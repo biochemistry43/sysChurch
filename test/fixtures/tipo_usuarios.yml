@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombreTipo: MyString
+  descripcionTipo: MyString
+  isVentas: false
+  isInventarios: false
+  isPerdidas: false
+  isPersonas: false
+  isGastos: false
+
+two:
+  nombreTipo: MyString
+  descripcionTipo: MyString
+  isVentas: false
+  isInventarios: false
+  isPerdidas: false
+  isPersonas: false
+  isGastos: false

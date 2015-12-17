@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Nombretipo:</strong>
+  <%= @tipo_usuario.nombreTipo %>
+</p>
+
+<p>
+  <strong>Descripciontipo:</strong>
+  <%= @tipo_usuario.descripcionTipo %>
+</p>
+
+<p>
+  <strong>Isventas:</strong>
+  <%= @tipo_usuario.isVentas %>
+</p>
+
+<p>
+  <strong>Isinventarios:</strong>
+  <%= @tipo_usuario.isInventarios %>
+</p>
+
+<p>
+  <strong>Isperdidas:</strong>
+  <%= @tipo_usuario.isPerdidas %>
+</p>
+
+<p>
+  <strong>Ispersonas:</strong>
+  <%= @tipo_usuario.isPersonas %>
+</p>
+
+<p>
+  <strong>Isgastos:</strong>
+  <%= @tipo_usuario.isGastos %>
+</p>
+
+<%= link_to 'Edit', edit_tipo_usuario_path(@tipo_usuario) %> |
+<%= link_to 'Back', tipo_usuarios_path %>
