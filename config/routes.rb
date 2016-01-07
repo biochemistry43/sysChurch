@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :gastos
+  resources :categoria_gastos
+  resources :cat_articulos
   resources :usuarios
   resources :tipo_usuarios
   resources :personas

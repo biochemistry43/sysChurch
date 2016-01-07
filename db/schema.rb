@@ -11,10 +11,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151217183255) do
+ActiveRecord::Schema.define(version: 20160107212452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cat_articulos", force: :cascade do |t|
+    t.string   "nombreCatArticulo"
+    t.string   "descripcionCatArticulo"
+    t.integer  "idCategoriaPadre"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "categoria_gastos", force: :cascade do |t|
+    t.string   "nombreCategoria"
+    t.string   "descripcionCategoria"
+    t.integer  "idCategoriaPadre"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  create_table "categoria_perdidas", force: :cascade do |t|
+    t.string   "nombreCatPerdida"
+    t.string   "descripcionCatPerdida"
+    t.integer  "idCategoriaPadre"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  create_table "gastos", force: :cascade do |t|
+    t.float    "montoGasto"
+    t.date     "fechaGasto"
+    t.string   "descripcionGasto"
+    t.string   "lugarCompraGasto"
+    t.integer  "persona_id"
+    t.integer  "categoria_gasto_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  create_table "perdidas", force: :cascade do |t|
+    t.string   "descripcionPerdida"
+    t.date     "fechaPerdida"
+    t.string   "nombreArticuloPerdida"
+    t.float    "precioCompraArticuloPerdida"
+    t.float    "precioVentaArticuloPerdida"
+    t.integer  "categoria_perdida_id"
+    t.integer  "cat_articulo_id"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
 
   create_table "personas", force: :cascade do |t|
     t.string   "nombre"

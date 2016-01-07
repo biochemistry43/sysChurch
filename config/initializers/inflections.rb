@@ -9,6 +9,12 @@
    inflect.irregular 'persona', 'personas'
    inflect.irregular 'usuario', 'usuarios'
    inflect.irregular 'tipoUsuario', 'tipoUsuarios'
+   inflect.irregular 'articulo', 'articulos'
+   inflect.irregular 'catArticulo', 'catArticulos'
+   inflect.irregular 'perdida', 'perdidas'
+   inflect.irregular 'proveedor', 'proveedores'
+   inflect.irregular 'venta', 'ventas'
+   inflect.irregular 'gasto', 'gastos'
 #   inflect.uncountable %w( fish sheep )
  end
 

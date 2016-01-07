@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Montogasto:</strong>
+  <%= @gasto.montoGasto %>
+</p>
+
+<p>
+  <strong>Fechagasto:</strong>
+  <%= @gasto.fechaGasto %>
+</p>
+
+<p>
+  <strong>Descripciongasto:</strong>
+  <%= @gasto.descripcionGasto %>
+</p>
+
+<p>
+  <strong>Lugarcompragasto:</strong>
+  <%= @gasto.lugarCompraGasto %>
+</p>
+
+<p>
+  <strong>Persona:</strong>
+  <%= @gasto.persona_id %>
+</p>
+
+<p>
+  <strong>Categoria gasto:</strong>
+  <%= @gasto.categoria_gasto_id %>
+</p>
+
+<%= link_to 'Edit', edit_gasto_path(@gasto) %> |
+<%= link_to 'Back', gastos_path %>

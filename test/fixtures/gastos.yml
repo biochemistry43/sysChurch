@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  montoGasto: 1.5
+  fechaGasto: 2016-01-07
+  descripcionGasto: MyString
+  lugarCompraGasto: MyString
+  persona_id: 1
+  categoria_gasto_id: 1
+
+two:
+  montoGasto: 1.5
+  fechaGasto: 2016-01-07
+  descripcionGasto: MyString
+  lugarCompraGasto: MyString
+  persona_id: 1
+  categoria_gasto_id: 1

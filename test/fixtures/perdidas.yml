@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  descripcionPerdida: MyString
+  fechaPerdida: 2016-01-07
+  nombreArticuloPerdida: MyString
+  precioCompraArticuloPerdida: 1.5
+  precioVentaArticuloPerdida: 1.5
+  categoriaPerdida_id: 1
+  catArticulo_id: 1
+
+two:
+  descripcionPerdida: MyString
+  fechaPerdida: 2016-01-07
+  nombreArticuloPerdida: MyString
+  precioCompraArticuloPerdida: 1.5
+  precioVentaArticuloPerdida: 1.5
+  categoriaPerdida_id: 1
+  catArticulo_id: 1

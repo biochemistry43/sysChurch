@@ -1,0 +1,29 @@
+<%= form_for(@categoria_gasto) do |f| %>
+  <% if @categoria_gasto.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@categoria_gasto.errors.count, "error") %> prohibited this categoria_gasto from being saved:</h2>
+
+      <ul>
+      <% @categoria_gasto.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :nombreCategoria %><br>
+    <%= f.text_field :nombreCategoria %>
+  </div>
+  <div class="field">
+    <%= f.label :descripcionCategoria %><br>
+    <%= f.text_field :descripcionCategoria %>
+  </div>
+  <div class="field">
+    <%= f.label :idCategoriaPadre %><br>
+    <%= f.number_field :idCategoriaPadre %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
