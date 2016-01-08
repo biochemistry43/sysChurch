@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  precioCompra: 1.5
+  precioVenta: 1.5
+  cantidadComprada: 1
+  unidadMedida: MyString
+  fechaIngreso: 2016-01-08
+  articulo_id: 1
+  proveedor_id: 1
+
+two:
+  precioCompra: 1.5
+  precioVenta: 1.5
+  cantidadComprada: 1
+  unidadMedida: MyString
+  fechaIngreso: 2016-01-08
+  articulo_id: 1
+  proveedor_id: 1

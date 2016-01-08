@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160107212452) do
+ActiveRecord::Schema.define(version: 20160108222328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "articulos", force: :cascade do |t|
+    t.string   "nombreArticulo"
+    t.string   "descripcionArticulo"
+    t.integer  "stockRequerido"
+    t.integer  "cat_articulo_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
 
   create_table "cat_articulos", force: :cascade do |t|
     t.string   "nombreCatArticulo"
@@ -51,6 +60,14 @@ ActiveRecord::Schema.define(version: 20160107212452) do
     t.datetime "updated_at",         null: false
   end
 
+  create_table "inventario", force: :cascade do |t|
+    t.integer  "cantidad"
+    t.string   "unidad"
+    t.integer  "articulo_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "perdidas", force: :cascade do |t|
     t.string   "descripcionPerdida"
     t.date     "fechaPerdida"
@@ -72,6 +89,14 @@ ActiveRecord::Schema.define(version: 20160107212452) do
     t.string   "cargo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "proveedores", force: :cascade do |t|
+    t.string   "nombreProveedor"
+    t.string   "telProveedor"
+    t.string   "emailProveedor"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "tipo_usuarios", force: :cascade do |t|
