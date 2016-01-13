@@ -1,4 +1,4 @@
-class CreateEntradasinventario < ActiveRecord::Migration
+class CreateEntradasInventario < ActiveRecord::Migration
   def change
     create_table :entradasInventario do |t|
       t.float :precioCompra

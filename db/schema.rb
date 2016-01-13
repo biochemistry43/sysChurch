@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160108222328) do
+ActiveRecord::Schema.define(version: 20160113201547) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,8 +21,9 @@ ActiveRecord::Schema.define(version: 20160108222328) do
     t.string   "descripcionArticulo"
     t.integer  "stockRequerido"
     t.integer  "cat_articulo_id"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.string   "descripcion2",        limit: 25
   end
 
   create_table "cat_articulos", force: :cascade do |t|
@@ -49,6 +50,18 @@ ActiveRecord::Schema.define(version: 20160108222328) do
     t.datetime "updated_at",            null: false
   end
 
+  create_table "entradasinventario", force: :cascade do |t|
+    t.float    "precioCompra"
+    t.float    "precioVenta"
+    t.integer  "cantidadComprada"
+    t.string   "unidadMedida"
+    t.date     "fechaIngreso"
+    t.integer  "articulo_id"
+    t.integer  "proveedor_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
   create_table "gastos", force: :cascade do |t|
     t.float    "montoGasto"
     t.date     "fechaGasto"
@@ -63,6 +76,13 @@ ActiveRecord::Schema.define(version: 20160108222328) do
   create_table "inventario", force: :cascade do |t|
     t.integer  "cantidad"
     t.string   "unidad"
+    t.integer  "articulo_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "item_ventas", force: :cascade do |t|
+    t.integer  "venta_id"
     t.integer  "articulo_id"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
@@ -118,6 +138,13 @@ ActiveRecord::Schema.define(version: 20160108222328) do
     t.integer  "tipo_usuario_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+  end
+
+  create_table "ventas", force: :cascade do |t|
+    t.date     "fechaVenta"
+    t.float    "montoVenta"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
