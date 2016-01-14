@@ -1,3 +1,3 @@
 class Inventario < ActiveRecord::Base
-	belongs_to :entradainventario
+	belongs_to :articulo
 end
