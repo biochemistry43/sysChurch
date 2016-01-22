@@ -124,3 +124,60 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+/*estas líneas son necesarias para utilizar los íconos de bootstrap*/
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../assets/glyphicons-halflings-regular.eot');
+  src: url('../assets/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+  url('../assets/glyphicons-halflings-regular.woff') format('woff'),
+  url('../assets/glyphicons-halflings-regular.ttf') format('truetype'),
+  url('../assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+.no-top-margin{
+  margin-top: -1px;
+}
+
+.store-tools-row{
+  //background-color: blue;
+  margin-top: 1.5em;
+}
+
+.circleglyphicon {
+  margin: 1px 0px 1px 1px;
+  font-size: 15px;
+    color: #1F2E54;
+    background-color: #F0C425;
+    padding: 12px;}
+
+.glyphicon:hover, .glyphicon:focus {
+    color: #F0C425;
+    background-color: #1F2E54;
+    padding: 12px;}
+
+.glyphicon:selected {
+    color: #F0C425;
+    background-color: #000;
+    padding: 12px;}
+
+
+.glyph {
+    text-align: center;
+}
+
+.transparent-button{
+  background: transparent;
+  border: none;
+}
+
+#total-price{
+  margin-left: 1em;
+}
+
+
+
+/*a {
+  text-decoration: underline;}
+a:focus, a:hover {
+  text-decoration: none;}*/
