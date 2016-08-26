@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'plainpage/index'
+
   resources :gastos
   resources :categoria_gastos
   resources :cat_articulos

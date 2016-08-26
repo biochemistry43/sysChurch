@@ -21,9 +21,8 @@ ActiveRecord::Schema.define(version: 20160113201547) do
     t.string   "descripcionArticulo"
     t.integer  "stockRequerido"
     t.integer  "cat_articulo_id"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
-    t.string   "descripcion2",        limit: 25
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
   end
 
   create_table "cat_articulos", force: :cascade do |t|
