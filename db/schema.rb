@@ -11,18 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160113201547) do
-
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+ActiveRecord::Schema.define(version: 20161227022211) do
 
   create_table "articulos", force: :cascade do |t|
-    t.string   "nombreArticulo"
-    t.string   "descripcionArticulo"
-    t.integer  "stockRequerido"
+    t.string   "clave"
+    t.string   "nombre"
+    t.string   "descripcion"
+    t.integer  "stock"
     t.integer  "cat_articulo_id"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "cat_articulos", force: :cascade do |t|
@@ -49,7 +47,7 @@ ActiveRecord::Schema.define(version: 20160113201547) do
     t.datetime "updated_at",            null: false
   end
 
-  create_table "entradasinventario", force: :cascade do |t|
+  create_table "entradasInventario", force: :cascade do |t|
     t.float    "precioCompra"
     t.float    "precioVenta"
     t.integer  "cantidadComprada"

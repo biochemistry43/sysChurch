@@ -1,13 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  nombreArticulo: MyString
-  descripcionArticulo: MyString
-  stockRequerido: 1
+  clave: MyString
+  nombre: MyString
+  descripcion: MyString
+  stock: 1
   cat_articulo_id: 1
 
 two:
-  nombreArticulo: MyString
-  descripcionArticulo: MyString
-  stockRequerido: 1
+  clave: MyString
+  nombre: MyString
+  descripcion: MyString
+  stock: 1
   cat_articulo_id: 1

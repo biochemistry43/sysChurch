@@ -1506,7 +1506,7 @@ span.right {
   .tile_count .tile_stats_count:first-child:before {
     border-left: 0; } }
 .tile_count .tile_stats_count .count {
-  font-size: 30px;
+  font-size: 150px;
   line-height: 47px;
   font-weight: 600; }
 

@@ -1,18 +1,15 @@
+
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Editar categoría de artículo</h1>
+      <h1>Editar artículo</h1>
     </div>
   </div>
   <div class="clearfix"></div>
-  
   <div class="col-md-10 col-sm-10 col-xs-10">
     <div class="x_panel" style="height: 600px;">
-
-
-<%= render 'form' %>
-
-<%= link_to 'Mostrar', @cat_articulo %> |
-<%= link_to 'Atrás', cat_articulos_path %>
+      <%= render 'form' %>
+      <%= link_to 'Show', @articulo %> |
+      <%= link_to 'Back', articulos_path %>
     </div>
   </div>

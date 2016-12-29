@@ -1,19 +1,31 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h3>Crear Categoria</h3>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+      <p id="notice"><%= notice %></p>
+      <p>
+        <strong>Nombrecatarticulo:</strong>
+        <%= @cat_articulo.nombreCatArticulo %>
+      </p>
 
-<p>
-  <strong>Nombrecatarticulo:</strong>
-  <%= @cat_articulo.nombreCatArticulo %>
-</p>
+      <p>
+        <strong>Descripcioncatarticulo:</strong>
+        <%= @cat_articulo.descripcionCatArticulo %>
+      </p>
 
-<p>
-  <strong>Descripcioncatarticulo:</strong>
-  <%= @cat_articulo.descripcionCatArticulo %>
-</p>
+      <p>
+      <strong>Idcategoriapadre:</strong>
+      <%= @cat_articulo.idCategoriaPadre %>
+      </p>
 
-<p>
-  <strong>Idcategoriapadre:</strong>
-  <%= @cat_articulo.idCategoriaPadre %>
-</p>
-
-<%= link_to 'Edit', edit_cat_articulo_path(@cat_articulo) %> |
-<%= link_to 'Back', cat_articulos_path %>
+      <%= link_to 'Editar', edit_cat_articulo_path(@cat_articulo) %> |
+      <%= link_to 'Atrás', cat_articulos_path %>
+    </div>
+  </div>
+</div>
