@@ -14,7 +14,9 @@ class ArticulosController < ApplicationController
     
   def showByCriteria
     @criteria = params[:criteria]
-    articulos = Articulo.select("clave, nombre").where(:nombre => @criteria)
+    articulos = Articulo.select("clave, nombre").where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')#:nombre => @criteria)
+    #Person.where('nombre LIKE ? OR clave LIKE ?',
+    #'#{@criteria}%', '#{@criteria}%')
     render :json => articulos
   end
 

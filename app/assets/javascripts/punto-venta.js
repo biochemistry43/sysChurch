@@ -1,35 +1,40 @@
 $(document).ready(function(){
    $("#search-product" ).keyup(function() {
    	  var criteria = $("#search-product").val();
-      $.ajax({
-        url: "/articulos/showByCriteria/" + criteria,
-        dataType: "JSON",
-        timeout: 10000,
-        beforeSend: function(){
-           //$("#respuesta").html("Cargando...");
-        },
-        error: function(){
-        	//alert("error");
-           //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-           
-        },
-        success: function(res){
-           if(res){
-              var resLength = res.length
-              for (i = 0; i < resLength; i++) {
-              //text += "<li>" + fruits[i] + "</li>";
-                 var element = res[i];
-                 $("#list-search-products").append("<li class='list-group-item list-group-item-success'>"+element.nombre+"</li>");
-              }
-              
-           }else{
-              //alert("fallo success")
-           }
-        }
-     })
+   	  if(criteria == ""){
+         $("#list-search-products").empty();
+   	  }
+   	  else{
+   	  	 $.ajax({
+	        url: "/articulos/showByCriteria/" + criteria,
+	        dataType: "JSON",
+	        timeout: 10000,
+	        beforeSend: function(){
+	           //$("#respuesta").html("Cargando...");
+	        },
+	        error: function(){
+	        	//alert("error");
+	           //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
+	           
+	        },
+	        success: function(res){
+	           if(res){
+	           	  $("#list-search-products").empty();
+	              var resLength = res.length;
+	              for (i = 0; i < resLength; i++) {
+	              //text += "<li>" + fruits[i] + "</li>";
+	                 var element = res[i];
+	                 $("#list-search-products").append("<li class='list-group-item list-group-item-success'>"+element.nombre+"</li>");
+	              }
+	              
+	           }else{
+	           	  $("#list-search-products").empty();
+	              //alert("fallo success")
+	           }
+	        }
+	     })
+   	  }
    });	
-
-
 });
 
 
