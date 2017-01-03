@@ -35,6 +35,11 @@
         <%= @articulo.cat_articulo_id %>
       </p>
 
+      <p>
+        <strong>Cat articulo:</strong>
+        <%= @articulo.existencia %>
+      </p>
+
       <%= link_to 'Edit', edit_articulo_path(@articulo) %> |
       <%= link_to 'Back', articulos_path %>
     </div>

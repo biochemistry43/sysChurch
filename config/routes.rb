@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'inventarios/index'
+  
   resources :articulos
   get 'articulos/showByCriteria'
   get 'plainpage/index'

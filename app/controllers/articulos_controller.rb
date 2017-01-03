@@ -14,9 +14,7 @@ class ArticulosController < ApplicationController
     
   def showByCriteria
     @criteria = params[:criteria]
-    articulos = Articulo.select("clave, nombre").where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')#:nombre => @criteria)
-    #Person.where('nombre LIKE ? OR clave LIKE ?',
-    #'#{@criteria}%', '#{@criteria}%')
+    articulos = Articulo.where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')
     render :json => articulos
   end
 
@@ -77,6 +75,6 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id)
+      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia)
     end
 end

@@ -19,7 +19,8 @@
             <th class="column-title">Nombre</th>
             <th class="column-title">Descripcion</th>
             <th class="column-title">Stock</th>
-            <th class="column-title">Cat articulo</th>
+            <th class="column-title">Existencia</th>
+            <th class="column-title">Categoria</th>
             <th colspan="3" class="column-title"></th>
           </tr>
         </thead>
@@ -31,6 +32,7 @@
               <td><%= articulo.nombre %></td>
               <td><%= articulo.descripcion %></td>
               <td><%= articulo.stock %></td>
+              <td><%= articulo.existencia %></td>
               <td><%= articulo.cat_articulo_id %></td>
               <td><%= link_to 'Show', articulo %></td>
               <td><%= link_to 'Edit', edit_articulo_path(articulo) %></td>

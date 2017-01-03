@@ -1,0 +1,78 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Inventarios</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="row">
+  	<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-left top_search">
+      <div class="input-group">
+        <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Buscar</button>
+          </span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+	    <div class="x_panel" style="height: 600px;">
+	       <div class="row">
+	       	<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :clave %><br>
+			    <%= text_field_tag :clave, class: "form-control has-feedback-left" %>
+			    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+			  </div>
+			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :nombre %><br>
+			    <%= text_field_tag :nombre, class: "form-control has-feedback-left" %>
+			  </div>
+			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :descripcion %><br>
+			    <%= text_field_tag :descripcion, class: "form-control has-feedback-left" %>
+			  </div>
+			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :stock %><br>
+			    <%= number_field_tag :stock, class: "form-control has-feedback-left" %>
+			  </div>
+			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :cat_articulo_id %><br>
+			    <%= number_field_tag :cat_articulo_id, class: "form-control has-feedback-left" %>
+			  </div>
+			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+			    <%= label_tag :existencia %><br>
+			    <%= number_field_tag :existencia, class: "form-control has-feedback-left" %>
+			  </div>
+			  <div class="ln_solid"></div>
+	       </div>
+	       <div class="row">
+	           <div class="col-md-6 col-sm-6 col-xs-6" style="overflow: scroll;"> 
+                  <table id ="table-inv" class="table table-striped responsive-utilities jambo_table">
+				      <thead>
+				        <tr class="headings">
+				          <th class="column-title">Clave </th>
+				          <th class="column-title">Nombre </th>
+				          <th class="column-title">Precio Compra </th>
+				          <th class="column-title">Precio Venta </th>
+				          <th class="column-title">Existencia </th>
+				          <th class="column-title">ültima modificación </th>
+				        </tr>
+				      </thead>
+		              <tbody>
+
+		              </tbody>
+				    </table>
+	           </div> 
+	           <div class="col-md-2 col-sm-2 col-xs-2">
+	           	
+	           </div>
+	           <div class="col-md-4 col-sm-4 col-xs-4">
+	           	
+	           </div>  	
+	       </div>
+	    </div>
+	</div>	
+  </div>
+</div>
+<%= javascript_include_tag "inventarios" %>
