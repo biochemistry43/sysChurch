@@ -15,11 +15,13 @@ Rails.application.routes.draw do
   resources :punto_venta
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-
+   
   # You can have the root of your site routed with "root"
   root 'punto_venta#venta'
-
+  
+  get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
+  get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

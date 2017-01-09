@@ -19,36 +19,40 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
 	    <div class="x_panel" style="height: 600px;">
 	       <div class="row">
-	       	<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :clave %><br>
-			    <%= text_field_tag :clave, class: "form-control has-feedback-left" %>
-			    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
-			  </div>
-			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :nombre %><br>
-			    <%= text_field_tag :nombre, class: "form-control has-feedback-left" %>
-			  </div>
-			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :descripcion %><br>
-			    <%= text_field_tag :descripcion, class: "form-control has-feedback-left" %>
-			  </div>
-			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :stock %><br>
-			    <%= number_field_tag :stock, class: "form-control has-feedback-left" %>
-			  </div>
-			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :cat_articulo_id %><br>
-			    <%= number_field_tag :cat_articulo_id, class: "form-control has-feedback-left" %>
-			  </div>
-			  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-			    <%= label_tag :existencia %><br>
-			    <%= number_field_tag :existencia, class: "form-control has-feedback-left" %>
-			  </div>
-			  <div class="ln_solid"></div>
+	          <div class="col-md-6 col-sm-6 col-xs-6">
+	          	<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				   <%= label_tag :clave %><br>
+				   <%= text_field_tag :clave, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <%= label_tag :nombre %><br>
+				  <%= text_field_tag :nombre, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <%= label_tag :descripcion %><br>
+				  <%= text_field_tag :descripcion, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <%= label_tag :stock %><br>
+				  <%= text_field_tag :stock, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <%= label_tag :cat_articulo_id %><br>
+				  <%= text_field_tag :cat_articulo_id, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <%= label_tag :existencia %><br>
+				  <%= text_field_tag :existencia, nil, class: "form-control has-feedback-left", :readonly => true %>
+				</div>
+				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+				  <button class="btn btn-primary" disabled="true">Actualizar</button>
+				</div>
+				<div class="ln_solid"></div>
+	          </div>
 	       </div>
 	       <div class="row">
 	           <div class="col-md-6 col-sm-6 col-xs-6" style="overflow: scroll;"> 
-                  <table id ="table-inv" class="table table-striped responsive-utilities jambo_table">
+                  <table id ="table_inv" class="table table-striped responsive-utilities jambo_table">
 				      <thead>
 				        <tr class="headings">
 				          <th class="column-title">Clave </th>

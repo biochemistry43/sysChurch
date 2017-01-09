@@ -4,8 +4,8 @@ class InventariosController < ApplicationController
 
   def showByCriteria
     @criteria = params[:criteria]
-    #articulos = Articulo.where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')
-    #render :json => articulos
+    articulos = Articulo.where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')
+    render :json => articulos
   end
 
 end
