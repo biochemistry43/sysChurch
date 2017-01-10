@@ -1,4 +1,4 @@
 class CatArticulo < ActiveRecord::Base
-	has_many :perdida
-	has_many :articulo
+	has_many :perdidas
+	has_many :articulos
 end

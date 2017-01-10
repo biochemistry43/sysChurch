@@ -4,11 +4,12 @@
       <h2><%= pluralize(@articulo.errors.count, "error") %> prohibited this articulo from being saved:</h2>
 
       <ul>
-      <% @articulo.errors.full_messages.each do |message| %>
+        <% @articulo.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
     </div>
+   
   <% end %>
 
   <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
@@ -29,8 +30,8 @@
     <%= f.number_field :stock, class: "form-control has-feedback-left" %>
   </div>
   <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :cat_articulo_id %><br>
-    <%= f.number_field :cat_articulo_id, class: "form-control has-feedback-left" %>
+    <%= f.label :categoria %><br>
+    <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Select'})%>
   </div>
   <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
     <%= f.label "Precio de Compra" %><br>

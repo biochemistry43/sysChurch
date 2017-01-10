@@ -1,6 +1,7 @@
 class ArticulosController < ApplicationController
   before_action :set_articulo, only: [:show, :edit, :update, :destroy]
 
+
   # GET /articulos
   # GET /articulos.json
   def index
@@ -20,18 +21,21 @@ class ArticulosController < ApplicationController
 
   # GET /articulos/new
   def new
+    @categories = CatArticulo.all
     @articulo = Articulo.new
   end
 
   # GET /articulos/1/edit
   def edit
+    @categories = CatArticulo.all
   end
 
   # POST /articulos
   # POST /articulos.json
   def create
+    @categories = CatArticulo.all
     @articulo = Articulo.new(articulo_params)
-
+    
     respond_to do |format|
       if @articulo.save
         format.html { redirect_to @articulo, notice: 'Articulo was successfully created.' }
@@ -46,6 +50,7 @@ class ArticulosController < ApplicationController
   # PATCH/PUT /articulos/1
   # PATCH/PUT /articulos/1.json
   def update
+    @categories = CatArticulo.all
     respond_to do |format|
       if @articulo.update(articulo_params)
         format.html { redirect_to @articulo, notice: 'Articulo was successfully updated.' }
@@ -72,6 +77,11 @@ class ArticulosController < ApplicationController
     def set_articulo
       @articulo = Articulo.find(params[:id])
     end
+
+    def set_art_categories
+      @categories = CatArticulo.all
+    end
+
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
