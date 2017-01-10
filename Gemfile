@@ -6,6 +6,9 @@ gem 'rails', '4.2.2'
 # Use postgresql as the database for Active Record
 gem 'pg'
 
+# Gema que permite subir imágenes al proyecto
+gem 'carrierwave'
+
 gem 'sqlite3', '~> 1.3', '>= 1.3.11'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'

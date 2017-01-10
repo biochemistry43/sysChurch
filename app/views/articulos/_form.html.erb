@@ -1,4 +1,4 @@
-<%= form_for @articulo, :html=> {:class=>'form-horizontal form-label-left input_mask'} do |f| %>
+<%= form_for @articulo, :html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
   <% if @articulo.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@articulo.errors.count, "error") %> prohibited this articulo from being saved:</h2>
@@ -16,6 +16,10 @@
     <%= f.label :clave %><br>
     <%= f.text_field :clave, class: "form-control has-feedback-left" %>
     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :foto %><br>
+    <%= f.file_field :fotoProducto, class: "form-control has-feedback-left" %>
   </div>
   <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
     <%= f.label :nombre %><br>

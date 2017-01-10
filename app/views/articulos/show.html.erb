@@ -9,6 +9,10 @@
   <div class="col-md-10 col-sm-10 col-xs-10">
     <div class="x_panel" style="height: 600px;">    
       <p id="notice"><%= notice %></p>
+      <p>
+        <strong>Foto:</strong>
+        <%= image_tag(@articulo.fotoProducto_url, :width => 170, :height => 190) if @articulo.fotoProducto.present? %>
+      </p>
 
       <p>
         <strong>Clave:</strong>

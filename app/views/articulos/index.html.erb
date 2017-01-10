@@ -28,6 +28,7 @@
         <tbody>
           <% @articulos.each do |articulo| %>
             <tr>
+              <td><%=image_tag(articulo.fotoProducto_url, :width => 65, :height => 75) if articulo.fotoProducto.present? %></td>
               <td><%= articulo.clave %></td>
               <td><%= articulo.nombre %></td>
               <td><%= articulo.descripcion %></td>
