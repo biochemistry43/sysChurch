@@ -1,0 +1,45 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Categorias de artículos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+      <p id="notice"><%= notice %></p>
+
+      <h1>Proveedores</h1>
+
+      <table class="table table-striped responsive-utilities jambo_table">
+        <thead>
+          <tr>
+            <th class="column-title">Nombre</th>
+            <th class="column-title">Telefono</th>
+            <th class="column-title">Email</th>
+            <th class="column-title" colspan="3"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @proveedores.each do |proveedor| %>
+            <tr>
+              <td><%= proveedor.nombre %></td>
+              <td><%= proveedor.telefono %></td>
+              <td><%= proveedor.email %></td>
+              <td><%= link_to 'Show', proveedor %></td>
+              <td><%= link_to 'Edit', edit_proveedor_path(proveedor) %></td>
+              <td><%= link_to 'Destroy', proveedor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <br>
+
+      <%= link_to 'New Proveedor', new_proveedor_path %>
+
+    </div>
+  </div>
+</div>

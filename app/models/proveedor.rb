@@ -1,3 +1,3 @@
 class Proveedor < ActiveRecord::Base
-	has_many :entradainventario
+	 has_many :entradasinventario
 end

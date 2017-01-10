@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  nombreProveedor: MyString
-  telProveedor: MyString
-  emailProveedor: MyString
+  nombre: MyString
+  telefono: MyString
+  email: MyString
 
 two:
-  nombreProveedor: MyString
-  telProveedor: MyString
-  emailProveedor: MyString
+  nombre: MyString
+  telefono: MyString
+  email: MyString

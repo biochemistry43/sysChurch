@@ -1,0 +1,32 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h3>Crear Categoria</h3>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">    
+      <p id="notice"><%= notice %></p>
+
+	  <p>
+	    <strong>Nombre:</strong>
+	    <%= @proveedor.nombre %>
+	  </p>
+
+	  <p>
+	    <strong>Telefono:</strong>
+	    <%= @proveedor.telefono %>
+	  </p>
+
+	  <p>
+	    <strong>Email:</strong>
+	    <%= @proveedor.email %>
+	  </p>
+
+	  <%= link_to 'Edit', edit_proveedor_path(@proveedor) %> |
+	  <%= link_to 'Back', proveedores_path %>
+    </div>
+  </div>
+</div>
