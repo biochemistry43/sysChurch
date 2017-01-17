@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tipoCuenta: MyString
+  nombreCuenta: MyString
+  numeroCuenta: 1
+  saldoInicial: 9.99
+  fecha: 2017-01-16
+  descripcion: MyText
+
+two:
+  tipoCuenta: MyString
+  nombreCuenta: MyString
+  numeroCuenta: 1
+  saldoInicial: 9.99
+  fecha: 2017-01-16
+  descripcion: MyText

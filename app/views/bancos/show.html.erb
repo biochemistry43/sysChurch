@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Tipocuenta:</strong>
+  <%= @banco.tipoCuenta %>
+</p>
+
+<p>
+  <strong>Nombrecuenta:</strong>
+  <%= @banco.nombreCuenta %>
+</p>
+
+<p>
+  <strong>Numerocuenta:</strong>
+  <%= @banco.numeroCuenta %>
+</p>
+
+<p>
+  <strong>Saldoinicial:</strong>
+  <%= @banco.saldoInicial %>
+</p>
+
+<p>
+  <strong>Fecha:</strong>
+  <%= @banco.fecha %>
+</p>
+
+<p>
+  <strong>Descripcion:</strong>
+  <%= @banco.descripcion %>
+</p>
+
+<%= link_to 'Edit', edit_banco_path(@banco) %> |
+<%= link_to 'Back', bancos_path %>

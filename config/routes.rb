@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :bancos
   resources :proveedores
   get 'inventarios/index'
   

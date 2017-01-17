@@ -1,0 +1,41 @@
+<%= form_for(@banco) do |f| %>
+  <% if @banco.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@banco.errors.count, "error") %> prohibited this banco from being saved:</h2>
+
+      <ul>
+      <% @banco.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :tipoCuenta %><br>
+    <%= f.text_field :tipoCuenta %>
+  </div>
+  <div class="field">
+    <%= f.label :nombreCuenta %><br>
+    <%= f.text_field :nombreCuenta %>
+  </div>
+  <div class="field">
+    <%= f.label :numeroCuenta %><br>
+    <%= f.number_field :numeroCuenta %>
+  </div>
+  <div class="field">
+    <%= f.label :saldoInicial %><br>
+    <%= f.text_field :saldoInicial %>
+  </div>
+  <div class="field">
+    <%= f.label :fecha %><br>
+    <%= f.date_select :fecha %>
+  </div>
+  <div class="field">
+    <%= f.label :descripcion %><br>
+    <%= f.text_area :descripcion %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
