@@ -1,6 +1,15 @@
-<h1>Editing Banco</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', @banco %> |
-<%= link_to 'Back', bancos_path %>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Editar artículo</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+		<%= render 'form' %>
+		<%= link_to 'Show', @banco %> |
+		<%= link_to 'Back', bancos_path %>
+    </div>
+  </div>
+</div>

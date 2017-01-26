@@ -32,23 +32,25 @@
           <ul class="nav side-menu">
             <li><a><i class="fa fa-home"></i> Módulos <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <li><%= link_to "Punto de venta", {:action=>"venta",:controller=>"punto_venta"}%>
+                <li><%= link_to "Punto de venta", punto_venta_index_path %>
                 </li>
                 <li><%= link_to "Categorias producto", cat_articulos_path %>
                 </li>
                 <li><%= link_to "Productos", articulos_path %>
                 </li>
                 </li>
-                <li><%= link_to "Inventarios", {:action=>"index",:controller=>"inventarios"}%>
+                <li><%= link_to "Inventarios", inventarios_path%>
                 </li>
                 <li><%= link_to "Proveedores", proveedores_path%>
+                </li>
+                <li><%= link_to "Bancos", bancos_path%>
                 </li>
               </ul>
 
             </li>
             <li><a><i class="fa fa-home"></i> Personal <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <li><%= link_to "Personas", {:action=>"venta",:controller=>"punto_venta"}%>
+                <li><%= link_to "Personas", root_path %>
                 <li><a href="index2.html">Usuarios</a>
                 </li>
               </ul>

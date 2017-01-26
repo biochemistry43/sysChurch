@@ -1,4 +1,4 @@
 class PuntoVentaController < ApplicationController
-	def venta
+	def index
 	end
 end

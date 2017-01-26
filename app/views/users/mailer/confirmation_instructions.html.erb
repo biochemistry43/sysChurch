@@ -1,17 +1,18 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h3>Crear Producto</h3>
+      <h3>Confirmación</h3>
     </div>
   </div>
   <div class="clearfix"></div>
   
   <div class="col-md-10 col-sm-10 col-xs-10">
     <div class="x_panel" style="height: 600px;">
+		<p>Welcome <%= @email %>!</p>
 
-		<%= render 'form' %>
+		<p>You can confirm your account email through the link below:</p>
 
-		<%= link_to 'Back', bancos_path %>
+		<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
     </div>
   </div>
 </div>

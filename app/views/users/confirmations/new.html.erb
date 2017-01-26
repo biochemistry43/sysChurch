@@ -1,0 +1,29 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h3>Confirmación</h3>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+		<h2>Resend confirmation instructions</h2>
+
+		<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+		  <%= devise_error_messages! %>
+
+		  <div class="field">
+		    <%= f.label :email %><br />
+		    <%= f.email_field :email, autofocus: true, value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+		  </div>
+
+		  <div class="actions">
+		    <%= f.submit "Resend confirmation instructions" %>
+		  </div>
+		<% end %>
+
+		<%= render "users/shared/links" %>
+	</div>
+  </div>
+</div>

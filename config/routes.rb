@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  
+  devise_for :users
   resources :bancos
   resources :proveedores
   get 'inventarios/index'
@@ -15,15 +17,23 @@ Rails.application.routes.draw do
   resources :tipo_usuarios
   resources :personas
   resources :punto_venta
+  resources :inventarios
+  #resources :punto_venta
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
    
   # You can have the root of your site routed with "root"
-  root 'punto_venta#venta'
+  #root 'devise/registrations#new'
   
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
+  root :to=> 'articulos#index'
+
+
+  #devise_scope :user do
+  #  root :to => 'devise/sessions#new'
+  #end
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

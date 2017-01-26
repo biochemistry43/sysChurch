@@ -1,34 +1,49 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h3>Crear Categoria</h3>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">    
 
-<p>
-  <strong>Tipocuenta:</strong>
-  <%= @banco.tipoCuenta %>
-</p>
+      <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Nombrecuenta:</strong>
-  <%= @banco.nombreCuenta %>
-</p>
+      <p>
+        <strong>Tipocuenta:</strong>
+        <%= @banco.tipoCuenta %>
+      </p>
 
-<p>
-  <strong>Numerocuenta:</strong>
-  <%= @banco.numeroCuenta %>
-</p>
+      <p>
+        <strong>Nombrecuenta:</strong>
+        <%= @banco.nombreCuenta %>
+      </p>
 
-<p>
-  <strong>Saldoinicial:</strong>
-  <%= @banco.saldoInicial %>
-</p>
+      <p>
+        <strong>Numerocuenta:</strong>
+        <%= @banco.numeroCuenta %>
+      </p>
 
-<p>
-  <strong>Fecha:</strong>
-  <%= @banco.fecha %>
-</p>
+      <p>
+        <strong>Saldoinicial:</strong>
+        <%= @banco.saldoInicial %>
+      </p>
 
-<p>
-  <strong>Descripcion:</strong>
-  <%= @banco.descripcion %>
-</p>
+      <p>
+        <strong>Fecha:</strong>
+        <%= @banco.fecha %>
+      </p>
 
-<%= link_to 'Edit', edit_banco_path(@banco) %> |
-<%= link_to 'Back', bancos_path %>
+      <p>
+        <strong>Descripcion:</strong>
+        <%= @banco.descripcion %>
+      </p>
+
+      <%= link_to 'Edit', edit_banco_path(@banco) %> |
+      <%= link_to 'Back', bancos_path %>
+
+    </div>
+  </div>
+</div>

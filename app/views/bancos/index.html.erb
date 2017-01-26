@@ -1,37 +1,49 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Bancos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+      <p id="notice"><%= notice %></p>
 
-<h1>Listing Bancos</h1>
+      <h1>Bancos</h1>
+      <table class="table table-striped responsive-utilities jambo_table">
+        <thead>
+          <tr>
+            <th class="column-title">Tipo de cuenta</th>
+            <th class="column-title">Nombre de cuenta</th>
+            <th class="column-title">Número de cuenta</th>
+            <th class="column-title">Saldo Inicial</th>
+            <th class="column-title">Fecha</th>
+            <th class="column-title">Descripcion</th>
+            <th colspan="3"></th>
+          </tr>
+        </thead>
 
-<table>
-  <thead>
-    <tr>
-      <th>Tipocuenta</th>
-      <th>Nombrecuenta</th>
-      <th>Numerocuenta</th>
-      <th>Saldoinicial</th>
-      <th>Fecha</th>
-      <th>Descripcion</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+        <tbody>
+          <% @bancos.each do |banco| %>
+            <tr>
+              <td><%= banco.tipoCuenta %></td>
+              <td><%= banco.nombreCuenta %></td>
+              <td><%= banco.numeroCuenta %></td>
+              <td><%= banco.saldoInicial %></td>
+              <td><%= banco.fecha %></td>
+              <td><%= banco.descripcion %></td>
+              <td><%= link_to 'Show', banco %></td>
+              <td><%= link_to 'Edit', edit_banco_path(banco) %></td>
+              <td><%= link_to 'Destroy', banco, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
 
-  <tbody>
-    <% @bancos.each do |banco| %>
-      <tr>
-        <td><%= banco.tipoCuenta %></td>
-        <td><%= banco.nombreCuenta %></td>
-        <td><%= banco.numeroCuenta %></td>
-        <td><%= banco.saldoInicial %></td>
-        <td><%= banco.fecha %></td>
-        <td><%= banco.descripcion %></td>
-        <td><%= link_to 'Show', banco %></td>
-        <td><%= link_to 'Edit', edit_banco_path(banco) %></td>
-        <td><%= link_to 'Destroy', banco, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+      <br>
 
-<br>
-
-<%= link_to 'New Banco', new_banco_path %>
+      <%= link_to 'New Banco', new_banco_path %>
+    </div>
+  </div>
+</div>
