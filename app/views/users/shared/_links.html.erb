@@ -1,13 +1,4 @@
-<div class="right_col" role="main">
-  <div class="page-title">
-    <div class="title_left">
-      <h3>Crear Producto</h3>
-    </div>
-  </div>
-  <div class="clearfix"></div>
-  
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
+
 		<%- if controller_name != 'sessions' %>
 		  <%= link_to "Log in", new_session_path(resource_name) %><br />
 		<% end -%>
@@ -33,6 +24,4 @@
 		    <%= link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider) %><br />
 		  <% end -%>
 		<% end -%>
-	</div>
-  </div>
-</div>
+
