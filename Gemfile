@@ -3,13 +3,10 @@ ruby "2.2.2"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.2'
-# Use postgresql as the database for Active Record
-gem 'pg'
 
 # Gema que permite subir imágenes al proyecto
 gem 'carrierwave'
 
-gem 'sqlite3', '~> 1.3', '>= 1.3.11'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -54,5 +51,17 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+
+  #sqlite3 db for Active Record in development enviroment
+  gem 'sqlite3', '~> 1.3', '>= 1.3.11'
 end
+
+group :production do
+   # Use postgresql as the database for Active Record in production
+   gem 'pg'
+end
+
+gem 'rails_12factor', group: :production  
+
+gem 'unicorn'  
 
