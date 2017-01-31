@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   
   resources :articulos
   get 'articulos/showByCriteria'
+  get 'articulos/getById'
   get 'plainpage/index'
 
 
@@ -29,6 +30,7 @@ Rails.application.routes.draw do
   
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
+  get 'articulos/getById/:criteria' => 'articulos#getById'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
   root :to=> 'articulos#index'
 

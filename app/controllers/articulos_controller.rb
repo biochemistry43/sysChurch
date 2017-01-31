@@ -12,6 +12,13 @@ class ArticulosController < ApplicationController
   # GET /articulos/1.json
   def show
   end
+
+  #obtiene un articulo en base a su Id
+  def getById
+    @criteria = params[:criteria]
+    articulo = Articulo.where('clave = ?', @criteria)
+    render :json => articulo
+  end
     
   def showByCriteria
     @criteria = params[:criteria]
