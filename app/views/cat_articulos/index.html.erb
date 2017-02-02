@@ -27,7 +27,7 @@
             <tr>
               <td><%= cat_articulo.nombreCatArticulo %></td>
               <td><%= cat_articulo.descripcionCatArticulo %></td>
-              <td><%= cat_articulo.idCategoriaPadre %></td>
+              <td><%= cat_articulo.padre %></td>
               <td><%= link_to 'Show', cat_articulo %></td>
               <td><%= link_to 'Edit', edit_cat_articulo_path(cat_articulo) %></td>
               <td><%= link_to 'Destroy', cat_articulo, method: :delete, data: { confirm: 'Are you sure?' } %></td>
