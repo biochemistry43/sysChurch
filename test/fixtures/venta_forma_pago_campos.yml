@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  venta_forma_pago_id: 1
+  campo_forma_pago_id: 1
+  ValorCampo: MyString
+
+two:
+  venta_forma_pago_id: 1
+  campo_forma_pago_id: 1
+  ValorCampo: MyString
