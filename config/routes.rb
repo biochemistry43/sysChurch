@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   resources :tipo_usuarios
   resources :personas
   resources :punto_venta
+  post 'punto_venta/realizarVenta'
+
   resources :inventarios
   #resources :punto_venta
   # The priority is based upon order of creation: first created -> highest priority.
@@ -32,6 +34,7 @@ Rails.application.routes.draw do
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'articulos/getById/:criteria' => 'articulos#getById'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
+  post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   root :to=> 'articulos#index'
 
 

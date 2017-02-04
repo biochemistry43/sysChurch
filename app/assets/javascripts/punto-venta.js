@@ -80,38 +80,44 @@ $(document).ready(function(){
     $("#importe").text(sumatoria);
   });
 
+  /*{"items":
+     {"item":{"codigo":"123", "cantidad":2},
+     }"item":{"codigo":"254":"cantidad":3}
+  }*/
+  var itemsVenta = [];
+  //Acción para guardar la venta en la base de datos.
+  $("#cobrarVenta").on("click", function() {
 
-  $("#cobrarVenta" ).on("click", function() {
-    
-    $.ajax({
-      url: "/articulos/showByCriteria/" + criteria,
-      dataType: "JSON",
-      timeout: 10000,
-      beforeSend: function(){
-        //$("#respuesta").html("Cargando...");
-      },
-      error: function(){
-        //alert("error");
-        //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-           
-      },
-      success: function(res){
-        if(res){
-          $("#list-search-products").empty();
-          var resLength = res.length;
-          for (i = 0; i < resLength; i++) {
-             //text += "<li>" + fruits[i] + "</li>";
-             var element = res[i];
-             $("#list-search-products").append("<li id='found-product' class='list-group-item list-group-item-success'>"+element.clave+"&nbsp &nbsp &nbsp"+element.nombre+"<button id='"+element.clave+"' onclick='addProductToSale(this)'>agregar</button></li>");
-          }
-        }else{
-          $("#list-search-products").empty();
-          //alert("fallo success")
-        }
+    $('#table_sales tr').each(function (i, el) {
+      //Se discrimina la primer fila (que corresponde al encabezado)
+      if(i!=0){
+        var codigoProd = $(this).find("td").eq(0).text();
+        var cantidadProd = $(this).find("td").eq(3).text();
+        var importeProd = $(this).find("td").eq(4).text();
+        itemVenta = {};
+        itemVenta["codigo"]=codigoProd;
+        itemVenta["cantidad"]=cantidadProd;
+        itemVenta["importe"]=importeProd;
+        itemsVenta.push(itemVenta);
+        
       }
-    })
-      
+    });
+
+    alert(itemsVenta);
+    $.post("/punto_venta/realizarVenta", {data: itemsVenta})
+
+       .done(function(data){
+          $("#flash").text(data);
+       })
+       .fail(function() {
+          alert( "error" );
+       })
+       .always(function() {
+          
+       });
+       itemsVenta = [];
    });
+  
 
 });
 
