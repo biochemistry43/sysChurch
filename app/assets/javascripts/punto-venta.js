@@ -1,5 +1,13 @@
+var numTarjetaCredito;
+var numTarjetaDebito;
+var plazoCredito;
+var referenciaOxxo;
+var referenciaPaypal;
+
 $(document).ready(function(){
    
+   $("#search-product" ).val("");
+   $("#formasPago").val("Efectivo");
 
    $("#search-product" ).keyup(function() {
    	  var criteria = $("#search-product").val();
@@ -80,14 +88,69 @@ $(document).ready(function(){
     $("#importe").text(sumatoria);
   });
 
-  /*{"items":
-     {"item":{"codigo":"123", "cantidad":2},
-     }"item":{"codigo":"254":"cantidad":3}
-  }*/
-  var itemsVenta = [];
-  //Acción para guardar la venta en la base de datos.
-  $("#cobrarVenta").on("click", function() {
+  //este arreglo json guardará todos los datos correspondientes a la venta
+  var datosVenta = [];
 
+  var datosFormaPago = [];
+
+  //Este arreglo json guardará código y cantidad de cada item de venta.
+  var itemsVenta = [];
+  var pago = "efectivo";
+  
+  $("#formasPago").on("change", function(){
+    if($(this).val() == "Tarjeta de Crédito"){
+      pago = "credito";
+      $('#pagoTC').modal('show');
+      $('#numTarjetaCredito').select();
+    }
+    if($(this).val() == "Tarjeta de débito"){
+      pago = "debito";
+      $('#pagoTD').modal('show');
+      $('#numTarjetaDebito').select();
+    }
+    if($(this).val() == "Oxxo"){
+      pago = "oxxo";
+      $('#pagoOxxo').modal('show');
+      $('#referenciaOxxo').select();
+    }
+    if($(this).val() == "Paypal"){
+      pago = "paypal";
+      $('#pagoPaypal').modal('show');
+      $('#referenciaPaypal').select();
+    }
+  });
+
+
+  //Acción para guardar la venta en un objeto JSON.
+  $("#cobrarVenta").on("click", function() {
+    
+    datosVenta.push({"caja":"1"});
+    formaPago = {}
+    if(pago == "efectivo"){
+      formaPago["formaPago"]="Efectivo";
+    }
+    if(pago == "credito"){
+      formaPago["formaPago"]="credito";
+      formaPago["ntCredito"] = numTarjetaCredito;
+      formaPago["plazo"] = plazoCredito;
+
+    }
+    if(pago == "debito"){
+      formaPago["formaPago"]="debito";
+      formaPago["ntDebito"] = numTarjetaDebito;
+    }
+    if(pago == "oxxo"){
+      formaPago["formaPago"]="oxxo";
+      formaPago["refOxxo"] = referenciaOxxo;
+    }
+    if(pago == "paypal"){
+      formaPago["formaPago"]="paypal";
+      formaPago["refPaypal"] = referenciaPaypal;
+    }
+
+    datosFormaPago.push(formaPago);
+    datosVenta.push(datosFormaPago);
+    
     $('#table_sales tr').each(function (i, el) {
       //Se discrimina la primer fila (que corresponde al encabezado)
       if(i!=0){
@@ -102,14 +165,13 @@ $(document).ready(function(){
         
       }
     });
+    datosVenta.push(itemsVenta);
 
-    alert(itemsVenta);
     $.ajaxSetup({async: false});
-    $.post("/punto_venta/realizarVenta", {data: itemsVenta})
+    $.post("/punto_venta/realizarVenta", {data: datosVenta})
 
        .done(function(data){
           alert(data);
-          location.reload();
        })
        .fail(function() {
           alert( "error" );
@@ -122,6 +184,23 @@ $(document).ready(function(){
   
 
 });
+
+function pagoTC(){
+  numTarjetaCredito = document.getElementById("numTarjetaCredito").value;
+  plazoCredito = document.getElementById("plazoCredito").value;
+}
+
+function pagoTD(){
+  numTarjetaDebito = document.getElementById("numTarjetaDebito").value;
+}
+
+function pagoOxxo(){
+  referenciaOxxo = document.getElementById("referenciaOxxo").value;
+}
+
+function pagoPaypal(){
+  referenciaPaypal = document.getElementById("referenciaPaypal").value;
+}
 
 function enterActualizar(event, indice){
   if (event.keyCode == 13) {
