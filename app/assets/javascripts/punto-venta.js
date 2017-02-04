@@ -104,10 +104,12 @@ $(document).ready(function(){
     });
 
     alert(itemsVenta);
+    $.ajaxSetup({async: false});
     $.post("/punto_venta/realizarVenta", {data: itemsVenta})
 
        .done(function(data){
-          $("#flash").text(data);
+          alert(data);
+          location.reload();
        })
        .fail(function() {
           alert( "error" );
