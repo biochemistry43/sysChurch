@@ -22,6 +22,7 @@
   
   <div class="col-md-12 col-sm-12 col-xs-12">
   	<div class="x_panel" style="height: 600px;">
+      <p id="notice"></p>
   	  <!--div para la lista de productos encontrados y la imagen del producto seleccionado-->
   	  <div class="row">
   	    <div class="right-col col-md-6 col-sm-6 col-xs-6" style="overflow: scroll; height: 15em">
@@ -40,35 +41,35 @@
   		
   		<div class="row segunda-fila ">
   		  <!--Aqui va la tabla de ventas-->
-  		  <div class="left-col col-md-5 col-sm-12 col-xs-12" style="overflow: scroll; height: 25em">
+  		  <div class="left-col col-md-8 col-sm-12 col-xs-12" style="overflow: scroll; height: 25em">
   		    <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
-		      <thead>
-		        <tr class="headings">
-		          <!--<th>
-		            <input type="checkbox" id="check-all" class="flat">
-		          </th>-->
-		          <th class="column-title">Clave </th>
-		          <th class="column-title">Nombre </th>
-		          <th class="column-title">Precio Venta </th>
-		          <th class="column-title">Cantidad </th>
-		          <th class="column-title">Importe </th>
-		          <!--<th class="column-title">Amount </th>
-		          <th class="column-title no-link last"><span class="nobr">Action</span>
-		          </th>
-		          <th class="bulk-actions" colspan="7">
-		            <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
-		          </th>-->
-		        </tr>
-		      </thead>
-              <tbody>
+  		      <thead>
+  		        <tr class="headings">
+  		          <!--<th>
+  		            <input type="checkbox" id="check-all" class="flat">
+  		          </th>-->
+  		          <th class="column-title">Clave </th>
+  		          <th class="column-title">Nombre </th>
+  		          <th class="column-title">Precio Venta </th>
+  		          <th class="column-title">Cantidad </th>
+  		          <th class="column-title">Importe </th>
+  		          <!--<th class="column-title">Amount </th>
+  		          <th class="column-title no-link last"><span class="nobr">Action</span>
+  		          </th>
+  		          <th class="bulk-actions" colspan="7">
+  		            <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+  		          </th>-->
+  		        </tr>
+  		      </thead>
+            <tbody>
                 
-              </tbody>
-		    </table>
-          </div>
+             </tbody>
+		      </table>
+        </div>
           <!--Aquí termina el div con la tabla de ventas-->
 
           <!--div con la sumatoria de venta-->
-          <div class="right-col col-md-5 col-xs-12 col-sm-12 col-md-offset-1" style=" height: 25em; background: gray;">
+          <div class="right-col col-md-3 col-xs-12 col-sm-12 col-md-offset-1" style=" height: 25em; background: gray;">
 	          <div class="row">
 	          	<div class="animated flipInY col-lg-12 col-md-12 col-sm-12 col-xs-12">
 	              <div class="tile-stats">
@@ -77,6 +78,17 @@
 	              </div>
 	            </div>
 	          </div>
+            <div class="row">
+              <div class="col-md-12">
+                <select class="form-control" id="formasPago">
+                  <option>Efectivo</option>
+                  <option>Tarjeta de Crédito</option>
+                  <option>Tarjeta de débito</option>
+                  <option>Oxxo</option>
+                  <option>Paypal</option>
+                </select>
+              </div>
+            </div>
 
 	          <div class="row" >
 	          	<div class="col-md-12">
@@ -107,6 +119,103 @@
           <div class="modal-body" id="modal-body">
           </div>
           <div class="modal-footer" id="modal-footer">
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal" id="pagoOxxo">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Ingresa los datos del pago en oxxo</h4>
+          </div>
+          <div class="modal-body" id="modal-body-oxxo">
+           <div class="form-group">
+              <label for="referenciaOxxo">Referencia oxxo:</label>
+              <input type="text" class="form-control" id="referenciaOxxo">
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-oxxo">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PagoOxxo()">Aceptar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- Modales para ingresar datos de diferentes formas de pago-->
+    <div class="modal" id="pagoTC">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Ingresa los datos de la tarjeta de crédito</h4>
+          </div>
+          <div class="modal-body" id="modal-body-tc">
+            <div class="form-group">
+              <label for="numTarjetaCredito">Número de tarjeta:</label>
+              <input type="text" class="form-control" id="numTarjetaCredito">
+            </div>
+            <div class="form-group">
+              <label for="plazoCredito">Plazo:</label>
+              <input type="text" class="form-control" id="plazoCredito">
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-tc">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoTC()">Aceptar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal" id="pagoTD">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Ingresa los datos de la tarjeta de débito</h4>
+          </div>
+          <div class="modal-body" id="modal-body-td">
+            <div class="form-group">
+              <label for="numTarjetaDebito">Número de tarjeta:</label>
+              <input type="text" class="form-control" id="numTarjetaDebito">
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoTD()">Aceptar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal" id="pagoPaypal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Ingresa los datos de paypal</h4>
+          </div>
+          <div class="modal-body" id="modal-body-paypal">
+            <div class="form-group">
+              <label for="referenciaPaypal">Referencia paypal:</label>
+              <input type="text" class="form-control" id="referenciaPaypal">
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-paypal">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoPaypal()">Aceptar</button>
           </div>
         </div>
         <!-- /.modal-content -->

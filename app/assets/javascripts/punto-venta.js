@@ -1,5 +1,13 @@
+var numTarjetaCredito;
+var numTarjetaDebito;
+var plazoCredito;
+var referenciaOxxo;
+var referenciaPaypal;
+
 $(document).ready(function(){
    
+   $("#search-product" ).val("");
+   $("#formasPago").val("Efectivo");
 
    $("#search-product" ).keyup(function() {
    	  var criteria = $("#search-product").val();
@@ -80,40 +88,119 @@ $(document).ready(function(){
     $("#importe").text(sumatoria);
   });
 
+  //este arreglo json guardará todos los datos correspondientes a la venta
+  var datosVenta = [];
 
-  $("#cobrarVenta" ).on("click", function() {
+  var datosFormaPago = [];
+
+  //Este arreglo json guardará código y cantidad de cada item de venta.
+  var itemsVenta = [];
+  var pago = "efectivo";
+  
+  $("#formasPago").on("change", function(){
+    if($(this).val() == "Tarjeta de Crédito"){
+      pago = "credito";
+      $('#pagoTC').modal('show');
+      $('#numTarjetaCredito').select();
+    }
+    if($(this).val() == "Tarjeta de débito"){
+      pago = "debito";
+      $('#pagoTD').modal('show');
+      $('#numTarjetaDebito').select();
+    }
+    if($(this).val() == "Oxxo"){
+      pago = "oxxo";
+      $('#pagoOxxo').modal('show');
+      $('#referenciaOxxo').select();
+    }
+    if($(this).val() == "Paypal"){
+      pago = "paypal";
+      $('#pagoPaypal').modal('show');
+      $('#referenciaPaypal').select();
+    }
+  });
+
+
+  //Acción para guardar la venta en un objeto JSON.
+  $("#cobrarVenta").on("click", function() {
     
-    $.ajax({
-      url: "/articulos/showByCriteria/" + criteria,
-      dataType: "JSON",
-      timeout: 10000,
-      beforeSend: function(){
-        //$("#respuesta").html("Cargando...");
-      },
-      error: function(){
-        //alert("error");
-        //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-           
-      },
-      success: function(res){
-        if(res){
-          $("#list-search-products").empty();
-          var resLength = res.length;
-          for (i = 0; i < resLength; i++) {
-             //text += "<li>" + fruits[i] + "</li>";
-             var element = res[i];
-             $("#list-search-products").append("<li id='found-product' class='list-group-item list-group-item-success'>"+element.clave+"&nbsp &nbsp &nbsp"+element.nombre+"<button id='"+element.clave+"' onclick='addProductToSale(this)'>agregar</button></li>");
-          }
-        }else{
-          $("#list-search-products").empty();
-          //alert("fallo success")
-        }
+    datosVenta.push({"caja":"1"});
+    formaPago = {}
+    if(pago == "efectivo"){
+      formaPago["formaPago"]="Efectivo";
+    }
+    if(pago == "credito"){
+      formaPago["formaPago"]="credito";
+      formaPago["ntCredito"] = numTarjetaCredito;
+      formaPago["plazo"] = plazoCredito;
+
+    }
+    if(pago == "debito"){
+      formaPago["formaPago"]="debito";
+      formaPago["ntDebito"] = numTarjetaDebito;
+    }
+    if(pago == "oxxo"){
+      formaPago["formaPago"]="oxxo";
+      formaPago["refOxxo"] = referenciaOxxo;
+    }
+    if(pago == "paypal"){
+      formaPago["formaPago"]="paypal";
+      formaPago["refPaypal"] = referenciaPaypal;
+    }
+
+    datosFormaPago.push(formaPago);
+    datosVenta.push(datosFormaPago);
+    
+    $('#table_sales tr').each(function (i, el) {
+      //Se discrimina la primer fila (que corresponde al encabezado)
+      if(i!=0){
+        var codigoProd = $(this).find("td").eq(0).text();
+        var cantidadProd = $(this).find("td").eq(3).text();
+        var importeProd = $(this).find("td").eq(4).text();
+        itemVenta = {};
+        itemVenta["codigo"]=codigoProd;
+        itemVenta["cantidad"]=cantidadProd;
+        itemVenta["importe"]=importeProd;
+        itemsVenta.push(itemVenta);
+        
       }
-    })
-      
+    });
+    datosVenta.push(itemsVenta);
+
+    $.ajaxSetup({async: false});
+    $.post("/punto_venta/realizarVenta", {data: datosVenta})
+
+       .done(function(data){
+          alert(data);
+       })
+       .fail(function() {
+          alert( "error" );
+       })
+       .always(function() {
+          
+       });
+       itemsVenta = [];
    });
+  
 
 });
+
+function pagoTC(){
+  numTarjetaCredito = document.getElementById("numTarjetaCredito").value;
+  plazoCredito = document.getElementById("plazoCredito").value;
+}
+
+function pagoTD(){
+  numTarjetaDebito = document.getElementById("numTarjetaDebito").value;
+}
+
+function pagoOxxo(){
+  referenciaOxxo = document.getElementById("referenciaOxxo").value;
+}
+
+function pagoPaypal(){
+  referenciaPaypal = document.getElementById("referenciaPaypal").value;
+}
 
 function enterActualizar(event, indice){
   if (event.keyCode == 13) {
