@@ -1,5 +1,4 @@
 class CatArticulosController < ApplicationController
-  before_action :set_cat_articulo, only: [:show]
   before_action :set_categoria, only: [:edit, :update, :destroy]
   # GET /cat_articulos
   # GET /cat_articulos.json
@@ -10,6 +9,7 @@ class CatArticulosController < ApplicationController
   # GET /cat_articulos/1
   # GET /cat_articulos/1.json
   def show
+    @cat_articulo = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id').where("cat_articulos.id=?",params[:id])
   end
 
   # GET /cat_articulos/new
@@ -64,10 +64,6 @@ class CatArticulosController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_cat_articulo
-      @cat_articulo = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id').where("cat_articulos.id=?",params[:id])
-    end
-
     def set_categoria
       @cat_articulo = CatArticulo.find(params[:id])
     end
