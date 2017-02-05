@@ -1,15 +1,15 @@
 class CatArticulosController < ApplicationController
-  before_action :set_cat_articulo, only: [:show, :edit, :update, :destroy]
-
+  before_action :set_categoria, only: [:edit, :update, :destroy]
   # GET /cat_articulos
   # GET /cat_articulos.json
   def index
-    @cat_articulos = CatArticulo.all
+    @cat_articulos = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id')
   end
 
   # GET /cat_articulos/1
   # GET /cat_articulos/1.json
   def show
+    @cat_articulo = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id').where("cat_articulos.id=?",params[:id])
   end
 
   # GET /cat_articulos/new
@@ -54,6 +54,7 @@ class CatArticulosController < ApplicationController
   # DELETE /cat_articulos/1
   # DELETE /cat_articulos/1.json
   def destroy
+
     @cat_articulo.destroy
     respond_to do |format|
       format.html { redirect_to cat_articulos_url, notice: 'Cat articulo was successfully destroyed.' }
@@ -63,7 +64,7 @@ class CatArticulosController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_cat_articulo
+    def set_categoria
       @cat_articulo = CatArticulo.find(params[:id])
     end
 
