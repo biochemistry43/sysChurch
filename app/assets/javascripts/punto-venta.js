@@ -124,15 +124,17 @@ $(document).ready(function(){
   //Acción para guardar la venta en un objeto JSON.
   $("#cobrarVenta").on("click", function() {
     
-    datosVenta.push({"caja":"1"});
-    formaPago = {}
+    caja = {};
+    caja["caja"] = $("#Caja").val();
+    datosVenta.push(caja);
+    formaPago = {};
     if(pago == "efectivo"){
-      formaPago["formaPago"]="Efectivo";
+      formaPago["formaPago"]="efectivo";
     }
     if(pago == "credito"){
       formaPago["formaPago"]="credito";
       formaPago["ntCredito"] = numTarjetaCredito;
-      formaPago["plazo"] = plazoCredito;
+      formaPago["plazoTCredito"] = plazoCredito;
 
     }
     if(pago == "debito"){
@@ -166,7 +168,7 @@ $(document).ready(function(){
       }
     });
     datosVenta.push(itemsVenta);
-
+    
     $.ajaxSetup({async: false});
     $.post("/punto_venta/realizarVenta", {data: datosVenta})
 
@@ -180,6 +182,8 @@ $(document).ready(function(){
           
        });
        itemsVenta = [];
+       datosVenta = [];
+       datosFormaPago = [];
    });
   
 
