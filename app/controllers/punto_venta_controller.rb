@@ -1,160 +1,105 @@
 class PuntoVentaController < ApplicationController
-    after_filter { flash.discard if request.xhr? }
+    #after_filter { flash.discard if request.xhr? }
 
-	def index
+	def index9
 	end
 
 	def realizarVenta
-		literal = params[:data]
-		hash = literal
-		hash = JSON.parse(hash) if hash.is_a?(String)
-		#render :text => hash
-		caja = ""
-        
-        formaPago = ""
-        numTDebito = ""
-        numTCredito = ""
-        plazoCredito = ""
-        refOxxo = ""
-        refPaypal = ""
-        #primer nivel del json
-        hash.each do |i, valor|
-        	if i.eql?"0"
-              caja = valor[:caja]
-            end
-            if i.eql?"1"
-           
-           	  #i = 1 es la parte json de la forma de pago
-              datosPago = valor["0"]
-              fPagoElegida = datosPago["formaPago"]
-              
-              if fPagoElegida == "efectivo"
-                 formaPago = "efectivo"
-              end
-              if fPagoElegida == "debito"
-              	 formaPago = "debito"
-              	 numTDebito = datosPago["ntDebito"]
-              end
-              if fPagoElegida == "credito"
-              	 formaPago = "credito"
-              	 numTDebito = datosPago["ntCredito"]
-              	 plazoCredito = datosPago["plazoTCredito"]
-              end
-              if fPagoElegida == "oxxo"
-              	 formaPago = "oxxo"
-              	 refOxxo = datosPago["refOxxo"]
-              end
-              if fPagoElegida == "paypal"
-                 formaPago = "paypal"
-                 refOxxo = datosPago["refPaypal"]
-              end
-            end
-            #i = 2 es la parte json con los items de venta
-            if i.eql?"2"
+	  literal = params[:dataVenta]
+	  hash = literal
+	  hash = JSON.parse(hash.gsub('\"', '"'))
+	  caja = ""
+      loquesea = ""
+      formaPago = ""
+      numTDebito = ""
+      numTCredito = ""
+      plazoCredito = ""
+      refOxxo = ""
+      refPaypal = ""
+    
+	  #primer nivel del json
+	  hash.each do |item|
+	    if item.respond_to?(:key?)
+	  	  if item.has_key?("caja")
+		    caja = item["caja"]
+		  end
+	    end
+	        	
+	    if item.is_a?(Array)
+	      if item[0].has_key?("formaPago")
+	              	
+	        hashPago = item[0]
+	        formaPago = hashPago["formaPago"]
+	       
+		    if formaPago == "debito"
+		      numTDebito = hashPago["ntDebito"]
+		    end
 
-              montoVenta = 0
-              valor.each do |indice, itemVenta|
-				  itemVenta.each do |clave, valor|
-		             if clave == "importe"
-		             	montoVenta += valor.to_f
-		             end
-				  end
-				end
+		    if formaPago == "credito"
+		      numTDebito = hashPago["ntCredito"]
+		      plazoCredito = hashPago["plazoTCredito"]
+		    end
 
+		    if formaPago == "oxxo"
+		      refOxxo = hashPago["refOxxo"]
+		    end
 
-		        @venta = Venta.new
-		        @venta.fechaVenta = Time.now
-		        @venta.montoVenta = montoVenta
-		        @venta.caja = 1
-		        @venta.user = current_user
-		        itemSaved = true
+		    if formaPago == "paypal"
+		      refOxxo = hashPago["refPaypal"]
+		    end
+	      
+	      end
+	      
+	      if item[0].has_key?("importe")
+            
+            #hash que contiene los items de venta
+            montoVenta = 0
+	        
+	        item.each do |itemVenta|
+			  
+			  montoVenta += itemVenta["importe"].to_f
 
-			    if @venta.save
-			      	#en el primer nivel del hash están los indice de cada item de venta
-			       	valor.each do |indice, itemVenta|
-
-			        itemV = ItemVenta.new
-			       	  #en el segundo nivel de hash están los items particulares de la venta
-					  itemVenta.each do |clave, valor|
-				           
-				       	itemV.venta = @venta
-				       	if clave == "codigo"
-			                itemV.articulo = Articulo.find_by clave: valor
-				       	end
-				       	if clave == "cantidad"
-			                itemV.cantidad = valor
-				       	end
-				        	
-					  end
-					  if itemV.save
-					  	itemSaved = itemSaved && true
-					  else
-					  	itemSaved = itemSaved && false
-					  end
-
-					end
-					if itemSaved
-					   render :text => "Venta realizada correctamente"
-		            else
-		               render :text => "Fallo al intentar realizar la venta"
-		            end
-			    else
-			       	render :text => "Fallo al intentar realizar la venta"
-			    end
-            end
-        end
-
-
-		if false
-	        montoVenta = 0
-			hash.each do |indice, itemVenta|
-			  itemVenta.each do |clave, valor|
-	             if clave == "importe"
-	             	montoVenta += valor.to_f
-	             end
-			  end
 			end
 
+			@venta = Venta.new
+			@venta.fechaVenta = Time.now
+			@venta.montoVenta = montoVenta
+			@venta.caja = 1
+			@venta.user = current_user
+			itemSaved = true
 
-	        @venta = Venta.new
-	        @venta.fechaVenta = Time.now
-	        @venta.montoVenta = montoVenta
-	        @venta.caja = 1
-	        @venta.user = current_user
-	        itemSaved = true
+			if @venta.save
+			  #Aquí se recorre cada item de venta
+			  item.each do |itemVenta|
+                
+			    itemV = ItemVenta.new
 
-		    if @venta.save
-		      	#en el primer nivel del hash están los indice de cada item de venta
-		       	hash.each do |indice, itemVenta|
-
-		        itemV = ItemVenta.new
-		       	  #en el segundo nivel de hash están los items particulares de la venta
-				  itemVenta.each do |clave, valor|
-			           
-			       	itemV.venta = @venta
-			       	if clave == "codigo"
-		                itemV.articulo = Articulo.find_by clave: valor
-			       	end
-			       	if clave == "cantidad"
-		                itemV.cantidad = valor
-			       	end
-			        	
-				  end
-				  if itemV.save
-				  	itemSaved = itemSaved && true
-				  else
-				  	itemSaved = itemSaved && false
-				  end
-
+                itemV.venta = @venta
+                itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
+                itemV.cantidad = itemVenta["cantidad"]
+				
+				if itemV.save
+				  itemSaved = itemSaved && true
+				else
+				  itemSaved = itemSaved && false
 				end
-				if itemSaved
-				   render :text => "Venta realizada correctamente"
-	            else
-	               render :text => "Fallo al intentar realizar la venta"
-	            end
-		    else
-		       	render :text => "Fallo al intentar realizar la venta"
-		    end
-		end
+
+			  end
+						
+			  if itemSaved
+			    flash[:notice] = "La venta se guardó exitosamente!"
+			    redirect_to punto_venta_index_path
+			  else
+			    flash[:notice] = "Error al intentar guardar la venta"
+			    redirect_to punto_venta_index_path
+			  end
+			#Si la venta no se guardó correctamente
+			else
+			  flash[:notice] = "Error al intentar guardar la venta"
+			  redirect_to punto_venta_index_path
+			end
+		  end
+	    end
+	  end
 	end
 end

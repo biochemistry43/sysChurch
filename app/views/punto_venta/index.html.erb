@@ -223,5 +223,9 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
+      <%= hidden_field_tag(:dataVenta) %>
+    <% end %>
   </div>
   <%= javascript_include_tag "punto-venta" %>

@@ -168,10 +168,7 @@ $(document).ready(function(){
       }
     });
     datosVenta.push(itemsVenta);
-    
-    $.ajaxSetup({async: false});
-    $.post("/punto_venta/realizarVenta", {data: datosVenta})
-
+    /*$.post("/punto_venta/realizarVenta", {data: datosVenta})
        .done(function(data){
           alert(data);
        })
@@ -180,7 +177,10 @@ $(document).ready(function(){
        })
        .always(function() {
           
-       });
+       });*/
+       $("#dataVenta").val(JSON.stringify(datosVenta));
+       var form = $("#ventaForm");
+       form.submit();
        itemsVenta = [];
        datosVenta = [];
        datosFormaPago = [];
