@@ -28,5 +28,9 @@ class VentasController < ApplicationController
     @ventas.each do |venta|
       @VentaDelDia += venta.montoVenta.to_f
     end
+
+    @usuarios = User.all
+    @monto = 0
+
   end
 end

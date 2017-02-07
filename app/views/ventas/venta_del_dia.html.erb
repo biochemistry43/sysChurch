@@ -12,6 +12,16 @@
       <h2>Venta del día de hoy:</h2>
       <h1>$<%=@VentaDelDia%></h1>
 
+      <% @usuarios.each do |usuario| %>
+        <h3>Venta del cajero: </h3>
+        <h4><%=usuario.email%></h4>
+        <% usuario.ventas.each do |venta| %>
+          <% @monto += venta.montoVenta.to_f %>
+        <%end%>
+        <h5><%= @monto %></h5>
+        <% @monto = 0.0%>
+      <% end %>
+
       <table class="table table-striped responsive-utilities jambo_table">
         <thead>
           <tr>

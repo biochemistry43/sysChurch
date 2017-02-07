@@ -46,6 +46,10 @@ Rails.application.routes.draw do
     delete "/logout" => "devise/sessions#destroy"
     get "/" => "users/sessions#new"
   end
+
+  resources :users do
+    resources :ventas
+  end
   #devise_scope :user do
   #  root :to => 'devise/sessions#new'
   #end
