@@ -1,5 +1,6 @@
 class PuntoVentaController < ApplicationController
     #after_filter { flash.discard if request.xhr? }
+   # before_filter :authenticate_user!
 
 	def index
 	end

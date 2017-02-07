@@ -10,6 +10,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource
   # def create
   #   super
+  #   redirect_to punto_venta_index_path
   # end
 
   # GET /resource/edit

@@ -1,0 +1,40 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Listado de Ventas</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+      <p id="notice"><%= notice %></p>
+
+      <h1>Ventas</h1>
+
+      <table class="table table-striped responsive-utilities jambo_table">
+        <thead>
+          <tr>
+            <th class="column-title">Fecha </th>
+            <th class="column-title">Monto Venta</th>
+            <th class="column-title">Caja #</th>
+            <th class="column-title">Cajero</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @ventas.each do |venta| %>
+            <tr>
+              <td><%= venta.fechaVenta %></td>
+              <td><%= venta.montoVenta %></td>
+              <td><%= venta.caja %></td>
+              <td><%= User.find(venta.user_id).email %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <br>
+
+    </div>
+  </div>
+</div>

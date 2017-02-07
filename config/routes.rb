@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   
-  #devise_for :users
-  devise_for :users, controllers: { sessions: "users/sessions" }
+  resources :ventas,  :except => [:show, :destroy]
+  get 'ventas/venta_del_dia'
 
+
+  devise_for :users, controllers: { sessions: "users/sessions" }
   resources :bancos
   resources :proveedores
   get 'inventarios/index'
@@ -34,10 +36,16 @@ Rails.application.routes.draw do
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'articulos/getById/:criteria' => 'articulos#getById'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
+  get 'ventas/venta_del_dia' => 'ventas#venta_del_dia'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
+  
   root :to=> 'articulos#index'
-
-
+  devise_scope :user do 
+    #devise_for :users
+    get "/login" => "devise/sessions#new"
+    delete "/logout" => "devise/sessions#destroy"
+    get "/" => "users/sessions#new"
+  end
   #devise_scope :user do
   #  root :to => 'devise/sessions#new'
   #end
