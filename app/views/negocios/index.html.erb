@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Negocios</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Logo</th>
+      <th>Nombre</th>
+      <th>Representante</th>
+      <th>Direccion</th>
+      <th>User</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @negocios.each do |negocio| %>
+      <tr>
+        <td><%= negocio.logo %></td>
+        <td><%= negocio.nombre %></td>
+        <td><%= negocio.representante %></td>
+        <td><%= negocio.direccion %></td>
+        <td><%= negocio.user_id %></td>
+        <td><%= link_to 'Show', negocio %></td>
+        <td><%= link_to 'Edit', edit_negocio_path(negocio) %></td>
+        <td><%= link_to 'Destroy', negocio, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Negocio', new_negocio_path %>

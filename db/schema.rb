@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170206192432) do
+ActiveRecord::Schema.define(version: 20170211112825) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -116,6 +116,16 @@ ActiveRecord::Schema.define(version: 20170206192432) do
     t.decimal  "cantidad"
   end
 
+  create_table "negocios", force: :cascade do |t|
+    t.string   "logo"
+    t.string   "nombre"
+    t.string   "representante"
+    t.string   "direccion"
+    t.integer  "user_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
   create_table "perdidas", force: :cascade do |t|
     t.string   "descripcionPerdida"
     t.date     "fechaPerdida"
@@ -145,6 +155,15 @@ ActiveRecord::Schema.define(version: 20170206192432) do
     t.string   "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "sucursals", force: :cascade do |t|
+    t.string   "nombre"
+    t.string   "representante"
+    t.string   "direccion"
+    t.integer  "negocio_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "tipo_usuarios", force: :cascade do |t|

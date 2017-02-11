@@ -1,0 +1,2 @@
+module NegociosHelper
+end

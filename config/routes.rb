@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  resources :negocios
+  resources :sucursals
   resources :ventas,  :except => [:show, :destroy]
   get 'ventas/venta_del_dia'
 

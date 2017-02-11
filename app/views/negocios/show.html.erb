@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Logo:</strong>
+  <%= @negocio.logo %>
+</p>
+
+<p>
+  <strong>Nombre:</strong>
+  <%= @negocio.nombre %>
+</p>
+
+<p>
+  <strong>Representante:</strong>
+  <%= @negocio.representante %>
+</p>
+
+<p>
+  <strong>Direccion:</strong>
+  <%= @negocio.direccion %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @negocio.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_negocio_path(@negocio) %> |
+<%= link_to 'Back', negocios_path %>

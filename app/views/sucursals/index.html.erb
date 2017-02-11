@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Sucursals</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Representante</th>
+      <th>Direccion</th>
+      <th>Negocio</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sucursals.each do |sucursal| %>
+      <tr>
+        <td><%= sucursal.nombre %></td>
+        <td><%= sucursal.representante %></td>
+        <td><%= sucursal.direccion %></td>
+        <td><%= sucursal.negocio_id %></td>
+        <td><%= link_to 'Show', sucursal %></td>
+        <td><%= link_to 'Edit', edit_sucursal_path(sucursal) %></td>
+        <td><%= link_to 'Destroy', sucursal, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Sucursal', new_sucursal_path %>
