@@ -7,4 +7,6 @@ class User < ActiveRecord::Base
   belongs_to :tipo_usuario
   has_many :ventas
   has_many :bancos
+  belongs_to :negocio
+  belongs_to :sucursal
 end

@@ -64,8 +64,8 @@
                     </li>
                   </ul>
                 </li>
-                <li><a >Configuración del negocio</a>
-                <li><a >Permisos de usuarios</a>
+                <li><%= link_to "Configuración del negocio", controller: "negocios", action: "show", id: current_user.negocio_id%>
+                <li><a ><%=@hello%></a>
                 </li>
               </ul>
               

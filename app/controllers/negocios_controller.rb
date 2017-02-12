@@ -69,6 +69,6 @@ class NegociosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def negocio_params
-      params.require(:negocio).permit(:logo, :nombre, :representante, :direccion, :user_id)
+      params.require(:negocio).permit(:logo, :nombre, :representante, :direccion)
     end
 end

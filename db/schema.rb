@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170211112825) do
+ActiveRecord::Schema.define(version: 20170212002524) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -121,7 +121,6 @@ ActiveRecord::Schema.define(version: 20170211112825) do
     t.string   "nombre"
     t.string   "representante"
     t.string   "direccion"
-    t.integer  "user_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
   end
@@ -191,6 +190,8 @@ ActiveRecord::Schema.define(version: 20170211112825) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
