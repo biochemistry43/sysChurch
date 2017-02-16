@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170212002524) do
+ActiveRecord::Schema.define(version: 20170216004142) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -68,6 +68,52 @@ ActiveRecord::Schema.define(version: 20170212002524) do
     t.integer  "idCategoriaPadre"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+  end
+
+  create_table "clientes", force: :cascade do |t|
+    t.string   "nombre"
+    t.string   "direccionCalle"
+    t.string   "direccionNumeroExt"
+    t.string   "direccionNumeroInt"
+    t.string   "direccionColonia"
+    t.string   "direccionMunicipio"
+    t.string   "direccionDelegacion"
+    t.string   "direccionEstado"
+    t.string   "direccionCp"
+    t.string   "foto"
+    t.string   "telefono1"
+    t.string   "telefono2"
+    t.string   "email"
+    t.integer  "negocio_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  create_table "datos_fiscales_clientes", force: :cascade do |t|
+    t.string   "nombreFiscal"
+    t.text     "direccionFiscal"
+    t.string   "rfc"
+    t.string   "cliente_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  create_table "datos_fiscales_negocios", force: :cascade do |t|
+    t.string   "nombreFiscal"
+    t.text     "direccionFiscal"
+    t.string   "rfc"
+    t.integer  "negocio_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  create_table "datos_fiscales_sucursals", force: :cascade do |t|
+    t.string   "nombreFiscal"
+    t.text     "direccionFiscal"
+    t.string   "rfc"
+    t.integer  "sucursal_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "entradasInventario", force: :cascade do |t|
@@ -163,6 +209,13 @@ ActiveRecord::Schema.define(version: 20170212002524) do
     t.integer  "negocio_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+  end
+
+  create_table "telefono_personas", force: :cascade do |t|
+    t.string   "telefono"
+    t.string   "persona_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tipo_usuarios", force: :cascade do |t|

@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   belongs_to :tipo_usuario
+  has_one :persona
   has_many :ventas
   has_many :bancos
   belongs_to :negocio

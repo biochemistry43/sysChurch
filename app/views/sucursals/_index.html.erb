@@ -14,17 +14,20 @@
   </thead>
 
   <tbody>
-    <% @sucursals.each do |sucursal| %>
-      <tr>
-        <td><%= sucursal.nombre %></td>
-        <td><%= sucursal.representante %></td>
-        <td><%= sucursal.direccion %></td>
-        <td><%= sucursal.negocio_id %></td>
-        <td><%= link_to 'Show', sucursal %></td>
-        <td><%= link_to 'Edit', edit_sucursal_path(sucursal) %></td>
-        <td><%= link_to 'Destroy', sucursal, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+    <%if @sucursals != nil%>
+      <% @sucursals.each do |sucursal| %>
+        <tr>
+          <td><%= sucursal.nombre %></td>
+          <td><%= sucursal.representante %></td>
+          <td><%= sucursal.direccion %></td>
+          <td><%= sucursal.negocio_id %></td>
+          <td><%= link_to 'Show', sucursal %></td>
+          <td><%= link_to 'Edit', edit_sucursal_path(sucursal) %></td>
+          <td><%= link_to 'Destroy', sucursal, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+
+      <% end %>
+    <%end%>
   </tbody>
 </table>
 

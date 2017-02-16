@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombreFiscal: MyString
+  direccionFiscal: MyText
+  rfc: MyString
+  negocio_id: 1
+
+two:
+  nombreFiscal: MyString
+  direccionFiscal: MyText
+  rfc: MyString
+  negocio_id: 1

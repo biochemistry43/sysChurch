@@ -1,4 +1,4 @@
 class Persona < ActiveRecord::Base
-	has_one :usuario
-	has_many :gasto
+	belongs_to :user
+	has_many :telefono_personas
 end

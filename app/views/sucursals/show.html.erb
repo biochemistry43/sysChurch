@@ -1,24 +1,33 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Productos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">
+		<p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Nombre:</strong>
-  <%= @sucursal.nombre %>
-</p>
+		<p>
+		  <strong>Nombre:</strong>
+		  <%= @sucursal.nombre %>
+		</p>
 
-<p>
-  <strong>Representante:</strong>
-  <%= @sucursal.representante %>
-</p>
+		<p>
+		  <strong>Representante:</strong>
+		  <%= @sucursal.representante %>
+		</p>
 
-<p>
-  <strong>Direccion:</strong>
-  <%= @sucursal.direccion %>
-</p>
+		<p>
+		  <strong>Direccion:</strong>
+		  <%= @sucursal.direccion %>
+		</p>
 
-<p>
-  <strong>Negocio:</strong>
-  <%= @sucursal.negocio_id %>
-</p>
+		<%= link_to 'Edit', edit_sucursal_path(@sucursal) %> |
+		<%= link_to 'Back', sucursals_path %>
 
-<%= link_to 'Edit', edit_sucursal_path(@sucursal) %> |
-<%= link_to 'Back', sucursals_path %>
+	</div>
+  </div>
+</div>

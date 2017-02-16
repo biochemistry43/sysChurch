@@ -10,6 +10,7 @@ class NegociosController < ApplicationController
   # GET /negocios/1
   # GET /negocios/1.json
   def show
+    @sucursals = Sucursal.where('negocio_id', params[:id])
   end
 
   # GET /negocios/new

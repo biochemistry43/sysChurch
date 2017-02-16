@@ -25,6 +25,7 @@ class VentasController < ApplicationController
   def venta_del_dia
     @ventas = Venta.where({ fechaVenta: (Date.today)})
     @VentaDelDia = 0
+    
     @ventas.each do |venta|
       @VentaDelDia += venta.montoVenta.to_f
     end
