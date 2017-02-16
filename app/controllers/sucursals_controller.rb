@@ -24,10 +24,11 @@ class SucursalsController < ApplicationController
   # POST /sucursals
   # POST /sucursals.json
   def create
-    @sucursal = Sucursal.new(sucursal_params)
-
+    @sucursal = Sucursal.new(sucursal_params) 
+    negocio = Negocio.find(current_user.negocio_id) 
     respond_to do |format|
       if @sucursal.save
+        negocio.sucursals << @sucursal
         format.html { redirect_to @sucursal, notice: 'Sucursal was successfully created.' }
         format.json { render :show, status: :created, location: @sucursal }
       else
@@ -69,6 +70,6 @@ class SucursalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sucursal_params
-      params.require(:sucursal).permit(:nombre, :representante, :direccion, :negocio_id)
+      params.require(:sucursal).permit(:nombre, :representante, :direccion)
     end
 end
