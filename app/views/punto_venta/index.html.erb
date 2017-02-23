@@ -1,112 +1,80 @@
-<div class="right_col" role="main">
-  <div class="page-title">
-    <div class="title_left">
-      <h3>Punto de Venta</h3>
-    </div>
-  </div>
-  <div class="clearfix"></div>
-  <div class="row">
-  	<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-left top_search">
-      <div class="input-group">
-        <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Buscar</button>
-          </span>
+<div class="right_col" role="main" >
+  <div class="row main-row-pos">
+    <div class="col-md-5 datosVenta">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="animated flipInY sumatoria">
+            <div class="tile-stats">
+              <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
+              <div id="importe" class="count">0.0</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="animated flipInY sumatoria">
+            <div class="tile-stats">
+              <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
+              <div id="importe" class="count">0.0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-primary">
+            <div class="panel-body">
+              Caja Número: 
+              <%= select_tag "Caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form_control selectpicker' %>  
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-rigth">
-        Caja Número: 
-        <%= select_tag "Caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form_control selectpicker' %>
+
+    <div class="col-md-7 col-pos">
+      <div class="panel panel-primary panel-pos">
+        <div class="panel-body ">
+          <div class="form-group top_search">
+            <div class="autocomplete input-group">
+              <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button"></button>
+              </span>
+            </div>
+          </div>
+
+          <table id ="table_sales" class="table table-striped responsive-utilities jambo_table" style="overflow: scroll;">
+            <thead>
+              <tr class="headings">
+                <!--<th>
+                <input type="checkbox" id="check-all" class="flat">
+                </th>-->
+                <th class="column-title">Clave </th>
+                <th class="column-title">Nombre </th>
+                <th class="column-title">Precio Venta </th>
+                <th class="column-title">Cantidad </th>
+                <th class="column-title">Importe </th>
+                <!--<th class="column-title">Amount </th>
+                <th class="column-title no-link last"><span class="nobr">Action</span>
+                </th>
+                <th class="bulk-actions" colspan="7">
+                  <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                </th>-->
+              </tr>
+            </thead>
+            <tbody>
+                    
+            </tbody>
+          </table>
+        
+        </div>   
+      </div>
     </div>
   </div>
-  
+
   <div class="col-md-12 col-sm-12 col-xs-12">
-  	<div class="x_panel" style="height: 600px;">
-      <p id="notice"></p>
-  	  <!--div para la lista de productos encontrados y la imagen del producto seleccionado-->
-  	  <div class="row">
-  	    <div class="right-col col-md-6 col-sm-6 col-xs-6" style="overflow: scroll; height: 15em">
-  		    <ul id="list-search-products" class="list-group">
-			      <!--<li class="list-group-item list-group-item-success">First item</li>-->
-			    </ul>
-  		  </div>
-  		  <!--div para la imagen del producto insertado-->
-  		  <div class="left-col col-md-6 col-sm-6 col-xs-6" style="height: 15em">
-  		    <!--Espacio destinado para la imagen del producto-->
-        </div>
-  	  </div>
-  		<!--Termina el div de la lista de productos encontrados y la imagen del producto seleccionado-->
-
-  		<div class="row linea-divisoria" style="height: 0.3em; background: gray;"></div>
-  		
-  		<div class="row segunda-fila ">
-  		  <!--Aqui va la tabla de ventas-->
-  		  <div class="left-col col-md-8 col-sm-12 col-xs-12" style="overflow: scroll; height: 25em">
-  		    <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
-  		      <thead>
-  		        <tr class="headings">
-  		          <!--<th>
-  		            <input type="checkbox" id="check-all" class="flat">
-  		          </th>-->
-  		          <th class="column-title">Clave </th>
-  		          <th class="column-title">Nombre </th>
-  		          <th class="column-title">Precio Venta </th>
-  		          <th class="column-title">Cantidad </th>
-  		          <th class="column-title">Importe </th>
-  		          <!--<th class="column-title">Amount </th>
-  		          <th class="column-title no-link last"><span class="nobr">Action</span>
-  		          </th>
-  		          <th class="bulk-actions" colspan="7">
-  		            <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
-  		          </th>-->
-  		        </tr>
-  		      </thead>
-            <tbody>
-                
-             </tbody>
-		      </table>
-        </div>
-          <!--Aquí termina el div con la tabla de ventas-->
-
-          <!--div con la sumatoria de venta-->
-          <div class="right-col col-md-3 col-xs-12 col-sm-12 col-md-offset-1" style=" height: 25em; background: gray;">
-	          <div class="row">
-	          	<div class="animated flipInY col-lg-12 col-md-12 col-sm-12 col-xs-12">
-	              <div class="tile-stats">
-	                <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
-	                <div id="importe" class="count">0.0</div>
-	              </div>
-	            </div>
-	          </div>
-            <div class="row">
-              <div class="col-md-12">
-                <select class="form-control" id="formasPago">
-                  <option>Efectivo</option>
-                  <option>Tarjeta de Crédito</option>
-                  <option>Tarjeta de débito</option>
-                  <option>Oxxo</option>
-                  <option>Paypal</option>
-                </select>
-              </div>
-            </div>
-
-	          <div class="row" >
-	          	<div class="col-md-12">
-	              <input type="text" class="form-control" placeholder="Paga con..." style="line-height:15em;">
-	          	</div>
-	          </div>
-
-	          <div class="row">
-	          	<div class="col-md-12">
-	          	  <button type="button" id="cobrarVenta" class="btn btn-primary btn-lg btn-block">Cobrar</button>       	
-	          	</div>
-	          </div>
-
-            
-          </div>
-          <!--termina el div con la sumatoria de ventas-->
-  		</div>
-  	</div>
+  	
     
     <!--modal para actuailización de cantidad de proudcto-->
     <div class="modal" id="actualizarCantidad">
@@ -229,3 +197,6 @@
     <% end %>
   </div>
   <%= javascript_include_tag "punto-venta" %>
+  <%= javascript_include_tag "autocomplete.jquery" %>
+  <%= stylesheet_link_tag "autocomplete" %>
+  <%= stylesheet_link_tag "punto_venta" %>

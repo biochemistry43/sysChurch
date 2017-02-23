@@ -5,12 +5,18 @@ var referenciaOxxo;
 var referenciaPaypal;
 
 $(document).ready(function(){
-   
+   $('.autocomplete').autocomplete();
    $("#search-product" ).val("");
    $("#formasPago").val("Efectivo");
 
-   $("#search-product" ).keyup(function() {
-   	  var criteria = $("#search-product").val();
+   $("#search-product" ).keyup(function(event) {
+      var code=event.keyCode;
+        // si es Enter => seleccionar el link marcado 
+        if (code==13 && $("#search-product").val()!="")
+        {
+          addProductToSale($("#search-product").val());
+        }
+   	  /*var criteria = $("#search-product").val();
    	  if(criteria == ""){
          $("#list-search-products").empty();
    	  }
@@ -19,31 +25,31 @@ $(document).ready(function(){
 	        url: "/articulos/showByCriteria/" + criteria,
 	        dataType: "JSON",
 	        timeout: 10000,
-	        beforeSend: function(){
+	        beforeSend: function(){*/
 	           //$("#respuesta").html("Cargando...");
-	        },
-	        error: function(){
+	       /* },
+	        error: function(){*/
 	        	//alert("error");
 	           //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
 	           
-	        },
+	       /* },
 	        success: function(res){
 	           if(res){
 	           	  $("#list-search-products").empty();
 	              var resLength = res.length;
-	              for (i = 0; i < resLength; i++) {
+	              for (i = 0; i < resLength; i++) {/*/
 	              //text += "<li>" + fruits[i] + "</li>";
-	                 var element = res[i];
+	                 /*var element = res[i];
 	                 $("#list-search-products").append("<li id='found-product' class='list-group-item list-group-item-success'>"+element.clave+"&nbsp &nbsp &nbsp"+element.nombre+"<button id='"+element.clave+"' onclick='addProductToSale(this)'>agregar</button></li>");
 	              }
 	              
 	           }else{
-	           	  $("#list-search-products").empty();
+	           	  $("#list-search-products").empty();*/
 	              //alert("fallo success")
-	           }
+	           /*}
 	        }
 	     })
-   	  }
+   	  }*/
    });
 
   
@@ -223,14 +229,14 @@ function actualizarCantidad(indice){
 
 function addProductToSale(elem){
   $.ajax({
-    url: "/articulos/getById/" + elem.id,
+    url: "/articulos/getById/" + elem,
     dataType: "JSON",
     timeout: 10000,
     beforeSend: function(){
     //$("#respuesta").html("Cargando...");
     },
     error: function(){
-      //alert("error");
+      alert("error");
       //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
              
     },

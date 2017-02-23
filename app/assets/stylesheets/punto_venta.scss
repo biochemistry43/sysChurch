@@ -1,3 +1,21 @@
 // Place all the styles related to the punto-venta controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+div.main-row-pos{
+	height: 910px; 
+	min-height: 910px;
+}
+
+.panel-pos, .col-pos{
+  height: 95%;
+}
+
+#table_sales{
+	margin-top: 5%;
+}
+
+.datos-venta{
+	background-color: gray;
+}
+
+
