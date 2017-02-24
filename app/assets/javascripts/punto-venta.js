@@ -7,6 +7,7 @@ var referenciaPaypal;
 $(document).ready(function(){
    $('.autocomplete').autocomplete();
    $("#search-product" ).val("");
+
    $("#formasPago").val("Efectivo");
 
    $("#search-product" ).keyup(function(event) {
@@ -15,7 +16,10 @@ $(document).ready(function(){
         if (code==13 && $("#search-product").val()!="")
         {
           addProductToSale($("#search-product").val());
+          $("#search-product").val("");
+
         }
+
    	  /*var criteria = $("#search-product").val();
    	  if(criteria == ""){
          $("#list-search-products").empty();
@@ -266,6 +270,9 @@ function addProductToSale(elem){
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
                                     "<td>"+element.precioVenta+"</td></tr>");
         }
+        var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
+        document.getElementById("search-product").parentNode.removeChild(nodoResultado);
+        
 
         
           /*var resLength = res.length;

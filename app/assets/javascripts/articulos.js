@@ -1,12 +1,9 @@
-$(document).ready(function(){
 
-  $("#articulo_clave").keyup(function(event) {
-    alert("hello");
-  	code = event.keyCode;
-  	if (code==13)
-    {
-    	alert("hello");
-      event.preventDefault();
-    }
-  });
-});
+
+function stopRKey(evt) {
+   var evt = (evt) ? evt : ((event) ? event : null);
+   var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+   if ((evt.keyCode == 13) && (node.type=="text" || node.type=="number")) {return false;}
+}
+
+document.onkeypress = stopRKey; 

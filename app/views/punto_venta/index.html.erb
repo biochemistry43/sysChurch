@@ -1,5 +1,6 @@
 <div class="right_col" role="main" >
   <div class="row main-row-pos">
+
     <div class="col-md-5 datosVenta">
       <div class="row">
         <div class="col-md-6">
@@ -24,9 +25,57 @@
         <div class="col-md-12">
           <div class="panel panel-primary">
             <div class="panel-body">
-              Caja Número: 
-              <%= select_tag "Caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form_control selectpicker' %>  
+
+                <div class="col-md-6 col-sm-6 col-xs-12 datos-vendedor">
+                  <div class="well profile_view" >
+                    <div class="col-sm-12">
+                      <h4 class="brief"><i>Datos del Vendedor:</i></h4>
+                      <div class="left col-md-12 col-xs-7">
+                        <form class="form-inline">
+                          <div class="form-group">
+                            Caja Número: 
+                            <%= select_tag "Caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
+                          </div>
+                        </form>
+                       
+                        <ul class="list-unstyled">
+                          <li><i class="fa fa-envelope"></i> Nombre: </li>
+                          <li><i class="fa fa-phone"></i> Teléfono: n/a</li>
+                        </ul>
+                      </div>
+                      <div class="right col-xs-5 text-center"></div>
+                    </div>
+                    
+
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-12 datos-cliente">
+                  <div class="well profile_view">
+                    <div class="col-sm-12">
+                      <h4 class="brief"><i>Datos del cliente:</i></h4>
+                      <div class="left col-md-12 col-xs-7">
+                        <h2 id="nom_cliente_venta">General</h2>
+                        <ul class="list-unstyled">
+                          <li><i class="fa fa-envelope"></i> Email: n/a</li>
+                          <li><i class="fa fa-phone"></i> Teléfono: n/a</li>
+                        </ul>
+                      </div>
+                      <div class="right col-xs-5 text-center"></div>
+                    </div>
+                    <div class="col-xs-12 bottom text-center">
+                      <div class="col-xs-12 col-sm-6 emphasis">
+                        <button type="button" class="btn btn-success btn-xs">
+                          <i class="fa fa-user"> </i> Cambiar cliente
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
             </div>
+
           </div>
         </div>
       </div>
@@ -43,31 +92,45 @@
               </span>
             </div>
           </div>
-
-          <table id ="table_sales" class="table table-striped responsive-utilities jambo_table" style="overflow: scroll;">
-            <thead>
-              <tr class="headings">
-                <!--<th>
-                <input type="checkbox" id="check-all" class="flat">
-                </th>-->
-                <th class="column-title">Clave </th>
-                <th class="column-title">Nombre </th>
-                <th class="column-title">Precio Venta </th>
-                <th class="column-title">Cantidad </th>
-                <th class="column-title">Importe </th>
-                <!--<th class="column-title">Amount </th>
-                <th class="column-title no-link last"><span class="nobr">Action</span>
-                </th>
-                <th class="bulk-actions" colspan="7">
-                  <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
-                </th>-->
-              </tr>
-            </thead>
-            <tbody>
-                    
-            </tbody>
-          </table>
-        
+          <div class="row">
+            <div class="col-md-12">
+              <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
+                <thead>
+                  <tr class="headings">
+                    <!--<th>
+                    <input type="checkbox" id="check-all" class="flat">
+                    </th>-->
+                    <th class="column-title">Clave </th>
+                    <th class="column-title">Nombre </th>
+                    <th class="column-title">Precio Venta </th>
+                    <th class="column-title">Cantidad </th>
+                    <th class="column-title">Importe </th>
+                    <!--<th class="column-title">Amount </th>
+                    <th class="column-title no-link last"><span class="nobr">Action</span>
+                    </th>
+                    <th class="bulk-actions" colspan="7">
+                      <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                    </th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                        
+                </tbody>
+              </table>
+            </div>
+            
+          </div>
+          <div class="row" id="botones-venta">
+            <div class="col-md-6">
+              <div class="btn-group btn-group-justified">
+                <button class="btn btn-round btn-success">
+                <i class="glyphicon glyphicon-usd"> </i>Pagar</button>
+                <button class="btn btn-round btn-danger">
+                <i class="glyphicon glyphicon-trash"> </i>Cancelar</button>
+              </div>
+            </div>
+            
+          </div>
         </div>   
       </div>
     </div>
@@ -196,7 +259,7 @@
       <%= hidden_field_tag(:dataVenta) %>
     <% end %>
   </div>
-  <%= javascript_include_tag "punto-venta" %>
   <%= javascript_include_tag "autocomplete.jquery" %>
+  <%= javascript_include_tag "punto-venta" %>
   <%= stylesheet_link_tag "autocomplete" %>
   <%= stylesheet_link_tag "punto_venta" %>
