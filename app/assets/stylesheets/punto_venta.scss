@@ -12,12 +12,20 @@ div.main-row-pos{
 
 #table_sales{
 	margin-top: 5%;
-	margin-bottom: 15%;
+	/*margin-bottom: 2%;*/
 	overflow: scroll;
 }
 
 #botones-venta{
-	margin-bottom: 5px;
+	position: absolute;
+	right: 50%;
+	left: 0%;
+	bottom: 0px;
+}
+
+#panel-pos-body{
+	height: 100%;
+	position: relative;
 }
 
 

@@ -65,7 +65,7 @@
                     </div>
                     <div class="col-xs-12 bottom text-center">
                       <div class="col-xs-12 col-sm-6 emphasis">
-                        <button type="button" class="btn btn-success btn-xs">
+                        <button type="button" class="btn btn-round btn-default btn-xs">
                           <i class="fa fa-user"> </i> Cambiar cliente
                         </button>
                       </div>
@@ -83,7 +83,7 @@
 
     <div class="col-md-7 col-pos">
       <div class="panel panel-primary panel-pos">
-        <div class="panel-body ">
+        <div class="panel-body" id="panel-pos-body">
           <div class="form-group top_search">
             <div class="autocomplete input-group">
               <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
@@ -121,17 +121,23 @@
             
           </div>
           <div class="row" id="botones-venta">
-            <div class="col-md-6">
-              <div class="btn-group btn-group-justified">
-                <button class="btn btn-round btn-success">
-                <i class="glyphicon glyphicon-usd"> </i>Pagar</button>
-                <button class="btn btn-round btn-danger">
-                <i class="glyphicon glyphicon-trash"> </i>Cancelar</button>
+
+              <div class="col-md-12 form-group">
+
+                <div class="col-md-6">
+                  <button class="btn btn-round btn-success form-control">
+                  <i class="glyphicon glyphicon-usd"> </i>Pagar</button>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-round btn-danger form-control">
+                  <i class="glyphicon glyphicon-trash"> </i>Cancelar</button>
+                </div>
+
               </div>
-            </div>
             
-          </div>
-        </div>   
+          </div> <!-- Terminar div fila de botones venta -->  
+
+        </div> <!-- Terminar panel-pos-body -->  
       </div>
     </div>
   </div>
