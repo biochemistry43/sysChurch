@@ -1,0 +1,31 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombre: MyString
+  ape_materno: MyString
+  ape_paterno: MyString
+  dir_calle: MyString
+  dir_numero_ext: MyString
+  dir_numero_int: MyString
+  dir_colonia: MyString
+  dir_municipio: MyString
+  dir_delegacion: MyString
+  dir_estado: MyString
+  dir_cp: MyString
+  foto: MyString
+  user_id: 1
+
+two:
+  nombre: MyString
+  ape_materno: MyString
+  ape_paterno: MyString
+  dir_calle: MyString
+  dir_numero_ext: MyString
+  dir_numero_int: MyString
+  dir_colonia: MyString
+  dir_municipio: MyString
+  dir_delegacion: MyString
+  dir_estado: MyString
+  dir_cp: MyString
+  foto: MyString
+  user_id: 1

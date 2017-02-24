@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  get 'perfil/index'
+
   resources :negocios
   resources :sucursals
   resources :ventas,  :except => [:show, :destroy]
@@ -22,7 +24,6 @@ Rails.application.routes.draw do
   resources :cat_articulos
   resources :usuarios
   resources :tipo_usuarios
-  resources :personas
   resources :punto_venta
   post 'punto_venta/realizarVenta'
 
