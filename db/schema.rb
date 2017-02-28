@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170228193616) do
+ActiveRecord::Schema.define(version: 20170228194444) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.integer  "usuario_id"
+    t.integer  "negocio_id"
   end
 
   create_table "campo_forma_pagos", force: :cascade do |t|
@@ -54,6 +55,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.integer  "idCategoriaPadre"
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+    t.integer  "negocio_id"
   end
 
   create_table "categoria_gastos", force: :cascade do |t|
@@ -62,6 +64,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.integer  "idCategoriaPadre"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
+    t.integer  "negocio_id"
   end
 
   create_table "categoria_perdidas", force: :cascade do |t|
@@ -70,6 +73,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.integer  "idCategoriaPadre"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.integer  "negocio_id"
   end
 
   create_table "clientes", force: :cascade do |t|
@@ -146,6 +150,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.integer  "categoria_gasto_id"
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
+    t.integer  "sucursal_id"
   end
 
   create_table "inventario", force: :cascade do |t|
@@ -183,6 +188,7 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.integer  "cat_articulo_id"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.integer  "sucursal_id"
   end
 
   create_table "perfils", force: :cascade do |t|
@@ -207,8 +213,9 @@ ActiveRecord::Schema.define(version: 20170228193616) do
     t.string   "nombre"
     t.string   "telefono"
     t.string   "email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "sucursal_id"
   end
 
   create_table "sucursals", force: :cascade do |t|
@@ -287,10 +294,11 @@ ActiveRecord::Schema.define(version: 20170228193616) do
   create_table "ventas", force: :cascade do |t|
     t.date     "fechaVenta"
     t.float    "montoVenta"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
     t.integer  "caja"
     t.integer  "user_id"
+    t.integer  "sucursal_id"
   end
 
 end
