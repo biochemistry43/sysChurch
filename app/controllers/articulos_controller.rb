@@ -7,7 +7,11 @@ class ArticulosController < ApplicationController
   # GET /articulos
   # GET /articulos.json
   def index
-    @articulos = Articulo.all
+    if current_user.perfil
+      @articulos = Articulo.all
+    else
+      redirect_to new_perfil_path
+    end
   end
 
   # GET /articulos/1

@@ -53,6 +53,8 @@ Rails.application.routes.draw do
   resources :users do
     resources :ventas
   end
+
+  resources :perfils
   #devise_scope :user do
   #  root :to => 'devise/sessions#new'
   #end

@@ -1,0 +1,163 @@
+<%= form_for @perfil, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |f| %>
+  	  <% if @perfil.errors.any? %>
+  	    <div id="error_explanation">
+  	      <h2><%= pluralize(@perfil.errors.count, "error") %> prohibited this perfil from being saved:</h2>
+
+  	      <ul>
+  	        <% @perfil.errors.full_messages.each do |message| %>
+  	          <li><%= message %></li>
+  	        <% end %>
+  	      </ul>
+  	    </div>
+  	  <% end %>
+      <script>
+        window.onload = function(){
+          var apiFile = (window.File && window.FileReader);
+          if(apiFile == false){
+            alert("Tu navegador no soporta la carga de imágenes o archivos. Actualiza tu navegador");
+            return; 
+          }
+          document.getElementById("perfil_foto").addEventListener('change', seleccionarArchivo, false);
+          
+
+          function seleccionarArchivo(evt){
+
+            var archivo = evt.target.files[0];
+            if(archivo.type.match("image.*")==false){
+              var msg = "Este archivo no es un archivo de imagen";
+              document.getElementById('msgFoto').innerHTML = msg;
+              return;
+            }  
+          
+            
+            //Creamos un objeto FileReader
+            var datos = new FileReader();
+            //Leemos al archivo
+            datos.readAsDataURL(archivo);
+
+            //Esperamos al final de la lectura
+            datos.onload = function(e){
+              //vaciamos el resultado
+              var resultado = e.target.result;
+              $("#foto_perfil").attr('src', resultado);
+            }
+          }
+      
+        }
+
+      </script>
+      <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <img src="" class="img-circle img-thumbnail" alt="avatar" id="foto_perfil">
+          <h6 id="msgFoto">Subir una foto diferente...</h6>
+          <!--<input type="file" class="text-center center-block well well-sm">-->
+          <%= f.file_field :foto, class: "text-center center-block well well-sm" %>
+        </div>
+      </div>
+      <!-- edit form column -->
+      <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+        <div class="alert alert-info alert-dismissable">
+          <a class="panel-close close" data-dismiss="alert">×</a> 
+          <i class="fa fa-coffee"></i>
+          Antes de continuar, ingrese sus datos de perfil.
+        </div>
+        <h3>Información personal</h3>
+        <div class="form-group">
+          <%= f.label :nombre, "Primer Nombre", :class=>'col-lg-3 control-label' %>
+          <!-- <label class="col-lg-3 control-label">Primer nombre:</label> -->
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Jane" type="text"> -->
+            <%= f.text_field :nombre, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <%= f.label :ape_paterno, "Apellido Paterno:", :class=>'col-lg-3 control-label' %>
+          <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :ape_paterno, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :ape_materno, "Apellido Materno:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :ape_materno, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_calle, "Calle:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_calle, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_numero_ext, "Numero exterior:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_numero_ext%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_numero_int, "Interior:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_numero_int%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_colonia, "Colonia:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_colonia, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_cp, "Código Postal:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_cp%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_municipio, "Municipio:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_municipio, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_delegacion, "Delegación:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_delegacion, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+          <%= f.label :dir_estado, "Estado:", :class=>'col-lg-3 control-label' %>
+          <div class="col-lg-8">
+            <!-- <input class="form-control" value="Bishop" type="text"> -->
+            <%= f.text_field :dir_estado, class: "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"></label>
+          <div class="col-md-8">
+            <%= f.submit "Guardar Cambios", :class=>"btn btn-primary"%>
+            <!-- <input class="btn btn-primary" value="Guardar Cambios" type="button"> -->
+            <span></span>
+            <input class="btn btn-danger" value="Cancelar" type="reset">
+          </div>
+        </div>
+      </div>
+    <%end%>
