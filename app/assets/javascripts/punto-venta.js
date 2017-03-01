@@ -66,35 +66,36 @@ $(document).ready(function(){
 
   $("#cambiarClienteBtn").on("click", function(e){
     $.ajax({
-    url: "/clientes.json",
-    dataType: "JSON",
-    timeout: 10000,
-    beforeSend: function(){
-    //$("#respuesta").html("Cargando...");
-    },
-    error: function(){
-      alert("error");
-      //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-             
-    },
-    //Acá se intenta construir una tabla con clientes dentro de un modal.
-    success: function(res){
-      ("#modalClientes > .form-group").html(""+
-        "<table id ='table_sales' class='table table-striped responsive-utilities jambo_table'>"+
-          "<thead>"+
-              "<tr class='headings'>"+
+      url: "/clientes.json",
+      dataType: "JSON",
+      timeout: 10000,
+      beforeSend: function(){
+      //$("#respuesta").html("Cargando...");
+      },
+      error: function(){
+        alert("error");
+        //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
+               
+      },
+      //Acá se intenta construir una tabla con clientes dentro de un modal.
+      success: function(res){
+        ("#modalClientes > .form-group").html(""+
+          "<table id ='table_sales' class='table table-striped responsive-utilities jambo_table'>"+
+            "<thead>"+
+                "<tr class='headings'>"+
                   "<th class='column-title'>Clave </th>"+
                   "<th class='column-title'>Clave </th>"+
                   "<th class='column-title'>Clave </th>"+
                   "<th class='column-title'>Clave </th>"+
                   "<th class='column-title'>Clave </th>"+
-              "</tr>"+
-          "</thead>"+
-          "<tbody>"+
-          "</tbody>"+
-        "</table>"+
-      );
-    }
+                "</tr>"+
+            "</thead>"+
+            "<tbody>"+
+            "</tbody>"+
+          "</table>"
+        );
+      }
+    });
   });
 
     
