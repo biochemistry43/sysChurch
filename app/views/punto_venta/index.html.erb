@@ -65,7 +65,7 @@
                     </div>
                     <div class="col-xs-12 bottom text-center">
                       <div class="col-xs-12 col-sm-6 emphasis">
-                        <button type="button" class="btn btn-round btn-default btn-xs">
+                        <button type="button" class="btn btn-round btn-default btn-xs" id="cambiarClienteBtn">
                           <i class="fa fa-user"> </i> Cambiar cliente
                         </button>
                       </div>
@@ -260,6 +260,28 @@
       <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <div class="modal" id="modalClientes">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Selecciona un cliente</h4>
+          </div>
+          <div class="modal-body" id="modal-body-oxxo">
+           <div class="form-group">
+              
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-oxxo">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="elegirCliente()">Aceptar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
 
     <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
       <%= hidden_field_tag(:dataVenta) %>

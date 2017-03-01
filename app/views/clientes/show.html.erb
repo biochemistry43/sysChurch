@@ -1,0 +1,77 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h3>Cliente</h3>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-10 col-sm-10 col-xs-10">
+    <div class="x_panel" style="height: 600px;">    
+      <p id="notice"><%= notice %></p>
+
+      <p>
+        <strong>Nombre:</strong>
+        <%= @cliente.nombre %>
+      </p>
+
+      <p>
+        <strong>Calle:</strong>
+        <%= @cliente.direccionCalle %>
+      </p>
+
+      <p>
+        <strong>Numero exterior:</strong>
+        <%= @cliente.direccionNumeroExt %>
+      </p>
+
+      <p>
+        <strong>Numero interior:</strong>
+        <%= @cliente.direccionNumeroInt %>
+      </p>
+
+      <p>
+        <strong>Colonia:</strong>
+        <%= @cliente.direccionColonia %>
+      </p>
+
+      <p>
+        <strong>Municipio:</strong>
+        <%= @cliente.direccionMunicipio %>
+      </p>
+
+      <p>
+        <strong>Delegacion:</strong>
+        <%= @cliente.direccionDelegacion %>
+      </p>
+
+      <p>
+        <strong>Estado:</strong>
+        <%= @cliente.direccionEstado %>
+      </p>
+
+      <p>
+        <strong>Código Postal:</strong>
+        <%= @cliente.direccionCp %>
+      </p>
+
+      <p>
+        <strong>Teléfono 1:</strong>
+        <%= @cliente.telefono1 %>
+      </p>
+
+      <p>
+        <strong>Teléfono 2:</strong>
+        <%= @cliente.telefono2 %>
+      </p>
+
+      <p>
+        <strong>Email:</strong>
+        <%= @cliente.email %>
+      </p>
+
+      <%= link_to 'Editar', edit_cliente_path(@cliente) %> |
+      <%= link_to 'Atras', clientes_path %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<%= form_for @cliente, :html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
+  <% if @cliente.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@cliente.errors.count, "error") %> prohibited this articulo from being saved:</h2>
+
+      <ul>
+        <% @cliente.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+   
+  <% end %>
+
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :nombre, "Nombre:" %><br>
+    <%= f.text_field :nombre, class: "form-control has-feedback-left"%>
+    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionCalle, "Calle:" %><br>
+    <%= f.text_field :direccionCalle, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionNumeroExt, "Número exterior: " %><br>
+    <%= f.text_field :direccionNumeroExt, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionNumeroInt, "Número interior: "%><br>
+    <%= f.text_field :direccionNumeroInt, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionColonia, "Colonia: " %><br>
+    <%= f.text_field :direccionColonia, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionMunicipio, "Municipio: " %><br>
+    <%= f.text_field :direccionMunicipio, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionDelegacion, "Delegación: " %><br>
+    <%= f.text_field :direccionDelegacion, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionEstado, "Estado: " %><br>
+    <%= f.text_field :direccionEstado, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :direccionCp, "Código Postal: " %><br>
+    <%= f.text_field :direccionCp, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :telefono1, "Teléfono 1: " %><br>
+    <%= f.text_field :telefono1, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :telefono2, "Teléfono 2" %><br>
+    <%= f.text_field :telefono2, class: "form-control has-feedback-left" %>
+  </div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.label :email, "Email: " %><br>
+    <%= f.text_field :email, class: "form-control has-feedback-left" %>
+  </div>
+  
+  <div class="ln_solid"></div>
+  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+    <%= f.submit %>
+  </div>
+<% end %>

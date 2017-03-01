@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
-  
+
+  resources :clientes  
+  get 'clientes/index'
+  get 'clientes/show'
+  get 'clientes/new'
+  get 'clientes/destroy'
+  get 'clientes/update'
+  get 'clientes/create'
   get 'perfil/index'
 
   resources :negocios
