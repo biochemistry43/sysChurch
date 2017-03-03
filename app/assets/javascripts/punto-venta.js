@@ -4,167 +4,232 @@ var plazoCredito;
 var referenciaOxxo;
 var referenciaPaypal;
 
+//este arreglo json guardará todos los datos correspondientes a la venta
+var datosVenta = [];
+
+//este arreglo guardará los datos de la forma de pago de esta venta en particular
+var datosFormaPago = [];
+
+//Este arreglo json guardará código y cantidad de cada item de venta.
+var itemsVenta = [];
+
+//Esta variable cambia dependiendo de la forma de pago elegida por el usuario
+var formaPago = "efectivo";
+
+var body = document.querySelector('body');
+
+
+
+//jquery
 $(document).ready(function(){
-   $('.autocomplete').autocomplete();
-   $("#search-product" ).val("");
 
-   $("#formasPago").val("Efectivo");
 
-   $("#search-product" ).keyup(function(event) {
-      var code=event.keyCode;
-        // si es Enter => seleccionar el link marcado 
-        if (code==13 && $("#search-product").val()!="")
-        {
-          addProductToSale($("#search-product").val());
-          $("#search-product").val("");
+  $('#div_pos').bind('keydown', function(event) {
+    
 
+    switch(event.keyCode){
+       case 115:
+        //primero verifica que la tabla de ventas tenga al menos un artículo agregado
+        if ($('#table_sales >tbody >tr').length == 0){
+          alert ( "No hay productos añadidos a la venta" );
         }
-
-   	  /*var criteria = $("#search-product").val();
-   	  if(criteria == ""){
-         $("#list-search-products").empty();
-   	  }
-   	  else{
-   	  	 $.ajax({
-	        url: "/articulos/showByCriteria/" + criteria,
-	        dataType: "JSON",
-	        timeout: 10000,
-	        beforeSend: function(){*/
-	           //$("#respuesta").html("Cargando...");
-	       /* },
-	        error: function(){*/
-	        	//alert("error");
-	           //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-	           
-	       /* },
-	        success: function(res){
-	           if(res){
-	           	  $("#list-search-products").empty();
-	              var resLength = res.length;
-	              for (i = 0; i < resLength; i++) {/*/
-	              //text += "<li>" + fruits[i] + "</li>";
-	                 /*var element = res[i];
-	                 $("#list-search-products").append("<li id='found-product' class='list-group-item list-group-item-success'>"+element.clave+"&nbsp &nbsp &nbsp"+element.nombre+"<button id='"+element.clave+"' onclick='addProductToSale(this)'>agregar</button></li>");
-	              }
-	              
-	           }else{
-	           	  $("#list-search-products").empty();*/
-	              //alert("fallo success")
-	           /*}
-	        }
-	     })
-   	  }*/
-   });
-
-  
-  //Codigo para cambiar cantidad de producto vendido.
-  $(document).delegate("tr", "dblclick", function(e) {
-    cantidad = $(this).find("#cantidadProducto").html();
-    abrirModal($(this).index(), cantidad);
+        else{
+          $('#modalPago').modal('show');
+          $('#campo-paga-con').select();
+        }
+        event.stopPropagation();
+        break;
+    }
 
   });
 
-  $("#cambiarClienteBtn").on("click", function(e){
-    $.ajax({
-      url: "/clientes.json",
-      dataType: "JSON",
-      timeout: 10000,
-      beforeSend: function(){
-      //$("#respuesta").html("Cargando...");
-      },
-      error: function(){
-        alert("error");
-        //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-               
-      },
-      //Acá se intenta construir una tabla con clientes dentro de un modal.
-      success: function(res){
-        ("#modalClientes > .form-group").html(""+
-          "<table id ='table_sales' class='table table-striped responsive-utilities jambo_table'>"+
-            "<thead>"+
-                "<tr class='headings'>"+
-                  "<th class='column-title'>Clave </th>"+
-                  "<th class='column-title'>Clave </th>"+
-                  "<th class='column-title'>Clave </th>"+
-                  "<th class='column-title'>Clave </th>"+
-                  "<th class='column-title'>Clave </th>"+
-                "</tr>"+
-            "</thead>"+
-            "<tbody>"+
-            "</tbody>"+
-          "</table>"
-        );
+
+  /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
+  autocomplete. Ver /assets/javascripts/autocomplete.jquery.js */
+  $('.autocomplete').autocomplete();
+
+  //Se aseguro que el campo de búsqueda esté vacío cada vez que se inicia el punto de venta.
+  $("#search-product" ).val("");
+
+
+
+  /**
+   * Esta porción de código identifica si se ha presionado enter en el campo de búsqueda de un
+   * producto. Si es así, añade el producto encontrado a la lista de venta actual
+   */
+  $("#search-product" ).keyup(function(event) {
+    //Obtiene el código del evento
+    var code=event.keyCode;
+
+      // Si es Enter y el valor no está vacío, añade el producto a la venta.
+      if (code==13 && $("#search-product").val()!="")
+      {
+        //añade el producto a la venta actual.
+        addProductToSale($("#search-product").val());
+        $("#search-product").val("");
       }
-    });
+  });
+
+  
+  /**
+   * Codigo para cambiar cantidad de producto vendido.
+   * Al dar doble clic sobre algún producto de la lista de ventas, se abre un modal
+   * que permite cambiar la cantidad de producto.
+   */
+  $(document).delegate("tr", "dblclick", function(e) {
+
+    cantidad = $(this).find("#cantidadProducto").html();
+    cambiarCantidadProducto($(this).index(), cantidad);
+
+  });
+
+  //Con esta petición ajax, se llena el modal de clientes.
+  $.ajax({
+    //Los datos se obtienen en json
+    url: "/clientes.json",
+    dataType: "JSON",
+    timeout: 10000,
+    beforeSend: function(){
+    
+    },
+    error: function(){
+      alert("Error al cargar la lista de clientes.");
+    },
+    //Una vez recibida la respuesta del servidor, se construye una tabla con clientes dentro de un modal.
+    success: function(res){
+
+      var resLength = res.length;
+
+      for(i=0; i < resLength; i++){
+        var element = res[i];
+
+        /* lista_clientes es la tabla que está dentro del modal con la lista de los clientes.
+         * por cada cliente que se agrega a la tabla, se añade un botón con el método onclick 
+         * para cambiar los datos
+         * del cliente dentro de la pantalla de venta**/
+        $("#lista_clientes").append(""+
+
+            "<tr class='even pointer'><td>"+element.nombre+"</td>"+
+            "<td>"+element.telefono1+"</td>"+
+            "<td>"+element.email+"</td>"+
+            "<td><button class='btn btn-primary btn-xs' "+
+                    "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombre+"\", \""+element.telefono1+"\", \""+element.email+"\")' >"+
+                      "<i class='fa fa-folder'></i> Seleccionar </button></td></tr>");
+
+      }
+
+      /* Una vez que se han cargado los datos en la tabla, convertimos nuestra tabla en una tabla DataTable.
+       * El plugin Datatable fue instalado mediante la gema 'jquery-datatables-rails'. 
+       * Para más información:  https://github.com/rweng/jquery-datatables-rails
+       * La funcionalidad de ser responsiva fue añadida a la tabla.
+       */
+      $('#lista_clientes').DataTable({
+        responsive: true
+      });
+         
+    }//Termina success de la petición ajax
+
+  }); //Termina petición ajax de la lista de clientes.
+
+  //Esta acción abre el modal que permite cambiar el cliente de una venta
+  $("#cambiarClienteBtn").on("click", function(e){
+
+    $('#modalClientes').modal('show');
+
   });
 
     
-
-  function abrirModal(indice, valor){
-    $('#modal-body').html('<div class="form-inline">'+
+  /**
+   * Esta función cambia la cantidad de un producto que se a agregado previamente a la venta.
+   * Cada vez que un producto se agrega a la venta, se agrega con una sola unidad. Mediante esta
+   * función, se puede cambiar esa cantidad.7
+   * param indice indica la fila de la tabla en donde se están intentando cambiar la cantidad.
+   * param valor indica la cantidad actual de producto.
+   */
+  function cambiarCantidadProducto(indice, valor){
+    //Se actualiza el "body" del modal actualizar cantidad
+    //Se asignan métodos para actualizar la cantidad dando click en el botón o con la tecla enter
+    $('#modal-body-actualizar-cantidad').html('<div class="form-inline">'+
         '<div class="form-group">'+
           '<label for="cantidad">Nueva Cantidad:</label>'+
           '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'" onkeyup="enterActualizar(event, '+indice+')">'+
         '</div>'+
       '</div>');
-      $('#modal-footer').html('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actualizarCantidad('+indice+')">Aceptar</button>')
+    //Se añade un botón en el footer del modal que permite actualizar la cantidad.
+    $('#modal-footer').html('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actualizarCantidad('+indice+')">Aceptar</button>')
+    
+    //Se muestra el modal.  
+    $('#actualizarCantidad').modal('show');
+    
+    //Se selecciona el texto que está en el textfield para facilitar la edición de la cantidad.    
+    $('#nuevaCantidad'+indice).select();
       
-      $('#actualizarCantidad').modal('show');
-      $('#nuevaCantidad'+indice).select();
-      
-  }
+  }//Termina el método cambiarCantidadProducto
 
-  //codigo para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
-  //cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
-  //agrega un producto o se cambia una cantidad de venta de producto).
+  /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
+   * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
+   * agrega un producto o se cambia una cantidad de venta de producto). */
   $("#table_sales").bind("DOMSubtreeModified", function() {
 
     var sumatoria = 0;
+
+    //recorre cada fila de la tabla de venta actual
     $('#table_sales tr').each(function (i, el) {
+
       //Se discrimina la primer fila (que corresponde al encabezado)
       if(i!=0){
+        //el td 4 equivale al campo con la cantidad.
         var val = $(this).find("td").eq(4).html();
+        
+        //Convierto el valor del importe en un valor float
         var importe = parseFloat(val);
+
+        //añado el importe a la sumatoria total de la venta
         sumatoria += importe;
       }
     });
+    
+    //una vez obtenido el valor de la venta, se limita a dos decimales.
     sumatoria.toFixed(2);
-
+    
+    //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
     $("#importe").text(sumatoria);
   });
 
-  //este arreglo json guardará todos los datos correspondientes a la venta
-  var datosVenta = [];
-
-  var datosFormaPago = [];
-
-  //Este arreglo json guardará código y cantidad de cada item de venta.
-  var itemsVenta = [];
-  var pago = "efectivo";
   
+
   $("#formasPago").on("change", function(){
     if($(this).val() == "Tarjeta de Crédito"){
-      pago = "credito";
+      formaPago = "credito";
       $('#pagoTC').modal('show');
       $('#numTarjetaCredito').select();
     }
     if($(this).val() == "Tarjeta de débito"){
-      pago = "debito";
+      formaPago = "debito";
       $('#pagoTD').modal('show');
       $('#numTarjetaDebito').select();
     }
     if($(this).val() == "Oxxo"){
-      pago = "oxxo";
+      formaPago = "oxxo";
       $('#pagoOxxo').modal('show');
       $('#referenciaOxxo').select();
     }
     if($(this).val() == "Paypal"){
-      pago = "paypal";
+      formaPago = "paypal";
       $('#pagoPaypal').modal('show');
       $('#referenciaPaypal').select();
     }
   });
 
+  //Acción para abrir el modal de cobro de la venta.
+  $("#pagarBtn").on("click", function(){
+    $('#modalPago').modal('show');
+    $('#campo-paga-con').select();
+  });
+
+  
+
+  
 
   //Acción para guardar la venta en un objeto JSON.
   $("#cobrarVenta").on("click", function() {
@@ -173,24 +238,24 @@ $(document).ready(function(){
     caja["caja"] = $("#Caja").val();
     datosVenta.push(caja);
     formaPago = {};
-    if(pago == "efectivo"){
+    if(formaPago == "efectivo"){
       formaPago["formaPago"]="efectivo";
     }
-    if(pago == "credito"){
+    if(formaPago == "credito"){
       formaPago["formaPago"]="credito";
       formaPago["ntCredito"] = numTarjetaCredito;
       formaPago["plazoTCredito"] = plazoCredito;
 
     }
-    if(pago == "debito"){
+    if(formaPago == "debito"){
       formaPago["formaPago"]="debito";
       formaPago["ntDebito"] = numTarjetaDebito;
     }
-    if(pago == "oxxo"){
+    if(formaPago == "oxxo"){
       formaPago["formaPago"]="oxxo";
       formaPago["refOxxo"] = referenciaOxxo;
     }
-    if(pago == "paypal"){
+    if(formaPago == "paypal"){
       formaPago["formaPago"]="paypal";
       formaPago["refPaypal"] = referenciaPaypal;
     }
@@ -280,22 +345,6 @@ function addProductToSale(elem){
              
     },
     success: function(res){
-/*<tr class="even pointer">
-                  <!--<td class="a-center ">
-                    <input type="checkbox" class="flat" name="table_records">
-                  </td>-->
-                   
-                  <!--ejemplo de como agregar datos a esta tabla
-                  <td class=" ">121000040</td>
-                  <td class=" ">May 23, 2014 11:47:56 PM </td>
-                  <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-                  <td class=" ">John Blank L</td>
-                  <td class="a-right a-right ">$7.45</td>-->
-
-
-                  <!--<td class=" last"><a href="#">View</a>
-                  </td>-->
-                </tr>*/
       if(res){
         var resLength = res.length;
         for(i=0; i < resLength; i++){
@@ -307,50 +356,26 @@ function addProductToSale(elem){
         }
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
         document.getElementById("search-product").parentNode.removeChild(nodoResultado);
-        
-
-        
-          /*var resLength = res.length;
-          for (i = 0; i < resLength; i++) {*/
-           //text += "<li>" + fruits[i] + "</li>";*/
-           /* var element = res[i];
-              $("#list-search-products").append("<li id='found-product' class='list-group-item list-group-item-success'>"+element.clave+"&nbsp &nbsp &nbsp"+element.nombre+"<button id='"+element.clave+"' onclick='addProductToSale(this)'>agregar</button></li>");
-            }*/
               
       }else{
-        //$("#list-search-products").empty();
+        
       }
     }
   })
 }
 
+/**
+ * Esta función permite cambiar los valores del cuadro de clientes en base al cliente elegido
+ * En el modal de clientes
+ */
+function cambiarCliente(id, nombre, telefono, email){
+  //Se guarda el id del cliente elegido en un input hidden
+  $("#id_cliente").val(id);
 
-
-
-/*function buscarPorLegajo(){
-   $("#boton_buscar").click(function(){
-     var legajo = $("#legajo").val();
-     $.ajax({
-        url: "/empleados/buscar_por_legajo/" + legajo,
-        dataType: "JSON",
-        timeout: 10000,
-        beforeSend: function(){
-           $("#respuesta").html("Cargando...");
-        },
-        error: function(){
-           $("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-        },
-        success: function(res){
-           if(res){
-              $("#respuesta").html('<a href="/empleados/'+res.id+'"> '+res.nombre+' ' + res.apellido + ' </a>');
-           }else{
-              $("#respuesta").html("El legajo no le pertenece a ningún empleado.");
-           }
-        }
-     })
-  });
-};
-$(document).ready(function(){
-   buscarPorLegajo();
-});*/
+  //Aquí se llenan los datos básicos del cliente.
+  $("#nom_cliente_venta").html("<strong>"+nombre+"</strong>");
+  $("#email_cliente").html("Email: <strong>"+email+"</strong>");
+  $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
+  $("#modalClientes").modal("hide");
+}
 

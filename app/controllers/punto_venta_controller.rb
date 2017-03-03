@@ -3,6 +3,7 @@ class PuntoVentaController < ApplicationController
    # before_filter :authenticate_user!
 
 	def index
+		@formas_pago = FormaPago.all
 	end
 
 	def realizarVenta

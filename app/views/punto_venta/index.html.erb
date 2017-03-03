@@ -1,5 +1,5 @@
 <div class="right_col" role="main" >
-  <div class="row main-row-pos">
+  <div id="div_pos" class="row main-row-pos" tabindex="0">
 
     <div class="col-md-5 datosVenta">
       <div class="row">
@@ -49,16 +49,17 @@
 
                   </div>
                 </div>
-
+                
                 <div class="col-md-6 col-sm-6 col-xs-12 datos-cliente">
                   <div class="well profile_view">
                     <div class="col-sm-12">
                       <h4 class="brief"><i>Datos del cliente:</i></h4>
                       <div class="left col-md-12 col-xs-7">
+                        <input type="hidden" id="id_cliente">
                         <h2 id="nom_cliente_venta">General</h2>
                         <ul class="list-unstyled">
-                          <li><i class="fa fa-envelope"></i> Email: n/a</li>
-                          <li><i class="fa fa-phone"></i> Teléfono: n/a</li>
+                          <li id="email_cliente"><i class="fa fa-envelope"></i> Email: n/a</li>
+                          <li id="telefono_cliente"><i class="fa fa-phone"></i> Teléfono: n/a</li>
                         </ul>
                       </div>
                       <div class="right col-xs-5 text-center"></div>
@@ -97,20 +98,11 @@
               <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
                 <thead>
                   <tr class="headings">
-                    <!--<th>
-                    <input type="checkbox" id="check-all" class="flat">
-                    </th>-->
                     <th class="column-title">Clave </th>
                     <th class="column-title">Nombre </th>
                     <th class="column-title">Precio Venta </th>
                     <th class="column-title">Cantidad </th>
                     <th class="column-title">Importe </th>
-                    <!--<th class="column-title">Amount </th>
-                    <th class="column-title no-link last"><span class="nobr">Action</span>
-                    </th>
-                    <th class="bulk-actions" colspan="7">
-                      <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
-                    </th>-->
                   </tr>
                 </thead>
                 <tbody>
@@ -125,11 +117,11 @@
               <div class="col-md-12 form-group">
 
                 <div class="col-md-6">
-                  <button class="btn btn-round btn-success form-control">
-                  <i class="glyphicon glyphicon-usd"> </i>Pagar</button>
+                  <button class="btn btn-round btn-success form-control" id="pagarBtn">
+                  <i class="glyphicon glyphicon-usd"> </i>Pagar(F3)</button>
                 </div>
                 <div class="col-md-6">
-                  <button class="btn btn-round btn-danger form-control">
+                  <button class="btn btn-round btn-warning form-control">
                   <i class="glyphicon glyphicon-trash"> </i>Cancelar</button>
                 </div>
 
@@ -153,7 +145,7 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="modal-title">Actualizar cantidad</h4>
           </div>
-          <div class="modal-body" id="modal-body">
+          <div class="modal-body" id="modal-body-actualizar-cantidad">
           </div>
           <div class="modal-footer" id="modal-footer">
           </div>
@@ -261,6 +253,74 @@
     </div>
     <!-- /.modal -->
 
+    <div id="modalPago" class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content x_panel">
+          <div class="modal-header x_title">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Ventana de pago</h4>
+            <div class="clearfix"></div>
+          </div>
+          <div id="modal-body-pago" class="modal-body x_content">
+              <h2>Cantidad a pagar:</h2>
+              <div class="animated flipInY sumatoria">
+                <div class="tile-stats">
+                  <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
+                  <div id="importe" class="count">0.0</div>
+                </div>
+              </div>
+              <div class="col-xs-3">
+                <ul class="nav nav-tabs tabs-left">
+                  <%contador = 0%>
+                  <li class="active"><a href='#div-pago-efectivo' data-toggle="tab">Efectivo</a>
+                  </li>
+                  <%@formas_pago.each do |forma|%>
+                    <%nombre_forma = forma.nombre.to_s%>
+                    <%nForma = nombre_forma.sub(' ', '-')%>
+                    <li><a href='#<%= "div-pago-" << nForma %>' data-toggle="tab"><%= forma.nombre.capitalize %></a>
+                    </li>
+                  <%end%>
+                </ul>
+              </div>
+
+              <div class="col-xs-9">
+                <div class="tab-content">
+                <div id="div-pago-efectivo" class="tab-pane active">
+                  <div class="form-group">
+                    <label for="paga_con">¿Con cuánto paga el cliente?</label>
+                    <input type="text" class="form-control" id="campo-paga-con">
+                  </div>
+                </div>
+                <%@formas_pago.each do |forma|%>
+                  <%nombre_forma = forma.nombre.to_s%>
+                  <%nombre_forma.sub!(' ', '-')%>
+                  <div id='<%= "div-pago-" << nombre_forma %>' class="tab-pane">
+                    <%forma.campo_forma_pagos.each do |campo|%>
+                      <%nombre_campo = campo.nombrecampo.to_s%>
+                      <%nCampo = nombre_campo.sub(' ', '-')%>
+                      <div class="form-group">
+                        <label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label>
+                        <% if nCampo.include?"plazo" %>
+                            <%= select_tag "plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                        <%else%>
+                          <input type="text" class="form-control" id="<%= "campo-" << nCampo %>">
+                        <%end%>
+                      </div>
+                    <%end%>
+                  </div>
+                <%end%>
+                
+                </div>
+              </div>
+              <div class="clearfix"></div>
+              <div class="modal-footer" id="modal-footer-pago">
+                <button style="width: 100%;" type="button" class="btn btn-success btn-lg" data-dismiss="modal">Cobrar</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="modal" id="modalClientes">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -270,11 +330,23 @@
           </div>
           <div class="modal-body" id="modal-body-oxxo">
            <div class="form-group">
-              
+            <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
+              <thead>
+                <tr class='headings'>
+                  <th class='column-title'>Nombre Cliente </th>
+                  <th class='column-title'>Teléfono </th>
+                  <th class='column-title'>Email </th>
+                  <th class='column-title'>Elegir </th>
+                </tr>
+              </thead>
+            <tbody>
+
+            </tbody>
+          </table>
             </div>
           </div>
-          <div class="modal-footer" id="modal-footer-oxxo">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="elegirCliente()">Aceptar</button>
+          <div class="modal-footer" id="modal-footer-clientes">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           </div>
         </div>
         <!-- /.modal-content -->
