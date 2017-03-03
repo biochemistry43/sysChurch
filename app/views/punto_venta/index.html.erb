@@ -204,7 +204,7 @@
                       <div class="form-group">
                         <label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label>
                         <% if nCampo.include?"plazo" %>
-                            <%= select_tag "plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                            <%= select_tag "campo-plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
                         <%else%>
                           <input type="text" class="form-control" id="<%= "campo-" << nCampo %>">
                         <%end%>

@@ -166,6 +166,7 @@ $(document).ready(function(){
       
   }//Termina el método cambiarCantidadProducto
 
+
   /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
    * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
    * agrega un producto o se cambia una cantidad de venta de producto). */
@@ -196,30 +197,6 @@ $(document).ready(function(){
     $("#importe").text(sumatoria);
   });
 
-  
-
-  $("#formasPago").on("change", function(){
-    if($(this).val() == "Tarjeta de Crédito"){
-      formaPago = "credito";
-      $('#pagoTC').modal('show');
-      $('#numTarjetaCredito').select();
-    }
-    if($(this).val() == "Tarjeta de débito"){
-      formaPago = "debito";
-      $('#pagoTD').modal('show');
-      $('#numTarjetaDebito').select();
-    }
-    if($(this).val() == "Oxxo"){
-      formaPago = "oxxo";
-      $('#pagoOxxo').modal('show');
-      $('#referenciaOxxo').select();
-    }
-    if($(this).val() == "Paypal"){
-      formaPago = "paypal";
-      $('#pagoPaypal').modal('show');
-      $('#referenciaPaypal').select();
-    }
-  });
 
   //Acción para abrir el modal de cobro de la venta.
   $("#pagarBtn").on("click", function(){
@@ -253,62 +230,88 @@ $(document).ready(function(){
       },
       
       success: function(res){
+        /*El resultado de esta petición, será una estructura ajax con los datos
+          de los campos dados de alta en la forma de pago elegida.
+          la forma de pago se solicita mediante la variable "formaPago"
+          cuando se hace la solicitud ajax*/
+
+        //Se recorre cada campo de la Forma de Pago elegida
         for(i= 0; i < res.length; i++){
-          resultado = res[i];
-          nom = resultado.nombrecampo;
-          campo = nom.toString();
-          camNoSpc = campo.replace(' ', '-');
-          
+
+          resultado = res[i]; //Se obtiene el campo.
+
+          nom = resultado.nombrecampo; //obtenemos el nombre del campo
+
+          campo = nom.toString(); //Se transforma el dato en un String.
+
+          camNoSpc = campo.replace(' ', '-');//Se reemplazan los espacios por un "-"
+
+          //Se crea un campo JSON con el mismo nombre del campo en base de datos
+          //Salvo que lleva un "-" en lugar de un espacio en los casos de nombres
+          //de campo compuestos. Ejemplo: Tarjeta credito cambia a Tarjeta-credito
+
+          // Dado que el campo html tiene el mismo nombre de id (con la palabra
+          // "campo-" antecediendole), se obtiene el valor del campo en base a ese
+          // mismo nombre encontrado en bd.
           formaPagoJSON[String(camNoSpc)] = $("#campo-"+camNoSpc).val();
+
         }
-        
-        
            
       }//Termina success de la petición ajax
 
     }); //Termina petición ajax de campos de la forma de pago elegida
 
-    if(formaPago == "efectivo"){
-      formaPagoJSON["formaPago"]="efectivo";
-    }
-    if(formaPago == "credito"){
-      formaPagoJSON["formaPago"]="credito";
-      formaPagoJSON["ntCredito"] = numTarjetaCredito;
-      formaPagoJSON["plazoTCredito"] = plazoCredito;
-
-    }
-    if(formaPago == "debito"){
-      formaPagoJSON["formaPago"]="debito";
-      formaPagoJSON["ntDebito"] = numTarjetaDebito;
-    }
-    if(formaPago == "oxxo"){
-      formaPagoJSON["formaPago"]="oxxo";
-      formaPagoJSON["refOxxo"] = referenciaOxxo;
-    }
-    if(formaPago == "paypal"){
-      formaPagoJSON["formaPago"]="paypal";
-      formaPagoJSON["refPaypal"] = referenciaPaypal;
-    }
-
+    //Se guardan los datos de la forma de pago en el arreglo JSON
     datosFormaPago.push(formaPagoJSON);
+
+    //Se guardan los datos de forma de pago en el arreglo de datos de la venta
     datosVenta.push(datosFormaPago);
     
+    /**
+     * Ahora se recorren cada uno de los items de la venta y llena el arreglo
+     * con los datos respectivos.
+     */
     $('#table_sales tr').each(function (i, el) {
+
       //Se discrimina la primer fila (que corresponde al encabezado)
       if(i!=0){
+        //El código del producto se encuentra en la primer columna de 
+        //de la tabla de venta actual.
         var codigoProd = $(this).find("td").eq(0).text();
+
+        //La cantidad vendida del producto se encuentra en la tercera
+        //columna de la tabla de venta actual.
         var cantidadProd = $(this).find("td").eq(3).text();
+
+        //El importe total del producto vendido se encuentra en la
+        //quinta columna de la tabla de venta actual.
         var importeProd = $(this).find("td").eq(4).text();
+
+        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
+        //vendido
         itemVenta = {};
+
+        //Se crean los campos correspondientes y se guardan los datos obtenidos
+        //del producto
         itemVenta["codigo"]=codigoProd;
         itemVenta["cantidad"]=cantidadProd;
         itemVenta["importe"]=importeProd;
+
+        //itemsVenta guarda la totalidad de los items de la venta.
+        //itemVenta es el item en particular.
         itemsVenta.push(itemVenta);
         
       }
     });
 
+    //Ahora se guardan los items de la venta en el objeto datosVenta
     datosVenta.push(itemsVenta);
+    
+    //Este objeto guarda el id del cliente a quien se vendió
+    datosCliente = {};
+    datosCliente["id_cliente"] = $("#id_cliente").val();
+
+    
 
        /*$("#dataVenta").val(JSON.stringify(datosVenta));
        var form = $("#ventaForm");
@@ -325,23 +328,6 @@ $(document).ready(function(){
  */
 function setFormaPago(forma){
   formaPago = forma;
-}
-
-function pagoTC(){
-  numTarjetaCredito = document.getElementById("numTarjetaCredito").value;
-  plazoCredito = document.getElementById("plazoCredito").value;
-}
-
-function pagoTD(){
-  numTarjetaDebito = document.getElementById("numTarjetaDebito").value;
-}
-
-function pagoOxxo(){
-  referenciaOxxo = document.getElementById("referenciaOxxo").value;
-}
-
-function pagoPaypal(){
-  referenciaPaypal = document.getElementById("referenciaPaypal").value;
 }
 
 function enterActualizar(event, indice){
