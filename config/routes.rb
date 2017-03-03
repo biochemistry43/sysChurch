@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :tipo_usuarios
   resources :punto_venta
   post 'punto_venta/realizarVenta'
+  post 'punto_venta/obtenerCamposFormaPago'
 
   resources :inventarios
   #resources :punto_venta
@@ -47,6 +48,7 @@ Rails.application.routes.draw do
   get 'articulos/getById/:criteria' => 'articulos#getById'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
   get 'ventas/venta_del_dia' => 'ventas#venta_del_dia'
+  post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   
   root :to=> 'articulos#index'

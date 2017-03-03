@@ -34,7 +34,7 @@
                         <form class="form-inline">
                           <div class="form-group">
                             Caja Número: 
-                            <%= select_tag "Caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
+                            <%= select_tag "caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
                           </div>
                         </form>
                        
@@ -118,7 +118,7 @@
 
                 <div class="col-md-6">
                   <button class="btn btn-round btn-success form-control" id="pagarBtn">
-                  <i class="glyphicon glyphicon-usd"> </i>Pagar(F3)</button>
+                  <i class="glyphicon glyphicon-usd"> </i>Pagar(F4)</button>
                 </div>
                 <div class="col-md-6">
                   <button class="btn btn-round btn-warning form-control">
@@ -156,103 +156,6 @@
     </div>
     <!-- /.modal -->
 
-    <div class="modal" id="pagoOxxo">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="modal-title">Ingresa los datos del pago en oxxo</h4>
-          </div>
-          <div class="modal-body" id="modal-body-oxxo">
-           <div class="form-group">
-              <label for="referenciaOxxo">Referencia oxxo:</label>
-              <input type="text" class="form-control" id="referenciaOxxo">
-            </div>
-          </div>
-          <div class="modal-footer" id="modal-footer-oxxo">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoOxxo()">Aceptar</button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-
-    <!-- Modales para ingresar datos de diferentes formas de pago-->
-    <div class="modal" id="pagoTC">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="modal-title">Ingresa los datos de la tarjeta de crédito</h4>
-          </div>
-          <div class="modal-body" id="modal-body-tc">
-            <div class="form-group">
-              <label for="numTarjetaCredito">Número de tarjeta:</label>
-              <input type="text" class="form-control" id="numTarjetaCredito">
-            </div>
-            <div class="form-group">
-              <label for="plazoCredito">Plazo:</label>
-              <input type="text" class="form-control" id="plazoCredito">
-            </div>
-          </div>
-          <div class="modal-footer" id="modal-footer-tc">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoTC()">Aceptar</button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-
-    <div class="modal" id="pagoTD">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="modal-title">Ingresa los datos de la tarjeta de débito</h4>
-          </div>
-          <div class="modal-body" id="modal-body-td">
-            <div class="form-group">
-              <label for="numTarjetaDebito">Número de tarjeta:</label>
-              <input type="text" class="form-control" id="numTarjetaDebito">
-            </div>
-          </div>
-          <div class="modal-footer" id="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoTD()">Aceptar</button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-
-    <div class="modal" id="pagoPaypal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="modal-title">Ingresa los datos de paypal</h4>
-          </div>
-          <div class="modal-body" id="modal-body-paypal">
-            <div class="form-group">
-              <label for="referenciaPaypal">Referencia paypal:</label>
-              <input type="text" class="form-control" id="referenciaPaypal">
-            </div>
-          </div>
-          <div class="modal-footer" id="modal-footer-paypal">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pagoPaypal()">Aceptar</button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-
     <div id="modalPago" class="modal">
       <div class="modal-dialog">
         <div class="modal-content x_panel">
@@ -272,12 +175,12 @@
               <div class="col-xs-3">
                 <ul class="nav nav-tabs tabs-left">
                   <%contador = 0%>
-                  <li class="active"><a href='#div-pago-efectivo' data-toggle="tab">Efectivo</a>
+                  <li class="active" onclick="setFormaPago('efectivo')" ><a href='#div-pago-efectivo' data-toggle="tab">Efectivo</a>
                   </li>
                   <%@formas_pago.each do |forma|%>
                     <%nombre_forma = forma.nombre.to_s%>
                     <%nForma = nombre_forma.sub(' ', '-')%>
-                    <li><a href='#<%= "div-pago-" << nForma %>' data-toggle="tab"><%= forma.nombre.capitalize %></a>
+                    <li onclick="setFormaPago('<%=nForma%>')"><a href='#<%= "div-pago-" << nForma %>' data-toggle="tab" ><%= forma.nombre.capitalize %></a>
                     </li>
                   <%end%>
                 </ul>
@@ -314,7 +217,7 @@
               </div>
               <div class="clearfix"></div>
               <div class="modal-footer" id="modal-footer-pago">
-                <button style="width: 100%;" type="button" class="btn btn-success btn-lg" data-dismiss="modal">Cobrar</button>
+                <button id="cobrarVenta" style="width: 100%;" type="button" class="btn btn-success btn-lg" data-dismiss="modal">Cobrar</button>
               </div>
           </div>
         </div>
@@ -328,21 +231,21 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" id="modal-title">Selecciona un cliente</h4>
           </div>
-          <div class="modal-body" id="modal-body-oxxo">
-           <div class="form-group">
-            <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
-              <thead>
-                <tr class='headings'>
-                  <th class='column-title'>Nombre Cliente </th>
-                  <th class='column-title'>Teléfono </th>
-                  <th class='column-title'>Email </th>
-                  <th class='column-title'>Elegir </th>
-                </tr>
-              </thead>
-            <tbody>
+          <div class="modal-body" id="modal-body-clientes">
+            <div class="form-group">
+              <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
+                <thead>
+                  <tr class='headings'>
+                    <th class='column-title'>Nombre Cliente </th>
+                    <th class='column-title'>Teléfono </th>
+                    <th class='column-title'>Email </th>
+                    <th class='column-title'>Elegir </th>
+                  </tr>
+                </thead>
+                <tbody>
 
-            </tbody>
-          </table>
+                </tbody>
+              </table>
             </div>
           </div>
           <div class="modal-footer" id="modal-footer-clientes">
@@ -359,7 +262,8 @@
       <%= hidden_field_tag(:dataVenta) %>
     <% end %>
   </div>
-  <%= javascript_include_tag "autocomplete.jquery" %>
-  <%= javascript_include_tag "punto-venta" %>
-  <%= stylesheet_link_tag "autocomplete" %>
-  <%= stylesheet_link_tag "punto_venta" %>
+</div>
+<%= javascript_include_tag "autocomplete.jquery" %>
+<%= javascript_include_tag "punto-venta" %>
+<%= stylesheet_link_tag "autocomplete" %>
+<%= stylesheet_link_tag "punto_venta" %>

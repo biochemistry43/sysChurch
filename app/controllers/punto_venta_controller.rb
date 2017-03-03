@@ -3,8 +3,20 @@ class PuntoVentaController < ApplicationController
    # before_filter :authenticate_user!
 
 	def index
-		@formas_pago = FormaPago.all
+      @formas_pago = FormaPago.all
 	end
+
+	def obtenerCamposFormaPago
+      
+      if request.post?
+        formaP = params[:formaPago]
+        formaElegida = formaP.to_s.sub('-', ' ')
+        forma = FormaPago.find_by_nombre(formaElegida)
+        campos = forma.campo_forma_pagos
+        render :json => campos
+      end
+
+    end 
 
 	def realizarVenta
 	  literal = params[:dataVenta]
@@ -14,7 +26,7 @@ class PuntoVentaController < ApplicationController
       loquesea = ""
       formaPago = ""
       formaPagoBD = ""
-      numTDebito = ""
+      numTDebito = ""	
       numTCredito = ""
       plazoCredito = ""
       refOxxo = ""

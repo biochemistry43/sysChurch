@@ -16,20 +16,20 @@ var itemsVenta = [];
 //Esta variable cambia dependiendo de la forma de pago elegida por el usuario
 var formaPago = "efectivo";
 
-var body = document.querySelector('body');
-
-
-
 //jquery
 $(document).ready(function(){
 
-
+  /**
+   * Aquí se añadirán todas las funcionalidades mediante teclas que el módulo de punto
+   * de venta va a tener.
+   */
   $('#div_pos').bind('keydown', function(event) {
     
 
     switch(event.keyCode){
-       case 115:
-        //primero verifica que la tabla de ventas tenga al menos un artículo agregado
+
+      case 115: //Tecla f4 abre el modal de pago.
+       //primero verifica que la tabla de ventas tenga al menos un artículo agregado
         if ($('#table_sales >tbody >tr').length == 0){
           alert ( "No hay productos añadidos a la venta" );
         }
@@ -41,7 +41,7 @@ $(document).ready(function(){
         break;
     }
 
-  });
+  });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
 
   /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
@@ -227,40 +227,70 @@ $(document).ready(function(){
     $('#campo-paga-con').select();
   });
 
-  
-
-  
 
   //Acción para guardar la venta en un objeto JSON.
   $("#cobrarVenta").on("click", function() {
     
-    caja = {};
-    caja["caja"] = $("#Caja").val();
+    //Se añade la caja a la que pertenece esta venta.
+    caja = { };
+    caja["caja"] = $("#caja").val();
     datosVenta.push(caja);
-    formaPago = {};
+
+    formaPagoJSON = {};
+    formaPagoJSON["formaPago"] = formaPago;
+
+    $.ajax({
+      //Los datos se obtienen en json
+      url: "/punto_venta/obtenerCamposFormaPago/"+formaPago,
+      dataType: "JSON",
+      method: "POST",
+      timeout: 10000,
+      beforeSend: function(){
+      
+      },
+      error: function(){
+        alert("Error al cargar los campos de formas de pago.");
+      },
+      
+      success: function(res){
+        for(i= 0; i < res.length; i++){
+          resultado = res[i];
+          nom = resultado.nombrecampo;
+          campo = nom.toString();
+          camNoSpc = campo.replace(' ', '-');
+          
+          formaPagoJSON[String(camNoSpc)] = $("#campo-"+camNoSpc).val();
+        }
+        
+        
+           
+      }//Termina success de la petición ajax
+
+    }); //Termina petición ajax de campos de la forma de pago elegida
+
     if(formaPago == "efectivo"){
-      formaPago["formaPago"]="efectivo";
+      formaPagoJSON["formaPago"]="efectivo";
     }
     if(formaPago == "credito"){
-      formaPago["formaPago"]="credito";
-      formaPago["ntCredito"] = numTarjetaCredito;
-      formaPago["plazoTCredito"] = plazoCredito;
+      formaPagoJSON["formaPago"]="credito";
+      formaPagoJSON["ntCredito"] = numTarjetaCredito;
+      formaPagoJSON["plazoTCredito"] = plazoCredito;
 
     }
     if(formaPago == "debito"){
-      formaPago["formaPago"]="debito";
-      formaPago["ntDebito"] = numTarjetaDebito;
+      formaPagoJSON["formaPago"]="debito";
+      formaPagoJSON["ntDebito"] = numTarjetaDebito;
     }
     if(formaPago == "oxxo"){
-      formaPago["formaPago"]="oxxo";
-      formaPago["refOxxo"] = referenciaOxxo;
+      formaPagoJSON["formaPago"]="oxxo";
+      formaPagoJSON["refOxxo"] = referenciaOxxo;
     }
     if(formaPago == "paypal"){
-      formaPago["formaPago"]="paypal";
-      formaPago["refPaypal"] = referenciaPaypal;
+      formaPagoJSON["formaPago"]="paypal";
+      formaPagoJSON["refPaypal"] = referenciaPaypal;
     }
 
-    datosFormaPago.push(formaPago);
+    datosFormaPago.push(formaPagoJSON);
     datosVenta.push(datosFormaPago);
     
     $('#table_sales tr').each(function (i, el) {
@@ -277,27 +307,25 @@ $(document).ready(function(){
         
       }
     });
+
     datosVenta.push(itemsVenta);
-    /*$.post("/punto_venta/realizarVenta", {data: datosVenta})
-       .done(function(data){
-          alert(data);
-       })
-       .fail(function() {
-          alert( "error" );
-       })
-       .always(function() {
-          
-       });*/
-       $("#dataVenta").val(JSON.stringify(datosVenta));
+
+       /*$("#dataVenta").val(JSON.stringify(datosVenta));
        var form = $("#ventaForm");
        form.submit();
        itemsVenta = [];
        datosVenta = [];
-       datosFormaPago = [];
+       datosFormaPago = [];*/
    });
-  
 
 });
+
+/**
+ * Establece el valor de la forma de pago que el cliente eligió
+ */
+function setFormaPago(forma){
+  formaPago = forma;
+}
 
 function pagoTC(){
   numTarjetaCredito = document.getElementById("numTarjetaCredito").value;
