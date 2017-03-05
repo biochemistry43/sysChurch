@@ -14,6 +14,7 @@ Rails.application.config.assets.version = '1.0'
 #Rails.application.config.assets.precompile += %w( normalize.css )
 Rails.application.config.assets.precompile += %w( punto-venta.js )
 Rails.application.config.assets.precompile += %w( autocomplete.jquery.js )
+Rails.application.config.assets.precompile += %w( jQuery.print/jQuery.print.js )
 Rails.application.config.assets.precompile += %w( autocomplete.css )
 Rails.application.config.assets.precompile += %w( punto_venta.css )
 Rails.application.config.assets.precompile += %w( inventarios.js )

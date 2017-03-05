@@ -20,8 +20,8 @@ var formaPago = "efectivo";
 $(document).ready(function(){
 
   /**
-   * Aquí se añadirán todas las funcionalidades mediante teclas que el módulo de punto
-   * de venta va a tener.
+   * Aquí se añadirán todas las funcionalidades mediante los botones de teclado
+   * que el módulo de punto de venta va a tener.
    */
   $('#div_pos').bind('keydown', function(event) {
     
@@ -200,8 +200,13 @@ $(document).ready(function(){
 
   //Acción para abrir el modal de cobro de la venta.
   $("#pagarBtn").on("click", function(){
-    $('#modalPago').modal('show');
-    $('#campo-paga-con').select();
+    if ($('#table_sales >tbody >tr').length == 0){
+      alert ( "No hay productos añadidos a la venta" );
+    }
+    else{
+      $('#modalPago').modal('show');
+      $('#campo-paga-con').select();
+    }
   });
 
 
@@ -213,115 +218,166 @@ $(document).ready(function(){
     caja["caja"] = $("#caja").val();
     datosVenta.push(caja);
 
-    formaPagoJSON = {};
-    formaPagoJSON["formaPago"] = formaPago;
-
-    $.ajax({
-      //Los datos se obtienen en json
-      url: "/punto_venta/obtenerCamposFormaPago/"+formaPago,
-      dataType: "JSON",
-      method: "POST",
-      timeout: 10000,
-      beforeSend: function(){
-      
-      },
-      error: function(){
-        alert("Error al cargar los campos de formas de pago.");
-      },
-      
-      success: function(res){
-        /*El resultado de esta petición, será una estructura ajax con los datos
-          de los campos dados de alta en la forma de pago elegida.
-          la forma de pago se solicita mediante la variable "formaPago"
-          cuando se hace la solicitud ajax*/
-
-        //Se recorre cada campo de la Forma de Pago elegida
-        for(i= 0; i < res.length; i++){
-
-          resultado = res[i]; //Se obtiene el campo.
-
-          nom = resultado.nombrecampo; //obtenemos el nombre del campo
-
-          campo = nom.toString(); //Se transforma el dato en un String.
-
-          camNoSpc = campo.replace(' ', '-');//Se reemplazan los espacios por un "-"
-
-          //Se crea un campo JSON con el mismo nombre del campo en base de datos
-          //Salvo que lleva un "-" en lugar de un espacio en los casos de nombres
-          //de campo compuestos. Ejemplo: Tarjeta credito cambia a Tarjeta-credito
-
-          // Dado que el campo html tiene el mismo nombre de id (con la palabra
-          // "campo-" antecediendole), se obtiene el valor del campo en base a ese
-          // mismo nombre encontrado en bd.
-          formaPagoJSON[String(camNoSpc)] = $("#campo-"+camNoSpc).val();
-
-        }
-           
-      }//Termina success de la petición ajax
-
-    }); //Termina petición ajax de campos de la forma de pago elegida
-
-    //Se guardan los datos de la forma de pago en el arreglo JSON
-    datosFormaPago.push(formaPagoJSON);
-
-    //Se guardan los datos de forma de pago en el arreglo de datos de la venta
-    datosVenta.push(datosFormaPago);
-    
-    /**
-     * Ahora se recorren cada uno de los items de la venta y llena el arreglo
-     * con los datos respectivos.
-     */
-    $('#table_sales tr').each(function (i, el) {
-
-      //Se discrimina la primer fila (que corresponde al encabezado)
-      if(i!=0){
-        //El código del producto se encuentra en la primer columna de 
-        //de la tabla de venta actual.
-        var codigoProd = $(this).find("td").eq(0).text();
-
-        //La cantidad vendida del producto se encuentra en la tercera
-        //columna de la tabla de venta actual.
-        var cantidadProd = $(this).find("td").eq(3).text();
-
-        //El importe total del producto vendido se encuentra en la
-        //quinta columna de la tabla de venta actual.
-        var importeProd = $(this).find("td").eq(4).text();
-
-        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
-        //vendido
-        itemVenta = {};
-
-        //Se crean los campos correspondientes y se guardan los datos obtenidos
-        //del producto
-        itemVenta["codigo"]=codigoProd;
-        itemVenta["cantidad"]=cantidadProd;
-        itemVenta["importe"]=importeProd;
-
-        //itemsVenta guarda la totalidad de los items de la venta.
-        //itemVenta es el item en particular.
-        itemsVenta.push(itemVenta);
-        
-      }
-    });
-
-    //Ahora se guardan los items de la venta en el objeto datosVenta
-    datosVenta.push(itemsVenta);
-    
     //Este objeto guarda el id del cliente a quien se vendió
     datosCliente = {};
     datosCliente["id_cliente"] = $("#id_cliente").val();
 
-    
+    datosVenta.push(datosCliente);
 
-       /*$("#dataVenta").val(JSON.stringify(datosVenta));
-       var form = $("#ventaForm");
-       form.submit();
-       itemsVenta = [];
-       datosVenta = [];
-       datosFormaPago = [];*/
-   });
+    formaPagoJSON = {};
+    formaPagoJSON["formaPago"] = formaPago;
 
-});
+    if(formaPago != "efectivo"){
+
+
+      $.ajax({
+        //Los datos se obtienen en json
+        url: "/punto_venta/obtenerCamposFormaPago/"+formaPago,
+        dataType: "JSON",
+        method: "POST",
+        timeout: 10000,
+        beforeSend: function(){
+        
+        },
+        error: function(){
+          alert("Error al cargar los campos de formas de pago.");
+        },
+        
+        success: function(res){
+
+          /*El resultado de esta petición, será una estructura ajax con los datos
+            de los campos dados de alta en la forma de pago elegida.
+            la forma de pago se solicita mediante la variable "formaPago"
+            cuando se hace la solicitud ajax*/
+
+          //Se recorre cada campo de la Forma de Pago elegida
+          for(i= 0; i < res.length; i++){
+
+            resultado = res[i]; //Se obtiene el campo.
+
+            nom = resultado.nombrecampo; //obtenemos el nombre del campo
+
+            campo = nom.toString(); //Se transforma el dato en un String.
+
+            camNoSpc = campo.replace(' ', '-');//Se reemplazan los espacios por un "-"
+
+            //Se crea un campo JSON con el mismo nombre del campo en base de datos
+            //Salvo que lleva un "-" en lugar de un espacio en los casos de nombres
+            //de campo compuestos. Ejemplo: Tarjeta credito cambia a Tarjeta-credito
+
+            // Dado que el campo html tiene el mismo nombre de id (con la palabra
+            // "campo-" antecediendole), se obtiene el valor del campo en base a ese
+            // mismo nombre encontrado en bd, a excepción de que lleva un guión medio
+            // en lugar de los espacios.
+            // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
+            // Espacios incluidos.
+            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();
+
+          }
+
+          //Se guardan los datos de la forma de pago en el arreglo JSON
+          
+             
+        },//Termina success de la petición ajax
+
+        complete: function(jqXHR, settings){
+          
+          if(jqXHR.status == 200){
+            
+            completarVenta();
+
+            
+          }
+
+        }
+
+      }); //Termina petición ajax de campos de la forma de pago elegida
+    }
+
+    else{
+      completarVenta();
+    }
+
+  });//Fin de la acción de cobrar venta.
+
+  $("#cancelarVentaBtn").on("click", function(evt){
+    $("#print-div").print({
+            globalStyles: true,
+            mediaPrint: false,
+            stylesheet: null,
+            noPrintSelector: ".no-print",
+            iframe: false,
+            append: null,
+            prepend: null,
+            manuallyCopyFormValues: true,
+            deferred: $.Deferred(),
+            timeout: 750,
+            title: null,
+            doctype: '<!doctype html>'
+    });
+  });
+
+});//Fin de JQuery
+
+/**
+ * 
+ */
+function completarVenta(){
+  datosFormaPago.push(formaPagoJSON);
+
+  //Se guardan los datos de forma de pago en el arreglo de datos de la venta
+  datosVenta.push(datosFormaPago);
+            
+  /**
+   * Ahora se recorren cada uno de los items de la venta y llena el arreglo
+   * con los datos respectivos.
+   */
+  $('#table_sales tr').each(function (i, el) {
+    //Se discrimina la primer fila (que corresponde al encabezado)
+    if(i!=0){
+    //El código del producto se encuentra en la primer columna de 
+    //de la tabla de venta actual.
+      var codigoProd = $(this).find("td").eq(0).text();
+      //La cantidad vendida del producto se encuentra en la tercera
+      //columna de la tabla de venta actual.
+      var cantidadProd = $(this).find("td").eq(3).text();
+      //El importe total del producto vendido se encuentra en la
+      //quinta columna de la tabla de venta actual.
+      var importeProd = $(this).find("td").eq(4).text();
+      //itemVenta es el objeto JSON que guarda toda la fila de un articulo
+      //vendido
+      itemVenta = {};
+      //Se crean los campos correspondientes y se guardan los datos obtenidos
+      //del producto
+      itemVenta["codigo"]=codigoProd;
+      itemVenta["cantidad"]=cantidadProd;
+      itemVenta["importe"]=importeProd;
+      //itemsVenta guarda la totalidad de los items de la venta.
+      //itemVenta es el item en particular.
+      itemsVenta.push(itemVenta);
+      
+    }
+  }); //Termina recorrido de la tabla de venta actual
+  //Ahora se guardan los items de la venta en el objeto datosVenta
+  datosVenta.push(itemsVenta);
+  
+  //dataVenta es un campo oculto dentro del form ventaForm
+  //este forma es el encargado de mandar toda la información relativa a la venta
+  //en un objeto JSON.
+  $("#dataVenta").val(JSON.stringify(datosVenta));
+  alert(JSON.stringify(datosVenta));
+  
+  var form = $("#ventaForm");
+  form.submit(); //Se submite el form con los datos de la venta.
+     
+  //Se vacían los arreglos previamente creados para evitar posibles datos 
+  //incorrectos.
+  itemsVenta = [];
+  datosVenta = [];
+  datosFormaPago = [];
+  datosCliente = {};
+
+}//Termina función completar venta
 
 /**
  * Establece el valor de la forma de pago que el cliente eligió

@@ -110,7 +110,10 @@
                 </tbody>
               </table>
             </div>
-            
+            <div id="print-div">
+            <strong>hello</strong>
+              hello
+            </div>
           </div>
           <div class="row" id="botones-venta">
 
@@ -121,7 +124,7 @@
                   <i class="glyphicon glyphicon-usd"> </i>Pagar(F4)</button>
                 </div>
                 <div class="col-md-6">
-                  <button class="btn btn-round btn-warning form-control">
+                  <button class="btn btn-round btn-warning form-control" id="cancelarVentaBtn">
                   <i class="glyphicon glyphicon-trash"> </i>Cancelar</button>
                 </div>
 
@@ -180,8 +183,10 @@
                   <%@formas_pago.each do |forma|%>
                     <%nombre_forma = forma.nombre.to_s%>
                     <%nForma = nombre_forma.sub(' ', '-')%>
-                    <li onclick="setFormaPago('<%=nForma%>')"><a href='#<%= "div-pago-" << nForma %>' data-toggle="tab" ><%= forma.nombre.capitalize %></a>
-                    </li>
+                    <%unless nombre_forma.eql?("efectivo")%>
+                      <li onclick="setFormaPago('<%=nombre_forma%>')"><a href='#<%= "div-pago-" << nForma %>' data-toggle="tab" ><%= forma.nombre.capitalize %></a>
+                      </li>
+                    <%end%>
                   <%end%>
                 </ul>
               </div>
@@ -197,20 +202,22 @@
                 <%@formas_pago.each do |forma|%>
                   <%nombre_forma = forma.nombre.to_s%>
                   <%nombre_forma.sub!(' ', '-')%>
-                  <div id='<%= "div-pago-" << nombre_forma %>' class="tab-pane">
-                    <%forma.campo_forma_pagos.each do |campo|%>
-                      <%nombre_campo = campo.nombrecampo.to_s%>
-                      <%nCampo = nombre_campo.sub(' ', '-')%>
-                      <div class="form-group">
-                        <label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label>
-                        <% if nCampo.include?"plazo" %>
-                            <%= select_tag "campo-plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
-                        <%else%>
-                          <input type="text" class="form-control" id="<%= "campo-" << nCampo %>">
-                        <%end%>
-                      </div>
-                    <%end%>
-                  </div>
+                  <%unless nombre_forma.eql?("efectivo")%>
+                    <div id='<%= "div-pago-" << nombre_forma %>' class="tab-pane">
+                      <%forma.campo_forma_pagos.each do |campo|%>
+                        <%nombre_campo = campo.nombrecampo.to_s%>
+                        <%nCampo = nombre_campo.sub(' ', '-')%>
+                        <div class="form-group">
+                          <label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label>
+                          <% if nCampo.include?"plazo" %>
+                              <%= select_tag "campo-plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                          <%else%>
+                            <input type="text" class="form-control" id="<%= "campo-" << nCampo %>">
+                          <%end%>
+                        </div>
+                      <%end%>
+                    </div>
+                  <%end%>
                 <%end%>
                 
                 </div>
@@ -264,6 +271,7 @@
   </div>
 </div>
 <%= javascript_include_tag "autocomplete.jquery" %>
+<%= javascript_include_tag "jQuery.print/jQuery.print" %>
 <%= javascript_include_tag "punto-venta" %>
 <%= stylesheet_link_tag "autocomplete" %>
 <%= stylesheet_link_tag "punto_venta" %>
