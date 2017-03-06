@@ -305,6 +305,7 @@ $(document).ready(function(){
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
     $("#direccion_sucursal_ticket").append("Direccion: " + $("#direccion_sucursal").val());
     $("#fecha_ticket").append("Fecha: " + $("#fecha").val());
+    $("#datos_cliente_ticket").html("Cliente: <strong>"++"</strong>")
     $("#tabla_productos_ticket").html(""+
       
         "<thead>"+
@@ -356,6 +357,7 @@ $(document).ready(function(){
 
 
     $("#print-div").print({
+      
             globalStyles: true,
             mediaPrint: false,
             stylesheet: null,
