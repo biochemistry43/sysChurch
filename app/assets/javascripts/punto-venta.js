@@ -301,12 +301,66 @@ $(document).ready(function(){
   });//Fin de la acción de cobrar venta.
 
   $("#cancelarVentaBtn").on("click", function(evt){
+    $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
+    $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
+    $("#direccion_sucursal_ticket").append("Direccion: " + $("#direccion_sucursal").val());
+    $("#fecha_ticket").append("Fecha: " + $("#fecha").val());
+    $("#tabla_productos_ticket").html(""+
+      
+        "<thead>"+
+          "<tr class='headings'>"+
+            "<th class'column-title'>Cant</th>"+
+            "<th class'column-title'>Art</th>"+
+            "<th class'column-title'>Pre Unit</th>"+
+            "<th class'column-title'>Importe</th>"+
+          "</tr>"+ 
+        "</thead>"
+    );
+
+    $('#table_sales tr').each(function (i, el) {
+      //Se discrimina la primer fila (que corresponde al encabezado)
+      
+      if(i!=0){
+      //El código del producto se encuentra en la primer columna de 
+      //de la tabla de venta actual.
+        var nombreProd = $(this).find("td").eq(1).text();
+        //La cantidad vendida del producto se encuentra en la tercera
+        //columna de la tabla de venta actual.
+        var precio = $(this).find("td").eq(2).text();
+        //El importe total del producto vendido se encuentra en la
+        //quinta columna de la tabla de venta actual.
+        var cantidad = $(this).find("td").eq(3).text();
+        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
+        //vendido
+        var importe = $(this).find("td").eq(4).text();
+        itemVenta = {};
+        
+        $("#tabla_productos_ticket").append(""+
+       
+          "<tr class='even pointer'>"+
+            "<td>"+cantidad+"</td>"+
+            "<td>"+nombreProd+"</td>"+
+            "<td>"+precio+"</td>"+
+            "<td>"+importe+"</td>"+
+          "</tr>"
+    
+        );
+
+      }
+
+    }); //Termina recorrido de la tabla de venta actual
+    $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
+
+    $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
+
+
+
     $("#print-div").print({
             globalStyles: true,
             mediaPrint: false,
             stylesheet: null,
             noPrintSelector: ".no-print",
-            iframe: false,
+            iframe: true,
             append: null,
             prepend: null,
             manuallyCopyFormValues: true,
@@ -423,7 +477,10 @@ function addProductToSale(elem){
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
                                     "<td>"+element.precioVenta+"</td></tr>");
+
         }
+
+
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
         document.getElementById("search-product").parentNode.removeChild(nodoResultado);
               

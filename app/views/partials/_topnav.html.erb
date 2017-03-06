@@ -14,8 +14,10 @@
             <span class=" fa fa-angle-down"></span>
           </a>
           <ul class="dropdown-menu dropdown-usermenu pull-right">
-            <li><%= link_to 'Perfil', edit_perfil_path(current_user.perfil) %>
-            </li>
+            <%if current_user.perfil%>
+              <li><%= link_to 'Perfil', edit_perfil_path(current_user.perfil) %>
+              </li>
+            <%end%>
             <li>
               <%= link_to 'Login', new_user_session_path %>
             </li>
