@@ -11,9 +11,9 @@
 // about supported directives.
 //
 //= require jquery
-//= require jquery.print/jquery.print.js
 //= require bootstrap-sprockets
 //= require jquery_ujs
+//= require jQuery.print
 //= require dataTables/jquery.dataTables
 //= require dataTables/extras/dataTables.responsive
 //= require dataTables/jquery.dataTables
