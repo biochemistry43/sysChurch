@@ -267,20 +267,20 @@
     <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.direccion%>">
     <input type="hidden" id="fecha" value="<%= Time.now %>">
 
-    <div id="print-div" >
+    <div id="print-div" style="display:none;" >
       <div class="col-md-3">
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-12" style="text-align: center;">
             <h4 id="nombre_negocio_ticket"></h4>
             <h5 id="nombre_sucursal_ticket"></h5>
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="text-align: center;">
           <div id="direccion_sucursal_ticket" class="class-md-12">
             
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="text-align: center;">
           <div class="col-md-12" id="fecha_ticket">
 
           </div>
@@ -294,7 +294,7 @@
           <div id="productos_ticket" class="col-md-12">
             
           </div>
-          <table id="tabla_productos_ticket" class="table">
+          <table id="tabla_productos_ticket" class="table table-striped jambo_table">
             
             <tbody>
 

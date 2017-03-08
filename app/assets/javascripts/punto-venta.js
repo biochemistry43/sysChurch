@@ -300,18 +300,22 @@ $(document).ready(function(){
 
   });//Fin de la acción de cobrar venta.
 
+  var f = new Date();
+
   $("#cancelarVentaBtn").on("click", function(evt){
     $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
     $("#direccion_sucursal_ticket").append("Direccion: " + $("#direccion_sucursal").val());
-    $("#fecha_ticket").append("Fecha: " + $("#fecha").val());
+    $("#fecha_ticket").append("Fecha: " + f.getDate()+"/"+
+                              (f.getMonth()+1)+"/"+f.getFullYear());
 
-    $("#datos_cliente_ticket").html("<strong>Cliente: </strong>"+
-                                    "<h5>"+$("#nom_cliente_venta").text()+"</h5>"+
+    $("#datos_cliente_ticket").html("<strong>Datos del cliente: </strong>"+
                                     "<ul class='list-unstyled'>"+
-                                      "<li>Email:"+$("#email_cliente").text()+"</li>"+
-                                      "<li> Teléfono: "+$("#telefono_cliente").text()+"</li>"+
+                                      "<li>"+$("#nom_cliente_venta").text()+"</li>"+
+                                      "<li>"+$("#email_cliente").text()+"</li>"+
+                                      "<li>"+$("#telefono_cliente").text()+"</li>"+
                                     "</ul>");
+
     $("#tabla_productos_ticket").html(""+
       
         "<thead>"+
@@ -322,6 +326,7 @@ $(document).ready(function(){
             "<th class'column-title'>Importe</th>"+
           "</tr>"+ 
         "</thead>"
+
     );
 
     $('#table_sales tr').each(function (i, el) {
