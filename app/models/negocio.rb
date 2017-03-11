@@ -2,6 +2,7 @@ class Negocio < ActiveRecord::Base
 	mount_uploader :logo, FotoProductoUploader
 	has_many :users
 	has_many :sucursals
+	has_many :articulos
 	has_many :clientes
 	has_many :bancos
 	has_many :cat_articulos

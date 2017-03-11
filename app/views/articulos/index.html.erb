@@ -7,40 +7,73 @@
   <div class="clearfix"></div>
   
   <div class="col-md-12 col-sm-12 col-xs-12 ">
-    <div>
-
-      <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_productos">
-        <thead>
-          <tr>
-            <th class="column-title">Clave</th>
-            <th class="column-title">Nombre</th>
-            <th class="column-title">Stock</th>
-            <th class="column-title">Existencia</th>
-            <th class="column-title">Categoria</th>
-            <th colspan="3" class="column-title"></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% @articulos.each do |articulo| %>
-            <tr>
-              <!--<td>--><%#image_tag(articulo.fotoProducto_url, :width => 65, :height => 75) if articulo.fotoProducto.present? %><!--</td>-->
-              <td><%= articulo.clave %></td>
-              <td><%= articulo.nombre %></td>
-              <td><%= articulo.stock %></td>
-              <td><%= articulo.existencia %></td>
-              <td><%= articulo.cat_articulo.nombreCatArticulo %></td>
-              <td><%= link_to 'Mostrar', articulo, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-              <td><%= link_to 'Editar', edit_articulo_path(articulo), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
-              <td><%= link_to 'Eliminar', articulo, method: :delete, data: { confirm: '¿Seguro que desea borrar este artículo permanentemente?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-
-      <br>
-
-      <%= link_to 'Nuevo Artículo', new_articulo_path, class: "btn btn-default" %>
+    <div class="row">
+      <div class="div-add-button">
+        <%= link_to new_articulo_path, {class: "btn btn-info btn-lg btn-add"} do %>  
+          <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+          Añadir Artículo
+        <%end%>
+      </div>
     </div>
+
+    <hr style="border-style: solid; border-width: 2px;">
+
+    <div class="row">
+      <div>
+
+        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_productos">
+          <thead>
+            <tr>
+              <th class="column-title">Clave</th>
+              <th class="column-title">Nombre</th>
+              <th class="column-title">Stock</th>
+              <th class="column-title">Existencia</th>
+              <th class="column-title">Categoria</th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @articulos.each do |articulo| %>
+              <tr>
+                <!--<td>--><%#image_tag(articulo.fotoProducto_url, :width => 65, :height => 75) if articulo.fotoProducto.present? %><!--</td>-->
+                <td><%= articulo.clave %></td>
+                <td><%= articulo.nombre %></td>
+                <td><%= articulo.stock %></td>
+                <td><%= articulo.existencia %></td>
+                <td><%= articulo.cat_articulo.nombreCatArticulo %></td>
+                <td><%= link_to 'Mostrar', articulo, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
+                <td><%= link_to 'Editar', edit_articulo_path(articulo), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
+                <td><%= link_to 'Eliminar', articulo, method: :delete, data: { confirm: '¿Seguro que desea borrar este artículo permanentemente?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
   </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+    });
+  </script>
 </div>

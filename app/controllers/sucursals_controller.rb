@@ -24,11 +24,10 @@ class SucursalsController < ApplicationController
   # POST /sucursals
   # POST /sucursals.json
   def create
-    @sucursal = Sucursal.new(sucursal_params) 
-    negocio = Negocio.find(current_user.negocio_id) 
+    @sucursal = Sucursal.new(sucursal_params)  
     respond_to do |format|
       if @sucursal.save
-        negocio.sucursals << @sucursal
+        current_user.negocio.sucursals << @sucursal
         format.html { redirect_to @sucursal, notice: 'Sucursal was successfully created.' }
         format.json { render :show, status: :created, location: @sucursal }
       else

@@ -28,6 +28,7 @@ class CategoriaGastosController < ApplicationController
 
     respond_to do |format|
       if @categoria_gasto.save
+        current_user.negocio.categoria_gastos << @categoria_gasto
         format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully created.' }
         format.json { render :show, status: :created, location: @categoria_gasto }
       else

@@ -28,7 +28,8 @@ class CatArticulosController < ApplicationController
 
     respond_to do |format|
       if @cat_articulo.save
-        format.html { redirect_to @cat_articulo, notice: 'Cat articulo was successfully created.' }
+        current_user.negocio.cat_articulos << @cat_articulo
+        format.html { redirect_to @cat_articulo, notice: 'La categoria fue creada satisfactoriamente' }
         format.json { render :show, status: :created, location: @cat_articulo }
       else
         format.html { render :new }
@@ -42,7 +43,7 @@ class CatArticulosController < ApplicationController
   def update
     respond_to do |format|
       if @cat_articulo.update(cat_articulo_params)
-        format.html { redirect_to @cat_articulo, notice: 'Cat articulo was successfully updated.' }
+        format.html { redirect_to @cat_articulo, notice: 'La categoria fue actualizada satisfactoriamente' }
         format.json { render :show, status: :ok, location: @cat_articulo }
       else
         format.html { render :edit }
@@ -57,7 +58,7 @@ class CatArticulosController < ApplicationController
 
     @cat_articulo.destroy
     respond_to do |format|
-      format.html { redirect_to cat_articulos_url, notice: 'Cat articulo was successfully destroyed.' }
+      format.html { redirect_to cat_articulos_url, notice: 'La categoria fue eliminada' }
       format.json { head :no_content }
     end
   end
@@ -70,6 +71,6 @@ class CatArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cat_articulo_params
-      params.require(:cat_articulo).permit(:nombreCatArticulo, :descripcionCatArticulo, :idCategoriaPadre)
+      params.require(:cat_articulo).permit(:nombreCatArticulo, :descripcionCatArticulo)
     end
 end

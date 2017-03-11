@@ -7,42 +7,74 @@
   <div class="clearfix"></div>
   
   <div class="col-md-12 col-sm-12 col-xs-12">
-    <div>
-      <p id="notice"><%= notice %></p>
-
-      <table class="table table-striped responsive-utilities jambo_table data-table">
-        <thead>
-          <tr>
-            <th class="column-title">Tipo de cuenta</th>
-            <th class="column-title">Nombre de cuenta</th>
-            <th class="column-title">Número de cuenta</th>
-            <th class="column-title">Saldo Inicial</th>
-            <th class="column-title">Fecha</th>
-            <th class="column-title">Descripcion</th>
-            <th colspan="3"></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% @bancos.each do |banco| %>
-            <tr>
-              <td><%= banco.tipoCuenta %></td>
-              <td><%= banco.nombreCuenta %></td>
-              <td><%= banco.numeroCuenta %></td>
-              <td><%= banco.saldoInicial %></td>
-              <td><%= banco.fecha %></td>
-              <td><%= banco.descripcion %></td>
-              <td><%= link_to 'Mostrar', banco, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-              <td><%= link_to 'Editar', edit_banco_path(banco), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
-              <td><%= link_to 'Borrar', banco, method: :delete, data: { confirm: '¿Está seguro de borrar este banco?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-
-      <br>
-
-      <%= link_to 'Nuevo Banco', new_banco_path, class: "btn btn-default" %>
+    <div class="row">
+      <div class="div-add-button">
+        <%= link_to new_banco_path, {class: "btn btn-info btn-lg btn-add"} do %>  
+          <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+          Añadir Banco
+        <%end%>
+      </div>
     </div>
+
+    <hr style="border-style: solid; border-width: 2px;">
+
+    <div class="row">
+      <div>
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title">Tipo de cuenta</th>
+              <th class="column-title">Nombre de cuenta</th>
+              <th class="column-title">Número de cuenta</th>
+              <th class="column-title">Saldo Inicial</th>
+              <th class="column-title">Fecha</th>
+              <th class="column-title">Descripcion</th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @bancos.each do |banco| %>
+              <tr>
+                <td><%= banco.tipoCuenta %></td>
+                <td><%= banco.nombreCuenta %></td>
+                <td><%= banco.numeroCuenta %></td>
+                <td><%= banco.saldoInicial %></td>
+                <td><%= banco.fecha %></td>
+                <td><%= banco.descripcion %></td>
+                <td><%= link_to 'Mostrar', banco, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
+                <td><%= link_to 'Editar', edit_banco_path(banco), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
+                <td><%= link_to 'Borrar', banco, method: :delete, data: { confirm: '¿Está seguro de borrar este banco?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    
   </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+    });
+  </script>  
 </div>

@@ -8,7 +8,8 @@ class ArticulosController < ApplicationController
   # GET /articulos.json
   def index
     if current_user.perfil
-      @articulos = Articulo.all
+      @articulos = current_user.sucursal.articulos
+      
     else
       redirect_to new_perfil_path
     end
@@ -22,19 +23,19 @@ class ArticulosController < ApplicationController
   #obtiene un articulo en base a su Id
   def getById
     @criteria = params[:criteria]
-    articulo = Articulo.where('clave = ?', @criteria)
+    articulo = Articulo.where('clave = ? AND sucursal_id = ?', @criteria, current_user.sucursal.id)
     render :json => articulo
   end
     
   def showByCriteria
     @criteria = params[:criteria]
-    articulos = Articulo.where('nombre LIKE ? OR clave LIKE ?', @criteria + '%', @criteria  + '%')
+    articulos = Articulo.where('nombre LIKE ? OR clave LIKE ? AND sucursal_id = ?', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
     render :json => articulos
   end
 
   # GET /articulos/new
   def new
-    @categories = CatArticulo.all
+    @categories = current_user.negocio.cat_articulos
     @articulo = Articulo.new
   end
 
@@ -51,7 +52,9 @@ class ArticulosController < ApplicationController
     
     respond_to do |format|
       if @articulo.save
-        format.html { redirect_to @articulo, notice: 'Articulo was successfully created.' }
+        current_user.negocio.articulos << @articulo
+        current_user.sucursal.articulos << @articulo
+        format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
         format.json { render :show, status: :created, location: @articulo }
       else
         format.html { render :new }
@@ -66,7 +69,7 @@ class ArticulosController < ApplicationController
     @categories = CatArticulo.all
     respond_to do |format|
       if @articulo.update(articulo_params)
-        format.html { redirect_to @articulo, notice: 'Articulo was successfully updated.' }
+        format.html { redirect_to @articulo, notice: 'El producto fue actualizado' }
         format.json { render :show, status: :ok, location: @articulo }
       else
         format.html { render :edit }
@@ -80,7 +83,7 @@ class ArticulosController < ApplicationController
   def destroy
     @articulo.destroy
     respond_to do |format|
-      format.html { redirect_to articulos_url, notice: 'Articulo was successfully destroyed.' }
+      format.html { redirect_to articulos_url, notice: 'El producto fue eliminado definitivamente' }
       format.json { head :no_content }
     end
   end

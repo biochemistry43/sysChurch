@@ -2,7 +2,7 @@ class ClientesController < ApplicationController
   before_action :set_cliente, only: [:show, :edit, :update, :destroy]
 
   def index
-    @clientes = Cliente.all
+    @clientes = current_user.negocio.clientes
   end
 
   def edit
@@ -16,6 +16,11 @@ class ClientesController < ApplicationController
   end
 
   def destroy
+    @cliente.destroy
+    respond_to do |format|
+      format.html { redirect_to clientes_path, notice: 'El cliente ha sido eliminado.' }
+      format.json { head :no_content }
+    end
   end
 
   def update
@@ -35,6 +40,7 @@ class ClientesController < ApplicationController
 
     respond_to do |format|
       if @cliente.save
+        current_user.negocio.clientes << @cliente
         format.html { redirect_to @cliente, notice: 'Cliente was successfully created.' }
         format.json { render :show, status: :created, location: @cliente }
       else

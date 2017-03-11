@@ -28,6 +28,7 @@ class ProveedoresController < ApplicationController
 
     respond_to do |format|
       if @proveedor.save
+        current_user.sucursal.proveedores << @proveedor
         format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
         format.json { render :show, status: :created, location: @proveedor }
       else

@@ -28,6 +28,7 @@ class BancosController < ApplicationController
 
     respond_to do |format|
       if @banco.save
+        current_user.negocio.bancos << @banco
         format.html { redirect_to @banco, notice: 'Banco was successfully created.' }
         format.json { render :show, status: :created, location: @banco }
       else

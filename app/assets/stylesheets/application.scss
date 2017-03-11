@@ -53,6 +53,21 @@ body {
   border-bottom: 1px solid #eee;
 }
 
+.data-table{
+  margin-bottom: 25px;
+  padding-top: 25px;
+  font-size: 16px;
+}
+
+.btn-add{
+  font-size: 22px;
+}
+
+.div-add-button{
+  float: right;
+  margin-bottom: 20px;
+}
+
 /*
  * Top navigation
  * Hide default border to remove 1px line.
@@ -201,21 +216,19 @@ thead > tr{
 }
 
 .circleglyphicon {
-  margin: 1px 0px 1px 1px;
-  font-size: 15px;
-    color: #1F2E54;
-    background-color: #F0C425;
-    padding: 12px;}
+  font-size: 22px;
+}
 
-.glyphicon:hover, .glyphicon:focus {
+/*.glyphicon:hover, .glyphicon:focus {
     color: #F0C425;
     background-color: #1F2E54;
-    padding: 12px;}
+    padding: 12px;
+  }
 
 .glyphicon:selected {
     color: #F0C425;
     background-color: #000;
-    padding: 12px;}
+    padding: 12px;}*/
 
 
 .glyph {
