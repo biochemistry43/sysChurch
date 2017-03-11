@@ -13,7 +13,7 @@ class PerfilsController < ApplicationController
 
   def update
     respond_to do |format|
-      if @perfil.update(:nombre, :ape_materno, :ape_paterno, :dir_calle, :dir_numero_ext, :dir_numero_int, :dir_colonia, :dir_municipio, :dir_delegacion, :dir_estado, :dir_cp, :foto)
+      if @perfil.update(perfil_params)
         format.html { redirect_to @perfil, notice: 'Perfil was successfully updated.' }
         format.json { render :edit, status: :ok, location: @perfil }
       else

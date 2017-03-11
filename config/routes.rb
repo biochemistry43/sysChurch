@@ -1,5 +1,17 @@
 Rails.application.routes.draw do
 
+  get 'datos_fiscales_negocios/index'
+
+  get 'datos_fiscales_negocios/show'
+
+  get 'datos_fiscales_negocios/new'
+
+  get 'datos_fiscales_negocios/create'
+
+  get 'datos_fiscales_negocios/update'
+
+  get 'datos_fiscales_negocios/destroy'
+
   resources :clientes  
   get 'clientes/index'
   get 'clientes/show'
@@ -10,6 +22,10 @@ Rails.application.routes.draw do
   get 'perfil/index'
 
   resources :negocios
+  resources :datos_fiscales_negocios
+
+  
+
   resources :sucursals
   resources :ventas,  :except => [:show, :destroy]
   get 'ventas/venta_del_dia'
@@ -51,7 +67,8 @@ Rails.application.routes.draw do
   post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   
-  root :to=> 'articulos#index'
+  
+  root :to=> 'plainpage#index'
   devise_scope :user do 
     #devise_for :users
     get "/login" => "devise/sessions#new"

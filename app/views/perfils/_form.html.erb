@@ -48,7 +48,11 @@
       </script>
       <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="text-center">
-          <img src="" class="img-circle img-thumbnail" alt="avatar" id="foto_perfil">
+          <%if current_user.perfil%>
+            <%= image_tag(current_user.perfil.foto_url, class: "img-circle img-thumbnail", id: "foto_perfil") if current_user.perfil.foto.present? %>
+          <%else%>
+            <img src="" class="img-circle img-thumbnail" alt="avatar" id="foto_perfil">
+          <%end%>
           <h6 id="msgFoto">Subir una foto diferente...</h6>
           <!--<input type="file" class="text-center center-block well well-sm">-->
           <%= f.file_field :foto, class: "text-center center-block well well-sm" %>
@@ -56,11 +60,13 @@
       </div>
       <!-- edit form column -->
       <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
-        <div class="alert alert-info alert-dismissable">
-          <a class="panel-close close" data-dismiss="alert">×</a> 
-          <i class="fa fa-coffee"></i>
-          Antes de continuar, ingrese sus datos de perfil.
-        </div>
+        <%unless current_user.perfil%>
+          <div class="alert alert-info alert-dismissable">
+            <a class="panel-close close" data-dismiss="alert">×</a> 
+            <i class="fa fa-coffee"></i>
+            Antes de continuar, ingrese sus datos de perfil.
+          </div>
+        <%end%>
         <h3>Información personal</h3>
         <div class="form-group">
           <%= f.label :nombre, "Primer Nombre", :class=>'col-lg-3 control-label' %>

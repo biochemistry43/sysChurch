@@ -6,15 +6,15 @@
         <div class="col-md-6">
           <div class="animated flipInY sumatoria">
             <div class="tile-stats">
-              <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
-              <div id="importe" class="count">0.0</div>
+              <div class="count" style="font-size: 100px;">
+                <%= image_tag(current_user.negocio.logo_url,:width => 250, :height => 140, class: "img") if current_user.negocio.logo.present? %>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="animated flipInY sumatoria">
             <div class="tile-stats">
-              <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
               <div id="importe" class="count">0.0</div>
             </div>
           </div>
@@ -22,63 +22,62 @@
       </div>
 
       <div class="row">
-        <div class="col-md-12">
-          <div class="panel panel-primary">
-            <div class="panel-body">
 
-                <div class="col-md-6 col-sm-6 col-xs-12 datos-vendedor">
-                  <div class="well profile_view" >
-                    <div class="col-sm-12">
-                      <h4 class="brief"><i>Datos del Vendedor:</i></h4>
-                      <div class="left col-md-12 col-xs-7">
-                        <form class="form-inline">
-                          <div class="form-group">
-                            Caja Número: 
-                            <%= select_tag "caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
-                          </div>
-                        </form>
+        <div class="col-md-12 col-sm-12 col-xs-12 datos-vendedor">
+          <div class="well profile_view" >
+            <div class="col-sm-12">
+              <h4 class="brief"><i><strong>Datos del Vendedor:</strong></i></h4>
+              <div class="left col-md-12 col-xs-7">
+                <div class="col-md-4">
+                  <form class="form">
+                    <div  class="form-group">
+                        Caja Número: 
+                        <%= select_tag "caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
+                    </div>
+                  </form>
+                </div>
+
+                <div class="col-md-6 col-md-offset-1">
+                  <ul class="list-unstyled ">
+                    <li><i class="fa fa-user"></i> Nombre: <strong><%=current_user.perfil.nombre%></strong>  </li>
+                    <li><i class="fa fa-envelope"></i> Email: <strong><%=current_user.email%></strong>  </li>
+                  </ul>
+                </div>
+                        
                        
-                        <ul class="list-unstyled">
-                          <li><i class="fa fa-user"></i> Nombre: <strong><%=current_user.perfil.nombre%></strong>  </li>
-                          <li><i class="fa fa-envelope"></i> Email: <strong><%=current_user.email%></strong>  </li>
-                        </ul>
-                      </div>
-                      <div class="right col-xs-5 text-center"></div>
-                    </div>
-                    
-
-                  </div>
-                </div>
                 
-                <div class="col-md-6 col-sm-6 col-xs-12 datos-cliente">
-                  <div class="well profile_view">
-                    <div class="col-sm-12">
-                      <h4 class="brief"><i>Datos del cliente:</i></h4>
-                      <div class="left col-md-12 col-xs-7">
-                        <input type="hidden" id="id_cliente">
-                        <h2 id="nom_cliente_venta">General</h2>
-                        <ul class="list-unstyled">
-                          <li id="email_cliente"><i class="fa fa-envelope"></i> Email: n/a</li>
-                          <li id="telefono_cliente"><i class="fa fa-phone"></i> Teléfono: n/a</li>
-                        </ul>
-                      </div>
-                      <div class="right col-xs-5 text-center"></div>
-                    </div>
-                    <div class="col-xs-12 bottom text-center">
-                      <div class="col-xs-12 col-sm-6 emphasis">
-                        <button type="button" class="btn btn-round btn-default btn-xs" id="cambiarClienteBtn">
-                          <i class="fa fa-user"> </i> Cambiar cliente
-                        </button>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
+              </div>
+              <div class="right col-xs-5 text-center"></div>
+            </div>
+                    
+          </div>
+      </div>
+                
+        <div class="col-md-12 col-sm-12 col-xs-12 datos-cliente">
+          <div class="well profile_view">
+            <div class="col-sm-12">
+              <h4 class="brief"><i><strong>Datos del cliente:</strong></i></h4>
+              <div class="left col-md-12 col-xs-7">
+                <input type="hidden" id="id_cliente">
+                <h2 id="nom_cliente_venta">General</h2>
+                <ul class="list-unstyled">
+                  <li id="email_cliente"><i class="fa fa-envelope"></i> Email: n/a</li>
+                  <li id="telefono_cliente"><i class="fa fa-phone"></i> Teléfono: n/a</li>
+                </ul>
+              </div>
+              <div class="right col-xs-5 text-center"></div>
+            </div>
+            <div class="col-xs-12 bottom text-left">
+              <div class="col-xs-12 col-sm-6 emphasis">
+                <button type="button" class="btn btn-round btn-default btn-xs" id="cambiarClienteBtn">
+                  <i class="fa fa-user"> </i> Cambiar cliente
+                </button>
+              </div>
             </div>
 
           </div>
         </div>
+
       </div>
     </div>
 
@@ -89,20 +88,21 @@
             <div class="autocomplete input-group">
               <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button"></button>
+                <button class="" type="button"></button>
               </span>
             </div>
           </div>
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" id="div-tabla-ventas">
               <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
                 <thead>
                   <tr class="headings">
                     <th class="column-title">Clave </th>
                     <th class="column-title">Nombre </th>
-                    <th class="column-title">Precio Venta </th>
+                    <th class="column-title">Precio</th>
                     <th class="column-title">Cantidad </th>
                     <th class="column-title">Importe </th>
+                    <th class="column-title"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,8 +168,7 @@
               <h2>Cantidad a pagar:</h2>
               <div class="animated flipInY sumatoria">
                 <div class="tile-stats">
-                  <div class="icon"><i class="glyphicon glyphicon-usd circleglyphicon"></i></div>
-                  <div id="importe" class="count">0.0</div>
+                  <div id="importePagar" class="count">0.0</div>
                 </div>
               </div>
               <div class="col-xs-3">
@@ -192,8 +191,14 @@
                 <div class="tab-content">
                 <div id="div-pago-efectivo" class="tab-pane active">
                   <div class="form-group">
-                    <label for="paga_con">¿Con cuánto paga el cliente?</label>
-                    <input type="text" class="form-control" id="campo-paga-con">
+                    <h2><label for="paga_con">¿Con cuánto paga el cliente?</label></h2>
+                    <input type="text" class="form-control campo-pago" id="campo-paga-con">
+                    <label for="">Usted debe dar este cambio:</label>
+                    <div style="text-align: center;">
+                       
+                      <h1 id="cambio_cliente"></h1>  
+                    </div>
+                    
                   </div>
                 </div>
                 <%@formas_pago.each do |forma|%>
@@ -205,11 +210,11 @@
                         <%nombre_campo = campo.nombrecampo.to_s%>
                         <%nCampo = nombre_campo.sub(' ', '-')%>
                         <div class="form-group">
-                          <label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label>
+                          <h2><label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label></h2>
                           <% if nCampo.include?"plazo" %>
-                              <%= select_tag "campo-plazo-credito", "<option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                              <%= select_tag "campo-plazo-credito", "<option>Ninguno</option><option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
                           <%else%>
-                            <input type="text" class="form-control" id="<%= "campo-" << nCampo %>">
+                            <input type="text" class="form-control campo-pago" id="<%= "campo-" << nCampo %>">
                           <%end%>
                         </div>
                       <%end%>
@@ -221,7 +226,13 @@
               </div>
               <div class="clearfix"></div>
               <div class="modal-footer" id="modal-footer-pago">
-                <button id="cobrarVenta" style="width: 100%;" type="button" class="btn btn-success btn-lg" data-dismiss="modal">Cobrar</button>
+                <div class="left">
+                  <div class="checkbox">
+                    
+                    <h2 style="display:inline;"><input name="isPrintTicket" id="isPrintTicket" type="checkbox" ype="checkbox" value="" checked="">¿Imprimir ticket?</h2><span class="glyphicon glyphicon-print"></span>
+                  </div>
+                </div>
+                <button id="cobrarVenta" style="width: 50%;" type="button" class="btn btn-success btn-lg" data-dismiss="modal">Cobrar</button>
               </div>
           </div>
         </div>
@@ -229,7 +240,7 @@
     </div>
     
     <div class="modal" id="modalClientes">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
@@ -266,61 +277,7 @@
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre.capitalize%>">
     <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.direccion%>">
     <input type="hidden" id="fecha" value="<%= Time.now %>">
-
-    <div id="print-div" >
-      <div class="col-md-3">
-        <div class="row">
-          <div class="col-md-12" style="text-align: center;">
-            <h4 id="nombre_negocio_ticket"></h4>
-            <h5 id="nombre_sucursal_ticket"></h5>
-          </div>
-        </div>
-        <div class="row" style="text-align: center;">
-          <div id="direccion_sucursal_ticket" class="class-md-12">
-            
-          </div>
-        </div>
-        <div class="row" style="text-align: center;">
-          <div class="col-md-12" id="fecha_ticket">
-
-          </div>
-        </div>
-        <div class="row">
-          <div id="datos_cliente_ticket" class="col-md-12">
-            
-          </div>
-        </div>
-        <div class="row">
-          <div id="productos_ticket" class="col-md-12">
-            
-          </div>
-          <table id="tabla_productos_ticket" class="table table-striped jambo_table">
-            
-            <tbody>
-
-                        
-            </tbody>
-          </table>
-        </div>
-       
-        <div class="row">
-          <div class="col-md-12">
-            <p id="importe_total_ticket"></p>
-          </div>
-        </div>
-
-         <div class="row">
-          <div class="col-md-12">
-            <p id="forma_pago">
-              
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-
+    <div id="print-div2"></div>
     <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
       <%= hidden_field_tag(:dataVenta) %>
     <% end %>

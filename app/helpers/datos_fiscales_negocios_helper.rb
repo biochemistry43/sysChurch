@@ -1,0 +1,2 @@
+module DatosFiscalesNegociosHelper
+end

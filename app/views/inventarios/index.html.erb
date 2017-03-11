@@ -17,9 +17,9 @@
   </div>
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
-	    <div class="x_panel" style="height: 600px;">
+	    <div>
 	       <div class="row">
-	          <div class="col-md-6 col-sm-6 col-xs-6">
+	          <div class="col-md-12 col-sm-12 col-xs-12">
 	          	<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
 				   <%= label_tag :clave %><br>
 				   <%= text_field_tag :clave, nil, class: "form-control has-feedback-left", :readonly => true %>
@@ -47,11 +47,10 @@
 				<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
 				  <button class="btn btn-primary" disabled="true">Actualizar</button>
 				</div>
-				<div class="ln_solid"></div>
 	          </div>
 	       </div>
 	       <div class="row">
-	           <div class="col-md-6 col-sm-6 col-xs-6" style="overflow: scroll;"> 
+	           <div class="col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"> 
                   <table id ="table_inv" class="table table-striped responsive-utilities jambo_table">
 				      <thead>
 				        <tr class="headings">
@@ -67,13 +66,7 @@
 
 		              </tbody>
 				    </table>
-	           </div> 
-	           <div class="col-md-2 col-sm-2 col-xs-2">
-	           	
-	           </div>
-	           <div class="col-md-4 col-sm-4 col-xs-4">
-	           	
-	           </div>  	
+	           </div>   	
 	       </div>
 	    </div>
 	</div>	

@@ -30,7 +30,7 @@
 @import "pace";
 
 body{
-	position: relative;
+	position: relative; 
 	/*padding-top: 60px;
 	padding-left: 10px;*/
 }
@@ -39,6 +39,8 @@ body{
 
 body {
   /*padding-top: 50px;*/
+  background: #5B7ECC;
+  font-size: 16px;
 }
 
 
@@ -83,6 +85,23 @@ body {
   }
 }
 
+.nav_title{
+  background: #5B7ECC;
+}
+
+table{
+  font-size: 14px;
+}
+
+thead > tr{
+  background: #5B7ECC;
+}
+
+.nav_menu{
+  background: black;
+  color: white;
+}
+
 /* Sidebar navigation */
 .nav-sidebar {
   margin-right: -21px; /* 20px padding + 1px border */
@@ -98,6 +117,30 @@ body {
 .nav-sidebar > .active > a:focus {
   color: #fff;
   background-color: #428bca;
+}
+
+.nav.side-menu > li.active > a {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #4c5566)), #686e78;
+  background: -webkit-linear-gradient(#000000, #262626), #262626;
+  background: linear-gradient(#000000, #262626), #262626;
+}
+
+.nav-sm .nav.side-menu li a {
+  font-size: 10px;
+}
+
+.nav.child_menu > li > a {
+  font-size: 14px;
+}
+
+.nav-sm ul.nav.child_menu{
+  background: #6A9916;
+}
+
+.div-forma-pago{
+  border-style: solid;
+  border-color: #5B7ECC;
+  background: white;
 }
 
 
@@ -184,14 +227,20 @@ body {
   border: none;
 }
 
-#total-price{
-  margin-left: 1em;
+@media (min-width: 1600px){
+  div.right_col{
+    height: 910px; 
+    min-height: 910px;
+  }
 }
 
-#importe{
-  font-size: 100px;
-  color: red;
+.jumbotron{
+  text-align: center;
+  background: #a7cf63;
+  color: #2e4309;
 }
+
+
 
 
 

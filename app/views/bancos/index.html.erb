@@ -6,12 +6,11 @@
   </div>
   <div class="clearfix"></div>
   
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div>
       <p id="notice"><%= notice %></p>
 
-      <h1>Bancos</h1>
-      <table class="table table-striped responsive-utilities jambo_table">
+      <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
             <th class="column-title">Tipo de cuenta</th>
@@ -33,9 +32,9 @@
               <td><%= banco.saldoInicial %></td>
               <td><%= banco.fecha %></td>
               <td><%= banco.descripcion %></td>
-              <td><%= link_to 'Show', banco %></td>
-              <td><%= link_to 'Edit', edit_banco_path(banco) %></td>
-              <td><%= link_to 'Destroy', banco, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+              <td><%= link_to 'Mostrar', banco, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
+              <td><%= link_to 'Editar', edit_banco_path(banco), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
+              <td><%= link_to 'Borrar', banco, method: :delete, data: { confirm: '¿Está seguro de borrar este banco?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
             </tr>
           <% end %>
         </tbody>
@@ -43,7 +42,7 @@
 
       <br>
 
-      <%= link_to 'New Banco', new_banco_path %>
+      <%= link_to 'Nuevo Banco', new_banco_path, class: "btn btn-default" %>
     </div>
   </div>
 </div>

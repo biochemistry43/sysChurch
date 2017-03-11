@@ -27,9 +27,10 @@
                 // partiendo del link busco el input y le asigno el valor del link
                 $(that).parent().parent().find('input').val("");
                 addProductToSale($(that).attr("id"));
+                 $(that).parent().parent().find('input').focus();
                 // remuevo el cuadro de autocompletar, se supone si ya seleccionaste
                 // un valor no se necesita mas
-                $(that).parent().remove();
+                //$(that).parent().remove();
                                     
             }
             // busco el input y le asigno un evento al presionar una tecla

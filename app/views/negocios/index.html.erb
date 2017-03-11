@@ -1,4 +1,3 @@
-<p id="notice"><%= notice %></p>
 
 <h1>Listing Negocios</h1>
 
@@ -21,7 +20,6 @@
         <td><%= negocio.nombre %></td>
         <td><%= negocio.representante %></td>
         <td><%= negocio.direccion %></td>
-        <td><%= negocio.user_id %></td>
         <td><%= link_to 'Show', negocio %></td>
         <td><%= link_to 'Edit', edit_negocio_path(negocio) %></td>
         <td><%= link_to 'Destroy', negocio, method: :delete, data: { confirm: 'Are you sure?' } %></td>

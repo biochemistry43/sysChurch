@@ -4,6 +4,7 @@ class PuntoVentaController < ApplicationController
 
 	def index
       @formas_pago = FormaPago.all
+      @pos = true
 	end
 
 	def obtenerCamposFormaPago

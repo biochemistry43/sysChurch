@@ -4,6 +4,7 @@ var plazoCredito;
 var referenciaOxxo;
 var referenciaPaypal;
 
+
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
 
@@ -16,8 +17,13 @@ var itemsVenta = [];
 //Esta variable cambia dependiendo de la forma de pago elegida por el usuario
 var formaPago = "efectivo";
 
+var fecha = new Date();
+
+
 //jquery
 $(document).ready(function(){
+
+  $(".autocomplete").autocomplete();
 
   /**
    * Aquí se añadirán todas las funcionalidades mediante los botones de teclado
@@ -35,6 +41,7 @@ $(document).ready(function(){
         }
         else{
           $('#modalPago').modal('show');
+          $("#importePagar").text($("#importe").text());
           $('#campo-paga-con').select();
         }
         event.stopPropagation();
@@ -43,10 +50,29 @@ $(document).ready(function(){
 
   });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
+  $('#campo-paga-con').bind('keyup', function(event) {
+    
+    if(($("#importe").text().length >= 1) && ($("#campo-paga-con").val().length >= 1))  {
+      
+      value = parseFloat($("#importe").text());
+      pagoCli = parseFloat($("#campo-paga-con").val());
+
+      
+      var cambio = pagoCli - value;
+
+      if (cambio > 0){
+        $("#cambio_cliente").text(cambio);  
+      }
+      
+    }
+    
+
+  });//Terminan los eventos de teclado dentro de el módulo punto de venta.
+
 
   /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
   autocomplete. Ver /assets/javascripts/autocomplete.jquery.js */
-  $('.autocomplete').autocomplete();
+  //$('.autocomplete').autocomplete();
 
   //Se aseguro que el campo de búsqueda esté vacío cada vez que se inicia el punto de venta.
   $("#search-product" ).val("");
@@ -112,9 +138,9 @@ $(document).ready(function(){
             "<tr class='even pointer'><td>"+element.nombre+"</td>"+
             "<td>"+element.telefono1+"</td>"+
             "<td>"+element.email+"</td>"+
-            "<td><button class='btn btn-primary btn-xs' "+
+            "<td><button class='btn btn-success btn-xs' "+
                     "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombre+"\", \""+element.telefono1+"\", \""+element.email+"\")' >"+
-                      "<i class='fa fa-folder'></i> Seleccionar </button></td></tr>");
+                      "<i class='fa fa-check-square'></i> Seleccionar </button></td></tr>");
 
       }
 
@@ -124,8 +150,23 @@ $(document).ready(function(){
        * La funcionalidad de ser responsiva fue añadida a la tabla.
        */
       $('#lista_clientes').DataTable({
-        responsive: true
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
       });
+
+
          
     }//Termina success de la petición ajax
 
@@ -167,35 +208,7 @@ $(document).ready(function(){
   }//Termina el método cambiarCantidadProducto
 
 
-  /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
-   * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
-   * agrega un producto o se cambia una cantidad de venta de producto). */
-  $("#table_sales").bind("DOMSubtreeModified", function() {
-
-    var sumatoria = 0;
-
-    //recorre cada fila de la tabla de venta actual
-    $('#table_sales tr').each(function (i, el) {
-
-      //Se discrimina la primer fila (que corresponde al encabezado)
-      if(i!=0){
-        //el td 4 equivale al campo con la cantidad.
-        var val = $(this).find("td").eq(4).html();
-        
-        //Convierto el valor del importe en un valor float
-        var importe = parseFloat(val);
-
-        //añado el importe a la sumatoria total de la venta
-        sumatoria += importe;
-      }
-    });
-    
-    //una vez obtenido el valor de la venta, se limita a dos decimales.
-    sumatoria.toFixed(2);
-    
-    //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
-    $("#importe").text(sumatoria);
-  });
+  
 
 
   //Acción para abrir el modal de cobro de la venta.
@@ -206,6 +219,7 @@ $(document).ready(function(){
     else{
       $('#modalPago').modal('show');
       $('#campo-paga-con').select();
+      $("#importePagar").text($("#importe").text());
     }
   });
 
@@ -300,14 +314,248 @@ $(document).ready(function(){
 
   });//Fin de la acción de cobrar venta.
 
-  var f = new Date();
 
   $("#cancelarVentaBtn").on("click", function(evt){
+
+    confirmacion = confirm("¿Está seguro de cancelar esta venta?");
+    if (confirmacion){
+      $("#table_sales tbody").empty();
+      $("#importe").text("0.0")
+      $("#search-product").focus();
+    }
+    else{
+      return;
+    }
+    
+
+  });
+
+  $("#search-product").select();
+  
+});//Fin de JQuery
+
+window.onload = function() {
+
+  if ($BODY.hasClass('nav-md')) {
+    $BODY.removeClass('nav-md').addClass('nav-sm');
+    $LEFT_COL.removeClass('scroll-view').removeAttr('style');
+
+    if ($SIDEBAR_MENU.find('li').hasClass('active')) {
+      $SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
+    }
+  } else {
+    $BODY.removeClass('nav-sm').addClass('nav-md');
+
+    if ($SIDEBAR_MENU.find('li').hasClass('active-sm')) {
+      $SIDEBAR_MENU.find('li.active-sm').addClass('active').removeClass('active-sm');
+    }
+  }
+};
+
+/**
+ * 
+ */
+function completarVenta(){
+  datosFormaPago.push(formaPagoJSON);
+
+  //Se guardan los datos de forma de pago en el arreglo de datos de la venta
+  datosVenta.push(datosFormaPago);
+            
+  /**
+   * Ahora se recorren cada uno de los items de la venta y llena el arreglo
+   * con los datos respectivos.
+   */
+  $('#table_sales tr').each(function (i, el) {
+    //Se discrimina la primer fila (que corresponde al encabezado)
+    if(i!=0){
+    //El código del producto se encuentra en la primer columna de 
+    //de la tabla de venta actual.
+      var codigoProd = $(this).find("td").eq(0).text();
+      //La cantidad vendida del producto se encuentra en la tercera
+      //columna de la tabla de venta actual.
+      var cantidadProd = $(this).find("td").eq(3).text();
+      //El importe total del producto vendido se encuentra en la
+      //quinta columna de la tabla de venta actual.
+      var importeProd = $(this).find("td").eq(4).text();
+      //itemVenta es el objeto JSON que guarda toda la fila de un articulo
+      //vendido
+      itemVenta = {};
+      //Se crean los campos correspondientes y se guardan los datos obtenidos
+      //del producto
+      itemVenta["codigo"]=codigoProd;
+      itemVenta["cantidad"]=cantidadProd;
+      itemVenta["importe"]=importeProd;
+      //itemsVenta guarda la totalidad de los items de la venta.
+      //itemVenta es el item en particular.
+      itemsVenta.push(itemVenta);
+      
+    }
+  }); //Termina recorrido de la tabla de venta actual
+  //Ahora se guardan los items de la venta en el objeto datosVenta
+  datosVenta.push(itemsVenta);
+  
+  //dataVenta es un campo oculto dentro del form ventaForm
+  //este forma es el encargado de mandar toda la información relativa a la venta
+  //en un objeto JSON.
+  $("#dataVenta").val(JSON.stringify(datosVenta));
+  
+  
+
+  if($("#isPrintTicket").attr("checked")){
+    imprimirTicket();
+  }
+  else{
+    var form = $("#ventaForm");
+    form.submit(); //Se submite el form con los datos de la venta.
+  }
+
+  
+
+  
+     
+  //Se vacían los arreglos previamente creados para evitar posibles datos 
+  //incorrectos.
+  itemsVenta = [];
+  datosVenta = [];
+  datosFormaPago = [];
+  datosCliente = {};
+
+}//Termina función completar venta
+
+/**
+ * Función que crea e imprime un ticket de compra
+ */
+function imprimirTicket(){
+var div_print = document.createElement("div");
+    div_print.setAttribute("id", "print-div")
+    var div_print_1 = document.createElement("div");
+    div_print_1.className = "col-md-3";
+
+    //Primer fila del ticket
+    var div_print_1_1 = document.createElement("div");
+    div_print_1_1.className = "row";
+
+    var div_print_1_1_1 = document.createElement("div");
+    div_print_1_1_1.className = "col-md-12";
+    div_print_1_1_1.setAttribute("style", "text-align:center;");
+
+    var nomNegocio = document.createElement("h4");
+    nomNegocio.setAttribute("id", "nombre_negocio_ticket");
+    var nomSucursal = document.createElement("h5");
+    nomSucursal.setAttribute("id", "nombre_sucursal_ticket");
+    //Termina primer fila del ticket
+
+    //Segunda fila del ticket
+    var div_print_1_2 = document.createElement("div");
+    div_print_1_2.className = "row";
+    div_print_1_2.setAttribute("style", "text-align:center;");
+    var div_print_1_2_1 = document.createElement("div");
+    div_print_1_2_1.className = "col-md-12";
+    div_print_1_2_1.setAttribute("id", "direccion_sucursal_ticket");
+    //Termina segunda fila del ticket
+
+    //Tercera fila del ticket
+    var div_print_1_3 = document.createElement("div");
+    div_print_1_3.className = "row";
+    div_print_1_3.setAttribute("style", "text-align:center;");
+    var div_print_1_3_1 = document.createElement("div");
+    div_print_1_3_1.className = "col-md-12";
+    div_print_1_3_1.setAttribute("id", "fecha_ticket");
+    //Termina tercer fila del ticket
+
+    //Cuarta fila del ticket
+    var div_print_1_4 = document.createElement("div");
+    div_print_1_4.className = "row";
+    var div_print_1_4_1 = document.createElement("div");
+    div_print_1_4_1.className = "col-md-12";
+    div_print_1_4_1.setAttribute("id", "datos_cliente_ticket");
+    //Termina la cuarta fila del ticket
+
+    //Quinta fila del ticket
+    var div_print_1_5 = document.createElement("div");
+    div_print_1_5.className = "row";
+    var div_print_1_5_1 = document.createElement("div");
+    div_print_1_5_1.className = "col-md-12";
+    div_print_1_5_1.setAttribute("id", "productos_ticket");
+    var tablaProductos = document.createElement("table");
+    tablaProductos.setAttribute("id", "tabla_productos_ticket");
+    tablaProductos.setAttribute("class", "table");
+    tablaProductos.setAttribute("class", "table-stripped");
+    tablaProductos.setAttribute("class", "jambo-table");
+    tBodyProductos = document.createElement("tbody");
+    //Termina quinta fila
+    
+    //Sexta fila del ticket
+    var div_print_1_6 = document.createElement("div");
+    div_print_1_6.className = "row";
+    var div_print_1_6_1 = document.createElement("div");
+    div_print_1_6_1.className = "col-md-12";
+    var importeTotal = document.createElement("p");
+    importeTotal.setAttribute("id", "importe_total_ticket");
+    //Termina sexta fila del ticket
+
+    //Septima fila del ticket
+    var div_print_1_7 = document.createElement("div");
+    div_print_1_7.className = "row";
+    var div_print_1_7_1 = document.createElement("div");
+    div_print_1_7_1.className = "col-md-12";
+    var forma_Pago = document.createElement("p");
+    forma_Pago.setAttribute("id", "forma_pago");
+    //Termina septima fila del ticket
+
+    //Construccion del arbol dom del ticket
+    div_print.appendChild(div_print_1);
+    div_print_1.appendChild(div_print_1_1);
+    div_print_1.appendChild(div_print_1_2);
+    div_print_1.appendChild(div_print_1_3);
+    div_print_1.appendChild(div_print_1_4);
+    div_print_1.appendChild(div_print_1_5);
+    div_print_1.appendChild(div_print_1_6);
+    div_print_1.appendChild(div_print_1_7);
+    
+    //Construccion de la primer fila
+    div_print_1_1.appendChild(div_print_1_1_1);
+    div_print_1_1_1.appendChild(nomNegocio);
+    div_print_1_1_1.appendChild(nomSucursal);
+    //Termina construcción de la primer fila
+
+    //Construcción de la segunda fila
+    div_print_1_2.appendChild(div_print_1_2_1);
+    //Termina construcción de la segunda fila
+
+    //Construcción de la tercer fila
+    div_print_1_3.appendChild(div_print_1_3_1);
+    //Termina construcción de la tercer fila
+
+    //Construcción de la cuarta fila
+    div_print_1_4.appendChild(div_print_1_4_1);
+    //Termina construcción de la cuarta fila
+
+    //Construcción de la quinta fila
+    div_print_1_5.appendChild(div_print_1_5_1);
+    div_print_1_5_1.appendChild(tablaProductos);
+    tablaProductos.appendChild(tBodyProductos);
+    //Termina construcción de la quinta fila
+
+    //Construcción de la sexta fila
+    div_print_1_6.appendChild(div_print_1_6_1);
+    div_print_1_6_1.appendChild(importeTotal);
+    //Termina construcción de la sexta fila
+
+    //Construcción de la septima fila
+    div_print_1_7.appendChild(div_print_1_7_1);
+    div_print_1_7_1.appendChild(forma_Pago);
+    //Termina construcción de la septima fila
+
+    document.getElementById('print-div2').appendChild(div_print);
+
+
+
     $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
     $("#direccion_sucursal_ticket").append("Direccion: " + $("#direccion_sucursal").val());
-    $("#fecha_ticket").append("Fecha: " + f.getDate()+"/"+
-                              (f.getMonth()+1)+"/"+f.getFullYear());
+    $("#fecha_ticket").append("Fecha: " + fecha.getDate()+"/"+
+                              (fecha.getMonth()+1)+"/"+fecha.getFullYear());
 
     $("#datos_cliente_ticket").html("<strong>Datos del cliente: </strong>"+
                                     "<ul class='list-unstyled'>"+
@@ -364,87 +612,29 @@ $(document).ready(function(){
     $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
 
     $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
+    
 
+    $("#print-div2").print({
 
+      globalStyles: true,
+      mediaPrint: true,
+      stylesheet: null,
+      noPrintSelector: ".no-print",
+      iframe: true,
+      append: null,
+      prepend: null,
+      manuallyCopyFormValues: true,
+      deferred: $.Deferred().done(function(){
+        $("#print-div").empty();
+        var form = $("#ventaForm");
+        form.submit(); //Se submite el form con los datos de la venta.
+      }),
+      timeout: 750,
+      title: null,
+      doctype: '<!doctype html>'
 
-    $("#print-div").print({
-
-            globalStyles: true,
-            mediaPrint: false,
-            stylesheet: null,
-            noPrintSelector: ".no-print",
-            iframe: true,
-            append: null,
-            prepend: null,
-            manuallyCopyFormValues: true,
-            deferred: $.Deferred(),
-            timeout: 750,
-            title: null,
-            doctype: '<!doctype html>'
-    });
-  });
-
-});//Fin de JQuery
-
-/**
- * 
- */
-function completarVenta(){
-  datosFormaPago.push(formaPagoJSON);
-
-  //Se guardan los datos de forma de pago en el arreglo de datos de la venta
-  datosVenta.push(datosFormaPago);
-            
-  /**
-   * Ahora se recorren cada uno de los items de la venta y llena el arreglo
-   * con los datos respectivos.
-   */
-  $('#table_sales tr').each(function (i, el) {
-    //Se discrimina la primer fila (que corresponde al encabezado)
-    if(i!=0){
-    //El código del producto se encuentra en la primer columna de 
-    //de la tabla de venta actual.
-      var codigoProd = $(this).find("td").eq(0).text();
-      //La cantidad vendida del producto se encuentra en la tercera
-      //columna de la tabla de venta actual.
-      var cantidadProd = $(this).find("td").eq(3).text();
-      //El importe total del producto vendido se encuentra en la
-      //quinta columna de la tabla de venta actual.
-      var importeProd = $(this).find("td").eq(4).text();
-      //itemVenta es el objeto JSON que guarda toda la fila de un articulo
-      //vendido
-      itemVenta = {};
-      //Se crean los campos correspondientes y se guardan los datos obtenidos
-      //del producto
-      itemVenta["codigo"]=codigoProd;
-      itemVenta["cantidad"]=cantidadProd;
-      itemVenta["importe"]=importeProd;
-      //itemsVenta guarda la totalidad de los items de la venta.
-      //itemVenta es el item en particular.
-      itemsVenta.push(itemVenta);
-      
-    }
-  }); //Termina recorrido de la tabla de venta actual
-  //Ahora se guardan los items de la venta en el objeto datosVenta
-  datosVenta.push(itemsVenta);
-  
-  //dataVenta es un campo oculto dentro del form ventaForm
-  //este forma es el encargado de mandar toda la información relativa a la venta
-  //en un objeto JSON.
-  $("#dataVenta").val(JSON.stringify(datosVenta));
-  alert(JSON.stringify(datosVenta));
-  
-  var form = $("#ventaForm");
-  form.submit(); //Se submite el form con los datos de la venta.
-     
-  //Se vacían los arreglos previamente creados para evitar posibles datos 
-  //incorrectos.
-  itemsVenta = [];
-  datosVenta = [];
-  datosFormaPago = [];
-  datosCliente = {};
-
-}//Termina función completar venta
+    });   
+}
 
 /**
  * Establece el valor de la forma de pago que el cliente eligió
@@ -489,7 +679,9 @@ function addProductToSale(elem){
            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
-                                    "<td>"+element.precioVenta+"</td></tr>");
+                                    "<td>"+element.precioVenta+"</td>"+
+                                    "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
+                                    "<i class='fa fa-trash-o'></i></button></td></tr>");
 
         }
 
@@ -503,6 +695,69 @@ function addProductToSale(elem){
     }
   })
 }
+
+$(document).on('click', '.borrar_item_venta', function (event) {
+    event.preventDefault();
+    $(this).closest('tr').remove();
+});
+
+jQuery.fn.contentChange = function(callback){
+    var elms = jQuery(this);
+    elms.each(
+      function(i){
+        var elm = jQuery(this);
+        elm.data("lastContents", elm.html());
+        window.watchContentChange = window.watchContentChange ? window.watchContentChange : [];
+        window.watchContentChange.push({"element": elm, "callback": callback});
+      }
+    )
+    return elms;
+  }
+  setInterval(function(){
+    if(window.watchContentChange){
+      for( i in window.watchContentChange){
+        if(window.watchContentChange[i].element.data("lastContents") != window.watchContentChange[i].element.html()){
+          window.watchContentChange[i].callback.apply(window.watchContentChange[i].element);
+          window.watchContentChange[i].element.data("lastContents", window.watchContentChange[i].element.html())
+        };
+      }
+    }
+  },500);
+
+  /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
+   * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
+   * agrega un producto o se cambia una cantidad de venta de producto). */
+  
+  /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
+   * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
+   * agrega un producto o se cambia una cantidad de venta de producto). */
+  $("#table_sales").contentChange(function(){
+    var sumatoria = 0;
+
+    //recorre cada fila de la tabla de venta actual
+    $('#table_sales tr').each(function (i, el) {
+
+      //Se discrimina la primer fila (que corresponde al encabezado)
+      if(i!=0){
+        //el td 4 equivale al campo con la cantidad.
+        var val = $(this).find("td").eq(4).html();
+        
+        //Convierto el valor del importe en un valor float
+        var importe = parseFloat(val);
+
+        //añado el importe a la sumatoria total de la venta
+        sumatoria += importe;
+      }
+    });
+    
+    //una vez obtenido el valor de la venta, se limita a dos decimales.
+    sumatoria.toFixed(2);
+    
+    //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
+    $("#importe").text(sumatoria);
+  });
+
+
 
 /**
  * Esta función permite cambiar los valores del cuadro de clientes en base al cliente elegido

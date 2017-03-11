@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= content_for?(:title) ? yield(:title) : "S I N O I" %> </title>
+  <title><%= content_for?(:title) ? yield(:title) : "MYBU - Sistema Integral de Negocios" %> </title>
 
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
@@ -14,7 +14,16 @@
 <body class="nav-md">
 <div class="container body">
   <% flash.each do |key, value| %>
-      <div align="center" id="flash" class="alert alert-<%= key %>"><%= value %></div>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+      
   <% end %>
 
   <%= render "partials/sidenav" %>

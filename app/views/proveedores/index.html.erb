@@ -1,18 +1,16 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Categorias de artículos</h1>
+      <h1>Proveedores</h1>
     </div>
   </div>
   <div class="clearfix"></div>
   
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div>
       <p id="notice"><%= notice %></p>
 
-      <h1>Proveedores</h1>
-
-      <table class="table table-striped responsive-utilities jambo_table">
+      <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
             <th class="column-title">Nombre</th>
@@ -28,9 +26,9 @@
               <td><%= proveedor.nombre %></td>
               <td><%= proveedor.telefono %></td>
               <td><%= proveedor.email %></td>
-              <td><%= link_to 'Show', proveedor %></td>
-              <td><%= link_to 'Edit', edit_proveedor_path(proveedor) %></td>
-              <td><%= link_to 'Destroy', proveedor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+              <td><%= link_to 'Mostrar', proveedor, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
+              <td><%= link_to 'Editar', edit_proveedor_path(proveedor), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
+              <td><%= link_to 'Borrar', proveedor, method: :delete, data: { confirm: '¿Está seguro de eliminar este proveedor?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
             </tr>
           <% end %>
         </tbody>
@@ -38,7 +36,7 @@
 
       <br>
 
-      <%= link_to 'New Proveedor', new_proveedor_path %>
+      <%= link_to 'Nuevo Proveedor', new_proveedor_path, class: "btn btn-default" %>
 
     </div>
   </div>

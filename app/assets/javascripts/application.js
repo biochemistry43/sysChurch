@@ -14,8 +14,17 @@
 //= require bootstrap-sprockets
 //= require jquery_ujs
 //= require jQuery.print
+//= require js/notify/pnotify.core
+//= require js/notify/pnotify.buttons
 //= require dataTables/jquery.dataTables
 //= require dataTables/extras/dataTables.responsive
 //= require dataTables/jquery.dataTables
 //= require turbolinks
+
+
+
+
+
+
+    
 

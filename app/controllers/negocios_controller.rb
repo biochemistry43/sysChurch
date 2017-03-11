@@ -11,6 +11,18 @@ class NegociosController < ApplicationController
   # GET /negocios/1.json
   def show
     @sucursals = Sucursal.where('negocio_id', params[:id])
+      @datosFiscales
+    unless @negocio.datos_fiscales_negocio
+      @datosFiscales = DatosFiscalesNegocio.new(:nombreFiscal => @negocio.nombre, :direccionFiscal=>@negocio.direccion)
+      @datosFiscales.save
+      @negocio.datos_fiscales_negocio = @datosFiscales
+    else
+      @datosFiscales = @negocio.datos_fiscales_negocio
+    end
+  end
+
+  def updateDatosFiscales
+    
   end
 
   # GET /negocios/new
@@ -43,7 +55,7 @@ class NegociosController < ApplicationController
   def update
     respond_to do |format|
       if @negocio.update(negocio_params)
-        format.html { redirect_to @negocio, notice: 'Negocio was successfully updated.' }
+        format.html { redirect_to @negocio, notice: 'Los datos del negocio fueron actualizados' }
         format.json { render :show, status: :ok, location: @negocio }
       else
         format.html { render :edit }

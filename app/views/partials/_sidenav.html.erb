@@ -5,7 +5,9 @@
     <div class="left_col scroll-view">
 
       <div class="navbar nav_title" style="border: 0;">
-        <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>S I N O I</span></a>
+        <%= link_to root_path, :class => "site_title" do %>
+          <i class="fa fa-cubes"></i> <span>M  Y  B  U</span>
+        <% end %>
       </div>
       <div class="clearfix"></div>
 
@@ -13,11 +15,16 @@
       <!-- menu profile quick info -->
       <div class="profile">
         <div class="profile_pic">
-          <%= image_tag "bety-cano.jpg", :class => "img-circle profile_img"  %>
+          <%= image_tag(current_user.perfil.foto_url, class: "img-circle profile_img") if current_user.perfil.foto.present? %>
+
         </div>
         <div class="profile_info">
-          <span>Bienvenida,</span>
-          <h2>Lic. Beatriz Cano</h2>
+          <span>Bienvenido,</span>
+          <%if current_user.perfil%>
+            <h2><%=current_user.perfil.nombre%></h2>
+          <%else%>
+            <h2><%=current_user.email%></h2>
+          <%end%>
         </div>
       </div>
       <!-- /menu profile quick info -->
@@ -28,11 +35,11 @@
       <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 
         <div class="menu_section">
-          <h3>General</h3>
+          <h3>General</h3>  
           <ul class="nav side-menu">
             <li><a><i class="fa fa-home"></i> Módulos <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <li><%= link_to "Punto de venta", punto_venta_index_path %>
+                <li><%= link_to "Punto de venta", punto_venta_index_path, id: "pos-mod" %>
                 </li>
                 <li><%= link_to "Categorias producto", cat_articulos_path %>
                 </li>
@@ -48,14 +55,6 @@
                 </li>
               </ul>
 
-            </li>
-            <li><a><i class="fa fa-home"></i> Personal <span class="fa fa-chevron-down"></span></a>
-              <ul class="nav child_menu" style="display: none">
-                <li><%= link_to "Personas", root_path %>
-                <li><a href="index2.html">Usuarios</a>
-                </li>
-              </ul>
-              
             </li>
             <li><a><i class="fa fa-home"></i> Configuración <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
@@ -79,7 +78,7 @@
       </div>
       <!-- /sidebar menu -->
 
-      <!-- /menu footer buttons -->
+      <!-- /menu footer buttons 
       <div class="sidebar-footer hidden-small">
         <a data-toggle="tooltip" data-placement="top" title="Settings">
           <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -93,7 +92,30 @@
         <a data-toggle="tooltip" data-placement="top" title="Logout">
           <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
         </a>
-      </div>
+      </div>-->
       <!-- /menu footer buttons -->
     </div>
+    <script>
+
+      $("#pos-mod").on("click", function(evt){
+        if ($("body").hasClass('nav-md')) {
+          $("body").removeClass('nav-md').addClass('nav-sm');
+          $LEFT_COL.removeClass('scroll-view').removeAttr('style');
+
+          if ($SIDEBAR_MENU.find('li').hasClass('active')) {
+            $SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
+          }
+        } else {
+          $("body").removeClass('nav-sm').addClass('nav-md');
+
+          if ($SIDEBAR_MENU.find('li').hasClass('active-sm')) {
+            $SIDEBAR_MENU.find('li.active-sm').addClass('active').removeClass('active-sm');
+          }
+        }
+
+        evt.stopPropagation();
+
+      });
+      
+    </script>
   </div>

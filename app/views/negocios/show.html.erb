@@ -1,39 +1,23 @@
-
-<div class="right_col" role="main">
-  <div class="page-title">
-    <div class="title_left">
-      <h1>Configuración del negocio</h1>
-    </div>
+<div class="right_col" style="padding-top: 60px;">
+  <h1 class="page-header">Configuración del negocio</h1>
+  <div class="row">
+    <!-- left column -->
+    <%= render 'form' %>
   </div>
-  <div class="clearfix"></div>
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
-      <p id="notice"><%= notice %></p>
 
-      <p>
-        <strong>Logo:</strong>
-        <%= @negocio.logo %>
-      </p>
-
-      <p>
-        <strong>Nombre:</strong>
-        <%= @negocio.nombre %>
-      </p>
-
-      <p>
-        <strong>Representante:</strong>
-        <%= @negocio.representante %>
-      </p>
-
-      <p>
-        <strong>Direccion:</strong>
-        <%= @negocio.direccion %>
-      </p>
-
-      <%= link_to 'Guardar datos', edit_negocio_path(@negocio) %>
-
-      <%= render "sucursals/index" %>
-
+  <div class="row" style="padding-top: 60px;">
+    <div class="col-md-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Sucursales</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <br />
+          <%= render 'sucursals/index' %>
+        </div>
+      </div>
     </div>
+    
   </div>
 </div>
