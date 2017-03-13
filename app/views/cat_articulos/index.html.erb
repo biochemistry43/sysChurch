@@ -11,7 +11,7 @@
       <div class="col-ms-12">
         <div class="div-add-button">
 
-           <%= link_to new_cat_articulo_path, {class: "btn btn-info btn-lg btn-add"} do%>
+           <%= link_to new_cat_articulo_path, {class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"} do%>
              <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
              Añadir Categoría
           <%end%>
@@ -53,6 +53,26 @@
       </div>
     </div>
   </div>
+
+  <div class="modal" id="modal-categorias">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="modal-title">Editar Categoria</h4>
+        </div>
+        <div class="modal-body" id="modal-body-categorias">
+          
+        </div>
+        <div class="modal-footer" id="modal-footer-categorias">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  
   <script>
     $(document).ready(function(){
   
@@ -73,8 +93,12 @@
         }
       });
     });
+
+
   </script>
+  
 </div>
+<%= javascript_include_tag "cat_articulos" %>
 
     
 
