@@ -11,7 +11,7 @@
       <div class="col-ms-12">
         <div class="div-add-button">
 
-           <%= link_to new_cat_articulo_path, {class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"} do%>
+           <%= link_to new_cat_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"}  do %>
              <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
              Añadir Categoría
           <%end%>
@@ -33,71 +33,28 @@
               <th class="column-title">Categoría Padre</th>
               <th class="column-title"></th>
               <th class="column-title"></th>
-              <th class="column-title"></th>
             </tr>
           </thead>
 
-          <tbody>
-            <% @cat_articulos.each do |cat_articulo| %>
+          <tbody id="tb_categorias_articulos">
+            <%= render @cat_articulos%>
+            <!--<$ @cat_articulos.each do |cat_articulo| %>
               <tr>
-                <td><%= cat_articulo.nombreCatArticulo %></td>
-                <td><%= cat_articulo.descripcionCatArticulo %></td>
-                <td><%= cat_articulo.padre %></td>
-                <td><%= link_to 'Mostrar', cat_articulo,  class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-                <td><%= link_to 'Editar', edit_cat_articulo_path(cat_articulo), html_options = {class: "btn btn-info btn-xs"} %><i class="fa fa-pencil"></i></td>
-                <td><%= link_to 'Borrar', cat_articulo, method: :delete, data: { confirm: '¿Seguro que deseas eliminar esta categoría?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+                <td><$= cat_articulo.nombreCatArticulo %></td>
+                <td><$= cat_articulo.descripcionCatArticulo %></td>
+                <td><$= cat_articulo.padre %></td>
+                <td><$= link_to 'Editar', edit_cat_articulo_path(cat_articulo), remote: true, html_options = {class: "btn btn-info btn-xs"} %><i class="fa fa-pencil"></i></td>
+                <td><$= link_to 'Borrar', cat_articulo, method: :delete, data: { confirm: '¿Seguro que deseas eliminar esta categoría?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
               </tr>
-            <% end %>
+            <$ end %>-->
           </tbody>
         </table>
+
+        <%= render 'modalCategorias'%>
       </div>
     </div>
   </div>
-
-  <div class="modal" id="modal-categorias">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="modal-title">Editar Categoria</h4>
-        </div>
-        <div class="modal-body" id="modal-body-categorias">
-          
-        </div>
-        <div class="modal-footer" id="modal-footer-categorias">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  
-  <script>
-    $(document).ready(function(){
-  
-      $('.data-table').DataTable({
-        responsive: true,
-        "language":{
-          "info": "Mostrar pag _PAGE_ de _PAGES_",
-          "lengthMenu": "Mostrar _MENU_ registros",
-          "zeroRecords": "No hay coincidencias",
-          "search": "Buscar: _INPUT_",
-          "infoFiltered": " - encontrados en _MAX_ registros",
-          "paginate": {
-            "previous": "Anterior",
-            "next" : "siguiente",
-            "last" : "último",
-            "first" : "primero"
-          }
-        }
-      });
-    });
-
-
-  </script>
-  
-</div>
+ 
 <%= javascript_include_tag "cat_articulos" %>
 
     

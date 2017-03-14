@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-categorias-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar categoria de artículo");
+ 
+// Render the new form
+$('.modal-body-categorias-articulos').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalCategorias').modal("show");
+ 
+// Set focus to the first element
+$('#modalCategorias').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

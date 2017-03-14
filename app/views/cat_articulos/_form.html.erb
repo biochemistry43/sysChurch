@@ -1,6 +1,6 @@
-<%= form_for @cat_articulo, :html=> {:class=>'form-horizontal form-label-left input_mask'} do |f| %>
+<%= form_for @cat_articulo, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
   <% if @cat_articulo.errors.any? %>
-    <div id="error_explanation">
+    <div id="error_explanation" class="bg-danger text-danger">
       <h2><%= pluralize(@cat_articulo.errors.count, "error") %> prohibited this cat_articulo from being saved:</h2>
 
       <ul>
@@ -11,22 +11,28 @@
     </div>
   <% end %>
 
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :nombreCatArticulo %><br>
-    <%= f.text_field :nombreCatArticulo, class: "form-control has-feedback-left"%>
-    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+        <%= f.label :nombreCatArticulo %><br>
+        <%= f.text_field :nombreCatArticulo, :html=>{class: "form-control has-feedback-left", required: true}%>
+        <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+      </div>
+      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+        <%= f.label :descripcionCatArticulo %><br>
+        <%= f.text_field :descripcionCatArticulo, class: "form-control has-feedback-left"%>
+      </div>
+      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+        <%= f.label :cat_articulo_id%><br>
+        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo)%>
+
+      </div>
+      <div class="ln_solid"></div>
+      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+        <%= f.submit @cat_articulo.new_record? ? "Crear categoria" : "Actualizar Categoria", :class => "btn btn-success"%>
+      </div>
+    </div>
+    
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :descripcionCatArticulo %><br>
-    <%= f.text_field :descripcionCatArticulo, class: "form-control has-feedback-left"%>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :idCategoriaPadre %><br>
-    <%= f.collection_select(:idCategoriaPadre, CatArticulo.all, :id, :nombreCatArticulo)%>
-    <!--<%= f.number_field :idCategoriaPadre, class: "form-control has-feedback-left" %>-->
-  </div>
-  <div class="ln_solid"></div>
-  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-    <%= f.submit %>
-  </div>
+  
 <% end %>

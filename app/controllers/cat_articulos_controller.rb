@@ -3,13 +3,13 @@ class CatArticulosController < ApplicationController
   # GET /cat_articulos
   # GET /cat_articulos.json
   def index
-    @cat_articulos = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id')
+    @cat_articulos = current_user.negocio.cat_articulos#select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id')
   end
 
   # GET /cat_articulos/1
   # GET /cat_articulos/1.json
   def show
-    @cat_articulo = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id').where("cat_articulos.id=?",params[:id])
+    #@cat_articulo = CatArticulo.select("cat_articulos.id,cat_articulos.nombreCatArticulo,cat_articulos.descripcionCatArticulo,b.nombreCatArticulo as padre").joins('INNER JOIN cat_articulos b on cat_articulos.idCategoriaPadre=b.id').where("cat_articulos.id=?",params[:id])
   end
 
   # GET /cat_articulos/new
@@ -29,11 +29,14 @@ class CatArticulosController < ApplicationController
     respond_to do |format|
       if @cat_articulo.save
         current_user.negocio.cat_articulos << @cat_articulo
-        format.html { redirect_to @cat_articulo, notice: 'La categoria fue creada satisfactoriamente' }
-        format.json { render :show, status: :created, location: @cat_articulo }
+        #format.html { redirect_to @cat_articulo, notice: 'La categoria fue creada satisfactoriamente' }
+        #format.json { render :show, status: :created, location: @cat_articulo }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
+        format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -43,11 +46,14 @@ class CatArticulosController < ApplicationController
   def update
     respond_to do |format|
       if @cat_articulo.update(cat_articulo_params)
-        format.html { redirect_to @cat_articulo, notice: 'La categoria fue actualizada satisfactoriamente' }
-        format.json { render :show, status: :ok, location: @cat_articulo }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @cat_articulo, notice: 'La categoria fue actualizada satisfactoriamente' }
+        #format.json { render :show, status: :ok, location: @cat_articulo }
       else
-        format.html { render :edit }
-        format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
+        format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -58,6 +64,7 @@ class CatArticulosController < ApplicationController
 
     @cat_articulo.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to cat_articulos_url, notice: 'La categoria fue eliminada' }
       format.json { head :no_content }
     end
@@ -71,6 +78,6 @@ class CatArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cat_articulo_params
-      params.require(:cat_articulo).permit(:nombreCatArticulo, :descripcionCatArticulo)
+      params.require(:cat_articulo).permit(:nombreCatArticulo, :descripcionCatArticulo, :cat_articulo_id)
     end
 end
