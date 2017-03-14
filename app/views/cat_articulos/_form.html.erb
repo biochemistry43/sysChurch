@@ -13,17 +13,17 @@
 
   <div class="row">
     <div class="col-md-12 col-sm-12">
-      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-        <%= f.label :nombreCatArticulo %><br>
+      <div class="field form-group has-feedback">
+        <%= f.label :nombreCatArticulo, "Nombre de categoría:" %><br>
         <%= f.text_field :nombreCatArticulo, :html=>{class: "form-control has-feedback-left", required: true}%>
         <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
       </div>
-      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-        <%= f.label :descripcionCatArticulo %><br>
+      <div class="field form-group has-feedback">
+        <%= f.label :descripcionCatArticulo, "Descripción:" %><br>
         <%= f.text_field :descripcionCatArticulo, class: "form-control has-feedback-left"%>
       </div>
-      <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-        <%= f.label :cat_articulo_id%><br>
+      <div class="field form-group has-feedback">
+        <%= f.label :cat_articulo_id, "Elegir categoría padre:"%><br>
         <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo)%>
 
       </div>

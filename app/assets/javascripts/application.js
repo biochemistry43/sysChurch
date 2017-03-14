@@ -22,9 +22,3 @@
 //= require turbolinks
 
 //= require js/validator/validator.js
-
-
-
-
-    
-

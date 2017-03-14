@@ -4,7 +4,7 @@ class CategoriaGastosController < ApplicationController
   # GET /categoria_gastos
   # GET /categoria_gastos.json
   def index
-    @categoria_gastos = CategoriaGasto.all
+    @categoria_gastos = current_user.negocio.categoria_gastos
   end
 
   # GET /categoria_gastos/1
