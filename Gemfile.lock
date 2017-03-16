@@ -48,6 +48,7 @@ GEM
       sass (>= 3.3.0)
     builder (3.2.2)
     byebug (8.2.1)
+    cancancan (1.16.0)
     carrierwave (1.0.0)
       activemodel (>= 4.0.0)
       activesupport (>= 4.0.0)
@@ -184,6 +185,7 @@ DEPENDENCIES
   autoprefixer-rails
   bootstrap-sass (~> 3.3.5)
   byebug
+  cancancan
   carrierwave
   coffee-rails (~> 4.1.0)
   devise

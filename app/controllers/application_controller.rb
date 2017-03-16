@@ -6,6 +6,12 @@ class ApplicationController < ActionController::Base
   layout :layout_by_resource
   protect_from_forgery with: :exception
 
+  rescue_from CanCan::AccessDenied do |exception|
+    
+    redirect_to root_url
+    flash[:success ] = exception.message.to_s
+  end
+
   private
 
   def layout_by_resource

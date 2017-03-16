@@ -19,6 +19,8 @@ gem "font-awesome-rails"
 
 gem "devise"
 
+gem "cancancan"
+
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 #jquery ui para rails

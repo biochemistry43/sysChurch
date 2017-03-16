@@ -42,32 +42,47 @@
               <ul class="nav child_menu" style="display: none">
                 <li><%= link_to "Punto de venta", punto_venta_index_path, id: "pos-mod" %>
                 </li>
-                <li><%= link_to "Categorias producto", cat_articulos_path %>
-                </li>
-                <li><%= link_to "Productos", articulos_path %>
-                </li>
-                <li><%= link_to "Inventarios", inventarios_path%>
-                </li>
-                <li><%= link_to "Proveedores", proveedores_path%>
-                </li>
-                <li><%= link_to "Bancos", bancos_path%>
-                </li>
-                <li><%= link_to "Clientes", clientes_path%>
-                </li>
+                <%if can? :update, CatArticulo%>
+                  <li><%= link_to "Categorias producto", cat_articulos_path %>
+                  </li>
+                <%end%>
+                <%if can? :update, Articulo%>
+                  <li><%= link_to "Productos", articulos_path %>
+                  </li>
+                <%end%>
+                <%if can? :update, Inventario%>
+                  <li><%= link_to "Inventarios", inventarios_path%>
+                  </li>
+                <%end%>
+                <%if can? :update, Proveedor%>
+                  <li><%= link_to "Proveedores", proveedores_path%>
+                  </li>
+                <%end%>
+                <%if can? :update, Banco%>
+                  <li><%= link_to "Bancos", bancos_path%>
+                  </li>
+                <%end%>
+                <%if can? :update, Cliente%>
+                  <li><%= link_to "Clientes", clientes_path%>
+                  </li>
+                <%end%>
               </ul>
 
             </li>
             <li><a><i class="fa fa-home"></i> Configuración <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <li><a>Reportes<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu" style="display: none">
-                    <li class="sub_menu"><%= link_to "Ventas", ventas_venta_del_dia_path%>
-                    </li>
-                  </ul>
-                </li>
-                <li><%= link_to "Configuración del negocio", controller: "negocios", action: "show", id: current_user.negocio_id%>
-                <li><a ><%=@hello%></a>
-                </li>
+                <%if can? :update, Negocio%>
+                  <li><a>Reportes<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="display: none">
+                      <li class="sub_menu"><%= link_to "Ventas", ventas_venta_del_dia_path%>
+                      </li>
+                    </ul>
+                  </li>
+                <%end%>
+                <%if can? :update, Negocio%>
+                  <li><%= link_to "Configuración del negocio", controller: "negocios", action: "show", id: current_user.negocio_id%>
+                  </li>
+                <%end%>
               </ul>
               
             </li>

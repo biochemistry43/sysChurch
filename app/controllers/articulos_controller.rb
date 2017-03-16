@@ -1,5 +1,6 @@
 class ArticulosController < ApplicationController
   #before_filter :authenticate_user!
+  load_and_authorize_resource
   before_action :set_articulo, only: [:show, :edit, :update, :destroy]
 
 
@@ -28,7 +29,7 @@ class ArticulosController < ApplicationController
     
   def showByCriteria
     @criteria = params[:criteria]
-    articulos = Articulo.where('nombre LIKE ? OR clave LIKE ? AND sucursal_id = ?', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
+    articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
     render :json => articulos
   end
 
