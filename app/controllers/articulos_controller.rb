@@ -1,12 +1,7 @@
 class ArticulosController < ApplicationController
   #before_filter :authenticate_user!
-<<<<<<< HEAD
   load_and_authorize_resource
   before_action :set_articulo, only: [:show, :edit, :update, :destroy]
-=======
-
-  before_action :set_articulo, only: [:edit, :update, :destroy]
->>>>>>> e9ebd3c8df579ef75da7f2d91e6a22b4913eeb24
 
 
   # GET /articulos
