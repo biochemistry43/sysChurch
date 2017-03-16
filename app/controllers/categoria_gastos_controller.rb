@@ -1,5 +1,5 @@
 class CategoriaGastosController < ApplicationController
-  before_action :set_categoria_gasto, only: [:show, :edit, :update, :destroy]
+  before_action :set_categoria_gasto, only: [:edit, :update, :destroy]
 
   # GET /categoria_gastos
   # GET /categoria_gastos.json
@@ -29,11 +29,14 @@ class CategoriaGastosController < ApplicationController
     respond_to do |format|
       if @categoria_gasto.save
         current_user.negocio.categoria_gastos << @categoria_gasto
-        format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully created.' }
-        format.json { render :show, status: :created, location: @categoria_gasto }
+        #format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully created.' }
+        f#ormat.json { render :show, status: :created, location: @categoria_gasto }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+        format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -43,11 +46,14 @@ class CategoriaGastosController < ApplicationController
   def update
     respond_to do |format|
       if @categoria_gasto.update(categoria_gasto_params)
-        format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully updated.' }
-        format.json { render :show, status: :ok, location: @categoria_gasto }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @categoria_gasto }
       else
-        format.html { render :edit }
-        format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+        format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -57,6 +63,7 @@ class CategoriaGastosController < ApplicationController
   def destroy
     @categoria_gasto.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to categoria_gastos_url, notice: 'Categoria gasto was successfully destroyed.' }
       format.json { head :no_content }
     end

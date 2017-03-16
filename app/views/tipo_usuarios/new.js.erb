@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-tusuarios-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nuevo tipo de usuario");
+ 
+// Render the new form
+$('.modal-body-tusuarios').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalTusuarios').modal("show");
+ 
+// Set focus to the first element
+$('#modalTusuarios').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

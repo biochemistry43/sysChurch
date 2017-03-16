@@ -1,7 +1,12 @@
 class ArticulosController < ApplicationController
   #before_filter :authenticate_user!
+<<<<<<< HEAD
   load_and_authorize_resource
   before_action :set_articulo, only: [:show, :edit, :update, :destroy]
+=======
+
+  before_action :set_articulo, only: [:edit, :update, :destroy]
+>>>>>>> e9ebd3c8df579ef75da7f2d91e6a22b4913eeb24
 
 
   # GET /articulos
@@ -54,11 +59,14 @@ class ArticulosController < ApplicationController
       if @articulo.save
         current_user.negocio.articulos << @articulo
         current_user.sucursal.articulos << @articulo
-        format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
-        format.json { render :show, status: :created, location: @articulo }
+        #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
+        #format.json { render :show, status: :created, location: @articulo }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @articulo.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @articulo.errors, status: :unprocessable_entity }
+        format.json{render json: @articulo.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -69,11 +77,14 @@ class ArticulosController < ApplicationController
     @categories = CatArticulo.all
     respond_to do |format|
       if @articulo.update(articulo_params)
-        format.html { redirect_to @articulo, notice: 'El producto fue actualizado' }
-        format.json { render :show, status: :ok, location: @articulo }
+         format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @articulo, notice: 'El producto fue actualizado' }
+        #format.json { render :show, status: :ok, location: @articulo }
       else
-        format.html { render :edit }
-        format.json { render json: @articulo.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @articulo.errors, status: :unprocessable_entity }
+        format.json{render json: @articulo.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -83,6 +94,7 @@ class ArticulosController < ApplicationController
   def destroy
     @articulo.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to articulos_url, notice: 'El producto fue eliminado definitivamente' }
       format.json { head :no_content }
     end

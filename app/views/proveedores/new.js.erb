@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-proveedores-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nuevo proveedor");
+ 
+// Render the new form
+$('.modal-body-provedores').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalProveedores').modal("show");
+ 
+// Set focus to the first element
+$('#modalProveedores').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

@@ -1,0 +1,9 @@
+<tr id="cliente_<%= cliente.id%>">
+  <td><%= cliente.nombre %></td>
+  <td><%= cliente.direccionCalle.to_s  << " " << cliente.direccionNumeroExt.to_s << " " << cliente.direccionNumeroInt.to_s << ", Colonia:" << cliente.direccionColonia.to_s  << ", C.P. : " << cliente.direccionCp.to_s %></td>
+  <td><%= cliente.direccionMunicipio %></td>
+  <td><%= cliente.direccionEstado %></td>
+  <td><%= cliente.email %></td>
+  <td><%= link_to 'Editar', edit_cliente_path(cliente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

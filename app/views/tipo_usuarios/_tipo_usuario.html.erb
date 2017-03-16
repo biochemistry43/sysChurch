@@ -1,0 +1,11 @@
+<tr id="tipo_usuario_<%= tipo_usuario.id%>">
+ <td><%= tipo_usuario.nombreTipo %></td>
+        <td><%= tipo_usuario.descripcionTipo %></td>
+        <td><%= tipo_usuario.isVentas %></td>
+        <td><%= tipo_usuario.isInventarios %></td>
+        <td><%= tipo_usuario.isPerdidas %></td>
+        <td><%= tipo_usuario.isPersonas %></td>
+        <td><%= tipo_usuario.isGastos %></td>
+  <td><%= link_to 'Editar', edit_tipo_usuario_path(tipo_usuario), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', tipo_usuario, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{tipo_usuario.nombreTipo}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

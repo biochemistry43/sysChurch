@@ -1,5 +1,5 @@
 class ClientesController < ApplicationController
-  before_action :set_cliente, only: [:show, :edit, :update, :destroy]
+  before_action :set_cliente, only: [:edit, :update, :destroy]
 
   def index
     @clientes = current_user.negocio.clientes
@@ -18,6 +18,7 @@ class ClientesController < ApplicationController
   def destroy
     @cliente.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to clientes_path, notice: 'El cliente ha sido eliminado.' }
       format.json { head :no_content }
     end
@@ -26,11 +27,14 @@ class ClientesController < ApplicationController
   def update
     respond_to do |format|
       if @cliente.update(cliente_params)
-        format.html { redirect_to @cliente, notice: 'Las datos del cliente han sido actualizados' }
-        format.json { render :show, status: :ok, location: @cliente }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @cliente, notice: 'Las datos del cliente han sido actualizados' }
+        #format.json { render :show, status: :ok, location: @cliente }
       else
-        format.html { render :edit }
-        format.json { render json: @cliente.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @cliente.errors, status: :unprocessable_entity }
+        format.json{render json: @cliente.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -41,11 +45,14 @@ class ClientesController < ApplicationController
     respond_to do |format|
       if @cliente.save
         current_user.negocio.clientes << @cliente
-        format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
-        format.json { render :show, status: :created, location: @cliente }
+        #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
+        #format.json { render :show, status: :created, location: @cliente }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @cliente.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @cliente.errors, status: :unprocessable_entity }
+        format.json{render json: @cliente.errors.full_messages, status: :unprocessable_entity}
       end
     end
 

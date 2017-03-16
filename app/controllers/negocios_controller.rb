@@ -1,5 +1,5 @@
 class NegociosController < ApplicationController
-  before_action :set_negocio, only: [:show, :edit, :update, :destroy]
+  before_action :set_negocio, only: [:edit, :update, :destroy]
 
   # GET /negocios
   # GET /negocios.json
@@ -41,11 +41,15 @@ class NegociosController < ApplicationController
 
     respond_to do |format|
       if @negocio.save
-        format.html { redirect_to @negocio, notice: 'Negocio was successfully created.' }
-        format.json { render :show, status: :created, location: @negocio }
+        current_user.negocio << @negocio
+        #format.html { redirect_to @negocio, notice: 'Negocio was successfully created.' }
+        #format.json { render :show, status: :created, location: @negocio }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -55,11 +59,14 @@ class NegociosController < ApplicationController
   def update
     respond_to do |format|
       if @negocio.update(negocio_params)
-        format.html { redirect_to @negocio, notice: 'Los datos del negocio fueron actualizados' }
-        format.json { render :show, status: :ok, location: @negocio }
+         format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @negocio, notice: 'Los datos del negocio fueron actualizados' }
+        #format.json { render :show, status: :ok, location: @negocio }
       else
-        format.html { render :edit }
-        format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -69,6 +76,7 @@ class NegociosController < ApplicationController
   def destroy
     @negocio.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to negocios_url, notice: 'Negocio was successfully destroyed.' }
       format.json { head :no_content }
     end

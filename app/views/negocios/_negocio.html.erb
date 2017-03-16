@@ -1,0 +1,8 @@
+<tr id="negocio_<%= negocio.id%>">
+  <td><%= negocio.logo %></td>
+        <td><%= negocio.nombre %></td>
+        <td><%= negocio.representante %></td>
+        <td><%= negocio.direccion %></td>
+  <td><%= link_to 'Editar', edit_negocio_path(negocio), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', negocio, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{negocio.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

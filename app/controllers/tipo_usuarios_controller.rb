@@ -1,6 +1,10 @@
 class TipoUsuariosController < ApplicationController
+<<<<<<< HEAD
   #load_and_authorize_resource
   before_action :set_tipo_usuario, only: [:show, :edit, :update, :destroy]
+=======
+  before_action :set_tipo_usuario, only: [:edit, :update, :destroy]
+>>>>>>> e9ebd3c8df579ef75da7f2d91e6a22b4913eeb24
 
   # GET /tipo_usuarios
   # GET /tipo_usuarios.json
@@ -29,11 +33,14 @@ class TipoUsuariosController < ApplicationController
 
     respond_to do |format|
       if @tipo_usuario.save
-        format.html { redirect_to @tipo_usuario, notice: 'Tipo usuario was successfully created.' }
-        format.json { render :show, status: :created, location: @tipo_usuario }
+        #format.html { redirect_to @tipo_usuario, notice: 'Tipo usuario was successfully created.' }
+        #format.json { render :show, status: :created, location: @tipo_usuario }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @tipo_usuario.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @tipo_usuario.errors, status: :unprocessable_entity }
+        format.json{render json: @tipo_usuario.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -43,11 +50,14 @@ class TipoUsuariosController < ApplicationController
   def update
     respond_to do |format|
       if @tipo_usuario.update(tipo_usuario_params)
-        format.html { redirect_to @tipo_usuario, notice: 'Tipo usuario was successfully updated.' }
-        format.json { render :show, status: :ok, location: @tipo_usuario }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @tipo_usuario, notice: 'Tipo usuario was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @tipo_usuario }
       else
-        format.html { render :edit }
-        format.json { render json: @tipo_usuario.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @tipo_usuario.errors, status: :unprocessable_entity }
+        format.json{render json: @tipo_usuario.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -57,6 +67,7 @@ class TipoUsuariosController < ApplicationController
   def destroy
     @tipo_usuario.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to tipo_usuarios_url, notice: 'Tipo usuario was successfully destroyed.' }
       format.json { head :no_content }
     end

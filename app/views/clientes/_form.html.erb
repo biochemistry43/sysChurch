@@ -1,17 +1,18 @@
-<%= form_for @cliente, :html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
+<%= form_for @cliente, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
   <% if @cliente.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@cliente.errors.count, "error") %> prohibited this articulo from being saved:</h2>
+    <div id="error_explanation" class="bg-danger text-danger">
+      <h2><%= pluralize(@cat_articulo.errors.count, "error") %> prohibited this cat_articulo from being saved:</h2>
 
       <ul>
-        <% @cliente.errors.full_messages.each do |message| %>
+      <% @cliente.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
     </div>
-   
   <% end %>
 
+<div class="row">
+<div class="col-md-12 col-sm-12">
   <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
     <%= f.label :nombre, "Nombre:" %><br>
     <%= f.text_field :nombre, class: "form-control has-feedback-left"%>
@@ -63,7 +64,9 @@
   </div>
   
   <div class="ln_solid"></div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.submit %>
-  </div>
+  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+        <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success"%>
+      </div>
+      </div>
+      </div>
 <% end %>

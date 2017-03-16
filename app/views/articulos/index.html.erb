@@ -7,12 +7,16 @@
   <div class="clearfix"></div>
   
   <div class="col-md-12 col-sm-12 col-xs-12 ">
-    <div class="row">
-      <div class="div-add-button">
-        <%= link_to new_articulo_path, {class: "btn btn-info btn-lg btn-add"} do %>  
+  <div class="row">
+      <div class="col-ms-12">
+        <div class="div-add-button">
+
+          <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
           <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
           Añadir Artículo
         <%end%>
+
+        </div>
       </div>
     </div>
 
@@ -31,14 +35,15 @@
               <th class="column-title">Categoria</th>
               <th class="column-title"></th>
               <th class="column-title"></th>
-              <th class="column-title"></th>
+              
             </tr>
           </thead>
 
-          <tbody>
-            <% @articulos.each do |articulo| %>
+          <tbody id="tb_articulos">
+             <%= render @articulos%>
+            <!--<% @articulos.each do |articulo| %>
               <tr>
-                <!--<td>--><%#image_tag(articulo.fotoProducto_url, :width => 65, :height => 75) if articulo.fotoProducto.present? %><!--</td>-->
+                <td>--><%#image_tag(articulo.fotoProducto_url, :width => 65, :height => 75) if articulo.fotoProducto.present? %><!--</td>
                 <td><%= articulo.clave %></td>
                 <td><%= articulo.nombre %></td>
                 <td><%= articulo.stock %></td>
@@ -48,9 +53,10 @@
                 <td><%= link_to 'Editar', edit_articulo_path(articulo), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
                 <td><%= link_to 'Eliminar', articulo, method: :delete, data: { confirm: '¿Seguro que desea borrar este artículo permanentemente?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
               </tr>
-            <% end %>
+            <% end %>-->
           </tbody>
         </table>
+        <%= render 'modalArticulos'%>
       </div>
     </div>
     

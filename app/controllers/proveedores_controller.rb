@@ -29,11 +29,14 @@ class ProveedoresController < ApplicationController
     respond_to do |format|
       if @proveedor.save
         current_user.sucursal.proveedores << @proveedor
-        format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
-        format.json { render :show, status: :created, location: @proveedor }
+        #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
+        #format.json { render :show, status: :created, location: @proveedor }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        format.json{render json: @proveedor.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -43,11 +46,14 @@ class ProveedoresController < ApplicationController
   def update
     respond_to do |format|
       if @proveedor.update(proveedor_params)
-        format.html { redirect_to @proveedor, notice: 'Proveedor was successfully updated.' }
-        format.json { render :show, status: :ok, location: @proveedor }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @proveedor }
       else
-        format.html { render :edit }
-        format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        format.json{render json: @proveedor.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -57,6 +63,7 @@ class ProveedoresController < ApplicationController
   def destroy
     @proveedor.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to proveedores_url, notice: 'Proveedor was successfully destroyed.' }
       format.json { head :no_content }
     end
