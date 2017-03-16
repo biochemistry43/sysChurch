@@ -27,7 +27,7 @@ class ClientesController < ApplicationController
   def update
     respond_to do |format|
       if @cliente.update(cliente_params)
-        format.json { head :no_content}
+        format.json { head :no_content }
         format.js
         #format.html { redirect_to @cliente, notice: 'Las datos del cliente han sido actualizados' }
         #format.json { render :show, status: :ok, location: @cliente }
@@ -66,7 +66,7 @@ class ClientesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cliente_params
-      params.require(:cliente).permit(:nombre, :direccionCalle, :direccionNumeroExt, :direccionNumeroInt, :direccionColonia, :direccionMunicipio, :direccionDelegacion, :direccionEstado, :direccionCp, :foto, :telefono1, :telefono2, :email)
+      params.require(:cliente).permit(:nombre, :direccionCalle, :direccionNumeroExt, :direccionNumeroInt, :direccionColonia, :direccionMunicipio, :direccionDelegacion, :direccionEstado, :direccionCp, :telefono1, :telefono2, :email)
     end
 
 end

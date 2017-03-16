@@ -1,10 +1,10 @@
 class ProveedoresController < ApplicationController
-  before_action :set_proveedor, only: [:show, :edit, :update, :destroy]
+  before_action :set_proveedor, only: [:edit, :update, :destroy]
 
   # GET /proveedores
   # GET /proveedores.json
   def index
-    @proveedores = Proveedor.all
+    @proveedores = current_user.sucursal.proveedores
   end
 
   # GET /proveedores/1

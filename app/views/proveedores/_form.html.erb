@@ -1,4 +1,4 @@
-<%= form_for @proveedor,  remote: true,:html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
+<%= form_for @proveedor,  remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
   <% if @proveedor.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@proveedor.errors.count, "error") %> prohibited this proveedor from being saved:</h2>

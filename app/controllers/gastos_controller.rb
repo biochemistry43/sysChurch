@@ -1,5 +1,5 @@
 class GastosController < ApplicationController
-  before_action :set_gasto, only: [:show, :edit, :update, :destroy]
+  before_action :set_gasto, only: [:edit, :update, :destroy]
 
   # GET /gastos
   # GET /gastos.json

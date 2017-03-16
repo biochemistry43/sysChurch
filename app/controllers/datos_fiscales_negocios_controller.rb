@@ -1,5 +1,5 @@
 class DatosFiscalesNegociosController < ApplicationController
-  before_action :set_datos_fiscales_negocio, only: [:show, :edit, :update, :destroy]
+  before_action :set_datos_fiscales_negocio, only: [:edit, :update, :destroy]
 
   def index
   end

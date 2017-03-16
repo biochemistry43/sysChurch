@@ -1,7 +1,7 @@
-<%= form_for @cliente, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
+<%= form_for @cliente, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form" } do |f| %>
   <% if @cliente.errors.any? %>
     <div id="error_explanation" class="bg-danger text-danger">
-      <h2><%= pluralize(@cat_articulo.errors.count, "error") %> prohibited this cat_articulo from being saved:</h2>
+      <h2><%= pluralize(@cliente.errors.count, "error") %> prohibited this cliente from being saved:</h2>
 
       <ul>
       <% @cliente.errors.full_messages.each do |message| %>
@@ -62,10 +62,9 @@
     <%= f.label :email, "Email: " %><br>
     <%= f.text_field :email, class: "form-control has-feedback-left" %>
   </div>
-  
   <div class="ln_solid"></div>
   <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success"%>
+        <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success" %>
       </div>
       </div>
       </div>

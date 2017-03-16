@@ -35,19 +35,7 @@
           </thead>
 
           <tbody id="tb_clientes">
-          <%= render @clientes%>
-            <!--<% @clientes.each do |cliente| %>
-              <tr>
-                <td><%= cliente.nombre %></td>
-                <td><%= cliente.direccionCalle.to_s  << " " << cliente.direccionNumeroExt.to_s << " " << cliente.direccionNumeroInt.to_s << ", Colonia:" << cliente.direccionColonia.to_s  << ", C.P. : " << cliente.direccionCp.to_s %></td>
-                <td><%= cliente.direccionMunicipio %></td>
-                <td><%= cliente.direccionEstado %></td>
-                <td><%= cliente.email %></td>
-                <td><%= link_to 'Mostrar', cliente, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-                <td><%= link_to 'Editar', edit_cliente_path(cliente), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
-                <td><%= link_to 'Eliminar', cliente, method: :delete, data: { confirm: '¿Desea eliminar este cliente?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
-              </tr>
-            <% end %>-->
+            <%= render @clientes%>
           </tbody>
         </table>
         <%= render 'modalClientes'%>

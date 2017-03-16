@@ -38,15 +38,6 @@
 
           <tbody id="tb_categorias_articulos">
             <%= render @cat_articulos%>
-            <!--<$ @cat_articulos.each do |cat_articulo| %>
-              <tr>
-                <td><$= cat_articulo.nombreCatArticulo %></td>
-                <td><$= cat_articulo.descripcionCatArticulo %></td>
-                <td><$= cat_articulo.padre %></td>
-                <td><$= link_to 'Editar', edit_cat_articulo_path(cat_articulo), remote: true, html_options = {class: "btn btn-info btn-xs"} %><i class="fa fa-pencil"></i></td>
-                <td><$= link_to 'Borrar', cat_articulo, method: :delete, data: { confirm: '¿Seguro que deseas eliminar esta categoría?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
-              </tr>
-            <$ end %>-->
           </tbody>
         </table>
 
