@@ -1,6 +1,5 @@
 class ArticulosController < ApplicationController
   #before_filter :authenticate_user!
-
   before_action :set_articulo, only: [:show, :edit, :update, :destroy]
 
 

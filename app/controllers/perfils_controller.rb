@@ -1,4 +1,5 @@
 class PerfilsController < ApplicationController
+
   before_action :set_perfil, only: [:show, :edit, :update]
 
   def new
@@ -14,7 +15,7 @@ class PerfilsController < ApplicationController
   def update
     respond_to do |format|
       if @perfil.update(perfil_params)
-        format.html { redirect_to @perfil, notice: 'Perfil was successfully updated.' }
+        format.html { redirect_to @perfil, notice: 'El perfil de usuario ha sido actualizado.' }
         format.json { render :edit, status: :ok, location: @perfil }
       else
         format.html { render :edit }
@@ -30,7 +31,7 @@ class PerfilsController < ApplicationController
     
     respond_to do |format|
       if @perfil.save
-        format.html { redirect_to @perfil, notice: 'Perfil was successfully created.' }
+        format.html { redirect_to @perfil, notice: 'Perfil de usuario creado satisfactoriamente.' }
         format.json { render :edit, status: :created, location: @perfil }
       else
         format.html { render :new }

@@ -10,7 +10,9 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="">
           <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            <%= image_tag(current_user.perfil.foto_url) if current_user.perfil.foto.present? %><%=current_user.perfil.nombre%>
+            <%if current_user.perfil%>
+              <%= image_tag(current_user.perfil.foto_url) if current_user.perfil.foto.present? %><%=current_user.perfil.nombre%>
+            <%end%>
             <span class=" fa fa-angle-down"></span>
           </a>
           <ul class="dropdown-menu dropdown-usermenu pull-right">

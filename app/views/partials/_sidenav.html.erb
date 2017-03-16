@@ -15,8 +15,9 @@
       <!-- menu profile quick info -->
       <div class="profile">
         <div class="profile_pic">
-          <%= image_tag(current_user.perfil.foto_url, class: "img-circle profile_img") if current_user.perfil.foto.present? %>
-
+          <%if current_user.perfil%>
+            <%= image_tag(current_user.perfil.foto_url, class: "img-circle profile_img") if current_user.perfil.foto.present? %>
+          <%end%>
         </div>
         <div class="profile_info">
           <span>Bienvenido,</span>

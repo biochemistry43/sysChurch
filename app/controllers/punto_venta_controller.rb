@@ -1,4 +1,5 @@
 class PuntoVentaController < ApplicationController
+   #load_and_authorize_resource
     #after_filter { flash.discard if request.xhr? }
    # before_filter :authenticate_user!
 

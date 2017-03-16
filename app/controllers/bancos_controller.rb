@@ -1,6 +1,5 @@
 class BancosController < ApplicationController
   before_action :set_banco, only: [:show, :edit, :update, :destroy]
-
   # GET /bancos
   # GET /bancos.json
   def index
