@@ -1,0 +1,8 @@
+<tr id="usuario_<%= usuario.id%>">
+ <td><%= usuario.nombreUsuario %></td>
+        <td><%= usuario.contrasena %></td>
+        <td><%= usuario.persona_id %></td>
+        <td><%= usuario.tipoUsuario_id %></td>
+  <td><%= link_to 'Editar', edit_usuario_path(usuario), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', usuario, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{usuario.nombreUsuario}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-cliente-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nuevo cliente");
+ 
+// Render the new form
+$('.modal-body-clientes').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalClientes').modal("show");
+ 
+// Set focus to the first element
+$('#modalClientes').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

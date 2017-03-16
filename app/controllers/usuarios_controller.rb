@@ -1,5 +1,5 @@
 class UsuariosController < ApplicationController
-  before_action :set_usuario, only: [:show, :edit, :update, :destroy]
+  before_action :set_usuario, only: [:edit, :update, :destroy]
 
   # GET /usuarios
   # GET /usuarios.json
@@ -28,11 +28,14 @@ class UsuariosController < ApplicationController
 
     respond_to do |format|
       if @usuario.save
-        format.html { redirect_to @usuario, notice: 'Usuario was successfully created.' }
-        format.json { render :show, status: :created, location: @usuario }
+        #format.html { redirect_to @usuario, notice: 'Usuario was successfully created.' }
+        #format.json { render :show, status: :created, location: @usuario }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @usuario.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @usuario.errors, status: :unprocessable_entity }
+        format.json{render json: @usuario.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -42,11 +45,14 @@ class UsuariosController < ApplicationController
   def update
     respond_to do |format|
       if @usuario.update(usuario_params)
-        format.html { redirect_to @usuario, notice: 'Usuario was successfully updated.' }
-        format.json { render :show, status: :ok, location: @usuario }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @usuario, notice: 'Usuario was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @usuario }
       else
-        format.html { render :edit }
-        format.json { render json: @usuario.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @usuario.errors, status: :unprocessable_entity }
+        format.json{render json: @usuario.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -56,6 +62,7 @@ class UsuariosController < ApplicationController
   def destroy
     @usuario.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to usuarios_url, notice: 'Usuario was successfully destroyed.' }
       format.json { head :no_content }
     end

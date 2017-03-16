@@ -1,24 +1,47 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Categorias de Artículos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+      <div class="col-ms-12">
+        <div class="div-add-button">
 
-<h1>Listing Gastos</h1>
+           <%= link_to new_gasto_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"}  do %>
+             <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+             Añadir gastos
+          <%end%>
 
-<table>
-  <thead>
-    <tr>
-      <th>Montogasto</th>
-      <th>Fechagasto</th>
-      <th>Descripciongasto</th>
-      <th>Lugarcompragasto</th>
-      <th>Persona</th>
-      <th>Categoria gasto</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
+        </div>
+      </div>
+    </div>
+    
+    <hr style="border-style: solid; border-width: 2px;">
 
-  <tbody>
-    <% @gastos.each do |gasto| %>
+    <div class="row">
+      <div>
+      
+        <table class="table table-striped responsive-utilities jambo_table responsive no-wrap data-table" id="tabla_categorias">
+          <thead>
+            <tr>
+              <th class="column-title">Monto gasto</th>
+              <th class="column-title">Fecha gasto</th>
+              <th class="column-title">Descripcion gasto</th>
+              <th class="column-title">Lugar compra gasto</th>
+              <th class="column-title">Persona</th>
+              <th class="column-title">Categoria gasto</th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_gastos">
+            <%= render @gastos%>
+            <!--<% @gastos.each do |gasto| %>
       <tr>
         <td><%= gasto.montoGasto %></td>
         <td><%= gasto.fechaGasto %></td>
@@ -30,10 +53,11 @@
         <td><%= link_to 'Edit', edit_gasto_path(gasto) %></td>
         <td><%= link_to 'Destroy', gasto, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    <% end %>-->
+          </tbody>
+        </table>
 
-<br>
-
-<%= link_to 'New Gasto', new_gasto_path %>
+        <%= render 'modalGastos'%>
+      </div>
+    </div>
+  </div>

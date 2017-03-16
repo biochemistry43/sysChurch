@@ -1,21 +1,44 @@
-<p id="notice"><%= notice %></p>
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Categorias de Gastos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+      <div class="col-ms-12">
+        <div class="div-add-button">
 
-<h1>Listing Categoria Gastos</h1>
+           <%= link_to new_categoria_gasto_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-gasto-btn"}  do %>
+             <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+             Añadir Categoría de gasto
+          <%end%>
 
-<table class="data-table">
-  <thead>
-    <tr>
-      <th>Nombrecategoria</th>
-      <th>Descripcioncategoria</th>
-      <th>Idcategoriapadre</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
+        </div>
+      </div>
+    </div>
+    
+    <hr style="border-style: solid; border-width: 2px;">
 
-  <tbody>
-    <% @categoria_gastos.each do |categoria_gasto| %>
+    <div class="row">
+      <div>
+      
+        <table class="table table-striped responsive-utilities jambo_table responsive no-wrap data-table" id="tabla_categorias">
+          <thead>
+            <tr>
+              <th class="column-title">Nombre de Categoría</th>
+              <th class="column-title">Descripción</th>
+              <th class="column-title">Categoría Padre</th>
+              <th class="column-title"></th>
+              <th class="column-title"></th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_categorias_gastos">
+            <%= render @categoria_gastos%>
+            <!--<% @categoria_gastos.each do |categoria_gasto| %>
       <tr>
         <td><%= categoria_gasto.nombreCategoria %></td>
         <td><%= categoria_gasto.descripcionCategoria %></td>
@@ -24,10 +47,11 @@
         <td><%= link_to 'Edit', edit_categoria_gasto_path(categoria_gasto) %></td>
         <td><%= link_to 'Destroy', categoria_gasto, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    <% end %>-->
+          </tbody>
+        </table>
 
-<br>
-
-<%= link_to 'New Categoria gasto', new_categoria_gasto_path %>
+        <%= render 'modalGastos'%>
+      </div>
+    </div>
+  </div>

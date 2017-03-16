@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-cliente-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar clientes");
+ 
+// Render the new form
+$('.modal-body-clietes').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalClientes').modal("show");
+ 
+// Set focus to the first element
+$('#modalClienetes').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

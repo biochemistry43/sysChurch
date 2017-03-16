@@ -1,0 +1,10 @@
+<tr id="banco_<%= banco.id%>">
+  <td><%= banco.tipoCuenta %></td>
+  <td><%= banco.nombreCuenta %></td>
+  <td><%= banco.numeroCuenta %></td>
+  <td><%= banco.saldoInicial %></td>
+  <td><%= banco.fecha %></td>
+  <td><%= banco.descripcion %></td>
+  <td><%= link_to 'Editar', edit_banco_path(banco), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', banco, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{banco.nombreCuenta}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

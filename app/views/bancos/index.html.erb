@@ -9,10 +9,11 @@
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="row">
       <div class="div-add-button">
-        <%= link_to new_banco_path, {class: "btn btn-info btn-lg btn-add"} do %>  
-          <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
-          Añadir Banco
-        <%end%>
+
+           <%= link_to new_banco_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-banco-btn"}  do %>
+             <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+             Añadir Banco
+          <%end%>
       </div>
     </div>
 
@@ -31,12 +32,12 @@
               <th class="column-title">Descripcion</th>
               <th class="column-title"></th>
               <th class="column-title"></th>
-              <th class="column-title"></th>
             </tr>
           </thead>
 
-          <tbody>
-            <% @bancos.each do |banco| %>
+          <tbody id="tb_bancos">
+          <%= render @bancos%>
+            <!--<% @bancos.each do |banco| %>
               <tr>
                 <td><%= banco.tipoCuenta %></td>
                 <td><%= banco.nombreCuenta %></td>
@@ -48,9 +49,10 @@
                 <td><%= link_to 'Editar', edit_banco_path(banco), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
                 <td><%= link_to 'Borrar', banco, method: :delete, data: { confirm: '¿Está seguro de borrar este banco?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
               </tr>
-            <% end %>
+            <% end %>-->
           </tbody>
         </table>
+        <%= render 'modalBancos'%>
       </div>
 
     </div>

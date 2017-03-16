@@ -28,11 +28,15 @@ class GastosController < ApplicationController
 
     respond_to do |format|
       if @gasto.save
-        format.html { redirect_to @gasto, notice: 'Gasto was successfully created.' }
-        format.json { render :show, status: :created, location: @gasto }
+        current_user.negocio.gasto << @gasto
+        #format.html { redirect_to @gasto, notice: 'Gasto was successfully created.' }
+        #format.json { render :show, status: :created, location: @gasto }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @gasto.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @gasto.errors, status: :unprocessable_entity }
+        format.json{render json: @gasto.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -42,11 +46,14 @@ class GastosController < ApplicationController
   def update
     respond_to do |format|
       if @gasto.update(gasto_params)
-        format.html { redirect_to @gasto, notice: 'Gasto was successfully updated.' }
-        format.json { render :show, status: :ok, location: @gasto }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @gasto, notice: 'Gasto was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @gasto }
       else
-        format.html { render :edit }
-        format.json { render json: @gasto.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @gasto.errors, status: :unprocessable_entity }
+        format.json{render json: @gasto.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -56,6 +63,7 @@ class GastosController < ApplicationController
   def destroy
     @gasto.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to gastos_url, notice: 'Gasto was successfully destroyed.' }
       format.json { head :no_content }
     end

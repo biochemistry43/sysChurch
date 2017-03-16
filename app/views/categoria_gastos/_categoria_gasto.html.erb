@@ -1,0 +1,7 @@
+<tr id="categoria_gasto_<%= categoria_gasto.id%>">
+ <td><%= categoria_gasto.nombreCategoria %></td>
+ <td><%= categoria_gasto.descripcionCategoria %></td>
+ <td><%= categoria_gasto.idCategoriaPadre %></td>
+  <td><%= link_to 'Editar', edit_categoria_gasto_path(categoria_gasto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', categoria_gasto, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{catategoria_gasto.nombreCategoria}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

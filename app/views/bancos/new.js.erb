@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-bancos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nuevo banco");
+ 
+// Render the new form
+$('.modal-body-bancos').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalBancos').modal("show");
+ 
+// Set focus to the first element
+$('#modalBancos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

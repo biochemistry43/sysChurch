@@ -9,7 +9,7 @@
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="row">
       <div class="div-add-button">
-        <%= link_to new_proveedor_path, {class: "btn btn-info btn-lg btn-add"} do %>  
+        <%= link_to new_proveedor_path, {remote: true,class: "btn btn-info btn-lg btn-add"} do %>  
           <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
           Añadir Proveedor
         <%end%>
@@ -28,12 +28,12 @@
               <th class="column-title">Email</th>
               <th class="column-title"></th>
               <th class="column-title"></th>
-              <th class="column-title"></th>
             </tr>
           </thead>
 
           <tbody>
-            <% @proveedores.each do |proveedor| %>
+          <%= render @proveedores%>
+            <!--<% @proveedores.each do |proveedor| %>
               <tr>
                 <td><%= proveedor.nombre %></td>
                 <td><%= proveedor.telefono %></td>
@@ -42,10 +42,10 @@
                 <td><%= link_to 'Editar', edit_proveedor_path(proveedor), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
                 <td><%= link_to 'Borrar', proveedor, method: :delete, data: { confirm: '¿Está seguro de eliminar este proveedor?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
               </tr>
-            <% end %>
+            <% end %>-->
           </tbody>
         </table>
-
+          <%= render 'modalProveedores'%>
       </div>
     </div>
   </div>

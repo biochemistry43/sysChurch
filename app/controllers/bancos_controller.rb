@@ -1,5 +1,5 @@
 class BancosController < ApplicationController
-  before_action :set_banco, only: [:show, :edit, :update, :destroy]
+  before_action :set_banco, only: [:edit, :update, :destroy]
 
   # GET /bancos
   # GET /bancos.json
@@ -29,11 +29,14 @@ class BancosController < ApplicationController
     respond_to do |format|
       if @banco.save
         current_user.negocio.bancos << @banco
-        format.html { redirect_to @banco, notice: 'Banco was successfully created.' }
-        format.json { render :show, status: :created, location: @banco }
+        #format.html { redirect_to @banco, notice: 'Banco was successfully created.' }
+        #format.json { render :show, status: :created, location: @banco }
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @banco.errors, status: :unprocessable_entity }
+        #format.html { render :new }
+        #format.json { render json: @banco.errors, status: :unprocessable_entity }
+        format.json{render json: @banco.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -43,11 +46,14 @@ class BancosController < ApplicationController
   def update
     respond_to do |format|
       if @banco.update(banco_params)
-        format.html { redirect_to @banco, notice: 'Banco was successfully updated.' }
-        format.json { render :show, status: :ok, location: @banco }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @banco, notice: 'Banco was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @banco }
       else
-        format.html { render :edit }
-        format.json { render json: @banco.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @banco.errors, status: :unprocessable_entity }
+        format.json{render json: @banco.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -57,6 +63,7 @@ class BancosController < ApplicationController
   def destroy
     @banco.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to bancos_url, notice: 'Banco was successfully destroyed.' }
       format.json { head :no_content }
     end

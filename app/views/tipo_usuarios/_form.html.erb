@@ -1,7 +1,7 @@
-<%= form_for(@tipo_usuario) do |f| %>
+<%= form_for @tipo_usuario, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
   <% if @tipo_usuario.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@tipo_usuario.errors.count, "error") %> prohibited this tipo_usuario from being saved:</h2>
+    <div id="error_explanation" class="bg-danger text-danger">
+      <h2><%= pluralize(@tipo_usuario.errors.count, "error") %> prohibited this cat_articulo from being saved:</h2>
 
       <ul>
       <% @tipo_usuario.errors.full_messages.each do |message| %>
