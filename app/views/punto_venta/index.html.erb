@@ -135,7 +135,9 @@
   </div>
 
   <div class="col-md-12 col-sm-12 col-xs-12">
-  	
+  <%if current_user.negocio%>
+    <%= image_tag(current_user.negocio.logo_url, id: "logo_negocio") if current_user.negocio.logo.present? %>
+  <%end%>
     
     <!--modal para actuailización de cantidad de proudcto-->
     <div class="modal" id="actualizarCantidad">
@@ -273,10 +275,12 @@
     </div>
 
 
-    <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.nombre.capitalize%>">
+    <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
+    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.direccionFiscal.capitalize : current_user.negocio.direccion.capitalize %>">
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre.capitalize%>">
     <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.direccion%>">
     <input type="hidden" id="fecha" value="<%= Time.now %>">
+    <input type="hidden" id="nombre_cajero" value="<%= current_user.perfil.nombre%>">
     <div id="print-div2"></div>
     <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
       <%= hidden_field_tag(:dataVenta) %>

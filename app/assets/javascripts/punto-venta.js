@@ -2,8 +2,8 @@ var numTarjetaCredito;
 var numTarjetaDebito;
 var plazoCredito;
 var referenciaOxxo;
-var referenciaPaypal;
-
+var referenciaPaypal
+var copiaFormaPago = {};
 
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
@@ -208,9 +208,6 @@ $(document).ready(function(){
   }//Termina el método cambiarCantidadProducto
 
 
-  
-
-
   //Acción para abrir el modal de cobro de la venta.
   $("#pagarBtn").on("click", function(){
     if ($('#table_sales >tbody >tr').length == 0){
@@ -285,7 +282,7 @@ $(document).ready(function(){
             // en lugar de los espacios.
             // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
             // Espacios incluidos.
-            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();
+            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();            
 
           }
 
@@ -297,7 +294,6 @@ $(document).ready(function(){
         complete: function(jqXHR, settings){
           
           if(jqXHR.status == 200){
-            
             completarVenta();
 
             
@@ -352,15 +348,20 @@ window.onload = function() {
   }
 };
 
+
+
 /**
  * 
  */
 function completarVenta(){
+
   datosFormaPago.push(formaPagoJSON);
+  //alert(JSON.stringify(datosFormaPago));
 
   //Se guardan los datos de forma de pago en el arreglo de datos de la venta
   datosVenta.push(datosFormaPago);
-            
+  copiaFormaPago = JSON.parse(JSON.stringify(formaPagoJSON));        
+  
   /**
    * Ahora se recorren cada uno de los items de la venta y llena el arreglo
    * con los datos respectivos.
@@ -409,9 +410,6 @@ function completarVenta(){
     form.submit(); //Se submite el form con los datos de la venta.
   }
 
-  
-
-  
      
   //Se vacían los arreglos previamente creados para evitar posibles datos 
   //incorrectos.
@@ -428,8 +426,26 @@ function completarVenta(){
 function imprimirTicket(){
 var div_print = document.createElement("div");
     div_print.setAttribute("id", "print-div")
+    div_print.setAttribute("style", "font-size: 11px; width:200px;");
     var div_print_1 = document.createElement("div");
     div_print_1.className = "col-md-3";
+
+    //logo del negocio
+    var filalogo = document.createElement("div");
+    filalogo.className = "row"
+    var divlogo = document.createElement("div");
+    divlogo.className = "col-md-12";
+    divlogo.setAttribute("style","width: 100%;");
+    div_print_1.appendChild(filalogo);
+    filalogo.appendChild(divlogo);
+    var logoNegocio = document.createElement("img")
+    logoNegocio.setAttribute("width", "70px");
+    logoNegocio.setAttribute("height", "45px");
+    rutaLogo = document.getElementById('logo_negocio').src;
+    logoNegocio.setAttribute("src", rutaLogo);
+    logoNegocio.setAttribute("style","horizontal-align:middle;");
+    divlogo.appendChild(logoNegocio);
+
 
     //Primer fila del ticket
     var div_print_1_1 = document.createElement("div");
@@ -439,8 +455,11 @@ var div_print = document.createElement("div");
     div_print_1_1_1.className = "col-md-12";
     div_print_1_1_1.setAttribute("style", "text-align:center;");
 
-    var nomNegocio = document.createElement("h4");
+    var nomNegocio = document.createElement("h5");
     nomNegocio.setAttribute("id", "nombre_negocio_ticket");
+    var dirNegocio = document.createElement("p");
+    dirNegocio.setAttribute("style", "font-size: 9px;");
+    dirNegocio.setAttribute("id", "dir_negocio_ticket")
     var nomSucursal = document.createElement("h5");
     nomSucursal.setAttribute("id", "nombre_sucursal_ticket");
     //Termina primer fila del ticket
@@ -449,9 +468,10 @@ var div_print = document.createElement("div");
     var div_print_1_2 = document.createElement("div");
     div_print_1_2.className = "row";
     div_print_1_2.setAttribute("style", "text-align:center;");
-    var div_print_1_2_1 = document.createElement("div");
+    var div_print_1_2_1 = document.createElement("p");
     div_print_1_2_1.className = "col-md-12";
     div_print_1_2_1.setAttribute("id", "direccion_sucursal_ticket");
+    div_print_1_2_1.setAttribute("style", "font-size:9px;");
     //Termina segunda fila del ticket
 
     //Tercera fila del ticket
@@ -461,6 +481,7 @@ var div_print = document.createElement("div");
     var div_print_1_3_1 = document.createElement("div");
     div_print_1_3_1.className = "col-md-12";
     div_print_1_3_1.setAttribute("id", "fecha_ticket");
+    div_print_1_3_1.setAttribute("style", "font-size: 9px;");
     //Termina tercer fila del ticket
 
     //Cuarta fila del ticket
@@ -469,7 +490,17 @@ var div_print = document.createElement("div");
     var div_print_1_4_1 = document.createElement("div");
     div_print_1_4_1.className = "col-md-12";
     div_print_1_4_1.setAttribute("id", "datos_cliente_ticket");
+    div_print_1_4_1.setAttribute("style", "font-size: 9px;");
     //Termina la cuarta fila del ticket
+
+    var filaCajero = document.createElement("div");
+    filaCajero.className = "row";
+    var divCajero = document.createElement("div");
+    divCajero.className = "col-md-12";
+    divCajero.setAttribute("id", "datos_cajero");
+    divCajero.setAttribute("style", "font-size: 9px;");
+
+
 
     //Quinta fila del ticket
     var div_print_1_5 = document.createElement("div");
@@ -477,11 +508,12 @@ var div_print = document.createElement("div");
     var div_print_1_5_1 = document.createElement("div");
     div_print_1_5_1.className = "col-md-12";
     div_print_1_5_1.setAttribute("id", "productos_ticket");
+    div_print_1_5_1.setAttribute("style", "width: 100%;");
     var tablaProductos = document.createElement("table");
+    tablaProductos.className = "col-md-12"
+    tablaProductos.setAttribute("style","font-size: 9px;");
+    tablaProductos.setAttribute("width", "95%");
     tablaProductos.setAttribute("id", "tabla_productos_ticket");
-    tablaProductos.setAttribute("class", "table");
-    tablaProductos.setAttribute("class", "table-stripped");
-    tablaProductos.setAttribute("class", "jambo-table");
     tBodyProductos = document.createElement("tbody");
     //Termina quinta fila
     
@@ -501,6 +533,7 @@ var div_print = document.createElement("div");
     div_print_1_7_1.className = "col-md-12";
     var forma_Pago = document.createElement("p");
     forma_Pago.setAttribute("id", "forma_pago");
+    forma_Pago.setAttribute("style", "font-size: 9px;")
     //Termina septima fila del ticket
 
     //Construccion del arbol dom del ticket
@@ -509,6 +542,7 @@ var div_print = document.createElement("div");
     div_print_1.appendChild(div_print_1_2);
     div_print_1.appendChild(div_print_1_3);
     div_print_1.appendChild(div_print_1_4);
+    div_print_1.appendChild(filaCajero);
     div_print_1.appendChild(div_print_1_5);
     div_print_1.appendChild(div_print_1_6);
     div_print_1.appendChild(div_print_1_7);
@@ -516,6 +550,7 @@ var div_print = document.createElement("div");
     //Construccion de la primer fila
     div_print_1_1.appendChild(div_print_1_1_1);
     div_print_1_1_1.appendChild(nomNegocio);
+    div_print_1_1_1.appendChild(dirNegocio);
     div_print_1_1_1.appendChild(nomSucursal);
     //Termina construcción de la primer fila
 
@@ -530,6 +565,8 @@ var div_print = document.createElement("div");
     //Construcción de la cuarta fila
     div_print_1_4.appendChild(div_print_1_4_1);
     //Termina construcción de la cuarta fila
+
+    filaCajero.appendChild(divCajero);
 
     //Construcción de la quinta fila
     div_print_1_5.appendChild(div_print_1_5_1);
@@ -547,31 +584,29 @@ var div_print = document.createElement("div");
     div_print_1_7_1.appendChild(forma_Pago);
     //Termina construcción de la septima fila
 
+    //alert(JSON.stringify(copiaFormaPago));
+
     document.getElementById('print-div2').appendChild(div_print);
 
 
 
     $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
+    $("#dir_negocio_ticket").append($("#direccion_negocio").val())
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
-    $("#direccion_sucursal_ticket").append("Direccion: " + $("#direccion_sucursal").val());
+    $("#direccion_sucursal_ticket").append($("#direccion_sucursal").val());
     $("#fecha_ticket").append("Fecha: " + fecha.getDate()+"/"+
                               (fecha.getMonth()+1)+"/"+fecha.getFullYear());
 
-    $("#datos_cliente_ticket").html("<strong>Datos del cliente: </strong>"+
-                                    "<ul class='list-unstyled'>"+
-                                      "<li>"+$("#nom_cliente_venta").text()+"</li>"+
-                                      "<li>"+$("#email_cliente").text()+"</li>"+
-                                      "<li>"+$("#telefono_cliente").text()+"</li>"+
-                                    "</ul>");
+    $("#datos_cliente_ticket").html("Cliente: "+$("#nom_cliente_venta").text());
+    $("#datos_cajero").html("Cajero: "+$("#nombre_cajero").val());
 
     $("#tabla_productos_ticket").html(""+
       
         "<thead>"+
-          "<tr class='headings'>"+
-            "<th class'column-title'>Cant</th>"+
-            "<th class'column-title'>Art</th>"+
-            "<th class'column-title'>Pre Unit</th>"+
-            "<th class'column-title'>Importe</th>"+
+          "<tr style='background-color: gray;'>"+
+            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Cant</th>"+
+            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Prod</th>"+
+            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Imp</th>"+
           "</tr>"+ 
         "</thead>"
 
@@ -597,11 +632,10 @@ var div_print = document.createElement("div");
         
         $("#tabla_productos_ticket").append(""+
        
-          "<tr class='even pointer'>"+
+          "<tr style='border-bottom: 1px solid #ddd;'>"+
             "<td>"+cantidad+"</td>"+
-            "<td>"+nombreProd+"</td>"+
-            "<td>"+precio+"</td>"+
-            "<td>"+importe+"</td>"+
+            "<td style='text-align: justify;' >"+nombreProd+"</td>"+
+            "<td style='text-align:right;'>"+importe+"</td>"+
           "</tr>"
     
         );
@@ -611,8 +645,23 @@ var div_print = document.createElement("div");
     }); //Termina recorrido de la tabla de venta actual
     $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
 
-    $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
-    
+    if(formaPago.toLowerCase() == "efectivo"){
+       $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
+    }
+    else{
+
+      for (x in copiaFormaPago) {
+        if(x.includes("tarjeta")){
+          nTarjeta = copiaFormaPago[x];
+          terminacion = nTarjeta.substr(12, 4);
+          document.getElementById("forma_pago").innerHTML += x + ": ************" +terminacion + "<br>"; 
+        }
+        else{
+          document.getElementById("forma_pago").innerHTML += x + ": " +copiaFormaPago[x] + "<br>";  
+        }
+      }
+    }
+
 
     $("#print-div2").print({
 
