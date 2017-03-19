@@ -35,6 +35,7 @@ class ClientesController < ApplicationController
         #format.html { render :edit }
         #format.json { render json: @cliente.errors, status: :unprocessable_entity }
         format.json{render json: @cliente.errors.full_messages, status: :unprocessable_entity}
+        format.js { render :edit }
       end
     end
   end
@@ -43,17 +44,23 @@ class ClientesController < ApplicationController
     @cliente = Cliente.new(cliente_params)
 
     respond_to do |format|
-      if @cliente.save
-        current_user.negocio.clientes << @cliente
-        #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
-        #format.json { render :show, status: :created, location: @cliente }
-        format.json { head :no_content}
-        format.js
+      if @cliente.valid?
+        if @cliente.save
+          current_user.negocio.clientes << @cliente
+          #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
+          #format.json { render :show, status: :created, location: @cliente }
+          format.json { head :no_content}
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @cliente.errors, status: :unprocessable_entity }
+          format.json{render json: @cliente.errors.full_messages, status: :unprocessable_entity}
+        end
       else
-        #format.html { render :new }
-        #format.json { render json: @cliente.errors, status: :unprocessable_entity }
-        format.json{render json: @cliente.errors.full_messages, status: :unprocessable_entity}
+        format.js { render :new }
+        format.json { render json: @cliente.errors.full_messages, status: :unprocessable_entity }
       end
+
     end
 
   end

@@ -1,40 +1,43 @@
-<%= form_for(@categoria_gasto) remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+<div class="x_content">
+  <%= form_for(@categoria_gasto) remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
 
-
-  <% if @categoria_gasto.errors.any? %>
-    <div id="error_explanation" class="bg-danger text-danger">
-      <h2><%= pluralize(@categoria_gasto.errors.count, "error") %> prohibited this categoria_gasto from being saved:</h2>
-
-      <ul>
-      <% @categoria_gasto.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+    <div class="item form-group<%= @categoria_gasto.errors[:nombreCategoria].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :nombreCategoria, "Nombre de categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :nombreCategoria, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el nombre de la categoría..."} do%>
+        <%end%>
+        <%if @categoria_gasto.errors[:nombreCategoria].any? %>
+          <p class="bg-danger"><%= @categoria_gasto.errors[:nombreCategoria].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
     </div>
-  <% end %>
-  <div class="row">
-    <div class="col-md-12 col-sm-12">
-      <div class="field form-group has-feedback">
-        <%= f.label :nombreCategoria, "Nombre de categoría:" %><br>
-        <%= f.text_field :nombreCategoria, :html=>{class: "form-control has-feedback-left", required: true}%>
-        <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
-      </div>
-      <div class="field form-group has-feedback">
-        <%= f.label :descripcionCategoria, "Descripción:" %><br>
-        <%= f.text_field :descripcionCategoria, class: "form-control has-feedback-left"%>
-      </div>
-      <div class="field form-group has-feedback">
-        <%= f.label :idCategoriaPadre, "Elegir categoría padre:"%><br>
-        <%= f.collection_select(:idCategoriaPadre, current_user.negocio.gasto, :id, :nombreCategoria)%>
 
-      </div>
-      <div class="ln_solid"></div>
-      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @categoria_gasto.new_record? ? "Crear categoria" : "Actualizar Categoria", :class => "btn btn-success"%>
+    <div class="item form-group<%= @categoria_gasto.errors[:descripcionCategoria].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :descripcionCategoria, "Descripción de categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_area :descripcionCategoria, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Descripción de la categoría de gasto. Máximo 250 caracteres..."} do%>
+        <%end%>
+        <%if @categoria_gasto.errors[:descripcionCategoria].any? %>
+          <p class="bg-danger"><%= @categoria_gasto.errors[:descripcionCategoria].to_s[/\w([^"]*)/] %></p>
+        <% end %>
       </div>
     </div>
     
-  </div>
-  
-<% end %>
+    <div class="item form-group<%= @categoria_gasto.errors[:idCategoriaPadre].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :idCategoriaPadre, "Categoría padre: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.collection_select(:idCategoriaPadre, current_user.negocio.gasto, :id, :nombreCategoria), {class: "form-control col-md-7 col-xs-12 text_field"%>
+        <%if @categoria_gasto.errors[:idCategoriaPadre].any? %>
+          <p class="bg-danger"><%= @categoria_gasto.errors[:idCategoriaPadre].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <%= f.submit @categoria_gasto.new_record? ? "Crear categoria" : "Actualizar Categoria", :class => "btn btn-success"%>
+    </div>
+
+  <% end %>
+</div>
+
 
