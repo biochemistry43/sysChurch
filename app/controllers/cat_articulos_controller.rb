@@ -40,7 +40,7 @@ class CatArticulosController < ApplicationController
           format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
         end
       else
-        format.js { remder :new }
+        format.js { render :new }
         format.json { render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity }
       end
     end

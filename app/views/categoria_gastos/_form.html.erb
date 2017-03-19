@@ -1,4 +1,6 @@
-<%= form_for(@categoria_gasto) remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
+<%= form_for(@categoria_gasto) remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+
+
   <% if @categoria_gasto.errors.any? %>
     <div id="error_explanation" class="bg-danger text-danger">
       <h2><%= pluralize(@categoria_gasto.errors.count, "error") %> prohibited this categoria_gasto from being saved:</h2>

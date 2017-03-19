@@ -27,15 +27,20 @@ class CategoriaGastosController < ApplicationController
     @categoria_gasto = CategoriaGasto.new(categoria_gasto_params)
 
     respond_to do |format|
-      if @categoria_gasto.save
-        current_user.negocio.categoria_gastos << @categoria_gasto
-        #format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully created.' }
-        f#ormat.json { render :show, status: :created, location: @categoria_gasto }
-        format.json { head :no_content}
-        format.js
+      if @categoria_gasto.valid?
+        if @categoria_gasto.save
+          current_user.negocio.categoria_gastos << @categoria_gasto
+          #format.html { redirect_to @categoria_gasto, notice: 'Categoria gasto was successfully created.' }
+          f#ormat.json { render :show, status: :created, location: @categoria_gasto }
+          format.json { head :no_content}
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+          format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
+        end
       else
-        #format.html { render :new }
-        #format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
+        format.js { render :new }
         format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
       end
     end
@@ -54,6 +59,7 @@ class CategoriaGastosController < ApplicationController
         #format.html { render :edit }
         #format.json { render json: @categoria_gasto.errors, status: :unprocessable_entity }
         format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
+        format.js { render :edit }
       end
     end
   end

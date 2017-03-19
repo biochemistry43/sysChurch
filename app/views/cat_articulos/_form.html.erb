@@ -1,38 +1,39 @@
-<%= form_for @cat_articulo, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
-  <% if @cat_articulo.errors.any? %>
-    <div id="error_explanation" class="bg-danger text-danger">
-      <h2><%= pluralize(@cat_articulo.errors.count, "error") %> prohibited this cat_articulo from being saved:</h2>
+<div class="x_content">
+  <%= form_for @cat_articulo, remote: true, :html=>{ :class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
 
-      <ul>
-      <% @cat_articulo.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+    <div class="item form-group<%= @cat_articulo.errors[:nombreCatArticulo].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :nombreCatArticulo, "Nombre de Categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :nombreCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el tipo de cuenta..."} do%>
+        <%end%>
+        <%if @cat_articulo.errors[:nombreCatArticulo].any? %>
+          <p class="bg-danger"><%= @cat_articulo.errors[:nombreCatArticulo].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @cat_articulo.errors[:descripcionCatArticulo].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :descripcionCatArticulo, "Descripción de la categoría: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :descripcionCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
+        <%end%>
+        <%if @cat_articulo.errors[:descripcionCatArticulo].any? %>
+          <p class="bg-danger"><%= @cat_articulo.errors[:descripcionCatArticulo].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @cat_articulo.errors[:numeroCuenta].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :cat_articulo_id, "Elegir categoría padre:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} do %>
       <% end %>
-      </ul>
-    </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo)%>      
+      </div>
+    </div>  
+
+    <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <%= f.submit @cat_articulo.new_record? ? "Crear Categoría" : "Actualizar Categoría", :class => "btn btn-success"%>
+    </div>  
   <% end %>
-
-  <div class="row">
-    <div class="col-md-12 col-sm-12">
-      <div class="field form-group has-feedback">
-        <%= f.label :nombreCatArticulo, "Nombre de categoría:" %><br>
-        <%= f.text_field :nombreCatArticulo, :html=>{class: "form-control has-feedback-left", required: true}%>
-        <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
-      </div>
-      <div class="field form-group has-feedback">
-        <%= f.label :descripcionCatArticulo, "Descripción:" %><br>
-        <%= f.text_field :descripcionCatArticulo, class: "form-control has-feedback-left"%>
-      </div>
-      <div class="field form-group has-feedback">
-        <%= f.label :cat_articulo_id, "Elegir categoría padre:"%><br>
-        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo)%>
-
-      </div>
-      <div class="ln_solid"></div>
-      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @cat_articulo.new_record? ? "Crear categoria" : "Actualizar Categoria", :class => "btn btn-success"%>
-      </div>
-    </div>
     
-  </div>
-  
-<% end %>
+</div>
