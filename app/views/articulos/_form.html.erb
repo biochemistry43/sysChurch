@@ -1,53 +1,91 @@
-<%= form_for @articulo, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
-  <% if @articulo.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@articulo.errors.count, "error") %> prohibited this articulo from being saved:</h2>
-
-      <ul>
-        <% @articulo.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-   
-  <% end %>
-
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :clave %><br>
-    <%= f.text_field :clave, class: "form-control has-feedback-left"%>
-    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :foto %><br>
-    <%= f.file_field :fotoProducto, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :nombre %><br>
-    <%= f.text_field :nombre, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :descripcion %><br>
-    <%= f.text_field :descripcion, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :stock %><br>
-    <%= f.number_field :stock, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :categoria %><br>
-    <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Select'})%>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label "Precio de Compra" %><br>
-    <%= f.number_field :precioCompra, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label "Precio de Venta" %><br>
-    <%= f.number_field :precioVenta, class: "form-control has-feedback-left" %>
-  </div>
-  <div class="ln_solid"></div>
-   <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @articulo.new_record? ? "Crear articulo" : "Actualizar articulo", :class => "btn btn-success"%>
+<div class="x_content">
+  <%= form_for @articulo, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+    
+    <div class="item form-group<%= @articulo.errors[:clave].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :clave, "Clave: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :clave, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del producto..."} do%>
+        <%end%>
+        <%if @articulo.errors[:clave].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:clave].to_s[/\w([^"]*)/] %></p>
+        <% end %>
       </div>
-<% end %>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :nombre, "Nombre: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre del producto..."} do%>
+        <%end%>
+        <%if @articulo.errors[:nombre].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:nombre].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :descripcion, "Descripción: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba alguna descripción del producto..."} do%>
+        <%end%>
+        <%if @articulo.errors[:descripcion].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:stock].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :stock, "Stock: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :stock, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"stock de producto..."} do%>
+        <%end%>
+        <%if @articulo.errors[:stock].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:stock].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :categoria, "Categoria: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+         <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Seleccione categoria', class: "form-control col-md-7 col-xs-12"})%>
+        <%if @articulo.errors[:categoria].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:categoria].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:precioCompra].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :precioCompra, "Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Precio venta..."} do%>
+        <%end%>
+        <%if @articulo.errors[:precioCompra].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:precioCompra].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:precioVenta].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :precioVenta, "Precio de venta:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :precioVenta, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Precio venta..."} do%>
+        <%end%>
+        <%if @articulo.errors[:precioVenta].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:precioVenta].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!--<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+       f.label :foto
+       f.file_field :fotoProducto, class: "form-control has-feedback-left"
+    </div>-->
+    
+     <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+          <%= f.submit @articulo.new_record? ? "Crear articulo" : "Actualizar articulo", :class => "btn btn-success"%>
+        </div>
+  <% end %>
+</div>
+
 

@@ -27,16 +27,21 @@ class CatArticulosController < ApplicationController
     @cat_articulo = CatArticulo.new(cat_articulo_params)
 
     respond_to do |format|
-      if @cat_articulo.save
-        current_user.negocio.cat_articulos << @cat_articulo
-        #format.html { redirect_to @cat_articulo, notice: 'La categoria fue creada satisfactoriamente' }
-        #format.json { render :show, status: :created, location: @cat_articulo }
-        format.json { head :no_content}
-        format.js
+      if @cat_articulo.valid?
+        if @cat_articulo.save
+          current_user.negocio.cat_articulos << @cat_articulo
+          #format.html { redirect_to @cat_articulo, notice: 'La categoria fue creada satisfactoriamente' }
+          #format.json { render :show, status: :created, location: @cat_articulo }
+          format.json { head :no_content}
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
+          format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
+        end
       else
-        #format.html { render :new }
-        #format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
-        format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
+        format.js { remder :new }
+        format.json { render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity }
       end
     end
   end
@@ -54,6 +59,7 @@ class CatArticulosController < ApplicationController
         #format.html { render :edit }
         #format.json { render json: @cat_articulo.errors, status: :unprocessable_entity }
         format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
+        format.js { render :edit }
       end
     end
   end

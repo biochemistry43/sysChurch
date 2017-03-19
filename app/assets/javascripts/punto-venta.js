@@ -59,6 +59,7 @@ $(document).ready(function(){
 
       
       var cambio = pagoCli - value;
+      cambio = cambio.toFixed(2);
 
       if (cambio > 0){
         $("#cambio_cliente").text(cambio);  

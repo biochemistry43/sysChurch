@@ -1,41 +1,74 @@
-<%= form_for @banco, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
-  <% if @banco.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@banco.errors.count, "error") %> prohibited this banco from being saved:</h2>
-
-      <ul>
-      <% @banco.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.label :tipoCuenta %><br>
-    <%= f.text_field :tipoCuenta %>
-  </div>
-  <div class="field">
-    <%= f.label :nombreCuenta %><br>
-    <%= f.text_field :nombreCuenta %>
-  </div>
-  <div class="field">
-    <%= f.label :numeroCuenta %><br>
-    <%= f.number_field :numeroCuenta %>
-  </div>
-  <div class="field">
-    <%= f.label :saldoInicial %><br>
-    <%= f.text_field :saldoInicial %>
-  </div>
-  <div class="field">
-    <%= f.label :fecha %><br>
-    <%= f.date_select :fecha %>
-  </div>
-  <div class="field">
-    <%= f.label :descripcion %><br>
-    <%= f.text_area :descripcion %>
-  </div>
-  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @banco.new_record? ? "Crear Banco" : "Actualizar Banco", :class => "btn btn-success"%>
+<div class="x_content">
+  <%= form_for @banco, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+    
+    <div class="item form-group<%= @banco.errors[:tipoCuenta].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :tipoCuenta, "Tipo de Cuenta: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :tipoCuenta, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el tipo de cuenta..."} do%>
+        <%end%>
+        <%if @banco.errors[:tipoCuenta].any? %>
+          <p class="bg-danger"><%= @banco.errors[:tipoCuenta].to_s[/\w([^"]*)/] %></p>
+        <% end %>
       </div>
-<% end %>
+    </div>
+
+    <div class="item form-group<%= @banco.errors[:nombreCuenta].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :nombreCuenta, "Nombre de cuenta: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :nombreCuenta, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
+        <%end%>
+        <%if @banco.errors[:nombreCuenta].any? %>
+          <p class="bg-danger"><%= @banco.errors[:nombreCuenta].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @banco.errors[:numeroCuenta].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :numeroCuenta, "Número cuenta: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :numeroCuenta, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el número de cuenta..."} do%>
+        <%end%>
+        <%if @banco.errors[:numeroCuenta].any? %>
+          <p class="bg-danger"><%= @banco.errors[:numeroCuenta].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @banco.errors[:saldoInicial].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :saldoInicial, "Saldo inicial: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :saldoInicial, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Saldo inicial de la cuenta..."} do%>
+        <%end%>
+        <%if @banco.errors[:saldoInicial].any? %>
+          <p class="bg-danger"><%= @banco.errors[:saldoInicial].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @banco.errors[:fecha].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :fecha, "Fecha: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :fecha, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Fecha de apertura de la cuenta..."} do%> 
+        <% end %> 
+        <% if @banco.errors[:fecha].any? %>
+          <p class="bg-danger"><%= @banco.errors[:fecha].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @banco.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :descripcion, "Descripción: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Breve descripción de la cuenta..."} do%>
+        <%end%>
+        <%if @banco.errors[:descripcion].any? %>
+          <p class="bg-danger"><%= @banco.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+    
+     <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+          <%= f.submit @banco.new_record? ? "Crear banco" : "Actualizar banco", :class => "btn btn-success"%>
+        </div>
+  <% end %>
+</div>

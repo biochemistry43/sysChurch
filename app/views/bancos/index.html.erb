@@ -36,20 +36,7 @@
           </thead>
 
           <tbody id="tb_bancos">
-          <%= render @bancos%>
-            <!--<% @bancos.each do |banco| %>
-              <tr>
-                <td><%= banco.tipoCuenta %></td>
-                <td><%= banco.nombreCuenta %></td>
-                <td><%= banco.numeroCuenta %></td>
-                <td><%= banco.saldoInicial %></td>
-                <td><%= banco.fecha %></td>
-                <td><%= banco.descripcion %></td>
-                <td><%= link_to 'Mostrar', banco, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-                <td><%= link_to 'Editar', edit_banco_path(banco), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
-                <td><%= link_to 'Borrar', banco, method: :delete, data: { confirm: '¿Está seguro de borrar este banco?' }, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></i></td>
-              </tr>
-            <% end %>-->
+            <%= render @bancos%>
           </tbody>
         </table>
         <%= render 'modalBancos'%>

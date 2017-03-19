@@ -1,11 +1,22 @@
 <div class="right_col" role="main">
+  <% flash.each do |key, value| %>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+  <%end%>
+
   <div class="page-title">
     <div class="title_left">
       <h1>Productos</h1>
     </div>
   </div>
-  <div class="clearfix"></div>
-  
+  <div class="clearfix"></div> 
   <div class="col-md-12 col-sm-12 col-xs-12 ">
   <div class="row">
       <div class="col-ms-12">
@@ -46,6 +57,7 @@
         <%= render 'modalArticulos'%>
       </div>
     </div>
+
     
   </div>
   <script>
@@ -68,5 +80,6 @@
         }
       });
     });
+    
   </script>
 </div>

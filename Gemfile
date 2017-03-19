@@ -17,8 +17,10 @@ gem 'coffee-rails', '~> 4.1.0'
 # gem 'therubyracer', platforms: :ruby
 gem "font-awesome-rails"
 
+#La gema devise se utiliza para la autenticación de usuarios
 gem "devise"
 
+#La gema cancancan determina las acciones que determinado rol de usuario puede realizar
 gem "cancancan"
 
 # Use jquery as the JavaScript library

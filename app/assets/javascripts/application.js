@@ -20,5 +20,3 @@
 //= require dataTables/extras/dataTables.responsive
 //= require dataTables/jquery.dataTables
 //= require turbolinks
-
-//= require js/validator/validator.js

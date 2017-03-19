@@ -4,7 +4,7 @@ class BancosController < ApplicationController
   # GET /bancos
   # GET /bancos.json
   def index
-    @bancos = Banco.all
+    @bancos = current_user.negocio.bancos
   end
 
   # GET /bancos/1
@@ -27,15 +27,20 @@ class BancosController < ApplicationController
     @banco = Banco.new(banco_params)
 
     respond_to do |format|
-      if @banco.save
-        current_user.negocio.bancos << @banco
-        #format.html { redirect_to @banco, notice: 'Banco was successfully created.' }
-        #format.json { render :show, status: :created, location: @banco }
-        format.json { head :no_content}
-        format.js
+      if@banco.valid?
+        if @banco.save
+          current_user.negocio.bancos << @banco
+          #format.html { redirect_to @banco, notice: 'Banco was successfully created.' }
+          #format.json { render :show, status: :created, location: @banco }
+          format.json { head :no_content}
+          format.js 
+        else
+          #format.html { render :new }
+          #format.json { render json: @banco.errors, status: :unprocessable_entity }
+          format.json{render json: @banco.errors.full_messages, status: :unprocessable_entity}
+        end
       else
-        #format.html { render :new }
-        #format.json { render json: @banco.errors, status: :unprocessable_entity }
+        format.js { render :new }
         format.json{render json: @banco.errors.full_messages, status: :unprocessable_entity}
       end
     end
@@ -53,7 +58,8 @@ class BancosController < ApplicationController
       else
         #format.html { render :edit }
         #format.json { render json: @banco.errors, status: :unprocessable_entity }
-        format.json{render json: @banco.errors.full_messages, status: :unprocessable_entity}
+        format.json { render json: @banco.errors.full_messages, status: :unprocessable_entity }
+        format.js { render :edit }
       end
     end
   end
@@ -64,7 +70,7 @@ class BancosController < ApplicationController
     @banco.destroy
     respond_to do |format|
       format.js
-      format.html { redirect_to bancos_url, notice: 'Banco was successfully destroyed.' }
+      format.html { redirect_to bancos_url, notice: 'El banco fue eliminado.' }
       format.json { head :no_content }
     end
   end
