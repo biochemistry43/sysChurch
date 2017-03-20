@@ -3,5 +3,5 @@ class Cliente < ActiveRecord::Base
 	has_one :datos_fiscales_cliente
 	has_many :ventas
 
-	validates :nombre, :presence => { message: "Este campo no puede ir vacío" }
+	validates :nombre, :ape_pat, :ape_mat, :presence => { message: "Este campo no puede ir vacío" }
 end

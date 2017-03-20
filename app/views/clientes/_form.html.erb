@@ -1,71 +1,186 @@
-<%= form_for @cliente, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form" } do |f| %>
-  <% if @cliente.errors.any? %>
-    <div id="error_explanation" class="bg-danger text-danger">
-      <h2><%= pluralize(@cliente.errors.count, "error") %> prohibited this cliente from being saved:</h2>
+<%= form_for @cliente, remote: true, :html=> { :class=>'form-horizontal form-label-left', :role=>"form"  } do |f| %>
 
-      <ul>
-      <% @cliente.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos generales del Cliente:</h2>
+  </div>
+
+  <div class="item form-group<%= @cliente.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre, "Nombre(s)*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-user"></i></span>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"nombre o nombres del cliente..."} do%>
+      <%end%>
+      <%if @cliente.errors[:nombre].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:nombre].to_s[/\w([^"]*)/] %></p>
       <% end %>
-      </ul>
     </div>
-  <% end %>
+  </div>
 
-<div class="row">
-<div class="col-md-12 col-sm-12">
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :nombre, "Nombre:" %><br>
-    <%= f.text_field :nombre, class: "form-control has-feedback-left"%>
-    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+  <div class="item form-group<%= @cliente.errors[:ape_pat].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :ape_pat, "Apellido paterno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-male"></i></span>
+      <%= f.text_field :ape_pat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido paterno del cliente..."} do%>
+      <%end%>
+      <%if @cliente.errors[:ape_pat].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:ape_pat].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionCalle, "Calle:" %><br>
-    <%= f.text_field :direccionCalle, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:ape_mat].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :ape_mat, "Apellido materno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-female"></i></span>
+      <%= f.text_field :ape_mat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido materno del cliente..."} do%>
+      <%end%>
+      <%if @cliente.errors[:ape_mat].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:ape_mat].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionNumeroExt, "Número exterior: " %><br>
-    <%= f.text_field :direccionNumeroExt, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Dirección del Cliente:</h2>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionNumeroInt, "Número interior: "%><br>
-    <%= f.text_field :direccionNumeroInt, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionCalle].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionCalle, "Calle: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-road"></i></span>
+      <%= f.text_field :direccionCalle, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Calle..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionCalle].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionCalle].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionColonia, "Colonia: " %><br>
-    <%= f.text_field :direccionColonia, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionNumeroExt].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionNumeroExt, "Número exterior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-home"></i></span>
+      <%= f.text_field :direccionNumeroExt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número exterior..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionNumeroExt].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionNumeroExt].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionMunicipio, "Municipio: " %><br>
-    <%= f.text_field :direccionMunicipio, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionNumeroInt].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionNumeroInt, "Número interior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-home"></i></span>
+      <%= f.text_field :direccionNumeroInt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número interior..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionNumeroInt].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionNumeroInt].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionDelegacion, "Delegación: " %><br>
-    <%= f.text_field :direccionDelegacion, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionColonia].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionColonia, "Colonia: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-tree"></i></span>
+      <%= f.text_field :direccionColonia, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Colonia del cliente..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionColonia].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionColonia].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionEstado, "Estado: " %><br>
-    <%= f.text_field :direccionEstado, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionMunicipio].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionMunicipio, "Municipio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building"></i></span>
+      <%= f.text_field :direccionMunicipio, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Municipio de la dirección del cliente..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionMunicipio].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionMunicipio].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :direccionCp, "Código Postal: " %><br>
-    <%= f.text_field :direccionCp, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionDelegacion].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionDelegacion, "Delegación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building"></i></span>
+      <%= f.text_field :direccionDelegacion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Delegación del cliente si existe..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionDelegacion].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionDelegacion].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :telefono1, "Teléfono 1: " %><br>
-    <%= f.text_field :telefono1, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionEstado].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionEstado, "Estado: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
+      <%= f.text_field :direccionEstado, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Estado de residencia..."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionEstado].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionEstado].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :telefono2, "Teléfono 2" %><br>
-    <%= f.text_field :telefono2, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group<%= @cliente.errors[:direccionCp].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :direccionCp, "Código postal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
+      <%= f.text_field :direccionCp, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "C.P...."} do%>
+      <%end%>
+      <%if @cliente.errors[:direccionCp].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:direccionCp].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-    <%= f.label :email, "Email: " %><br>
-    <%= f.text_field :email, class: "form-control has-feedback-left" %>
+
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos de contacto:</h2>
   </div>
-  <div class="ln_solid"></div>
+
+  <div class="item form-group<%= @cliente.errors[:telefono1].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :telefono1, "Teléfono 1: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+      <%= f.text_field :telefono1, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Teléfono del cliente"} do%>
+      <%end%>
+      <%if @cliente.errors[:telefono1].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:telefono1].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @cliente.errors[:telefono2].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :telefono2, "Teléfono 2: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+      <%= f.text_field :telefono2, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Teléfono del cliente"} do%>
+      <%end%>
+      <%if @cliente.errors[:telefono2].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:telefono2].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @cliente.errors[:email].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :email, "Email: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+      <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "email del cliente"} do%>
+      <%end%>
+      <%if @cliente.errors[:email].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:email].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
   <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success" %>
-      </div>
-      </div>
-      </div>
+    <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success"%>
+  </div>
 <% end %>
