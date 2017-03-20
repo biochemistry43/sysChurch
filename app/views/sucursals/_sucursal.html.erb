@@ -1,0 +1,9 @@
+<tr id="sucursal<%= sucursal.id%>">
+  <td><%= sucursal.nombre %></td>
+  <td><%= sucursal.representante %></td>
+  <td><%= sucursal.calle.to_s  << " " << sucursal.numExterior.to_s << " " << sucursal.numInterior.to_s << " " << sucursal.colonia.to_s  << " " << sucursal.codigo_postal.to_s %></td>
+  <td><%= sucursal.municipio %></td>
+  <td><%= sucursal.estado %></td>
+  <td><%= link_to 'Editar', edit_sucursal_path(sucursal), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', sucursal, remote: true, method: :delete, data: { confirm: "¿Borrar Sucursal: #{sucursal.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

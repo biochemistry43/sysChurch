@@ -1,29 +1,142 @@
-      <%= form_for(@sucursal) do |f| %>
-        <% if @sucursal.errors.any? %>
-          <div id="error_explanation">
-            <h2><%= pluralize(@sucursal.errors.count, "error") %> prohibited this sucursal from being saved:</h2>
+<%= form_for @sucursal  , remote: true, :html=> { :class=>'form-horizontal form-label-left', :role=>"form"  } do |f| %>
 
-            <ul>
-            <% @sucursal.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-        <div class="field">
-          <%= f.label :nombre %><br>
-          <%= f.text_field :nombre %>
-        </div>
-        <div class="field">
-          <%= f.label :representante %><br>
-          <%= f.text_field :representante %>
-        </div>
-        <div class="field">
-          <%= f.label :direccion %><br>
-          <%= f.text_field :direccion %>
-        </div>
-        <div class="actions">
-          <%= f.submit %>
-        </div>
+  <div class="item form-group<%= @sucursal.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre, "Nombre*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-user"></i></span>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"nombre de sucursal..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:nombre].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:nombre].to_s[/\w([^"]*)/] %></p>
       <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:representante].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :representante, "Representante*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-male"></i></span>
+      <%= f.text_field :representante, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Representante de la sucursal..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:representante].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:representante].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Dirección de la sucursal:</h2>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:calle].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :calle, "Calle: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-road"></i></span>
+      <%= f.text_field :calle, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Calle..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:calle].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:calle].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:numExterior].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :numExterior, "Número exterior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-home"></i></span>
+      <%= f.text_field :numExterior, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número exterior..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:numExterior].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:numExterior].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:numInterior].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :numInterior, "Número interior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-home"></i></span>
+      <%= f.text_field :numInterior, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número interior..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:numInterior].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:numInterior].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:colonia].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :colonia, "Colonia: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-tree"></i></span>
+      <%= f.text_field :colonia, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Colonia de la sucursal..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:colonia].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:colonia].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:municipio].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :municipio, "Municipio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building"></i></span>
+      <%= f.text_field :municipio, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Municipio de la sucursal..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:municipio].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:municipio].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:delegacion].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :delegacion, "Delegación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building"></i></span>
+      <%= f.text_field :delegacion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Delegación de la sucursal si existe..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:delegacion].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:delegacion].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:estado].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :estado, "Estado: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
+      <%= f.text_field :estado, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Estado de la sucursal..."} do%>
+      <%end%>
+      <%if @sucursal.errors[:estado].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:estado].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:codigo_postal].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :codigo_postal, "Código postal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
+      <%= f.text_field :codigo_postal, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "C.P...."} do%>
+      <%end%>
+      <%if @sucursal.errors[:codigo_postal].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:codigo_postal].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @sucursal.errors[:email].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :email, "Email: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+      <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "email del sucursal"} do%>
+      <%end%>
+      <%if @sucursal.errors[:email].any? %>
+        <p class="bg-danger"><%= @sucursal.errors[:email].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+    <%= f.submit @sucursal.new_record? ? "Crear sucursal" : "Actualizar sucursal", :class => "btn btn-success"%>
+  </div>
+<% end %>

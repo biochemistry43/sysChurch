@@ -81,7 +81,7 @@
                 <%end%>
               </ul>
               <%if can? :update, Negocio%>
-                  <li><a>Reportes<span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none">
                       <li class="sub_menu"><%= link_to "Ventas", ventas_venta_del_dia_path%>
                       </li>
@@ -90,10 +90,13 @@
                 <%end%>
 
             </li>
-            <li><a><i class="fa fa-cog"></i> Configuración <span class="fa fa-chevron-down"></span></a>
+            <li><a><i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
                 <%if can? :update, Negocio%>
-                  <li><%= link_to "Configuración del negocio", controller: "negocios", action: "show", id: current_user.negocio_id%>
+                  <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
+                        <i class="fa fa-area-chart"></i>
+                        Negocio
+                      <% end %>
                   </li>
                 <%end%>
               </ul>

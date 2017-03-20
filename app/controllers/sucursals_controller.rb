@@ -4,7 +4,7 @@ class SucursalsController < ApplicationController
   # GET /sucursals
   # GET /sucursals.json
   def index
-    @sucursals = Sucursal.all
+    @sucursals = current_user.negocio.sucursals
   end
 
   # GET /sucursals/1
@@ -26,13 +26,20 @@ class SucursalsController < ApplicationController
   def create
     @sucursal = Sucursal.new(sucursal_params)  
     respond_to do |format|
-      if @sucursal.save
-        current_user.negocio.sucursals << @sucursal
-        format.html { redirect_to @sucursal, notice: 'Sucursal was successfully created.' }
-        format.json { render :show, status: :created, location: @sucursal }
+      if @sucursal.valid?
+        if @sucursal.save
+          current_user.negocio.sucursals << @sucursal
+          format.js
+          format.html { redirect_to @sucursal, notice: 'La sucursal fue creada.' }
+          format.json { render :show, status: :created, location: @sucursal }
+        else
+          format.js { render :new }
+          format.html { render :new }
+          format.json { render json: @sucursal.errors, status: :unprocessable_entity }
+        end
       else
-        format.html { render :new }
-        format.json { render json: @sucursal.errors, status: :unprocessable_entity }
+        format.js { render :new }
+        format.json {render json: @sucursal.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -42,11 +49,15 @@ class SucursalsController < ApplicationController
   def update
     respond_to do |format|
       if @sucursal.update(sucursal_params)
-        format.html { redirect_to @sucursal, notice: 'Sucursal was successfully updated.' }
-        format.json { render :show, status: :ok, location: @sucursal }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @sucursal, notice: 'Sucursal was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @sucursal }
       else
-        format.html { render :edit }
-        format.json { render json: @sucursal.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @sucursal.errors, status: :unprocessable_entity }
+        format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
+        format.js {render :edit}
       end
     end
   end
@@ -56,7 +67,8 @@ class SucursalsController < ApplicationController
   def destroy
     @sucursal.destroy
     respond_to do |format|
-      format.html { redirect_to sucursals_url, notice: 'Sucursal was successfully destroyed.' }
+      format.js
+      format.html { redirect_to sucursals_url, notice: 'La Sucursal fue eliminada.' }
       format.json { head :no_content }
     end
   end
@@ -69,6 +81,6 @@ class SucursalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sucursal_params
-      params.require(:sucursal).permit(:nombre, :representante, :direccion)
+      params.require(:sucursal).permit(:nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email)
     end
 end

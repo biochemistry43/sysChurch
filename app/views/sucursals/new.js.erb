@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-sucursal-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nueva sucursal");
+ 
+// Render the new form
+$('.modal-body-sucursales').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalSucursales').modal("show");
+ 
+// Set focus to the first element
+$('#modalSucursales').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

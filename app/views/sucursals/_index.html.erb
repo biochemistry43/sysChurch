@@ -14,27 +14,19 @@
             <th class="column-title">Nombre Sucursal</th>
             <th class="column-title">Representante</th>
             <th class="column-title">Direccion</th>
+            <th class="column-title">Municipio</th>
+            <th class="column-title">Estado</th>
             <th class="column-title"></th>
             <th class="column-title"></th>
+            
           </tr>
         </thead>
 
-        <tbody>
-          <%if @sucursals != nil%>
-            <% @sucursals.each do |sucursal| %>
-              <tr>
-                <td><%= sucursal.nombre %></td>
-                <td><%= sucursal.representante %></td>
-                <td><%= sucursal.direccion %></td>
-                <td><%= link_to 'Mostrar', sucursal, class: "btn btn-primary btn-xs" %><i class="fa fa-folder"></i></td>
-                <td><%= link_to 'Editar', edit_sucursal_path(sucursal), class: "btn btn-info btn-xs" %><i class="fa fa-pencil"></i></td>
-              </tr>
-
-            <% end %>
-          <%end%>
+        <tbody id="tb_sucursales">
+          <%= render @sucursals %>
         </tbody>        
       </table>
-
+      <%= render 'sucursals/modalSucursales' %>
     </div>
   </div>
   <script>
