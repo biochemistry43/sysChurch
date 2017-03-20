@@ -13,7 +13,17 @@ class NegociosController < ApplicationController
     @sucursals = Sucursal.where('negocio_id', params[:id])
       @datosFiscales
     unless @negocio.datos_fiscales_negocio
-      @datosFiscales = DatosFiscalesNegocio.new(:nombreFiscal => @negocio.nombre, :calle=>@negocio.direccion)
+      @datosFiscales = DatosFiscalesNegocio.new
+      @datosFiscales.nombreFiscal = @negocio.nombre if @negocio.nombre
+      @datosFiscales.calle = @negocio.calle if @negocio.calle
+      @datosFiscales.numExterior = @negocio.numExterior if @negocio.numExterior
+      @datosFiscales.numInterior = @negocio.numInterior if @negocio.numInterior
+      @datosFiscales.colonia = @negocio.colonia if @negocio.colonia
+      @datosFiscales.codigo_postal = @negocio.codigo_postal if @negocio.codigo_postal
+      @datosFiscales.municipio = @negocio.municipio if @negocio.municipio
+      @datosFiscales.delegacion = @negocio.delegacion if @negocio.delegacion
+      @datosFiscales.estado = @negocio.estado if @negocio.estado
+      @datosFiscales.email = @negocio.email if @negocio.email    
       @datosFiscales.save
       @negocio.datos_fiscales_negocio = @datosFiscales
     else
@@ -41,7 +51,7 @@ class NegociosController < ApplicationController
 
     respond_to do |format|
       if @negocio.save
-        current_user.negocio << @negocio
+        current_user.negocio = @negocio
         format.html { redirect_to @negocio, notice: 'Negocio was successfully created.' }
         format.json { render :show, status: :created, location: @negocio }
         #format.json { head :no_content}
@@ -90,6 +100,6 @@ class NegociosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def negocio_params
-      params.require(:negocio).permit(:logo, :nombre, :representante, :direccion)
+      params.require(:negocio).permit(:logo, :nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email)
     end
 end

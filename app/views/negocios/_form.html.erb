@@ -74,10 +74,82 @@
     </div>
     <div class="form-group">
       <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
-      <%= f.label :direccion, "Dirección del negocio:", :class=>'col-lg-3 control-label' %>
+      <%= f.label :calle, "Calle:", :class=>'col-lg-3 control-label' %>
       <div class="col-lg-8">
         <!-- <input class="form-control" value="Bishop" type="text"> -->
-        <%= f.text_field :direccion, class: "form-control"%>
+        <%= f.text_field :calle, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :numExterior, "Número ext:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :numExterior, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :numInterior, "Número int:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :numInterior, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :colonia, "Colonia:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :colonia, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :codigo_postal, "Código Postal:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :codigo_postal, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :numInterior, "Número int:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :numInterior, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :municipio, "Municipio:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :municipio, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :delegacion, "Delegacion:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :delegacion, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :estado, "Estado:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :estado, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :email, "Email:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.email_field :email, class: "form-control"%>
       </div>
     </div>
         
@@ -117,7 +189,15 @@
       </div>
     </div>
     <div class="form-group">
-      <%= d.label :calle, "Direccion Fiscal:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= d.label :rfc, "RFC:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :rfc, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :calle, "Calle:", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
       <div class="col-lg-8">
         <!-- <input class="form-control" value="Bishop" type="text"> -->
@@ -125,11 +205,67 @@
       </div>
     </div>
     <div class="form-group">
-      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
-      <%= d.label :rfc, "RFC:", :class=>'col-lg-3 control-label' %>
+      <%= d.label :numExterior, "Num Exterior:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
       <div class="col-lg-8">
         <!-- <input class="form-control" value="Bishop" type="text"> -->
-        <%= d.text_field :rfc, class: "form-control"%>
+        <%= d.text_field :numExterior, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :numInterior, "Num Interior:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :numInterior, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :colonia, "Colonia:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :colonia, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :codigo_postal, "Código Postal:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :codigo_postal, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :municipio, "Municipio:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :municipio, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :delegacion, "Delegacion:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :delegacion, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :estado, "Estado:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :estado, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :email, "Email:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.email_field :email, class: "form-control"%>
       </div>
     </div>
       
