@@ -27,15 +27,21 @@ class ProveedoresController < ApplicationController
     @proveedor = Proveedor.new(proveedor_params)
 
     respond_to do |format|
-      if @proveedor.save
-        current_user.sucursal.proveedores << @proveedor
-        #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
-        #format.json { render :show, status: :created, location: @proveedor }
-        format.json { head :no_content}
-        format.js
+      if @proveedor.valid?
+        if @proveedor.save
+          current_user.sucursal.proveedores << @proveedor
+          #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
+          #format.json { render :show, status: :created, location: @proveedor }
+          format.json { head :no_content}
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+          format.js { render :new }
+          format.json{render json: @proveedor.errors.full_messages, status: :unprocessable_entity}
+        end
       else
-        #format.html { render :new }
-        #format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        format.js { render :new }
         format.json{render json: @proveedor.errors.full_messages, status: :unprocessable_entity}
       end
     end
@@ -53,6 +59,7 @@ class ProveedoresController < ApplicationController
       else
         #format.html { render :edit }
         #format.json { render json: @proveedor.errors, status: :unprocessable_entity }
+        format.js { render :edit }
         format.json{render json: @proveedor.errors.full_messages, status: :unprocessable_entity}
       end
     end
@@ -77,6 +84,6 @@ class ProveedoresController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def proveedor_params
-      params.require(:proveedor).permit(:nombre, :telefono, :email)
+      params.require(:proveedor).permit(:nombre, :telefono, :email, :nombreContacto, :telefonoContacto, :emailContacto, :celularContacto)
     end
 end

@@ -1,28 +1,89 @@
-<%= form_for @proveedor,  remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :multipart => true} do |f| %>
-  <% if @proveedor.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@proveedor.errors.count, "error") %> prohibited this proveedor from being saved:</h2>
+<%= form_for @proveedor,  remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
 
-      <ul>
-      <% @proveedor.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
+  <div class="item form-group<%= @proveedor.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre, "Nombre*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Nombre del proveedor..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:nombre].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:nombre].to_s[/\w([^"]*)/] %></p>
       <% end %>
-      </ul>
     </div>
-  <% end %>
+  </div>
 
-  <div class="field">
-    <%= f.label :nombre %><br>
-    <%= f.text_field :nombre %>
+  <div class="item form-group<%= @proveedor.errors[:telefono].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :telefono, "Teléfono: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+      <%= f.text_field :telefono, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Teléfono del proveedor..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:telefono].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:telefono].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :telefono %><br>
-    <%= f.text_field :telefono %>
+  
+  <div class="item form-group<%= @proveedor.errors[:email].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :email, "Teléfono: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+      <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Teléfono del proveedor..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:email].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:email].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :email %><br>
-    <%= f.text_field :email %>
+
+  <div class="item form-group<%= @proveedor.errors[:nombreContacto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombreContacto, "Nombre Contacto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-user"></i></span>
+      <%= f.text_field :nombreContacto, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Contacto..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:nombreContacto].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:nombreContacto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
+
+  <div class="item form-group<%= @proveedor.errors[:telefonoContacto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :telefonoContacto, "Teléfono Contacto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+      <%= f.text_field :telefonoContacto, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Teléfono de contacto..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:telefonoContacto].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:telefonoContacto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @proveedor.errors[:celularContacto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :celularContacto, "Móvil Contacto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
+      <%= f.text_field :celularContacto, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número móvil del contacto..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:celularContacto].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:celularContacto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @proveedor.errors[:emailContacto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :emailContacto, "Email Contacto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+      <%= f.text_field :emailContacto, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Email del contacto..."} do%>
+      <%end%>
+      <%if @proveedor.errors[:emailContacto].any? %>
+        <p class="bg-danger"><%= @proveedor.errors[:emailContacto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
   <div class="actions">
     <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
         <%= f.submit @proveedor.new_record? ? "Crear proveedor" : "Actualizar proveedor", :class => "btn btn-success"%>
