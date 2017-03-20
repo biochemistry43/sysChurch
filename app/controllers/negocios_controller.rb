@@ -1,5 +1,5 @@
 class NegociosController < ApplicationController
-  before_action :set_negocio, only: [:edit, :update, :destroy]
+  before_action :set_negocio, only: [:edit, :update, :destroy, :show]
 
   # GET /negocios
   # GET /negocios.json
@@ -13,7 +13,7 @@ class NegociosController < ApplicationController
     @sucursals = Sucursal.where('negocio_id', params[:id])
       @datosFiscales
     unless @negocio.datos_fiscales_negocio
-      @datosFiscales = DatosFiscalesNegocio.new(:nombreFiscal => @negocio.nombre, :direccionFiscal=>@negocio.direccion)
+      @datosFiscales = DatosFiscalesNegocio.new(:nombreFiscal => @negocio.nombre, :calle=>@negocio.direccion)
       @datosFiscales.save
       @negocio.datos_fiscales_negocio = @datosFiscales
     else
@@ -42,14 +42,14 @@ class NegociosController < ApplicationController
     respond_to do |format|
       if @negocio.save
         current_user.negocio << @negocio
-        #format.html { redirect_to @negocio, notice: 'Negocio was successfully created.' }
-        #format.json { render :show, status: :created, location: @negocio }
-        format.json { head :no_content}
-        format.js
+        format.html { redirect_to @negocio, notice: 'Negocio was successfully created.' }
+        format.json { render :show, status: :created, location: @negocio }
+        #format.json { head :no_content}
+        #format.js
       else
-        #format.html { render :new }
-        #format.json { render json: @negocio.errors, status: :unprocessable_entity }
-        format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
+        format.html { render :new }
+        format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        #format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end
@@ -59,14 +59,14 @@ class NegociosController < ApplicationController
   def update
     respond_to do |format|
       if @negocio.update(negocio_params)
-         format.json { head :no_content}
-        format.js
-        #format.html { redirect_to @negocio, notice: 'Los datos del negocio fueron actualizados' }
-        #format.json { render :show, status: :ok, location: @negocio }
+        #format.json { head :no_content}
+        #format.js
+        format.html { redirect_to @negocio, notice: 'Los datos del negocio fueron actualizados' }
+        format.json { render :show, status: :ok, location: @negocio }
       else
-        #format.html { render :edit }
-        #format.json { render json: @negocio.errors, status: :unprocessable_entity }
-        format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
+        format.html { render :edit }
+        format.json { render json: @negocio.errors, status: :unprocessable_entity }
+        #format.json{render json: @negocio.errors.full_messages, status: :unprocessable_entity}
       end
     end
   end

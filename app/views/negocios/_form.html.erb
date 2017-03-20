@@ -1,4 +1,4 @@
-<%= form_for @negocio, remote: true, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |f| %>
+<%= form_for @negocio, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |f| %>
   <% if @negocio.errors.any? %>
   <div id="error_explanation">
     <h2><%= pluralize(@negocio.errors.count, "error") %> prohibited this negocio from being saved:</h2>
@@ -19,9 +19,7 @@
       }
       document.getElementById("negocio_logo").addEventListener('change', seleccionarArchivo, false);
           
-
       function seleccionarArchivo(evt){
-
         var archivo = evt.target.files[0];
         if(archivo.type.match("image.*")==false){
           var msg = "Este archivo no es un archivo de imagen";
@@ -43,7 +41,6 @@
       }
       
     }
-
   </script>
 
 
@@ -88,6 +85,58 @@
       <label class="col-md-3 control-label"></label>
       <div class="col-md-8">
         <%= f.submit "Guardar Cambios", :class=>"btn btn-primary"%>
+        <!-- <input class="btn btn-primary" value="Guardar Cambios" type="button"> -->
+        <span></span>
+        <input class="btn btn-danger" value="Cancelar" type="reset">
+      </div>
+    </div>
+  </div>
+<%end%>
+
+<%= form_for @datosFiscales, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |d| %>
+  <% if @datosFiscales.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@datosFiscales.errors.count, "error") %> prohibited this negocio from being saved:</h2>
+      <ul>
+      <% @datosFiscales.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+            
+            
+  <div class="col-md-8 col-md-offset-4 col-sm-6 col-xs-12 personal-info">
+    <h3>Información Fiscal</h3>
+    <div class="form-group">
+      <%= d.label :nombreFiscal, "Nombre Fiscal: ", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Primer nombre:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Jane" type="text"> -->
+        <%= d.text_field :nombreFiscal, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= d.label :calle, "Direccion Fiscal:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :calle, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= d.label :rfc, "RFC:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :rfc, class: "form-control"%>
+      </div>
+    </div>
+      
+    <div class="form-group">
+      <label class="col-md-3 control-label"></label>
+      <div class="col-md-8">
+        <%= d.submit "Guardar Cambios", :class=>"btn btn-primary"%>
         <!-- <input class="btn btn-primary" value="Guardar Cambios" type="button"> -->
         <span></span>
         <input class="btn btn-danger" value="Cancelar" type="reset">
