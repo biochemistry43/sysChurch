@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170320051536) do
+ActiveRecord::Schema.define(version: 20170321042934) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -187,6 +187,12 @@ ActiveRecord::Schema.define(version: 20170320051536) do
     t.decimal  "cantidad"
   end
 
+  create_table "marca_productos", force: :cascade do |t|
+    t.string   "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "negocios", force: :cascade do |t|
     t.string   "logo"
     t.string   "nombre"
@@ -233,6 +239,12 @@ ActiveRecord::Schema.define(version: 20170320051536) do
     t.integer  "user_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+  end
+
+  create_table "presentacion_productos", force: :cascade do |t|
+    t.string   "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "proveedores", force: :cascade do |t|

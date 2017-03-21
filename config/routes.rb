@@ -1,5 +1,23 @@
 Rails.application.routes.draw do
 
+  resources :presentacion_productos
+  resources :marca_productos
+  resources :empleados
+  
+  get 'empleados/index'
+
+  get 'empleados/show'
+
+  get 'empleados/new'
+
+  get 'empleados/edit'
+
+  get 'empleados/create'
+
+  get 'empleados/update'
+
+  get 'empleados/destroy'
+
   get 'datos_fiscales_negocios/index'
 
   get 'datos_fiscales_negocios/show'

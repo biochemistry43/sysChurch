@@ -94,8 +94,18 @@
               <ul class="nav child_menu" style="display: none">
                 <%if can? :update, Negocio%>
                   <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
-                        <i class="fa fa-area-chart"></i>
+                        <i class="fa fa-rocket"></i>
                         Negocio
+                      <% end %>
+                  </li>
+                  <li><%= link_to sucursals_path do%>
+                        <i class="fa fa-truck"></i>
+                        Sucursales
+                      <% end %>
+                  </li>
+                  <li><%= link_to empleados_path do%>
+                        <i class="fa fa-child"></i>
+                        Empleados
                       <% end %>
                   </li>
                 <%end%>
