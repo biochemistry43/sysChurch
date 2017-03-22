@@ -3,6 +3,8 @@ class Articulo < ActiveRecord::Base
 	belongs_to :cat_articulo
 	belongs_to :negocio
 	belongs_to :sucursal
+	belongs_to :marca_producto
+	belongs_to :presentacion_producto
 
 	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }
 	validates :precioCompra, :precioVenta, :numericality => { message: "Campo numérico", greater_than: 1}

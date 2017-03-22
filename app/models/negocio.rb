@@ -9,4 +9,6 @@ class Negocio < ActiveRecord::Base
 	has_many :categoria_gastos
 	has_many :categoria_perdidas
 	has_one :datos_fiscales_negocio
+	has_many :marca_productos
+	has_many :presentacion_productos
 end
