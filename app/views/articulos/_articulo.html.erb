@@ -1,9 +1,27 @@
 <tr id="articulo_<%= articulo.id%>">
   <td><%= articulo.clave %></td>
-  <td><%= articulo.nombre %></td>
+  <td><%if articulo.nombre %>
+        <%= articulo.nombre %>
+      <% end %>
+      <% if articulo.marca_producto  %>
+        <%= " marca: "<<articulo.marca_producto.nombre %>
+      <% end %>
+      <% if articulo.presentacion_producto %>
+        <%= " presentación: "<<articulo.presentacion_producto.nombre  %>
+      <% end %>
+  </td>
   <td><%= articulo.stock %></td>
-  <td><%= articulo.existencia %></td>
+  <td>
+    <% if articulo.existencia< articulo.stock %>
+    <div class= "has-error has-feedback">
+    <%= articulo.existencia %>
+    </div>
+    <% else %>
+    <%= articulo.existencia %>
+    <% end %>
+  </td>
   <td><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
   <td><%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
   <td><%= link_to 'Borrar', articulo, remote: true, method: :delete, data: { confirm: "¿Borrar Producto: #{articulo.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
 </tr>
+

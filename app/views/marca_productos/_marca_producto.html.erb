@@ -1,0 +1,5 @@
+<tr id="marca_producto_<%= marca_producto.id%>">
+  <td><%= marca_producto.nombre %></td>
+  <td><%= link_to 'Editar', edit_marca_producto_path(marca_producto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+  <td><%= link_to 'Borrar', marca_producto, remote: true, method: :delete, data: { confirm: "¿Desea borrar la marca: #{marca_producto.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>

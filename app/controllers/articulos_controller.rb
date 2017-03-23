@@ -36,18 +36,24 @@ class ArticulosController < ApplicationController
   # GET /articulos/new
   def new
     @categories = current_user.negocio.cat_articulos
+    @marcas = current_user.negocio.marca_productos
+    @presentaciones = current_user.negocio.presentacion_productos
     @articulo = Articulo.new
   end
 
   # GET /articulos/1/edit
   def edit
-    @categories = CatArticulo.all
+    @categories = current_user.negocio.cat_articulos
+    @marcas = current_user.negocio.marca_productos
+    @presentaciones = current_user.negocio.presentacion_productos
   end
 
   # POST /articulos
   # POST /articulos.json
   def create
-    @categories = CatArticulo.all
+    @categories = current_user.negocio.cat_articulos
+    @marcas = current_user.negocio.marca_productos
+    @presentaciones = current_user.negocio.presentacion_productos
     @articulo = Articulo.new(articulo_params)
     
     respond_to do |format|
@@ -75,7 +81,9 @@ class ArticulosController < ApplicationController
   # PATCH/PUT /articulos/1
   # PATCH/PUT /articulos/1.json
   def update
-    @categories = CatArticulo.all
+    @categories = current_user.negocio.cat_articulos
+    @marcas = current_user.negocio.marca_productos
+    @presentaciones = current_user.negocio.presentacion_productos
     respond_to do |format|
       if @articulo.update(articulo_params)
         format.json { head :no_content}
@@ -115,6 +123,6 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto)
+      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id)
     end
 end

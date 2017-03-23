@@ -4,7 +4,7 @@ class PresentacionProductosController < ApplicationController
   # GET /presentacion_productos
   # GET /presentacion_productos.json
   def index
-    @presentacion_productos = PresentacionProducto.all
+    @presentacion_productos = current_user.negocio.presentacion_productos
   end
 
   # GET /presentacion_productos/1
@@ -27,12 +27,22 @@ class PresentacionProductosController < ApplicationController
     @presentacion_producto = PresentacionProducto.new(presentacion_producto_params)
 
     respond_to do |format|
-      if @presentacion_producto.save
-        format.html { redirect_to @presentacion_producto, notice: 'Presentacion producto was successfully created.' }
-        format.json { render :show, status: :created, location: @presentacion_producto }
+      if @presentacion_producto.valid?
+        if @presentacion_producto.save
+          current_user.negocio.presentacion_productos << @presentacion_producto
+          #format.html { redirect_to @presentacion_producto, notice: 'Presentacion producto was successfully created.' }
+          #format.json { render :show, status: :created, location: @presentacion_producto }
+          format.json { head :no_content}
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @presentacion_producto.errors, status: :unprocessable_entity }
+          format.json {render json: @presentacion_producto.errors.full_messages, status: :unprocessable_entity}
+          format.js {render :new}
+        end
       else
-        format.html { render :new }
-        format.json { render json: @presentacion_producto.errors, status: :unprocessable_entity }
+        format.js { render :new }
+        format.json { render json: @presentacion_producto.errors.full_messages, status: :unprocessable_entity }
       end
     end
   end
@@ -42,11 +52,15 @@ class PresentacionProductosController < ApplicationController
   def update
     respond_to do |format|
       if @presentacion_producto.update(presentacion_producto_params)
-        format.html { redirect_to @presentacion_producto, notice: 'Presentacion producto was successfully updated.' }
-        format.json { render :show, status: :ok, location: @presentacion_producto }
+        format.json { head :no_content}
+        format.js
+        #format.html { redirect_to @presentacion_producto, notice: 'Presentacion producto was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @presentacion_producto }
       else
-        format.html { render :edit }
-        format.json { render json: @presentacion_producto.errors, status: :unprocessable_entity }
+        format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
+        format.js {render :edit}
+        #format.html { render :edit }
+        #format.json { render json: @presentacion_producto.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -56,6 +70,7 @@ class PresentacionProductosController < ApplicationController
   def destroy
     @presentacion_producto.destroy
     respond_to do |format|
+      format.js
       format.html { redirect_to presentacion_productos_url, notice: 'Presentacion producto was successfully destroyed.' }
       format.json { head :no_content }
     end

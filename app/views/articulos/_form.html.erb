@@ -55,6 +55,26 @@
       </div>
     </div>
 
+    <div class="item form-group<%= @articulo.errors[:marca_producto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :marca_producto, "Marca: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+         <%= collection_select(:articulo, :marca_producto_id, @marcas, :id, :nombre, {:prompt => 'Seleccione una marca', class: "form-control col-md-7 col-xs-12"})%>
+        <%if @articulo.errors[:marca_producto].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:marca_producto].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:presentacion_producto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :presentacion, "Presentación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+         <%= collection_select(:articulo, :presentacion_producto_id, @presentaciones, :id, :nombre, {:prompt => 'Seleccione presentacion', class: "form-control col-md-7 col-xs-12"})%>
+        <%if @articulo.errors[:presentacion_producto].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:presentacion_producto].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
     <div class="item form-group<%= @articulo.errors[:precioCompra].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :precioCompra, "Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12">

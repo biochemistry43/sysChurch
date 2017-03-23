@@ -4,7 +4,7 @@ class MarcaProductosController < ApplicationController
   # GET /marca_productos
   # GET /marca_productos.json
   def index
-    @marca_productos = MarcaProducto.all
+    @marca_productos = current_user.negocio.marca_productos
   end
 
   # GET /marca_productos/1
@@ -27,12 +27,22 @@ class MarcaProductosController < ApplicationController
     @marca_producto = MarcaProducto.new(marca_producto_params)
 
     respond_to do |format|
-      if @marca_producto.save
-        format.html { redirect_to @marca_producto, notice: 'Marca producto was successfully created.' }
-        format.json { render :show, status: :created, location: @marca_producto }
+      if @marca_producto.valid?
+        if @marca_producto.save
+          current_user.negocio.marca_productos << @marca_producto
+          #format.html { redirect_to @marca_producto, notice: 'Marca producto was successfully created.' }
+          #format.json { render :show, status: :created, location: @marca_producto }
+          format.json { head :no_content }
+          format.js
+        else
+          #format.html { render :new }
+          #format.json { render json: @marca_producto.errors, status: :unprocessable_entity }
+          format.json { render json: @marca_producto.errors.full_messages, status: :unprocessable_entity }
+          format.js { render :new }
+        end
       else
-        format.html { render :new }
-        format.json { render json: @marca_producto.errors, status: :unprocessable_entity }
+        format.js { render :new }
+        format.json { render json: @marca_producto.errors.full_messages, status: :unprocessable_entity }
       end
     end
   end
@@ -42,11 +52,14 @@ class MarcaProductosController < ApplicationController
   def update
     respond_to do |format|
       if @marca_producto.update(marca_producto_params)
-        format.html { redirect_to @marca_producto, notice: 'Marca producto was successfully updated.' }
-        format.json { render :show, status: :ok, location: @marca_producto }
+        #format.html { redirect_to @marca_producto, notice: 'Marca producto was successfully updated.' }
+        #format.json { render :show, status: :ok, location: @marca_producto }
+        format.json { head :no_content }
       else
-        format.html { render :edit }
-        format.json { render json: @marca_producto.errors, status: :unprocessable_entity }
+        #format.html { render :edit }
+        #format.json { render json: @marca_producto.errors, status: :unprocessable_entity }
+        format.json { render json: @marca_producto.errors.full_messages, status: :unprocessable_entity }
+        format.js { render :edit }
       end
     end
   end
@@ -56,7 +69,8 @@ class MarcaProductosController < ApplicationController
   def destroy
     @marca_producto.destroy
     respond_to do |format|
-      format.html { redirect_to marca_productos_url, notice: 'Marca producto was successfully destroyed.' }
+      format.js
+      format.html { redirect_to marca_productos_url, notice: 'La marca fue eliminada' }
       format.json { head :no_content }
     end
   end

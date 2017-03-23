@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-marca-productos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear Nueva Marca");
+ 
+// Render the new form
+$('.modal-body-marcas').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalMarcaProductos').modal("show");
+ 
+// Set focus to the first element
+$('#modalMarcaProductos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

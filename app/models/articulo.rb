@@ -8,5 +8,5 @@ class Articulo < ActiveRecord::Base
 
 	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }
 	validates :precioCompra, :precioVenta, :numericality => { message: "Campo numérico", greater_than: 1}
-    validates :clave, :nombre, uniqueness: { message: "Ya existe este registro en la base de datos" }
+    validates :clave, :nombre, uniqueness: { scope: :sucursal_id, message: "Ya existe este registro en la base de datos" }
 end

@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-presentacion_productos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear presentación");
+ 
+// Render the new form
+$('.modal-body-presentaciones').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalPresentacionProductos').modal("show");
+ 
+// Set focus to the first element
+$('#modalPresentacionProductos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})
