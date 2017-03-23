@@ -10,17 +10,17 @@
         <%= " presentación: "<<articulo.presentacion_producto.nombre  %>
       <% end %>
   </td>
-  <td><%= articulo.stock %></td>
-  <td>
-    <% if articulo.existencia< articulo.stock %>
-    <div class= "has-error has-feedback">
+  <td class="center-td"><%= articulo.stock %></td>
+  <td class="center-td">
+    <% if articulo.existencia < articulo.stock %>
+    <div style="background: #ff9999; color: red;">
     <%= articulo.existencia %>
     </div>
     <% else %>
     <%= articulo.existencia %>
     <% end %>
   </td>
-  <td><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
+  <td class="center-td"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
   <td><%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
   <td><%= link_to 'Borrar', articulo, remote: true, method: :delete, data: { confirm: "¿Borrar Producto: #{articulo.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
 </tr>

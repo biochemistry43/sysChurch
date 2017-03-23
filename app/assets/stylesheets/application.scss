@@ -61,8 +61,26 @@ body {
   font-size: 16px;
 }
 
+.center-td{
+  text-align: center;
+}
+
 .btn-add{
   font-size: 22px;
+}
+
+.modal-header{
+  background: #92c33c;
+  color: white;
+}
+
+.modal-content{
+  background: #ebf0f9;
+  color: #1d3562;
+}
+
+.modal-body{
+  margin-top: 20px;
 }
 
 .div-add-button{

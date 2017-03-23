@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cantidad_comprada: 9.99
+  precio_compra: 9.99
+  importe: 9.99
+  compra_id: 1
+  articulo_id: 1
+
+two:
+  cantidad_comprada: 9.99
+  precio_compra: 9.99
+  importe: 9.99
+  compra_id: 1
+  articulo_id: 1

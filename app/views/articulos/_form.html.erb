@@ -26,7 +26,7 @@
     <div class="item form-group<%= @articulo.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :descripcion, "Descripción: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba alguna descripción del producto..."} do%>
+        <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba alguna descripción del producto..."} do%>
         <%end%>
         <%if @articulo.errors[:descripcion].any? %>
           <p class="bg-danger"><%= @articulo.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
@@ -44,6 +44,19 @@
         <% end %>
       </div>
     </div>
+
+    <%if @articulo.new_record?%>
+    <div class="item form-group<%= @articulo.errors[:existencia].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :existencia, "Existencia inicial: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <%= f.text_field :existencia, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Existencia inicial en inventario(opcional)..."} do%>
+        <%end%>
+        <%if @articulo.errors[:existencia].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:existencia].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
 
     <div class="item form-group<%= @articulo.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :categoria, "Categoria: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>

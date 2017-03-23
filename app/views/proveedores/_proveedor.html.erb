@@ -1,5 +1,6 @@
 <tr id="proveedor_<%= proveedor.id%>">
   <td><%= proveedor.nombre %></td>
+  <td><%= proveedor.nombreContacto %></td>
   <td><%= proveedor.telefono %></td>
   <td><%= proveedor.email %></td>
   <td><%= link_to 'Editar', edit_proveedor_path(proveedor), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>

@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fecha: 2017-03-22
+  tipo_pago: MyString
+  plazo_pago: MyString
+  folio_compra: MyString
+  proveedor_id: 1
+  user_id: 1
+
+two:
+  fecha: 2017-03-22
+  tipo_pago: MyString
+  plazo_pago: MyString
+  folio_compra: MyString
+  proveedor_id: 1
+  user_id: 1

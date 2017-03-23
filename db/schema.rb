@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170323000344) do
+ActiveRecord::Schema.define(version: 20170323044104) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -99,6 +99,17 @@ ActiveRecord::Schema.define(version: 20170323000344) do
     t.string   "ape_mat"
   end
 
+  create_table "compras", force: :cascade do |t|
+    t.date     "fecha"
+    t.string   "tipo_pago"
+    t.string   "plazo_pago"
+    t.string   "folio_compra"
+    t.integer  "proveedor_id"
+    t.integer  "user_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
   create_table "datos_fiscales_clientes", force: :cascade do |t|
     t.string   "nombreFiscal"
     t.string   "rfc"
@@ -140,6 +151,26 @@ ActiveRecord::Schema.define(version: 20170323000344) do
     t.integer  "sucursal_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+  end
+
+  create_table "detalle_compras", force: :cascade do |t|
+    t.decimal  "cantidad_comprada"
+    t.decimal  "precio_compra"
+    t.decimal  "importe"
+    t.integer  "compra_id"
+    t.integer  "articulo_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  create_table "entrada_almacens", force: :cascade do |t|
+    t.decimal  "cantidad"
+    t.date     "fecha"
+    t.boolean  "isEntradaInicial"
+    t.integer  "articulo_id"
+    t.integer  "compra_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
   end
 
   create_table "entradasInventario", force: :cascade do |t|

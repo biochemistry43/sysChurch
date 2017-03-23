@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cantidad: 9.99
+  fecha: 2017-03-22
+  isEntradaInicial: false
+  articulo_id: 1
+  compra_id: 1
+
+two:
+  cantidad: 9.99
+  fecha: 2017-03-22
+  isEntradaInicial: false
+  articulo_id: 1
+  compra_id: 1
