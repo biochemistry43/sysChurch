@@ -1,6 +1,6 @@
 class Proveedor < ActiveRecord::Base
-	 has_many :entradasinventario
 	 belongs_to :sucursal
+	 has_many :compras
 
 	 validates :nombre, :presence => { message: "Campo obligatorio" }
 end

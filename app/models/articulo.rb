@@ -5,6 +5,9 @@ class Articulo < ActiveRecord::Base
 	belongs_to :sucursal
 	belongs_to :marca_producto
 	belongs_to :presentacion_producto
+	has_many :entrada_almacens
+	has_many :detalle_compras
+
 
 	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }
 	validates :precioCompra, :precioVenta, :stock, :existencia, :numericality => { message: "Campo numérico", greater_than: 1}
