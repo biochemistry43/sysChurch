@@ -1,33 +1,31 @@
 Rails.application.routes.draw do
 
+  resources :compras
+  get 'compras/index'
+  get 'compras/new'
+  get 'compras/show'
+  get 'compras/create'
+  get 'compras/edit'
+  get 'compras/update'
+  get 'compras/destroy'
+
   resources :presentacion_productos
   resources :marca_productos
-  resources :empleados
   
+  resources :empleados
   get 'empleados/index'
-
   get 'empleados/show'
-
   get 'empleados/new'
-
   get 'empleados/edit'
-
   get 'empleados/create'
-
   get 'empleados/update'
-
   get 'empleados/destroy'
 
   get 'datos_fiscales_negocios/index'
-
   get 'datos_fiscales_negocios/show'
-
   get 'datos_fiscales_negocios/new'
-
   get 'datos_fiscales_negocios/create'
-
   get 'datos_fiscales_negocios/update'
-
   get 'datos_fiscales_negocios/destroy'
 
   resources :clientes  
