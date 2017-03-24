@@ -61,6 +61,8 @@ GEM
       execjs
     coffee-script-source (1.10.0)
     concurrent-ruby (1.0.0)
+    date_picker (0.0.9)
+      rails (>= 4.0.3)
     debug_inspector (0.0.2)
     devise (4.2.0)
       bcrypt (~> 3.0)
@@ -188,6 +190,7 @@ DEPENDENCIES
   cancancan
   carrierwave
   coffee-rails (~> 4.1.0)
+  date_picker
   devise
   font-awesome-rails
   jbuilder (~> 2.0)

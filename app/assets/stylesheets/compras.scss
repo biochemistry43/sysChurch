@@ -1,3 +1,98 @@
-// Place all the styles related to the Compras controller here.
+// Place all the styles related to the punto-venta controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+@media (min-width: 1600px){
+	div.main-row-pos{
+	    height: 910px; 
+	    min-height: 910px;
+    }
+
+    #div-tabla-ventas{
+	   height: 500px;
+	   overflow: auto;
+	}
+}
+
+.campo-pago{
+  background: #fffce6;
+  color: #5B7ECC;
+  font-size: 25px;
+  height: 50px;
+  border-color: green;
+  border-width: 1px;
+}
+
+#logo_negocio{
+	display: none;
+}
+
+
+    .panel-pos, .col-pos{
+	  height: 90%;
+	}
+
+	.well.profile_view .bottom{
+		background: #A3CC5B;
+
+	}
+	
+	.well.profile_view {
+		color: #1b2d06;
+		background: #e6e6ff;//#fffce6;
+	}
+
+	#table_sales{
+		margin-top: 3%;
+		color: black;
+		text-transform: uppercase;
+		font-size: 16px;
+		background-color: #A3CC5B;
+		/*margin-bottom: 2%;*/
+	}
+
+	#search-product{
+		font-size: 16px;
+		height: 50px;
+	}
+
+	.modal-content{
+		background: #e6e6ff;
+	}
+
+	#total-price{
+	  margin-left: 1em;
+	}
+
+	#importe, #importePagar{
+	  font-size: 100px;
+	  color: #6A9916;
+	}
+
+	#botones-venta{
+		position: absolute;
+		right: 50%;
+		left: 0%;
+		bottom: 0px;
+	}
+
+	#panel-pos-body{
+		height: 100%;
+		position: relative;
+		z-index:3;
+		background-color: #fffce6;//#e6e6ff;
+	}
+
+	#print-div{
+	  position: absolute;
+	  z-index:1;	
+	}
+
+	.tabs-left > li > a{
+		background: #5B7ECC;
+		color: white;
+	}
+
+
+
+
+

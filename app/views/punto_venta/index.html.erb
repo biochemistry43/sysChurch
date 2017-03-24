@@ -276,9 +276,9 @@
 
 
     <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
-    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.direccionFiscal.capitalize : current_user.negocio.direccion.capitalize %>">
-    <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre.capitalize%>">
-    <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.direccion%>">
+    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle : "Sin calle" %>">
+    <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">
+    <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.calle%>">
     <input type="hidden" id="fecha" value="<%= Time.now %>">
     <input type="hidden" id="nombre_cajero" value="<%= current_user.perfil.nombre%>">
     <div id="print-div2"></div>

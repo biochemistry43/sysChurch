@@ -61,7 +61,7 @@
     <div class="item form-group<%= @articulo.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :categoria, "Categoria: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12">
-         <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Seleccione categoria', class: "form-control col-md-7 col-xs-12"})%>
+         <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12" })%>
         <%if @articulo.errors[:categoria].any? %>
           <p class="bg-danger"><%= @articulo.errors[:categoria].to_s[/\w([^"]*)/] %></p>
         <% end %>

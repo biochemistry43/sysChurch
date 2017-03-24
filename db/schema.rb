@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170323044104) do
+ActiveRecord::Schema.define(version: 20170323191408) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20170323044104) do
     t.integer  "user_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.string   "forma_pago"
   end
 
   create_table "datos_fiscales_clientes", force: :cascade do |t|

@@ -20,3 +20,6 @@
 //= require dataTables/extras/dataTables.responsive
 //= require dataTables/jquery.dataTables
 //= require turbolinks
+//= require pickadate/lib/compressed/picker
+//= require pickadate/lib/compressed/picker.date
+//= require pickadate/lib/compressed/picker.time

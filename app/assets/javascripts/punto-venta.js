@@ -11,7 +11,7 @@ var datosVenta = [];
 //este arreglo guardará los datos de la forma de pago de esta venta en particular
 var datosFormaPago = [];
 
-//Este arreglo json guardará código y cantidad de cada item de venta.
+//Este arreglo json guardará código y cFantidad de cada item de venta.
 var itemsVenta = [];
 
 //Esta variable cambia dependiendo de la forma de pago elegida por el usuario
@@ -92,7 +92,7 @@ $(document).ready(function(){
       if (code==13 && $("#search-product").val()!="")
       {
         //añade el producto a la venta actual.
-        addProductToSale($("#search-product").val());
+        addProduct($("#search-product").val());
         $("#search-product").val("");
       }
   });
@@ -708,7 +708,7 @@ function actualizarCantidad(indice){
   $($('#table_sales').find('tbody > tr')[indice]).children('td')[4].innerHTML = importe;
 }
 
-function addProductToSale(elem){
+function addProduct(elem){
   $.ajax({
     url: "/articulos/getById/" + elem,
     dataType: "JSON",
