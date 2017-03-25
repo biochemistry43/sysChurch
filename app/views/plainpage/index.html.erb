@@ -6,7 +6,7 @@
   <div class="col-md-12 col-sm-12 col-xs-12 ">
       <div class="container">
         <div class="jumbotron" style="text-align: center;">
-          <%= image_tag(@negocio.logo_url, :width => 500, :height => 450, class: "img img-circle") if @negocio.logo.present? %>
+          <%= image_tag(@negocio.logo_url, :width => 500, :height => 450, class: "img") if @negocio.logo.present? %>
           <h1><%=@empresa.capitalize%></h1>
           <h3 style="font-size: 30px; ">Sucursal <%=@sucursal.capitalize%></h3>
           <h3 style="font-size: 28px; color: #5B7ECC;">¡Bienvenido <%=current_user.perfil.nombre%>!</h3>

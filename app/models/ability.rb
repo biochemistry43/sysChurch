@@ -70,7 +70,7 @@ class Ability
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil
-         can :crud, Cliente
+         can :cru, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, Banco

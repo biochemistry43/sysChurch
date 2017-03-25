@@ -106,7 +106,8 @@ $(document).ready(function(){
   $(document).delegate("tr", "dblclick", function(e) {
 
     cantidad = $(this).find("#cantidadProducto").html();
-    cambiarCantidadProducto($(this).index(), cantidad);
+    precio = $(this).find("#precioProducto").html();
+    cambiarCantidadProducto($(this).index(), cantidad, precio);
 
   });
 
@@ -188,13 +189,17 @@ $(document).ready(function(){
    * param indice indica la fila de la tabla en donde se están intentando cambiar la cantidad.
    * param valor indica la cantidad actual de producto.
    */
-  function cambiarCantidadProducto(indice, valor){
+  function cambiarCantidadProducto(indice, valor, precio){
     //Se actualiza el "body" del modal actualizar cantidad
     //Se asignan métodos para actualizar la cantidad dando click en el botón o con la tecla enter
-    $('#modal-body-actualizar-cantidad').html('<div class="form-inline">'+
+    $('#modal-body-actualizar-cantidad').html('<div class="form">'+
         '<div class="form-group">'+
           '<label for="cantidad">Nueva Cantidad:</label>'+
-          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'" onkeyup="enterActualizar(event, '+indice+')">'+
+          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'">'+
+        '</div>'+
+        '<div class="form-group">'+
+          '<label for="precio">Precio de Compra:</label>'+
+          '<input type="text" class="form-control" id="precio'+indice+'" value="'+precio+'">'+
         '</div>'+
       '</div>');
     //Se añade un botón en el footer del modal que permite actualizar la cantidad.
@@ -221,10 +226,15 @@ $(document).ready(function(){
     }
   });
 
-
+$("#comprarBtn").on("click", function() {
+  alert($("compra_fecha").val());
+});
   //Acción para guardar la venta en un objeto JSON.
-  $("#cobrarVenta").on("click", function() {
+  $("#comprarBtn2").on("click", function() {
     
+    folio = $("#compra_folio_compra").val();
+    fecha = $("compra_fecha").val();
+
     //Se añade la caja a la que pertenece esta venta.
     caja = { };
     caja["caja"] = $("#caja").val();
@@ -702,8 +712,14 @@ function enterActualizar(event, indice){
 
 function actualizarCantidad(indice){
   cantidad = $("#nuevaCantidad"+indice).val();
+  precio = $("#precio"+indice).val();
+
   $($('#table_sales').find('tbody > tr')[indice]).children('td')[3].innerHTML = cantidad;
+  $($('#table_sales').find('tbody > tr')[indice]).children('td')[2].innerHTML = precio;
+
   precioVenta = $($('#table_sales').find('tbody > tr')[indice]).children('td')[2].innerHTML;
+  
+
   importe = cantidad * precioVenta;
   $($('#table_sales').find('tbody > tr')[indice]).children('td')[4].innerHTML = importe;
 }
@@ -728,8 +744,8 @@ function addProduct(elem){
            var element = res[i];
            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
-                                    "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
-                                    "<td>"+element.precioVenta+"</td>"+
+                                    "<td id='precioProducto' >0</td><td id='cantidadProducto'>1</td>"+
+                                    "<td>0</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td></tr>");
 
