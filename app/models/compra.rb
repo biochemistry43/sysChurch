@@ -4,6 +4,6 @@ class Compra < ActiveRecord::Base
 	belongs_to :proveedor
 	belongs_to :user
 
-	validates :fecha, :tipo_pago, :folio_compra, :presence => { message: "Dato necesario para la compra" }
+	validates :fecha, :proveedor_id, :tipo_pago, :folio_compra, :presence => { message: "Dato necesario para la compra" }
 	
 end

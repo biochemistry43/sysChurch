@@ -227,7 +227,7 @@ $(document).ready(function(){
   });
 
 $("#comprarBtn").on("click", function() {
-  alert($("compra_fecha").val());
+  alert($("#compra_fecha").val());
 });
   //Acción para guardar la venta en un objeto JSON.
   $("#comprarBtn2").on("click", function() {
