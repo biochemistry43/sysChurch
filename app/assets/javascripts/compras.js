@@ -12,7 +12,7 @@ var datosVenta = [];
 var datosFormaPago = [];
 
 //Este arreglo json guardará código y cFantidad de cada item de venta.
-var itemsVenta = [];
+var itemsCompra = [];
 
 //Esta variable cambia dependiendo de la forma de pago elegida por el usuario
 var formaPago = "efectivo";
@@ -22,7 +22,10 @@ var fecha = new Date();
 
 //jquery
 $(document).ready(function(){
+  
 
+  /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
+  autocomplete. Ver /assets/javascripts/autocomplete.jquery.js */
   $(".autocomplete").autocomplete();
 
   /**
@@ -50,35 +53,9 @@ $(document).ready(function(){
 
   });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
-  $('#campo-paga-con').bind('keyup', function(event) {
-    
-    if(($("#importe").text().length >= 1) && ($("#campo-paga-con").val().length >= 1))  {
-      
-      value = parseFloat($("#importe").text());
-      pagoCli = parseFloat($("#campo-paga-con").val());
-
-      
-      var cambio = pagoCli - value;
-      cambio = cambio.toFixed(2);
-
-      if (cambio > 0){
-        $("#cambio_cliente").text(cambio);  
-      }
-      
-    }
-    
-
-  });//Terminan los eventos de teclado dentro de el módulo punto de venta.
-
-
-  /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
-  autocomplete. Ver /assets/javascripts/autocomplete.jquery.js */
-  //$('.autocomplete').autocomplete();
 
   //Se aseguro que el campo de búsqueda esté vacío cada vez que se inicia el punto de venta.
   $("#search-product" ).val("");
-
-
 
   /**
    * Esta porción de código identifica si se ha presionado enter en el campo de búsqueda de un
@@ -111,6 +88,7 @@ $(document).ready(function(){
 
   });
 
+
   //Con esta petición ajax, se llena el modal de clientes.
   $.ajax({
     //Los datos se obtienen en json
@@ -123,7 +101,8 @@ $(document).ready(function(){
     error: function(){
       alert("Error al cargar la lista de clientes.");
     },
-    //Una vez recibida la respuesta del servidor, se construye una tabla con clientes dentro de un modal.
+    //Una vez recibida la respuesta del servidor, 
+    //se construye una tabla con clientes dentro de un modal.
     success: function(res){
 
       var resLength = res.length;
@@ -146,7 +125,9 @@ $(document).ready(function(){
 
       }
 
-      /* Una vez que se han cargado los datos en la tabla, convertimos nuestra tabla en una tabla DataTable.
+
+      /* Una vez que se han cargado los datos en la tabla, 
+       * convertimos nuestra tabla en una tabla DataTable.
        * El plugin Datatable fue instalado mediante la gema 'jquery-datatables-rails'. 
        * Para más información:  https://github.com/rweng/jquery-datatables-rails
        * La funcionalidad de ser responsiva fue añadida a la tabla.
@@ -167,12 +148,11 @@ $(document).ready(function(){
           }
         }
       });
-
-
-         
+  
     }//Termina success de la petición ajax
 
   }); //Termina petición ajax de la lista de clientes.
+
 
   //Esta acción abre el modal que permite cambiar el cliente de una venta
   $("#cambiarClienteBtn").on("click", function(e){
@@ -195,11 +175,11 @@ $(document).ready(function(){
     $('#modal-body-actualizar-cantidad').html('<div class="form">'+
         '<div class="form-group">'+
           '<label for="cantidad">Nueva Cantidad:</label>'+
-          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'">'+
+          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'" onkeyup="enterActualizar(event, '+indice+')" >'+
         '</div>'+
         '<div class="form-group">'+
           '<label for="precio">Precio de Compra:</label>'+
-          '<input type="text" class="form-control" id="precio'+indice+'" value="'+precio+'">'+
+          '<input type="text" class="form-control" id="precio'+indice+'" value="'+precio+'" onkeyup="enterActualizar(event, '+indice+')">'+
         '</div>'+
       '</div>');
     //Se añade un botón en el footer del modal que permite actualizar la cantidad.
@@ -225,101 +205,6 @@ $(document).ready(function(){
       $("#importePagar").text($("#importe").text());
     }
   });
-
-$("#comprarBtn").on("click", function() {
-  alert($("#compra_fecha").val());
-});
-  //Acción para guardar la venta en un objeto JSON.
-  $("#comprarBtn2").on("click", function() {
-    
-    folio = $("#compra_folio_compra").val();
-    fecha = $("compra_fecha").val();
-
-    //Se añade la caja a la que pertenece esta venta.
-    caja = { };
-    caja["caja"] = $("#caja").val();
-    datosVenta.push(caja);
-
-    //Este objeto guarda el id del cliente a quien se vendió
-    datosCliente = {};
-    datosCliente["id_cliente"] = $("#id_cliente").val();
-
-    datosVenta.push(datosCliente);
-
-    formaPagoJSON = {};
-    formaPagoJSON["formaPago"] = formaPago;
-
-    if(formaPago != "efectivo"){
-
-
-      $.ajax({
-        //Los datos se obtienen en json
-        url: "/punto_venta/obtenerCamposFormaPago/"+formaPago,
-        dataType: "JSON",
-        method: "POST",
-        timeout: 10000,
-        beforeSend: function(){
-        
-        },
-        error: function(){
-          alert("Error al cargar los campos de formas de pago.");
-        },
-        
-        success: function(res){
-
-          /*El resultado de esta petición, será una estructura ajax con los datos
-            de los campos dados de alta en la forma de pago elegida.
-            la forma de pago se solicita mediante la variable "formaPago"
-            cuando se hace la solicitud ajax*/
-
-          //Se recorre cada campo de la Forma de Pago elegida
-          for(i= 0; i < res.length; i++){
-
-            resultado = res[i]; //Se obtiene el campo.
-
-            nom = resultado.nombrecampo; //obtenemos el nombre del campo
-
-            campo = nom.toString(); //Se transforma el dato en un String.
-
-            camNoSpc = campo.replace(' ', '-');//Se reemplazan los espacios por un "-"
-
-            //Se crea un campo JSON con el mismo nombre del campo en base de datos
-            //Salvo que lleva un "-" en lugar de un espacio en los casos de nombres
-            //de campo compuestos. Ejemplo: Tarjeta credito cambia a Tarjeta-credito
-
-            // Dado que el campo html tiene el mismo nombre de id (con la palabra
-            // "campo-" antecediendole), se obtiene el valor del campo en base a ese
-            // mismo nombre encontrado en bd, a excepción de que lleva un guión medio
-            // en lugar de los espacios.
-            // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
-            // Espacios incluidos.
-            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();            
-
-          }
-
-          //Se guardan los datos de la forma de pago en el arreglo JSON
-          
-             
-        },//Termina success de la petición ajax
-
-        complete: function(jqXHR, settings){
-          
-          if(jqXHR.status == 200){
-            completarVenta();
-
-            
-          }
-
-        }
-
-      }); //Termina petición ajax de campos de la forma de pago elegida
-    }
-
-    else{
-      completarVenta();
-    }
-
-  });//Fin de la acción de cobrar venta.
 
 
   $("#cancelarVentaBtn").on("click", function(evt){
@@ -360,349 +245,6 @@ window.onload = function() {
 };
 
 
-
-/**
- * 
- */
-function completarVenta(){
-
-  datosFormaPago.push(formaPagoJSON);
-  //alert(JSON.stringify(datosFormaPago));
-
-  //Se guardan los datos de forma de pago en el arreglo de datos de la venta
-  datosVenta.push(datosFormaPago);
-  copiaFormaPago = JSON.parse(JSON.stringify(formaPagoJSON));        
-  
-  /**
-   * Ahora se recorren cada uno de los items de la venta y llena el arreglo
-   * con los datos respectivos.
-   */
-  $('#table_sales tr').each(function (i, el) {
-    //Se discrimina la primer fila (que corresponde al encabezado)
-    if(i!=0){
-    //El código del producto se encuentra en la primer columna de 
-    //de la tabla de venta actual.
-      var codigoProd = $(this).find("td").eq(0).text();
-      //La cantidad vendida del producto se encuentra en la tercera
-      //columna de la tabla de venta actual.
-      var cantidadProd = $(this).find("td").eq(3).text();
-      //El importe total del producto vendido se encuentra en la
-      //quinta columna de la tabla de venta actual.
-      var importeProd = $(this).find("td").eq(4).text();
-      //itemVenta es el objeto JSON que guarda toda la fila de un articulo
-      //vendido
-      itemVenta = {};
-      //Se crean los campos correspondientes y se guardan los datos obtenidos
-      //del producto
-      itemVenta["codigo"]=codigoProd;
-      itemVenta["cantidad"]=cantidadProd;
-      itemVenta["importe"]=importeProd;
-      //itemsVenta guarda la totalidad de los items de la venta.
-      //itemVenta es el item en particular.
-      itemsVenta.push(itemVenta);
-      
-    }
-  }); //Termina recorrido de la tabla de venta actual
-  //Ahora se guardan los items de la venta en el objeto datosVenta
-  datosVenta.push(itemsVenta);
-  
-  //dataVenta es un campo oculto dentro del form ventaForm
-  //este forma es el encargado de mandar toda la información relativa a la venta
-  //en un objeto JSON.
-  $("#dataVenta").val(JSON.stringify(datosVenta));
-  
-  
-
-  if($("#isPrintTicket").attr("checked")){
-    imprimirTicket();
-  }
-  else{
-    var form = $("#ventaForm");
-    form.submit(); //Se submite el form con los datos de la venta.
-  }
-
-     
-  //Se vacían los arreglos previamente creados para evitar posibles datos 
-  //incorrectos.
-  itemsVenta = [];
-  datosVenta = [];
-  datosFormaPago = [];
-  datosCliente = {};
-
-}//Termina función completar venta
-
-/**
- * Función que crea e imprime un ticket de compra
- */
-function imprimirTicket(){
-var div_print = document.createElement("div");
-    div_print.setAttribute("id", "print-div")
-    div_print.setAttribute("style", "font-size: 11px; width:200px;");
-    var div_print_1 = document.createElement("div");
-    div_print_1.className = "col-md-3";
-
-    //logo del negocio
-    var filalogo = document.createElement("div");
-    filalogo.className = "row"
-    var divlogo = document.createElement("div");
-    divlogo.className = "col-md-12";
-    divlogo.setAttribute("style","width: 100%;");
-    div_print_1.appendChild(filalogo);
-    filalogo.appendChild(divlogo);
-    var logoNegocio = document.createElement("img")
-    logoNegocio.setAttribute("width", "70px");
-    logoNegocio.setAttribute("height", "45px");
-    rutaLogo = document.getElementById('logo_negocio').src;
-    logoNegocio.setAttribute("src", rutaLogo);
-    logoNegocio.setAttribute("style","horizontal-align:middle;");
-    divlogo.appendChild(logoNegocio);
-
-
-    //Primer fila del ticket
-    var div_print_1_1 = document.createElement("div");
-    div_print_1_1.className = "row";
-
-    var div_print_1_1_1 = document.createElement("div");
-    div_print_1_1_1.className = "col-md-12";
-    div_print_1_1_1.setAttribute("style", "text-align:center;");
-
-    var nomNegocio = document.createElement("h5");
-    nomNegocio.setAttribute("id", "nombre_negocio_ticket");
-    var dirNegocio = document.createElement("p");
-    dirNegocio.setAttribute("style", "font-size: 9px;");
-    dirNegocio.setAttribute("id", "dir_negocio_ticket")
-    var nomSucursal = document.createElement("h5");
-    nomSucursal.setAttribute("id", "nombre_sucursal_ticket");
-    //Termina primer fila del ticket
-
-    //Segunda fila del ticket
-    var div_print_1_2 = document.createElement("div");
-    div_print_1_2.className = "row";
-    div_print_1_2.setAttribute("style", "text-align:center;");
-    var div_print_1_2_1 = document.createElement("p");
-    div_print_1_2_1.className = "col-md-12";
-    div_print_1_2_1.setAttribute("id", "direccion_sucursal_ticket");
-    div_print_1_2_1.setAttribute("style", "font-size:9px;");
-    //Termina segunda fila del ticket
-
-    //Tercera fila del ticket
-    var div_print_1_3 = document.createElement("div");
-    div_print_1_3.className = "row";
-    div_print_1_3.setAttribute("style", "text-align:center;");
-    var div_print_1_3_1 = document.createElement("div");
-    div_print_1_3_1.className = "col-md-12";
-    div_print_1_3_1.setAttribute("id", "fecha_ticket");
-    div_print_1_3_1.setAttribute("style", "font-size: 9px;");
-    //Termina tercer fila del ticket
-
-    //Cuarta fila del ticket
-    var div_print_1_4 = document.createElement("div");
-    div_print_1_4.className = "row";
-    var div_print_1_4_1 = document.createElement("div");
-    div_print_1_4_1.className = "col-md-12";
-    div_print_1_4_1.setAttribute("id", "datos_cliente_ticket");
-    div_print_1_4_1.setAttribute("style", "font-size: 9px;");
-    //Termina la cuarta fila del ticket
-
-    var filaCajero = document.createElement("div");
-    filaCajero.className = "row";
-    var divCajero = document.createElement("div");
-    divCajero.className = "col-md-12";
-    divCajero.setAttribute("id", "datos_cajero");
-    divCajero.setAttribute("style", "font-size: 9px;");
-
-
-
-    //Quinta fila del ticket
-    var div_print_1_5 = document.createElement("div");
-    div_print_1_5.className = "row";
-    var div_print_1_5_1 = document.createElement("div");
-    div_print_1_5_1.className = "col-md-12";
-    div_print_1_5_1.setAttribute("id", "productos_ticket");
-    div_print_1_5_1.setAttribute("style", "width: 100%;");
-    var tablaProductos = document.createElement("table");
-    tablaProductos.className = "col-md-12"
-    tablaProductos.setAttribute("style","font-size: 9px;");
-    tablaProductos.setAttribute("width", "95%");
-    tablaProductos.setAttribute("id", "tabla_productos_ticket");
-    tBodyProductos = document.createElement("tbody");
-    //Termina quinta fila
-    
-    //Sexta fila del ticket
-    var div_print_1_6 = document.createElement("div");
-    div_print_1_6.className = "row";
-    var div_print_1_6_1 = document.createElement("div");
-    div_print_1_6_1.className = "col-md-12";
-    var importeTotal = document.createElement("p");
-    importeTotal.setAttribute("id", "importe_total_ticket");
-    //Termina sexta fila del ticket
-
-    //Septima fila del ticket
-    var div_print_1_7 = document.createElement("div");
-    div_print_1_7.className = "row";
-    var div_print_1_7_1 = document.createElement("div");
-    div_print_1_7_1.className = "col-md-12";
-    var forma_Pago = document.createElement("p");
-    forma_Pago.setAttribute("id", "forma_pago");
-    forma_Pago.setAttribute("style", "font-size: 9px;")
-    //Termina septima fila del ticket
-
-    //Construccion del arbol dom del ticket
-    div_print.appendChild(div_print_1);
-    div_print_1.appendChild(div_print_1_1);
-    div_print_1.appendChild(div_print_1_2);
-    div_print_1.appendChild(div_print_1_3);
-    div_print_1.appendChild(div_print_1_4);
-    div_print_1.appendChild(filaCajero);
-    div_print_1.appendChild(div_print_1_5);
-    div_print_1.appendChild(div_print_1_6);
-    div_print_1.appendChild(div_print_1_7);
-    
-    //Construccion de la primer fila
-    div_print_1_1.appendChild(div_print_1_1_1);
-    div_print_1_1_1.appendChild(nomNegocio);
-    div_print_1_1_1.appendChild(dirNegocio);
-    div_print_1_1_1.appendChild(nomSucursal);
-    //Termina construcción de la primer fila
-
-    //Construcción de la segunda fila
-    div_print_1_2.appendChild(div_print_1_2_1);
-    //Termina construcción de la segunda fila
-
-    //Construcción de la tercer fila
-    div_print_1_3.appendChild(div_print_1_3_1);
-    //Termina construcción de la tercer fila
-
-    //Construcción de la cuarta fila
-    div_print_1_4.appendChild(div_print_1_4_1);
-    //Termina construcción de la cuarta fila
-
-    filaCajero.appendChild(divCajero);
-
-    //Construcción de la quinta fila
-    div_print_1_5.appendChild(div_print_1_5_1);
-    div_print_1_5_1.appendChild(tablaProductos);
-    tablaProductos.appendChild(tBodyProductos);
-    //Termina construcción de la quinta fila
-
-    //Construcción de la sexta fila
-    div_print_1_6.appendChild(div_print_1_6_1);
-    div_print_1_6_1.appendChild(importeTotal);
-    //Termina construcción de la sexta fila
-
-    //Construcción de la septima fila
-    div_print_1_7.appendChild(div_print_1_7_1);
-    div_print_1_7_1.appendChild(forma_Pago);
-    //Termina construcción de la septima fila
-
-    //alert(JSON.stringify(copiaFormaPago));
-
-    document.getElementById('print-div2').appendChild(div_print);
-
-
-
-    $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
-    $("#dir_negocio_ticket").append($("#direccion_negocio").val())
-    $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
-    $("#direccion_sucursal_ticket").append($("#direccion_sucursal").val());
-    $("#fecha_ticket").append("Fecha: " + fecha.getDate()+"/"+
-                              (fecha.getMonth()+1)+"/"+fecha.getFullYear());
-
-    $("#datos_cliente_ticket").html("Cliente: "+$("#nom_cliente_venta").text());
-    $("#datos_cajero").html("Cajero: "+$("#nombre_cajero").val());
-
-    $("#tabla_productos_ticket").html(""+
-      
-        "<thead>"+
-          "<tr style='background-color: gray;'>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Cant</th>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Prod</th>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Imp</th>"+
-          "</tr>"+ 
-        "</thead>"
-
-    );
-
-    $('#table_sales tr').each(function (i, el) {
-      //Se discrimina la primer fila (que corresponde al encabezado)
-      
-      if(i!=0){
-      //El código del producto se encuentra en la primer columna de 
-      //de la tabla de venta actual.
-        var nombreProd = $(this).find("td").eq(1).text();
-        //La cantidad vendida del producto se encuentra en la tercera
-        //columna de la tabla de venta actual.
-        var precio = $(this).find("td").eq(2).text();
-        //El importe total del producto vendido se encuentra en la
-        //quinta columna de la tabla de venta actual.
-        var cantidad = $(this).find("td").eq(3).text();
-        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
-        //vendido
-        var importe = $(this).find("td").eq(4).text();
-        itemVenta = {};
-        
-        $("#tabla_productos_ticket").append(""+
-       
-          "<tr style='border-bottom: 1px solid #ddd;'>"+
-            "<td>"+cantidad+"</td>"+
-            "<td style='text-align: justify;' >"+nombreProd+"</td>"+
-            "<td style='text-align:right;'>"+importe+"</td>"+
-          "</tr>"
-    
-        );
-
-      }
-
-    }); //Termina recorrido de la tabla de venta actual
-    $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
-
-    if(formaPago.toLowerCase() == "efectivo"){
-       $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
-    }
-    else{
-
-      for (x in copiaFormaPago) {
-        if(x.includes("tarjeta")){
-          nTarjeta = copiaFormaPago[x];
-          terminacion = nTarjeta.substr(12, 4);
-          document.getElementById("forma_pago").innerHTML += x + ": ************" +terminacion + "<br>"; 
-        }
-        else{
-          document.getElementById("forma_pago").innerHTML += x + ": " +copiaFormaPago[x] + "<br>";  
-        }
-      }
-    }
-
-
-    $("#print-div2").print({
-
-      globalStyles: true,
-      mediaPrint: true,
-      stylesheet: null,
-      noPrintSelector: ".no-print",
-      iframe: true,
-      append: null,
-      prepend: null,
-      manuallyCopyFormValues: true,
-      deferred: $.Deferred().done(function(){
-        $("#print-div").empty();
-        var form = $("#ventaForm");
-        form.submit(); //Se submite el form con los datos de la venta.
-      }),
-      timeout: 750,
-      title: null,
-      doctype: '<!doctype html>'
-
-    });   
-}
-
-/**
- * Establece el valor de la forma de pago que el cliente eligió
- */
-function setFormaPago(forma){
-  formaPago = forma;
-}
-
 function enterActualizar(event, indice){
   if (event.keyCode == 13) {
     actualizarCantidad(indice);
@@ -740,6 +282,9 @@ function addProduct(elem){
     success: function(res){
       if(res){
         var resLength = res.length;
+
+        // En este for, se añaden los datos a cada una de las celdas 
+        //de la fila de un producto.
         for(i=0; i < resLength; i++){
            var element = res[i];
            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
@@ -749,18 +294,26 @@ function addProduct(elem){
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td></tr>");
 
-        }
+        } //Terminan de añadirse los datos a la fila
 
-
+        
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
         document.getElementById("search-product").parentNode.removeChild(nodoResultado);
+
+        //Se reconstruye el JSON con los datos de los productos añadidos a la compra
+        crearJSONProductos();
               
-      }else{
-        
-      }
-    }
-  })
-}
+      }// Termina if(res)
+
+
+    }// Termina la función success
+
+  }); //Termina ajax
+
+} //Termina la función addProduct
+
+
+
 
 $(document).on('click', '.borrar_item_venta', function (event) {
     event.preventDefault();
@@ -805,11 +358,34 @@ jQuery.fn.contentChange = function(callback){
 
       //Se discrimina la primer fila (que corresponde al encabezado)
       if(i!=0){
-        //el td 4 equivale al campo con la cantidad.
-        var val = $(this).find("td").eq(4).html();
+
+
+        //Los datos de interés son la clave, el precio, la cantidad comprada y el importe
+        //Estos datos se encuentran en las columnas cero, dos, tres y cuatro respectivamente.
+   
+        var codigoProd = $(this).find("td").eq(0).text();
+        var precio = $(this).find("td").eq(2).text();
+        var cantidad = $(this).find("td").eq(3).text();
+        var importeProducto = $(this).find("td").eq(4).text();
+        
+        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
+        //comprado
+        itemCompra = {};
+
+        //Se crean los campos correspondientes y se guardan los datos obtenidos
+        //del producto
+        itemCompra["codigo"]=codigoProd;
+        itemCompra["precio"]=precio;
+        itemCompra["cantidad"]=cantidad;
+        itemCompra["importe"]=importeProducto;
+        
+        //itemsCompra guarda la totalidad de los items de la compra.
+        //itemCompra es el item en particular.
+        itemsCompra.push(itemCompra);
+
         
         //Convierto el valor del importe en un valor float
-        var importe = parseFloat(val);
+        var importe = parseFloat(importeProducto);
 
         //añado el importe a la sumatoria total de la venta
         sumatoria += importe;
@@ -821,6 +397,13 @@ jQuery.fn.contentChange = function(callback){
     
     //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
     $("#importe").text(sumatoria);
+
+    //Se anade los valores de la compra en el textfield hidden #compra_articulos
+    $("#compra_articulos").val(JSON.stringify(itemsCompra));
+    
+    //Se reinicia el arreglo de items de la compra
+    itemsCompra = [];
+
   });
         
 
