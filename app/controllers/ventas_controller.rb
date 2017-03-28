@@ -24,14 +24,14 @@ class VentasController < ApplicationController
   end
 
   def venta_del_dia
-    @ventas = Venta.where({ fechaVenta: (Date.today)})
+    @ventas = current_user.sucursal.ventas
     @VentaDelDia = 0
     
     @ventas.each do |venta|
       @VentaDelDia += venta.montoVenta.to_f
     end
 
-    @usuarios = User.all
+    @usuarios = current_user.negocio.users
     @monto = 0
 
   end

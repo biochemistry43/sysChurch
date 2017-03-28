@@ -55,12 +55,16 @@ class ArticulosController < ApplicationController
     @marcas = current_user.negocio.marca_productos
     @presentaciones = current_user.negocio.presentacion_productos
     @articulo = Articulo.new(articulo_params)
+    existenciaInicial = articulo_params[:existencia]
     
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
           current_user.negocio.articulos << @articulo
           current_user.sucursal.articulos << @articulo
+          entradaAlmacen = EntradaAlmacen.new(:cantidad=>existenciaInicial, :fecha=>Time.now, :isEntradaInicial=>true)
+          entradaAlmacen.save
+          @articulo.entrada_almacens << entradaAlmacen          
           #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
           #format.json { render :show, status: :created, location: @articulo }
           format.json { head :no_content}

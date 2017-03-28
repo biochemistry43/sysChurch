@@ -134,7 +134,7 @@
       <!-- /.modal-dialog -->
     </div>
 
-
+    <%= render 'modalProveedores'%>
     <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
     <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle : "Sin calle" %>">
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">

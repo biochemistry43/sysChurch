@@ -47,7 +47,7 @@
                       </li>
                     <%end%>
                     <%if can? :update, Articulo%>
-                      <li><%= link_to "Productos", articulos_path %>
+                      <li><%= link_to "Catálogo productos", articulos_path %>
                       </li>
                     <%end%>
                     <%if can? :update, Articulo%>
@@ -58,12 +58,12 @@
                       <li><%= link_to "Presentaciones", presentacion_productos_path %>
                       </li>
                     <%end%>
+                  </ul>
+                </li>
+                <li><a><i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu" style="display: none">
                     <%if can? :update, Proveedor%>
                       <li><%= link_to "Proveedores", proveedores_path%>
-                      </li>
-                    <%end%>
-                    <%if can? :update, Inventario%>
-                      <li><%= link_to "Inventario", inventarios_path%>
                       </li>
                     <%end%>
                   </ul>

@@ -309,7 +309,9 @@ function addProduct(elem){
 
 } //Termina la función addProduct
 
-
+function toggleCredito(event){
+  alert("hello" + event);
+}
 
 
 $(document).on('click', '.borrar_item_venta', function (event) {

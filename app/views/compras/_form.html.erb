@@ -13,7 +13,7 @@
 
   <div class="item form-group<%= @compra.errors[:fecha].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :fecha, "Fecha de compra*: ", {class: "control-label"} %>
-    <div class="input-group">
+    <div class="input-group form-i">
       <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
       <%= f.date_picker :fecha, {class: "form-control"} do%>
       <%end%>
@@ -25,20 +25,22 @@
 
   <div class="item form-group<%= @compra.errors[:proveedor_id].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :proveedor_id, "Proveedor*: ", {class: "control-label"} %>
-    <div class="input-group">
+    <div class="input-group ">
       <span class="input-group-addon"><i class="fa fa-truck"></i></span>
-      <%= collection_select(:compra, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control"})%>
-      <%if @compra.errors[:proveedor_id].any? %>
+      <%= collection_select(:compra, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control", style: "display:inline"})%>
+    </div>
+    <%=link_to "Nuevo proveedor", {controller: "proveedores", action: "new"}, html_options = {class: "btn btn-info", remote: true} %>
+    
+    <%if @compra.errors[:proveedor_id].any? %>
         <p class="bg-danger"><%= @compra.errors[:proveedor_id].to_s[/\w([^"]*)/] %></p>
       <% end %>
-    </div>
   </div>
 
   <div class="item form-group<%= @compra.errors[:tipo_pago].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :tipo_pago, "Tipo de pago*: ", {class: "control-label"} %>
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
-      <%= f.select :tipo_pago, {}, {}, {:class=> "form-control"} do %>
+      <%= f.select :tipo_pago, {}, {}, {:class=> "form-control", :onchange=>"toogleCredito(event)"} do %>
         <% [['Contado', 'Contado'], ['Crédito', 'Credito']].each do |c| -%>
           <%= content_tag(:option, c.first, value: c.last) %>
         <% end %>
@@ -49,14 +51,68 @@
     </div>
   </div>
 
+
+  <div id="hiddenFields">
+    <div class="item form-group<%= @compra.errors[:plazo_pago].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :plazo_pago, "Plazo de pago*: ", {class: "control-label"} %>
+      <div class="input-group">
+        <span class="input-group-addon"><i class="fa fa-smile-o"></i></span>
+        <%= f.text_field :plazo_pago, {class: "form-control text_field ", :placeholder=>"Por ejemplo 3, 6 o 9 meses..."} do%>
+
+        <%end%>
+
+          <%= f.select :periodo_plazo, {}, {}, {:class=> "form-control"} do %>
+            <% [['meses', 'meses'], ['semanas', 'semanas'], ['dias', 'dias']].each do |c| -%>
+              <%= content_tag(:option, c.first, value: c.last) %>
+            <% end %>
+          <% end %>
+
+        <%if @compra.errors[:plazo_pago].any? %>
+          <p class="bg-danger"><%= @compra.errors[:plazo_pago].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @compra.errors[:fecha_limite_pago].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :fecha_limite_pago, "Fecha límite de pago: ", {class: "control-label"} %>
+      <div class="input-group">
+        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+        <%= f.date_picker :fecha_limite_pago, {class: "form-control"} do%>
+        <%end%>
+        <%if @compra.errors[:fecha_limite_pago].any? %>
+          <p class="bg-danger"><%= @compra.errors[:fecha_limite_pago].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
   <div class="item form-group<%= @compra.errors[:plazo_pago].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :plazo_pago, "Plazo de pago*: ", {class: "control-label"} %>
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-smile-o"></i></span>
-      <%= f.text_field :plazo_pago, {class: "form-control text_field first_input", :placeholder=>"Por ejemplo 3, 6 o 9 meses..."} do%>
+      <%= f.text_field :plazo_pago, {class: "form-control text_field ", :placeholder=>"Por ejemplo 3, 6 o 9 meses..."} do%>
+
       <%end%>
+
+        <%= f.select :periodo_plazo, {}, {}, {:class=> "form-control"} do %>
+          <% [['meses', 'meses'], ['semanas', 'semanas'], ['dias', 'dias']].each do |c| -%>
+            <%= content_tag(:option, c.first, value: c.last) %>
+          <% end %>
+        <% end %>
+
       <%if @compra.errors[:plazo_pago].any? %>
         <p class="bg-danger"><%= @compra.errors[:plazo_pago].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @compra.errors[:fecha_limite_pago].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :fecha_limite_pago, "Fecha límite de pago: ", {class: "control-label"} %>
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+      <%= f.date_picker :fecha_limite_pago, {class: "form-control"} do%>
+      <%end%>
+      <%if @compra.errors[:fecha_limite_pago].any? %>
+        <p class="bg-danger"><%= @compra.errors[:fecha_limite_pago].to_s[/\w([^"]*)/] %></p>
       <% end %>
     </div>
   </div>
