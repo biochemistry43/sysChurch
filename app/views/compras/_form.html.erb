@@ -1,6 +1,6 @@
 <%= form_for @compra, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
   <div class="item form-group<%= @compra.errors[:folio_compra].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :folio_compra, "Factura de folio_compra*: ", {class: "control-label"} %>
+    <%= f.label :folio_compra, "Factura de compra*: ", {class: "control-label"} %>
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
       <%= f.text_field :folio_compra, {class: "form-control text_field first_input", :placeholder=>"Factura de compra, num ticket, etc..."} do%>
