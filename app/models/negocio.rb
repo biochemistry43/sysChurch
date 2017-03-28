@@ -11,4 +11,5 @@ class Negocio < ActiveRecord::Base
 	has_one :datos_fiscales_negocio
 	has_many :marca_productos
 	has_many :presentacion_productos
+	has_many :ventas
 end

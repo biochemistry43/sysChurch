@@ -24,15 +24,26 @@ class VentasController < ApplicationController
   end
 
   def venta_del_dia
-    @ventas = current_user.sucursal.ventas
-    @VentaDelDia = 0
+
+    @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: Date.today)
+
+    @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today)
+
+    @ventaDiaNegocio = 0
+
+    @ventaMesNegocio = 0
     
-    @ventas.each do |venta|
-      @VentaDelDia += venta.montoVenta.to_f
+    @ventasNegocioHoy.each do |venta|
+      @ventaDiaNegocio += venta.montoVenta.to_f
     end
 
+    @ventasNegocioMes.each do |venta|
+      @ventaMesNegocio += venta.montoVenta.to_f
+    end
+
+    @sucursales = current_user.negocio.sucursals
+
     @usuarios = current_user.negocio.users
-    @monto = 0
 
   end
 end

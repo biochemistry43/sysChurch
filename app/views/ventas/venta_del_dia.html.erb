@@ -5,46 +5,94 @@
     </div>
   </div>
   <div class="clearfix"></div>
-  
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
-      <p id="notice"><%= notice %></p>
-      <h2>Venta del día de hoy:</h2>
-      <h1>$<%=@VentaDelDia%></h1>
-
-      <% @usuarios.each do |usuario| %>
-        <h3>Venta del cajero: </h3>
-        <h4><%=usuario.perfil.nombre%></h4>
-        <% usuario.ventas.each do |venta| %>
-          <% @monto += venta.montoVenta.to_f %>
-        <%end%>
-        <h5><%= @monto %></h5>
-        <% @monto = 0.0%>
-      <% end %>
-
-      <table class="table table-striped responsive-utilities jambo_table">
-        <thead>
-          <tr>
-            <th class="column-title">Fecha </th>
-            <th class="column-title">Monto Venta</th>
-            <th class="column-title">Caja #</th>
-            <th class="column-title">Cajero</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% @ventas.each do |venta| %>
-            <tr>
-              <td><%= venta.fechaVenta %></td>
-              <td><%= venta.montoVenta %></td>
-              <td><%= venta.caja %></td>
-              <td><%= User.find(venta.user_id).email %></td>
-            </tr>
+  <div class="row">
+    <div class="col-md-offset-1 col-sm-offset-1 col-md-5 col-sm-5 col-xs-12">
+      <div class="row">
+        <h2>Ventas del día de hoy</h2>
+        <h1>$<%= @ventaDiaNegocio %></h1>
+      </div>
+      <div class="row">
+        <% @ventaDiaSucursal = 0 %>
+        <% @sucursales.each do |sucursal| %>
+          
+          <h3>Sucursal: <%= sucursal.nombre %></h3>
+          
+          <% sucursal.ventas.where(fechaVenta: Date.today).each do |ventaSucursal| %>
+            <% @ventaDiaSucursal += ventaSucursal.montoVenta.to_f %>
+            
           <% end %>
-        </tbody>
-      </table>
-      <br>
+          <h1>$<%= @ventaDiaSucursal %></h1>
+          <% @ventaDiaSucursal = 0 %>
+          <table class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr>
+                <th class="column-title">Nombre </th>
+                <th class="column-title">Rol</th>
+                <th class="column-title">Monto Vendido</th>
+              </tr>
+            </thead>
+            <tbody>
+          <% sucursal.users.each do |user| %>
+            <% @ventasUsuario = 0 %>
+            
+            <% user.ventas.where(fechaVenta: Date.today).each do |ventaUsuario| %>
+              <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
+            <% end %>
+              <tr>
+                <td> <%= user.perfil.nombre %> </td>
+                <td> <%= user.role %></td>
+                <td> <%= @ventasUsuario %></td>
+              </tr>   
+          <% end %>
+            </tbody>
+          </table>
 
+        <% end %>
+      </div>
+    </div>
+    <div class="col-md-5 col-sm-5 col-xs-12 col-md-offset-1 col-sm-offset-1">
+      <div class="row">
+        <h2>Ventas del mes</h2>
+        <h1>$<%= @ventaMesNegocio %></h1>
+      </div>
+      <div class="row">
+        <% @ventaMesSucursal = 0 %>
+        <% @sucursales.each do |sucursal| %>
+          
+          <h3>Sucursal: <%= sucursal.nombre %></h3>
+          
+          <% sucursal.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today).each do |ventaSucursal| %>
+            <% @ventaMesSucursal += ventaSucursal.montoVenta.to_f %>
+            
+          <% end %>
+          <h1>$<%= @ventaMesSucursal %></h1>
+          <% @ventaMesSucursal = 0 %>
+          <table class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr>
+                <th class="column-title">Nombre </th>
+                <th class="column-title">Rol</th>
+                <th class="column-title">Monto Vendido</th>
+              </tr>
+            </thead>
+            <tbody>
+          <% sucursal.users.each do |user| %>
+            <% @ventasUsuario = 0 %>
+            
+            <% user.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today).each do |ventaUsuario| %>
+              <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
+            <% end %>
+              <tr>
+                <td> <%= user.perfil.nombre %> </td>
+                <td> <%= user.role %></td>
+                <td> <%= @ventasUsuario %></td>
+              </tr>   
+          <% end %>
+            </tbody>
+          </table>
+
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

@@ -95,6 +95,7 @@ class PuntoVentaController < ApplicationController
 			
 			current_user.ventas << @venta
 			current_user.sucursal.ventas << @venta
+			current_user.negocio.ventas << @venta
 			#@venta.user = current_user
 			itemSaved = true
 			ventaFPCSaved = true
