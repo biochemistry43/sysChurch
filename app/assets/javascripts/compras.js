@@ -299,9 +299,6 @@ function addProduct(elem){
         
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
         document.getElementById("search-product").parentNode.removeChild(nodoResultado);
-
-        //Se reconstruye el JSON con los datos de los productos añadidos a la compra
-        crearJSONProductos();
               
       }// Termina if(res)
 
@@ -397,6 +394,9 @@ jQuery.fn.contentChange = function(callback){
     
     //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
     $("#importe").text(sumatoria);
+
+    //el valor de la sumatoria se pone en el campo hidden monto_compra
+    $("#compra_monto_compra").val(sumatoria);
 
     //Se anade los valores de la compra en el textfield hidden #compra_articulos
     $("#compra_articulos").val(JSON.stringify(itemsCompra));

@@ -16,32 +16,46 @@ class ComprasController < ApplicationController
     @compra = Compra.new(compra_params)
     @proveedores = current_user.sucursal.proveedores
      
-    articulos = compra_params[:articulos]
-
-    hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
-
-    codigo = ""
-    cantidad = 0
-    precio = 0
-    importe = 0
-
-
-    hashArticulos.collect { |articulo|
-
-        codigo = articulo["codigo"]
-        precio = articulo["precio"]
-        cantidad = articulo["cantidad"]
-        importe = articulo["importe"]
-
-      
-      detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe)
-      Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take.detalle_compras << detalleCompra
-
-    }
-
     respond_to do |format|
       if @compra.valid?
         if @compra.save
+          articulos = compra_params[:articulos]
+          fecha = DateTime.parse(compra_params[:fecha]).to_date
+
+          hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+
+          codigo = ""
+          cantidad = 0
+          precio = 0
+          importe = 0
+          existencia = 0
+          nuevaExistencia = 0
+
+
+          hashArticulos.collect { |articulo|
+
+            codigo = articulo["codigo"]
+            precio = articulo["precio"]
+            cantidad = articulo["cantidad"]
+            importe = articulo["importe"]
+            
+            detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe)
+            entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+            articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+            articulo.detalle_compras << detalleCompra
+            articulo.entrada_almacens << entradaAlmacen
+
+            existencia = articulo.existencia
+
+            nuevaExistencia = existencia + entradaAlmacen.cantidad
+
+            articulo[:existencia] = nuevaExistencia
+
+            articulo.save
+
+
+          }
+
           current_user.compras << @compra
           format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
           format.json { render :new, status: :created, location: @compra }
@@ -79,7 +93,7 @@ class ComprasController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def compra_params
-      params.require(:compra).permit(:fecha, :tipo_pago, :plazo_pago, :folio_compra, :proveedor_id, :forma_pago, :articulos)
+      params.require(:compra).permit(:fecha, :tipo_pago, :plazo_pago, :folio_compra, :proveedor_id, :forma_pago, :articulos, :monto_compra)
     end
 
 end

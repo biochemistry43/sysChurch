@@ -76,6 +76,15 @@
     </div>
   </div>
   
+  <div class="item form-group<%= @compra.errors[:monto_compra].any? ? ' has-error has-feedback' : '' %>">
+    <div class="input-group">
+      <%= f.hidden_field :monto_compra %>
+      <%if @compra.errors[:monto_compra].any? %>
+        <p class="bg-danger"><%= @compra.errors[:monto_compra].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
   <div class="item form-group<%= @compra.errors[:articulos].any? ? ' has-error has-feedback' : '' %>">
     <div class="input-group">
       <%= f.hidden_field :articulos %>
