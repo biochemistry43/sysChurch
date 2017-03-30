@@ -1,5 +1,6 @@
 class Ability
   include CanCan::Ability
+  jmora2017
 
   def initialize(user)
     # Define abilities for the passed in user here. For example
@@ -25,6 +26,7 @@ class Ability
          can :crud, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
+         can :crud, CatArticulo
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -49,6 +51,7 @@ class Ability
          can :crud, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
+         can :crud, CatArticulo
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -73,6 +76,7 @@ class Ability
          can :cru, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
+         can :crud, CatArticulo
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
