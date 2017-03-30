@@ -1,9 +1,14 @@
 <div class="x_content">
   <%= form_for @cat_articulo, remote: true, :html=>{ :class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
 
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de la categoría:</h2>
+    </div>
+
     <div class="item form-group<%= @cat_articulo.errors[:nombreCatArticulo].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :nombreCatArticulo, "Nombre de Categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
         <%= f.text_field :nombreCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el tipo de cuenta..."} do%>
         <%end%>
         <%if @cat_articulo.errors[:nombreCatArticulo].any? %>
@@ -14,8 +19,9 @@
 
     <div class="item form-group<%= @cat_articulo.errors[:descripcionCatArticulo].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :descripcionCatArticulo, "Descripción de la categoría: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :descripcionCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+        <%= f.text_area :descripcionCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
         <%end%>
         <%if @cat_articulo.errors[:descripcionCatArticulo].any? %>
           <p class="bg-danger"><%= @cat_articulo.errors[:descripcionCatArticulo].to_s[/\w([^"]*)/] %></p>
@@ -23,11 +29,12 @@
       </div>
     </div>
 
-    <div class="item form-group<%= @cat_articulo.errors[:numeroCuenta].any? ? ' has-error has-feedback' : '' %>">
+    <div class="item form-group<%= @cat_articulo.errors[:cat_articulo_id].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :cat_articulo_id, "Elegir categoría padre:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} do %>
       <% end %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo)%>      
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-level-up"></i></span>
+        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo, {:placeholder=>"Escriba el nombre de la cuenta..."}, {class: "form-control col-md-7 col-xs-12 text_field"})%>      
       </div>
     </div>  
 

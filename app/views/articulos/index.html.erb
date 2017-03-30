@@ -20,12 +20,28 @@
   <div class="col-md-12 col-sm-12 col-xs-12 ">
   <div class="row">
       <div class="col-ms-12">
+        <div class="div-left-buttons">
+
+          <%= link_to url = {controller:"cat_articulos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear categoría"} do %>  
+            <span class="fa fa-tag" style=""></span>
+          <% end %>
+
+          <%= link_to url = {controller:"marca_productos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear marca"} do %>  
+            <span class="fa fa-apple" style=""></span>
+          <% end %>
+
+          <%= link_to url = {controller: "presentacion_productos", action: "new"}, html_options = {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", id: "presentacion-btn", title: "crear presentación"} do %>  
+            <span class="fa fa-cube" style=""></span>
+          <%end%>
+
+        </div>
+
         <div class="div-add-button">
 
           <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
-          <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
-          Añadir Artículo
-        <%end%>
+            <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+            Añadir Artículo
+          <%end%>
 
         </div>
       </div>
@@ -55,6 +71,10 @@
           </tbody>
         </table>
         <%= render 'modalArticulos'%>
+        <%= render 'modalCategorias'%>
+        <%= render 'modalPresentacionProductos'%>
+        <%= render 'modalMarcaProductos'%>
+        <%= render 'modalProveedores'%>
       </div>
     </div>
 

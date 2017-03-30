@@ -8,8 +8,11 @@ class ArticulosController < ApplicationController
   # GET /articulos.json
   def index
     if current_user.perfil
-      @articulos = current_user.sucursal.articulos
-      
+      if can? :update, Negocio
+        @articulos = current_user.negocio.articulos
+      else
+        @articulos = current_user.sucursal.articulos
+      end
     else
       redirect_to new_perfil_path
     end
@@ -38,6 +41,7 @@ class ArticulosController < ApplicationController
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @presentaciones = current_user.negocio.presentacion_productos
+    @sucursales = current_user.negocio.sucursals
     @articulo = Articulo.new
   end
 
@@ -45,6 +49,7 @@ class ArticulosController < ApplicationController
   def edit
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
+    @sucursales = current_user.negocio.sucursals
     @presentaciones = current_user.negocio.presentacion_productos
   end
 
@@ -53,15 +58,27 @@ class ArticulosController < ApplicationController
   def create
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
+    @sucursales = current_user.negocio.sucursals
     @presentaciones = current_user.negocio.presentacion_productos
-    @articulo = Articulo.new(articulo_params)
     existenciaInicial = articulo_params[:existencia]
+    suc = articulo_params[:suc_elegida]
+
+    @articulo = Articulo.new(articulo_params)
+    if suc.empty?
+      @articulo.suc_elegida = current_user.sucursal.nombre
+    end
     
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
           current_user.negocio.articulos << @articulo
-          current_user.sucursal.articulos << @articulo
+          if suc.empty?
+            current_user.sucursal.articulos << @articulo
+            @articulo.suc_elegida = current_user.sucursal.nombre
+          else
+            sucElegida = Sucursal.find_by(nombre: suc)
+            sucElegida.articulos << @articulo
+          end
           entradaAlmacen = EntradaAlmacen.new(:cantidad=>existenciaInicial, :fecha=>Time.now, :isEntradaInicial=>true)
           entradaAlmacen.save
           @articulo.entrada_almacens << entradaAlmacen          
@@ -88,6 +105,7 @@ class ArticulosController < ApplicationController
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @presentaciones = current_user.negocio.presentacion_productos
+    @sucursales = current_user.negocio.sucursals
     respond_to do |format|
       if @articulo.update(articulo_params)
         format.json { head :no_content}
@@ -127,6 +145,6 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id)
+      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :suc_elegida)
     end
 end

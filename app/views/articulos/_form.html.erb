@@ -1,9 +1,12 @@
-<div class="x_content">
   <%= form_for @articulo, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
-    
+
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos generales del Producto:</h2>
+    </div>
     <div class="item form-group<%= @articulo.errors[:clave].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :clave, "Clave: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
         <%= f.text_field :clave, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del producto..."} do%>
         <%end%>
         <%if @articulo.errors[:clave].any? %>
@@ -14,7 +17,8 @@
 
     <div class="item form-group<%= @articulo.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :nombre, "Nombre: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
         <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre del producto..."} do%>
         <%end%>
         <%if @articulo.errors[:nombre].any? %>
@@ -25,7 +29,8 @@
 
     <div class="item form-group<%= @articulo.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :descripcion, "Descripción: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
         <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba alguna descripción del producto..."} do%>
         <%end%>
         <%if @articulo.errors[:descripcion].any? %>
@@ -34,10 +39,61 @@
       </div>
     </div>
 
+    <div class="item form-group<%= @articulo.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :categoria, "Categoria: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+        <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12" })%>
+        <%if @articulo.errors[:categoria].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:categoria].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:marca_producto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :marca_producto, "Marca: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-apple"></i></span>
+        <%= collection_select(:articulo, :marca_producto_id, @marcas, :id, :nombre, {:prompt => 'Seleccione una marca'}, {class: "form-control col-md-7 col-xs-12"})%>
+        <%if @articulo.errors[:marca_producto].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:marca_producto].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @articulo.errors[:presentacion_producto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :presentacion, "Presentación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-cube"></i></span>
+        <%= collection_select(:articulo, :presentacion_producto_id, @presentaciones, :id, :nombre, {:prompt => 'Seleccione presentacion'}, {class: "form-control col-md-7 col-xs-12"})%>
+        <%if @articulo.errors[:presentacion_producto].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:presentacion_producto].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de almacén:</h2>
+    </div>
+    <% if can? :update, Negocio %>
+      <div class="item form-group<%= @articulo.errors[:suc_elegida].any? ? ' has-error has-feedback' : '' %>">
+        <%= f.label :suc_elegida, "Sucursal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+        <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+          <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+          <%= collection_select(:articulo, :suc_elegida, @sucursales, :nombre, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+          <%if @articulo.errors[:suc_elegida].any? %>
+            <p class="bg-danger"><%= @articulo.errors[:suc_elegida].to_s[/\w([^"]*)/] %></p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    
+
     <div class="item form-group<%= @articulo.errors[:stock].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :stock, "Stock: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :stock, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"stock de producto..."} do%>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-unsorted"></i></span>
+        <%= f.text_field :stock, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"stock de producto..."} do%>
         <%end%>
         <%if @articulo.errors[:stock].any? %>
           <p class="bg-danger"><%= @articulo.errors[:stock].to_s[/\w([^"]*)/] %></p>
@@ -48,8 +104,9 @@
     <%if @articulo.new_record?%>
     <div class="item form-group<%= @articulo.errors[:existencia].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :existencia, "Existencia inicial: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :existencia, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Existencia inicial en inventario(opcional)..."} do%>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-database"></i></span>
+        <%= f.text_field :existencia, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Existencia inicial en inventario(opcional)..."} do%>
         <%end%>
         <%if @articulo.errors[:existencia].any? %>
           <p class="bg-danger"><%= @articulo.errors[:existencia].to_s[/\w([^"]*)/] %></p>
@@ -58,51 +115,25 @@
     </div>
     <% end %>
 
-    <div class="item form-group<%= @articulo.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :categoria, "Categoria: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-         <%= collection_select(:articulo, :cat_articulo_id, @categories, :id, :nombreCatArticulo, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12" })%>
-        <%if @articulo.errors[:categoria].any? %>
-          <p class="bg-danger"><%= @articulo.errors[:categoria].to_s[/\w([^"]*)/] %></p>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="item form-group<%= @articulo.errors[:marca_producto].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :marca_producto, "Marca: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-         <%= collection_select(:articulo, :marca_producto_id, @marcas, :id, :nombre, {:prompt => 'Seleccione una marca', class: "form-control col-md-7 col-xs-12"})%>
-        <%if @articulo.errors[:marca_producto].any? %>
-          <p class="bg-danger"><%= @articulo.errors[:marca_producto].to_s[/\w([^"]*)/] %></p>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="item form-group<%= @articulo.errors[:presentacion_producto].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :presentacion, "Presentación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-         <%= collection_select(:articulo, :presentacion_producto_id, @presentaciones, :id, :nombre, {:prompt => 'Seleccione presentacion', class: "form-control col-md-7 col-xs-12"})%>
-        <%if @articulo.errors[:presentacion_producto].any? %>
-          <p class="bg-danger"><%= @articulo.errors[:presentacion_producto].to_s[/\w([^"]*)/] %></p>
-        <% end %>
-      </div>
-    </div>
-
+    <%if @articulo.new_record?%>
     <div class="item form-group<%= @articulo.errors[:precioCompra].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :precioCompra, "Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Precio venta..."} do%>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+        <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"Precio de compra al dar de alta el producto (opcional)..."} do%>
         <%end%>
         <%if @articulo.errors[:precioCompra].any? %>
           <p class="bg-danger"><%= @articulo.errors[:precioCompra].to_s[/\w([^"]*)/] %></p>
         <% end %>
       </div>
     </div>
+    <% end %>
 
     <div class="item form-group<%= @articulo.errors[:precioVenta].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :precioVenta, "Precio de venta:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <%= f.text_field :precioVenta, {class: "col-md-7 col-xs-12 text_field", :placeholder=>"Precio venta..."} do%>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+        <%= f.text_field :precioVenta, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"Precio venta del producto..."} do%>
         <%end%>
         <%if @articulo.errors[:precioVenta].any? %>
           <p class="bg-danger"><%= @articulo.errors[:precioVenta].to_s[/\w([^"]*)/] %></p>
@@ -119,6 +150,5 @@
           <%= f.submit @articulo.new_record? ? "Crear articulo" : "Actualizar articulo", :class => "btn btn-success"%>
         </div>
   <% end %>
-</div>
 
 

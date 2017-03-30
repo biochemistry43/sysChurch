@@ -3,7 +3,8 @@
     
     <div class="item form-group<%= @presentacion_producto.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :nombre, "Descripción de la presentación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-      <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-cube"></i></span>
         <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Ej pieza, galón, caja de 1 kilo, etc..."} do%>
         <%end%>
         <%if @presentacion_producto.errors[:nombre].any? %>
