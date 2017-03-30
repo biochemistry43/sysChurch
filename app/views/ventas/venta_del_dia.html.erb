@@ -2,13 +2,18 @@
   <div class="page-title">
     <div class="title_left">
       <h1>Reporte de Ventas</h1>
+      <%= form_tag({}, {:method => :post}) do %>
+        Seleccione una fecha: <%= date_picker_tag("Fecha", @fechaCorrecta, {}, {})%>
+        <div><%= submit_tag 'Consultar Fecha' %></div>
+
+      <% end %>
     </div>
   </div>
   <div class="clearfix"></div>
   <div class="row">
-    <div class="col-md-offset-1 col-sm-offset-1 col-md-5 col-sm-5 col-xs-12">
+    <div class="col-md-offset-1 col-sm-offset-1 col-md-5 col-sm-5 col-xs-11">
       <div class="row">
-        <h2>Ventas del día de hoy</h2>
+        <h2>Ventas del día <%= @fechaCorrecta %></h2>
         <h1>$<%= @ventaDiaNegocio %></h1>
       </div>
       <div class="row">
@@ -17,7 +22,7 @@
           
           <h3>Sucursal: <%= sucursal.nombre %></h3>
           
-          <% sucursal.ventas.where(fechaVenta: Date.today).each do |ventaSucursal| %>
+          <% sucursal.ventas.where(fechaVenta: @fechaCorrecta).each do |ventaSucursal| %>
             <% @ventaDiaSucursal += ventaSucursal.montoVenta.to_f %>
             
           <% end %>
@@ -35,7 +40,7 @@
           <% sucursal.users.each do |user| %>
             <% @ventasUsuario = 0 %>
             
-            <% user.ventas.where(fechaVenta: Date.today).each do |ventaUsuario| %>
+            <% user.ventas.where(fechaVenta: @fechaCorrecta).each do |ventaUsuario| %>
               <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
             <% end %>
               <tr>
@@ -52,7 +57,7 @@
     </div>
     <div class="col-md-5 col-sm-5 col-xs-12 col-md-offset-1 col-sm-offset-1">
       <div class="row">
-        <h2>Ventas del mes</h2>
+        <h2>Ventas del mes <%= Date::MONTHNAMES[@fechaCorrecta.month] %></h2>
         <h1>$<%= @ventaMesNegocio %></h1>
       </div>
       <div class="row">
@@ -61,7 +66,7 @@
           
           <h3>Sucursal: <%= sucursal.nombre %></h3>
           
-          <% sucursal.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today).each do |ventaSucursal| %>
+          <% sucursal.ventas.where(fechaVenta: @fechaCorrecta.beginning_of_month..@fechaCorrecta.end_of_month).each do |ventaSucursal| %>
             <% @ventaMesSucursal += ventaSucursal.montoVenta.to_f %>
             
           <% end %>
@@ -79,7 +84,7 @@
           <% sucursal.users.each do |user| %>
             <% @ventasUsuario = 0 %>
             
-            <% user.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today).each do |ventaUsuario| %>
+            <% user.ventas.where(fechaVenta: @fechaCorrecta.beginning_of_month..@fechaCorrecta.end_of_month).each do |ventaUsuario| %>
               <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
             <% end %>
               <tr>

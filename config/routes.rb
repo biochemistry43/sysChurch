@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   resources :sucursals
   resources :ventas,  :except => [:show, :destroy]
   get 'ventas/venta_del_dia'
+  post 'ventas/venta_del_dia'
 
 
   devise_for :users, controllers: { sessions: "users/sessions" }

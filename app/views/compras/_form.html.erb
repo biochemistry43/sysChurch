@@ -15,8 +15,9 @@
     <%= f.label :fecha, "Fecha de compra*: ", {class: "control-label"} %>
     <div class="input-group form-i">
       <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-      <%= f.date_picker :fecha, {class: "form-control"} do%>
-      <%end%>
+      
+      <%= date_picker_tag ("Fecha reporte", "fecha", options = {})%>
+
       <%if @compra.errors[:fecha].any? %>
         <p class="bg-danger"><%= @compra.errors[:fecha].to_s[/\w([^"]*)/] %></p>
       <% end %>
@@ -33,7 +34,7 @@
     
     <%if @compra.errors[:proveedor_id].any? %>
         <p class="bg-danger"><%= @compra.errors[:proveedor_id].to_s[/\w([^"]*)/] %></p>
-      <% end %>
+    <% end %>
   </div>
 
   <div class="item form-group<%= @compra.errors[:tipo_pago].any? ? ' has-error has-feedback' : '' %>">

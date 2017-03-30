@@ -25,25 +25,56 @@ class VentasController < ApplicationController
 
   def venta_del_dia
 
-    @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: Date.today)
+    if request.get?
+      @fechaCorrecta = Date.today
+      
+      @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: Date.today)
 
-    @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today)
+      @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today)
 
-    @ventaDiaNegocio = 0
+      @ventaDiaNegocio = 0
 
-    @ventaMesNegocio = 0
+      @ventaMesNegocio = 0
+      
+      @ventasNegocioHoy.each do |venta|
+        @ventaDiaNegocio += venta.montoVenta.to_f
+      end
+
+      @ventasNegocioMes.each do |venta|
+        @ventaMesNegocio += venta.montoVenta.to_f
+      end
+
+      @sucursales = current_user.negocio.sucursals
+
+      @usuarios = current_user.negocio.users
     
-    @ventasNegocioHoy.each do |venta|
-      @ventaDiaNegocio += venta.montoVenta.to_f
+    elsif request.post?
+      
+      fecha = params[:Fecha]
+      @fechaCorrecta = DateTime.parse(fecha).to_date
+       
+      @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: @fechaCorrecta)
+
+      @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: @fechaCorrecta.beginning_of_month..@fechaCorrecta.end_of_month)
+
+      @ventaDiaNegocio = 0
+
+      @ventaMesNegocio = 0
+      
+      @ventasNegocioHoy.each do |venta|
+        @ventaDiaNegocio += venta.montoVenta.to_f
+      end
+
+      @ventasNegocioMes.each do |venta|
+        @ventaMesNegocio += venta.montoVenta.to_f
+      end
+
+      @sucursales = current_user.negocio.sucursals
+
+      @usuarios = current_user.negocio.users
+
     end
 
-    @ventasNegocioMes.each do |venta|
-      @ventaMesNegocio += venta.montoVenta.to_f
-    end
-
-    @sucursales = current_user.negocio.sucursals
-
-    @usuarios = current_user.negocio.users
 
   end
 end
