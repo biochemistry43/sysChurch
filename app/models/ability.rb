@@ -1,6 +1,5 @@
 class Ability
   include CanCan::Ability
-  jmora2017
 
   def initialize(user)
     # Define abilities for the passed in user here. For example
