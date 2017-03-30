@@ -73,6 +73,11 @@
                        Punto de venta
                     <%end%>
                 </li>
+                <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
+                       <i class="fa fa-" aria-hidden="true"></i>
+                       Punto de venta
+                    <%end%>
+                </li>
                 <%if can? :update, Banco%>
                   <li><%= link_to bancos_path do%>
                         <i class="fa fa-bank"></i>
