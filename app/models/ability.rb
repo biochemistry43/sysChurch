@@ -9,7 +9,7 @@ class Ability
     alias_action :create, to: :c
     alias_action :update, to: :u
 
-    alias_action :create, :read, :update, :delete, to: :crud
+    alias_action :create, :read, :update, :destroy, to: :crud
        user ||= User.new # guest user (not logged in)
        if user.role == "root"
          can :manage, :all
