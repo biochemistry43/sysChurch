@@ -45,7 +45,11 @@
               <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
             <% end %>
               <tr>
-                <td> <%= user.perfil.nombre %> </td>
+                <td> 
+                  <% if user.perfil %> 
+                    <%= user.perfil.nombre %>
+                  <% end %>
+                </td>
                 <td> <%= user.role %></td>
                 <td> <%= @ventasUsuario %></td>
               </tr>   
@@ -89,7 +93,11 @@
               <% @ventasUsuario += ventaUsuario.montoVenta.to_f %>
             <% end %>
               <tr>
-                <td> <%= user.perfil.nombre %> </td>
+                <td> 
+                  <% if user.perfil %> 
+                    <%= user.perfil.nombre %>
+                  <% end %>
+                </td>
                 <td> <%= user.role %></td>
                 <td> <%= @ventasUsuario %></td>
               </tr>   
