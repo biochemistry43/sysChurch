@@ -23,3 +23,52 @@
 //= require pickadate/lib/compressed/picker
 //= require pickadate/lib/compressed/picker.date
 //= require pickadate/lib/compressed/picker.time
+
+    $BODY = $('body'),
+    $MENU_TOGGLE = $('#menu_toggle'),
+    $SIDEBAR_MENU = $('#sidebar-menu'),
+    $SIDEBAR_FOOTER = $('.sidebar-footer'),
+    $LEFT_COL = $('.left_col'),
+    $RIGHT_COL = $('.right_col'),
+    $NAV_MENU = $('.nav_menu'),
+    $FOOTER = $('footer');
+
+$(document).ready(function() {
+
+	$(".data-table").contentChange(function(){
+	   $RIGHT_COL.css('min-height', $(window).height());
+
+        
+	});
+
+
+
+ });
+
+jQuery.fn.contentChange = function(callback){
+    var elms = jQuery(this);
+    elms.each(
+      function(i){
+        var elm = jQuery(this);
+        elm.data("lastContents", elm.html());
+        window.watchContentChange = window.watchContentChange ? window.watchContentChange : [];
+        window.watchContentChange.push({"element": elm, "callback": callback});
+      }
+    )
+    return elms;
+  }
+
+  setInterval(function(){
+    if(window.watchContentChange){
+      for( i in window.watchContentChange){
+        if(window.watchContentChange[i].element.data("lastContents") != window.watchContentChange[i].element.html()){
+          window.watchContentChange[i].callback.apply(window.watchContentChange[i].element);
+          window.watchContentChange[i].element.data("lastContents", window.watchContentChange[i].element.html())
+        };
+      }
+    }
+  },500);
+
+$(document).on('change', '.data-table', function (event) {
+    alert("hello");
+});

@@ -48,7 +48,7 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
-       elsif user.role == "auxiliar"
+       elsif user.role == "subadministrador"
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil
