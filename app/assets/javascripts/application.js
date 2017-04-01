@@ -19,6 +19,7 @@
 //= require dataTables/jquery.dataTables
 //= require dataTables/extras/dataTables.responsive
 //= require dataTables/jquery.dataTables
+//= require dataTables/extras/dataTables.buttons
 //= require turbolinks
 //= require pickadate/lib/compressed/picker
 //= require pickadate/lib/compressed/picker.date
