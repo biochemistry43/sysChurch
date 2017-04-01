@@ -28,13 +28,22 @@
             <%if can? :update, Negocio%>
               <%@nempleados.each do |nempleado|%>
                 <tr id="nempleado_<%= nempleado.id%>">
-                  <td><%= image_tag(nempleado.perfil.foto_url, :width => 65, :height => 75) if nempleado.perfil.foto.present? %></td>
-				  <td><%= nempleado.perfil.nombre << " " << nempleado.perfil.ape_paterno %></td>
-				  <td><%= nempleado.email %></td>
-				  <td><%= nempleado.role %></td>
-				  <td><%= nempleado.sucursal.nombre %></td>
-				</tr>
-			  <% end %>
+                  <td>
+                    <% if nempleado.perfil %>
+                      <%= image_tag(nempleado.perfil.foto_url, :width => 65, :height => 75) if nempleado.perfil.foto.present? %>
+                    <% end %>
+                  </td>
+        				  <td>
+                    <% if nempleado.perfil %>
+                      <%= nempleado.perfil.nombre << " " << nempleado.perfil.ape_paterno %></td>
+                    <% else %>
+                      Este empleado no tiene nombre en su perfil
+                    <% end %>
+        				  <td><%= nempleado.email %></td>
+        				  <td><%= nempleado.role %></td>
+        				  <td><%= nempleado.sucursal.nombre %></td>
+        				</tr>
+        			  <% end %>
             <% end %>
           </tbody>
         </table>
