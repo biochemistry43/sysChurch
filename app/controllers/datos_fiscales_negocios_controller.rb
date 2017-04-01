@@ -34,7 +34,7 @@ class DatosFiscalesNegociosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def datos_fiscales_negocio_params
-      params.require(:datos_fiscales_negocio).permit(:nombreFiscal, :direccionFiscal, :rfc)
+      params.require(:datos_fiscales_negocio).permit(:nombreFiscal, :rfc, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email)
     end
 
 end
