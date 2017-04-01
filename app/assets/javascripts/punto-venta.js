@@ -440,12 +440,12 @@ var div_print = document.createElement("div");
     div_print_1.appendChild(filalogo);
     filalogo.appendChild(divlogo);
     var logoNegocio = document.createElement("img")
-    logoNegocio.setAttribute("width", "70px");
-    logoNegocio.setAttribute("height", "45px");
-    rutaLogo = document.getElementById('logo_negocio').src;
-    logoNegocio.setAttribute("src", rutaLogo);
-    logoNegocio.setAttribute("style","horizontal-align:middle;");
-    divlogo.appendChild(logoNegocio);
+    //logoNegocio.setAttribute("width", "70px");
+    //logoNegocio.setAttribute("height", "45px");
+    //rutaLogo = document.getElementById('logo_negocio').src;
+    //logoNegocio.setAttribute("src", rutaLogo);
+    //logoNegocio.setAttribute("style","horizontal-align:middle;");
+    //divlogo.appendChild(logoNegocio);
 
 
     //Primer fila del ticket
