@@ -214,7 +214,7 @@
                         <div class="form-group">
                           <h2><label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label></h2>
                           <% if nCampo.include?"plazo" %>
-                              <%= select_tag "campo-plazo-credito", "<option>Ninguno</option><option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                            <%= select_tag "campo-plazo-credito", "<option>Ninguno</option><option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
                           <%else%>
                             <input type="text" class="form-control campo-pago" id="<%= "campo-" << nCampo %>">
                           <%end%>
@@ -274,9 +274,9 @@
       <!-- /.modal-dialog -->
     </div>
 
-
-    <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
-    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle : "Sin calle" %>">
+    <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal : current_user.negocio.nombre %>">
+    <input type="hidden" id="nombre_negocio_fiscal" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal : ' ' %>">
+    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle << ' ' <<current_user.negocio.datos_fiscales_negocio.numExterior << ' ' << current_user.negocio.datos_fiscales_negocio.numInterior << ' ' << current_user.negocio.datos_fiscales_negocio.colonia << ' ' << current_user.negocio.datos_fiscales_negocio.codigo_postal << ' ' <<current_user.negocio.datos_fiscales_negocio.municipio << ' ' << current_user.negocio.datos_fiscales_negocio.delegacion << ' ' << current_user.negocio.datos_fiscales_negocio.estado: "Sin calle" %>">
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">
     <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.calle%>">
     <input type="hidden" id="fecha" value="<%= Time.now %>">

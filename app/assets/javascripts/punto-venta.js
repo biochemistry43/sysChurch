@@ -136,11 +136,11 @@ $(document).ready(function(){
          * del cliente dentro de la pantalla de venta**/
         $("#lista_clientes").append(""+
 
-            "<tr class='even pointer'><td>"+element.nombre+"</td>"+
+            "<tr class='even pointer'><td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
             "<td>"+element.telefono1+"</td>"+
             "<td>"+element.email+"</td>"+
             "<td><button class='btn btn-success btn-xs' "+
-                    "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombre+"\", \""+element.telefono1+"\", \""+element.email+"\")' >"+
+                    "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"\", \""+element.telefono1+"\", \""+element.email+"\")' >"+
                       "<i class='fa fa-check-square'></i> Seleccionar </button></td></tr>");
 
       }
@@ -458,6 +458,8 @@ var div_print = document.createElement("div");
 
     var nomNegocio = document.createElement("h5");
     nomNegocio.setAttribute("id", "nombre_negocio_ticket");
+    var nomFiscalNegocio = document.createElement("h6");
+    nomFiscalNegocio.setAttribute("id", "nombre_fiscal_negocio_ticket");
     var dirNegocio = document.createElement("p");
     dirNegocio.setAttribute("style", "font-size: 9px;");
     dirNegocio.setAttribute("id", "dir_negocio_ticket")
@@ -551,6 +553,7 @@ var div_print = document.createElement("div");
     //Construccion de la primer fila
     div_print_1_1.appendChild(div_print_1_1_1);
     div_print_1_1_1.appendChild(nomNegocio);
+    div_print_1_1_1.appendChild(nomFiscalNegocio);
     div_print_1_1_1.appendChild(dirNegocio);
     div_print_1_1_1.appendChild(nomSucursal);
     //Termina construcción de la primer fila
@@ -592,6 +595,8 @@ var div_print = document.createElement("div");
 
 
     $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
+    $("#nombre_fiscal_negocio_ticket").append($("#nombre_negocio_fiscal").val() );
+
     $("#dir_negocio_ticket").append($("#direccion_negocio").val())
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
     $("#direccion_sucursal_ticket").append($("#direccion_sucursal").val());
@@ -644,11 +649,14 @@ var div_print = document.createElement("div");
       }
 
     }); //Termina recorrido de la tabla de venta actual
+
     $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
 
+    
     if(formaPago.toLowerCase() == "efectivo"){
        $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
     }
+
     else{
 
       for (x in copiaFormaPago) {
