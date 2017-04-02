@@ -7,7 +7,7 @@
       <div class="container">
         <div class="jumbotron" style="text-align: center;">
           <%= image_tag(@negocio.logo_url, :width => 500, :height => 450, class: "img") if @negocio.logo.present? %>
-          <h1><%=@empresa.capitalize%></h1>
+          <h1><%=@empresa%></h1>
           <h3 style="font-size: 30px; ">Sucursal <%=@sucursal%></h3>
           <h3 style="font-size: 28px; color: #5B7ECC;">¡Bienvenido <%=current_user.perfil.nombre%>!</h3>
           <h3>Tipo de usuario: <%=current_user.role%>

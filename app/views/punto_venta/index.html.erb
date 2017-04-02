@@ -276,6 +276,7 @@
 
     <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.nombre ? current_user.negocio.nombre : ' ' %>">
     <input type="hidden" id="nombre_negocio_fiscal" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal : ' ' %>">
+    <input type="hidden" id="rfc_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.rfc : ' ' %>">
     <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle << ' ' <<current_user.negocio.datos_fiscales_negocio.numExterior << ' ' << current_user.negocio.datos_fiscales_negocio.numInterior << ' ' << current_user.negocio.datos_fiscales_negocio.colonia << ' ' << current_user.negocio.datos_fiscales_negocio.codigo_postal << ' ' <<current_user.negocio.datos_fiscales_negocio.municipio << ' ' << current_user.negocio.datos_fiscales_negocio.delegacion << ' ' << current_user.negocio.datos_fiscales_negocio.estado: "Sin calle" %>">
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">
     <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.calle%>">

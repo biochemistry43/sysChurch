@@ -12,4 +12,5 @@ class Negocio < ActiveRecord::Base
 	has_many :marca_productos
 	has_many :presentacion_productos
 	has_many :ventas
+	has_many :compras
 end

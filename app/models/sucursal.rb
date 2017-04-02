@@ -5,6 +5,7 @@ class Sucursal < ActiveRecord::Base
 	has_many :perdidas
 	has_many :proveedores
 	has_many :ventas
+	has_many :compras
 	belongs_to :negocio
 	has_one :datos_fiscales_sucursal
 end

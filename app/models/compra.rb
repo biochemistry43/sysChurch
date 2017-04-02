@@ -3,6 +3,8 @@ class Compra < ActiveRecord::Base
 	has_many :entrada_almacens
 	belongs_to :proveedor
 	belongs_to :user
+	belongs_to :sucursal
+	belongs_to :negocio
 
 	validates_associated :detalle_compras
 

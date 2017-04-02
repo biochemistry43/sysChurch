@@ -460,6 +460,9 @@ var div_print = document.createElement("div");
     nomNegocio.setAttribute("id", "nombre_negocio_ticket");
     var nomFiscalNegocio = document.createElement("h6");
     nomFiscalNegocio.setAttribute("id", "nombre_fiscal_negocio_ticket");
+    var rfcNegocio = document.createElement("p");
+    rfcNegocio.setAttribute("style", "font-size: 9px;");
+    rfcNegocio.setAttribute("id", "rfc_negocio_ticket")
     var dirNegocio = document.createElement("p");
     dirNegocio.setAttribute("style", "font-size: 9px;");
     dirNegocio.setAttribute("id", "dir_negocio_ticket")
@@ -555,6 +558,7 @@ var div_print = document.createElement("div");
     div_print_1_1_1.appendChild(nomNegocio);
     div_print_1_1_1.appendChild(nomFiscalNegocio);
     div_print_1_1_1.appendChild(dirNegocio);
+    div_print_1_1_1.appendChild(rfcNegocio);
     div_print_1_1_1.appendChild(nomSucursal);
     //Termina construcción de la primer fila
 
@@ -598,6 +602,7 @@ var div_print = document.createElement("div");
     $("#nombre_fiscal_negocio_ticket").append($("#nombre_negocio_fiscal").val() );
 
     $("#dir_negocio_ticket").append($("#direccion_negocio").val())
+    $("#rfc_negocio_ticket").append($("#rfc_negocio").val())
     $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
     $("#direccion_sucursal_ticket").append($("#direccion_sucursal").val());
     $("#fecha_ticket").append("Fecha: " + fecha.getDate()+"/"+
