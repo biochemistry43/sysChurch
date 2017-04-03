@@ -68,16 +68,30 @@
                     <%end%>
                   </ul>
                 </li>
+
                 <li><%= link_to punto_venta_index_path, {id: "pos-mod"} do%>
                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                        Punto de venta
                     <%end%>
                 </li>
-                <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
-                       <i class="fa fa-cc-visa" aria-hidden="true"></i>
-                       Compras
-                    <%end%>
+                <li><a><i class="fa fa-cc-visa"></i>Compras<span class="fa fa-chevron-down"></span></a>
+
+                  <ul class="nav child_menu" style="display: none">
+                    <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
+                      
+                      Registrar compra
+                      <%end%>
+                    </li>
+
+
+                    <li><%= link_to compras_path, {id: "pos-mod"} do%>
+                      Compras realizadas
+                      <%end%>
+                    </li>
+                  </ul>
                 </li>
+                
+                
                 <%if can? :update, Banco%>
                   <li><%= link_to bancos_path do%>
                         <i class="fa fa-bank"></i>

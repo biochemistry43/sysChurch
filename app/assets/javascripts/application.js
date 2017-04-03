@@ -70,6 +70,3 @@ jQuery.fn.contentChange = function(callback){
     }
   },500);
 
-$(document).on('change', '.data-table', function (event) {
-    alert("hello");
-});

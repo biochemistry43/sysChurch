@@ -2,6 +2,11 @@ class ComprasController < ApplicationController
   before_action :set_compra, only: [:edit, :update, :destroy]
 
   def index
+    if can? :update, Negocio
+      @compras = current_user.negocio.compras
+    else
+      @compras = current_user.sucursal.compras
+    end
   end
 
   def new
@@ -57,6 +62,8 @@ class ComprasController < ApplicationController
           }
 
           current_user.compras << @compra
+          current_user.negocio.compras << @compra
+          current_user.sucursal.compras << @compra
           format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
           format.json { render :new, status: :created, location: @compra }
           #format.json { head :no_content}
