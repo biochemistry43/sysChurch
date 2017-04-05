@@ -137,11 +137,14 @@
                                             var widthFixed=width - 3;
                                             a.css({'width':widthFixed});
                                             a.attr("id",  data[index].clave);
-
+                                            if(data[index].existencia == 0){
+                                                a.addClass('autocomplete-jquery-item-inexistence');
+                                            }
                                             a.click(function(){
-                                                // funcion que pone el texto en input
-                                                selectItem(this);
+                                              // funcion que pone el texto en input
+                                              selectItem(this);
                                             })
+                                            
                                             a.attr('data-id',index);
                                             $(result).append(a);
                                         }

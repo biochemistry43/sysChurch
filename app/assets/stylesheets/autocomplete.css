@@ -72,3 +72,14 @@
     background-color: #E0F0FF;
     color:black;
 }
+
+/* Cada sugerencia va a llevar esta clase, por lo tanto tomara el estilo siguiente */
+.autocomplete-jquery-item-inexistence{
+    background-color: #ff4d4d;
+    color: #e6e6e6;
+}
+/* Al pasar por ensima de las sugerencias*/
+.autocomplete-jquery-item-inexistence:hover{
+    background-color: #ff9999;
+    color:#a6a6a6;
+}

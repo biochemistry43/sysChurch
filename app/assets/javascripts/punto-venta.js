@@ -738,13 +738,19 @@ function addProduct(elem){
       if(res){
         var resLength = res.length;
         for(i=0; i < resLength; i++){
-           var element = res[i];
-           $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
+          var element = res[i];
+          if(element.existencia == 0){
+            alert("Este producto no tiene existencias");
+          }
+          else{
+
+            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td></tr>");
+          }
 
         }
 

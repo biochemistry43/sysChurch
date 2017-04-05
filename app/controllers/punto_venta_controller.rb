@@ -173,6 +173,7 @@ class PuntoVentaController < ApplicationController
 	          itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
 	          itemV.cantidad = itemVenta["cantidad"]
               @venta.item_ventas << itemV
+              itemV.articulo.existencia = itemV.articulo.existencia - itemV.cantidad
 			end
             
             #Para cerrar la venta, primero evalúa mediante la variable booleana
