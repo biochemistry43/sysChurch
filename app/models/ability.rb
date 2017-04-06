@@ -104,7 +104,7 @@ class Ability
          can :crud, DatosFiscalesNegocio
          can :crud, Gasto
          can :crud, ItemVenta
-         can :cr, Negocio
+         can :cru, Negocio
          can :crud, Perdida
          can :cru, Perfil
          can :crud, Proveedor
@@ -150,7 +150,7 @@ class Ability
          can :cru, CatArticulo
          can :crud, MarcaProducto
          can :crud, PresentacionProducto
-         can :r, Negocio
+         can :ru, Negocio
          can :r, DatosFiscalesNegocio
          can :cru, Proveedor
          can :r, Sucursal
