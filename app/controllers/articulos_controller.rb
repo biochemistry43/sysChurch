@@ -61,10 +61,24 @@ class ArticulosController < ApplicationController
     @marcas = current_user.negocio.marca_productos
     @sucursales = current_user.negocio.sucursals
     @presentaciones = current_user.negocio.presentacion_productos
+
+    # Un usuario administrador o un gerente de sucursal, puede asignar una existencia inicial
+    # a un producto desde el momento que se crea. Esta opción estará disponible únicamente
+    # al momento de crearse y no hay posibilidad de editar este dato.
     existenciaInicial = articulo_params[:existencia]
+
+    #suc guarda la sucursal elegida por un usuario administrador.
+    #Un usuario administrador tiene la facultad de elegir a que sucursal u/o almacen
+    #puede asignar un producto determinado. esta opción no estará visible para todos  los
+    #roles. Por ejemplo, un gerente de sucursal, sólo puede agregar productos para su propia
+    #sucursal.
     suc = articulo_params[:suc_elegida]
 
     @articulo = Articulo.new(articulo_params)
+
+    #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
+    #el nombre asignado de sucursal para este producto, será la misma sucursal a la que el usuario
+    #pertence.
     if suc.empty?
       @articulo.suc_elegida = current_user.sucursal.nombre
     end
@@ -72,7 +86,13 @@ class ArticulosController < ApplicationController
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
+          #añado el articulo a la lista de articulos pertenecientes al negocio
           current_user.negocio.articulos << @articulo
+
+          #Si el usuario no eligió una sucursal para asignar el artículo, entonces añado el artículo
+          #a la sucursal a la que el usuario pertenece.
+          #De lo contrario, busco la sucursal en la tabla de sucursales, en base al nombre de la 
+          #sucursal elegida y ahí es donde se asigna el artículo.
           if suc.empty?
             current_user.sucursal.articulos << @articulo
             @articulo.suc_elegida = current_user.sucursal.nombre
@@ -80,8 +100,17 @@ class ArticulosController < ApplicationController
             sucElegida = Sucursal.find_by(nombre: suc)
             sucElegida.articulos << @articulo
           end
+          
+          if existenciaInicial.empty?
+            existenciaInicial = 0
+          end
+
+          #añado una primera instancia de entrada de almacén, aunque la existencia inicial sea cero.
           entradaAlmacen = EntradaAlmacen.new(:cantidad=>existenciaInicial, :fecha=>Time.now, :isEntradaInicial=>true)
           entradaAlmacen.save
+
+          #añado esta entrada a almacén a la lista de entradas de almacén relacionadas con el
+          #artículo.
           @articulo.entrada_almacens << entradaAlmacen          
           #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
           #format.json { render :show, status: :created, location: @articulo }
