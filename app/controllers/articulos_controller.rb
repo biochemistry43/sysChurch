@@ -74,6 +74,10 @@ class ArticulosController < ApplicationController
     #sucursal.
     suc = articulo_params[:suc_elegida]
 
+    unless suc
+      suc = ""
+    end
+
     @articulo = Articulo.new(articulo_params)
 
     #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
@@ -101,7 +105,7 @@ class ArticulosController < ApplicationController
             sucElegida.articulos << @articulo
           end
           
-          if existenciaInicial.empty?
+          unless existenciaInicial
             existenciaInicial = 0
           end
 
