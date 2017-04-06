@@ -8,7 +8,7 @@ class ArticulosController < ApplicationController
   # GET /articulos.json
   def index
     if current_user.perfil
-      if can? :update, Negocio
+      if can? :create, Negocio
         @articulos = current_user.negocio.articulos
       else
         @articulos = current_user.sucursal.articulos
