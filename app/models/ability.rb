@@ -8,6 +8,7 @@ class Ability
     alias_action :read, to: :r
     alias_action :create, to: :c
     alias_action :update, to: :u
+    alias_action :read, :update, :ru
 
     alias_action :create, :read, :update, :destroy, to: :crud
        user ||= User.new # guest user (not logged in)
@@ -88,7 +89,7 @@ class Ability
          can :crud, DatosFiscalesNegocio
          can :crud, Gasto
          can :crud, ItemVenta
-         can :cru, Negocio
+         can :cr, Negocio
          can :crud, Perdida
          can :cru, Perfil
          can :crud, Proveedor
@@ -98,6 +99,43 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+       elsif user.role == "auxiliar"
+         can :getById, Articulo
+         can :showByCriteria, Articulo
+         can :cru, Perfil
+         can :cru, Cliente
+         can :ru, DatosFiscalesCliente
+         can :r, Articulo
+         can :r, CatArticulo
+         can :r, Banco
+         can :r, CategoriaGasto
+         can :r, CategoriaPerdida
+         can :r, DatosFiscalesSucursal
+         can :r, DatosFiscalesNegocio
+         can :cr, Gasto
+         can :r, CategoriaGasto
+         can :r, Negocio
+         can :crud, Perdida
+         can :cru, Perfil
+         can :cru, Proveedor
+         can :r, Sucursal
+         can :ru, TelefonoPersona
+         can :ru, User
+       elsif user.role == "almacenista"
+         can :cru, Perfil
+         can :cru, Cliente
+         can :cru, DatosFiscalesCliente
+         can :cru, Articulo
+         can :cru, CatArticulo
+         can :r, Negocio
+         can :r, DatosFiscalesNegocio
+         can :cru, Perfil
+         can :crud, Proveedor
+         can :r, Sucursal
+         can :r, DatosFiscalesSucursal
+         can :crud, TelefonoPersona
+         can :ru, User
+         cru :crud, Compra
        end
     #
     # The first argument to `can` is the action you are giving the user
