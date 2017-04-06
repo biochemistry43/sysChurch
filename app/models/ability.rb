@@ -94,7 +94,7 @@ class Ability
          can :cru, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
-         can :r, CatArticulo
+         can :ru, CatArticulo
          can :crud, MarcaProducto
          can :crud, PresentacionProducto
          can :crud, Banco
@@ -152,7 +152,7 @@ class Ability
          can :crud, PresentacionProducto
          can :r, Negocio
          can :r, DatosFiscalesNegocio
-         can :crud, Proveedor
+         can :cru, Proveedor
          can :r, Sucursal
          can :r, DatosFiscalesSucursal
          can :crud, TelefonoPersona
