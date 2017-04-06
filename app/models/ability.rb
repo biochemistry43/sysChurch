@@ -25,6 +25,8 @@ class Ability
          can :crud, DatosFiscalesCliente
          can :crud, Venta
          can :crud, ItemVenta
+         can :ru, Negocio
+         can :ru, Sucursal
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
        elsif user.role == "administrador"
@@ -104,7 +106,7 @@ class Ability
          can :crud, DatosFiscalesNegocio
          can :crud, Gasto
          can :crud, ItemVenta
-         can :cru, Negocio
+         can :ru, Negocio
          can :crud, Perdida
          can :cru, Perfil
          can :crud, Proveedor

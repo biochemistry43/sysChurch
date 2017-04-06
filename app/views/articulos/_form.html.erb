@@ -75,7 +75,7 @@
     <div class="item form-group">
       <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de almacén:</h2>
     </div>
-    <% if can? :update, Negocio %>
+    <% if can? :create, Negocio %>
       <div class="item form-group<%= @articulo.errors[:suc_elegida].any? ? ' has-error has-feedback' : '' %>">
         <%= f.label :suc_elegida, "Sucursal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
         <div class="col-md-6 col-sm-6 col-xs-12 input-group">
