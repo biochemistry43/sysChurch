@@ -17,6 +17,9 @@ class Ability
        elsif user.role == "cajero"
          can :getById, Articulo
          can :showByCriteria, Articulo
+         can :r, Articulo
+         can :r, Marca
+         can :r, Presentacion
          can :cru, Perfil
          can :cru, Cliente
          can :crud, DatosFiscalesCliente
@@ -32,6 +35,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, CatArticulo
+         can :crud, Marca
+         can :crud, Presentacion
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -49,6 +54,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+         can :cru, Compra
+         can :cru, DetalleCompra
+         can :cru, EntradaAlmacen
        elsif user.role == "subadministrador"
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -57,6 +65,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, CatArticulo
+         can :crud, Marca
+         can :crud, Presentacion
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -74,6 +84,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+         can :cru, Compra
+         can :cru, DetalleCompra
+         can :cru, EntradaAlmacen
        elsif user.role == "gerente"
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -82,6 +95,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, CatArticulo
+         can :crud, Marca
+         can :crud, Presentacion
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -99,6 +114,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+         can :cru, Compra
+         can :cru, DetalleCompra
+         can :cru, EntradaAlmacen
        elsif user.role == "auxiliar"
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -121,6 +139,9 @@ class Ability
          can :r, Sucursal
          can :ru, TelefonoPersona
          can :ru, User
+         can :cr, Compra
+         can :cr, DetalleCompra
+         can :cr, EntradaAlmacen
        elsif user.role == "almacenista"
          can :cru, Perfil
          can :cru, Cliente
@@ -129,13 +150,14 @@ class Ability
          can :cru, CatArticulo
          can :r, Negocio
          can :r, DatosFiscalesNegocio
-         can :cru, Perfil
          can :crud, Proveedor
          can :r, Sucursal
          can :r, DatosFiscalesSucursal
          can :crud, TelefonoPersona
          can :ru, User
-         cru :crud, Compra
+         can :cr, Compra
+         can :cr, DetalleCompra
+         can :cr, EntradaAlmacen
        end
     #
     # The first argument to `can` is the action you are giving the user
