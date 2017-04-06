@@ -8,7 +8,7 @@ class Ability
     alias_action :read, to: :r
     alias_action :create, to: :c
     alias_action :update, to: :u
-    alias_action :read, :update, :ru
+    alias_action :read, :update, to: :ru
 
     alias_action :create, :read, :update, :destroy, to: :crud
        user ||= User.new # guest user (not logged in)
@@ -94,7 +94,7 @@ class Ability
          can :cru, Cliente
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
-         can :crud, CatArticulo
+         can :r, CatArticulo
          can :crud, Marca
          can :crud, Presentacion
          can :crud, Banco
