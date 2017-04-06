@@ -4,6 +4,16 @@
   <td><%= cliente.direccionMunicipio %></td>
   <td><%= cliente.direccionEstado %></td>
   <td><%= cliente.email %></td>
-  <td><%= link_to 'Editar', edit_cliente_path(cliente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
-  <td><%= link_to 'Borrar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar Cliente: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+
+  <td>
+    <% if can? :update, cliente %>
+      <%= link_to 'Editar', edit_cliente_path(cliente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>	
+    <% end %>
+  </td>
+
+  <td>
+    <% if can? :detroy, cliente %>
+      <%= link_to 'Borrar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar Cliente: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
 </tr>

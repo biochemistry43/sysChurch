@@ -40,66 +40,75 @@
           <ul class="nav side-menu">
             <li><a><i class="fa fa-home"></i> Módulos <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <li><a><i class="fa fa-tags"></i>Productos<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu" style="display: none">
-                    <%if can? :update, CatArticulo%>
-                      <li><%= link_to "Categorias", cat_articulos_path %>
-                      </li>
-                    <%end%>
-                    <%if can? :update, Articulo%>
-                      <li><%= link_to "Catálogo productos", articulos_path %>
-                      </li>
-                    <%end%>
-                    <%if can? :update, Articulo%>
-                      <li><%= link_to "Marcas", marca_productos_path %>
-                      </li>
-                    <%end%>
-                    <%if can? :update, Articulo%>
-                      <li><%= link_to "Presentaciones", presentacion_productos_path %>
-                      </li>
-                    <%end%>
-                  </ul>
-                </li>
-                <li><a><i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu" style="display: none">
-                    <%if can? :update, Proveedor%>
-                      <li><%= link_to "Proveedores", proveedores_path%>
-                      </li>
-                    <%end%>
-                  </ul>
-                </li>
+                <% if can? :read, Articulo %>
+                  <li><a><i class="fa fa-tags"></i>Productos<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="display: none">
+                      <%if can? :read, CatArticulo%>
+                        <li><%= link_to "Categorias", cat_articulos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :read, Articulo%>
+                        <li><%= link_to "Catálogo productos", articulos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :read, MarcaProducto%>
+                        <li><%= link_to "Marcas", marca_productos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :read, PresentacionProducto%>
+                        <li><%= link_to "Presentaciones", presentacion_productos_path %>
+                        </li>
+                      <%end%>
+                    </ul>
+                  </li>
+                <% end %>
+
+                <% if can? :read, Proveedor %>
+                  <li><a><i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="display: none">
+                      <%if can? :update, Proveedor%>
+                        <li><%= link_to "Proveedores", proveedores_path%>
+                        </li>
+                      <%end%>
+                    </ul>
+                  </li>
+                <% end %>
 
                 <li><%= link_to punto_venta_index_path, {id: "pos-mod"} do%>
                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                        Punto de venta
                     <%end%>
                 </li>
-                <li><a><i class="fa fa-cc-visa"></i>Compras<span class="fa fa-chevron-down"></span></a>
+                <% if can? :read, Compra %>
+                
+                  <li><a><i class="fa fa-cc-visa"></i>Compras<span class="fa fa-chevron-down"></span></a>
 
-                  <ul class="nav child_menu" style="display: none">
-                    <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
-                      
-                      Registrar compra
-                      <%end%>
-                    </li>
+                    <ul class="nav child_menu" style="display: none">
+                      <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
+                        
+                        Registrar compra
+                        <%end%>
+                      </li>
 
 
-                    <li><%= link_to compras_path, {id: "pos-mod"} do%>
-                      Compras realizadas
-                      <%end%>
-                    </li>
-                  </ul>
-                </li>
+                      <li><%= link_to compras_path, {id: "pos-mod"} do%>
+                        Compras realizadas
+                        <%end%>
+                      </li>
+                    </ul>
+                  </li>
+
+                <% end %>
                 
                 
-                <%if can? :update, Banco%>
+                <%if can? :read, Banco%>
                   <li><%= link_to bancos_path do%>
                         <i class="fa fa-bank"></i>
                         Bancos
                       <%end%>
                   </li>
                 <%end%>
-                <%if can? :update, Cliente%>
+                <%if can? :read, Cliente%>
                   <li><%= link_to clientes_path do%>
                         <i class="fa fa-users"></i>
                         Clientes
@@ -107,7 +116,7 @@
                   </li>
                 <%end%>
               </ul>
-              <%if can? :update, Negocio%>
+              <%if can? :create, Sucursal%>
                   <li><a><i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none">
                       <li class="sub_menu"><%= link_to "Ventas", ventas_venta_del_dia_path%>
@@ -117,9 +126,10 @@
                 <%end%>
 
             </li>
+            <%if can? :create, Negocio%>
             <li><a><i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                <%if can? :update, Negocio%>
+                
                   <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
                         <i class="fa fa-rocket"></i>
                         Negocio
@@ -135,10 +145,11 @@
                         Empleados
                       <% end %>
                   </li>
-                <%end%>
+                
               </ul>
               
             </li>
+            <%end%>
           </ul>
 
         </div>

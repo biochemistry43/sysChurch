@@ -37,11 +37,13 @@
         </div>
 
         <div class="div-add-button">
-
-          <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
-            <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
-            Añadir Artículo
-          <%end%>
+          <% if can? :create, Articulo %>
+            <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
+              <span class="fa fa-plus-square" style=""></span>
+              Añadir Artículo
+            <%end%>
+          <% end %>
+          
 
         </div>
       </div>
@@ -55,13 +57,13 @@
         <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_productos">
           <thead>
             <tr>
-              <th class="column-title">Clave</th>
-              <th class="column-title">Nombre</th>
-              <th class="column-title">Stock</th>
-              <th class="column-title">Existencia</th>
-              <th class="column-title">Categoria</th>
-              <th class="column-title"></th>
-              <th class="column-title"></th>
+              <th class="column-title" style="text-align: center;" >Clave</th>
+              <th class="column-title" style="text-align: center;">Nombre</th>
+              <th class="column-title" style="text-align: center;">Stock</th>
+              <th class="column-title" style="text-align: center;">Existencia</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;"></th>
+              <th class="column-title" style="text-align: center;"></th>
               
             </tr>
           </thead>

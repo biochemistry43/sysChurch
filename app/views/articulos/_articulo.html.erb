@@ -21,7 +21,19 @@
     <% end %>
   </td>
   <td class="center-td"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
-  <td><%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
-  <td><%= link_to 'Borrar', articulo, remote: true, method: :delete, data: { confirm: "¿Borrar Producto: #{articulo.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+
+
+  <td>
+    <% if can? :update, articulo %>
+      <%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+
+  <td>
+    <% if can? :destroy, articulo %>
+      <%= link_to 'Borrar', articulo, remote: true, method: :delete, data: { confirm: "¿Borrar Producto: #{articulo.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
 </tr>
 

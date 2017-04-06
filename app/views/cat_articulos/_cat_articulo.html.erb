@@ -3,6 +3,17 @@
   <td><%= cat_articulo.descripcionCatArticulo %></td>
   <td><%= cat_articulo.cat_articulo ? cat_articulo.cat_articulo.nombreCatArticulo : "No tiene asignada una categoria padre" %>
   </td>
-  <td><%= link_to 'Editar', edit_cat_articulo_path(cat_articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
-  <td><%= link_to 'Borrar', cat_articulo, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_articulo.nombreCatArticulo}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+  
+  <td>
+    <% if can? :create, cat_articulo %>
+      <%= link_to 'Editar', edit_cat_articulo_path(cat_articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td>
+    <% if can? :destroy, cat_articulo %>
+      <%= link_to 'Borrar', cat_articulo, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_articulo.nombreCatArticulo}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
 </tr>
