@@ -18,8 +18,8 @@ class Ability
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :r, Articulo
-         can :r, Marca
-         can :r, Presentacion
+         can :r, MarcaProducto
+         can :r, PresentacionProducto
          can :cru, Perfil
          can :cru, Cliente
          can :crud, DatosFiscalesCliente
@@ -35,8 +35,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, CatArticulo
-         can :crud, Marca
-         can :crud, Presentacion
+         can :crud, MarcaProducto
+         can :crud, PresentacionProducto
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -65,8 +65,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :crud, CatArticulo
-         can :crud, Marca
-         can :crud, Presentacion
+         can :crud, MarcaProducto
+         can :crud, PresentacionProducto
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -95,8 +95,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :crud, Articulo
          can :r, CatArticulo
-         can :crud, Marca
-         can :crud, Presentacion
+         can :crud, MarcaProducto
+         can :crud, PresentacionProducto
          can :crud, Banco
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
@@ -148,6 +148,8 @@ class Ability
          can :cru, DatosFiscalesCliente
          can :cru, Articulo
          can :cru, CatArticulo
+         can :crud, MarcaProducto
+         can :crud, PresentacionProducto
          can :r, Negocio
          can :r, DatosFiscalesNegocio
          can :crud, Proveedor
