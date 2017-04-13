@@ -116,9 +116,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
-         can :cru, Compra
-         can :cru, DetalleCompra
-         can :cru, EntradaAlmacen
+         can :crud, Compra
+         can :crud, DetalleCompra
+         can :crud, EntradaAlmacen
        elsif user.role == "auxiliar"
          can :getById, Articulo
          can :showByCriteria, Articulo
