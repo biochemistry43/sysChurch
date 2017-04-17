@@ -56,7 +56,7 @@
     <%= f.label :pagina_web, "Página web: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-desktop"></i></span>
-      <%= f.email_field :pagina_web, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Ej. www.kodikas.com.mx..."} do%>
+      <%= f.text_field :pagina_web, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Ej. www.kodikas.com.mx..."} do%>
       <%end%>
       <%if @proveedor.errors[:pagina_web].any? %>
         <p class="bg-danger"><%= @proveedor.errors[:pagina_web].to_s[/\w([^"]*)/] %></p>

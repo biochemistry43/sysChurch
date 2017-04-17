@@ -84,6 +84,7 @@
     
   </div>
   <script>
+
     $(document).ready(function(){
   
       $('.data-table').DataTable({
@@ -108,9 +109,14 @@
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
       });
+
     });
 
-    //table.buttons().container().appendTo( $('.table-buttons', table.table().container() ) );
+    $(document).on('DOMNodeInserted', 'tr.rowsearch', function (event) {
+      if ( document.readyState != 'complete') return;
+      window.location.reload(true);
+    });
+
     
   </script>
 </div>

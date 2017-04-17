@@ -60,5 +60,10 @@
         }
       });
     });
+
+    $(document).on('DOMNodeInserted', 'tr.rowsearch', function (event) {
+      if ( document.readyState != 'complete') return;
+      window.location.reload(true);
+    });
   </script>
 </div>
