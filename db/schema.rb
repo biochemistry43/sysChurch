@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170418004446) do
+ActiveRecord::Schema.define(version: 20170418175202) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -98,6 +98,7 @@ ActiveRecord::Schema.define(version: 20170418004446) do
     t.datetime "updated_at",          null: false
     t.string   "ape_pat"
     t.string   "ape_mat"
+    t.date     "fecha_nac"
   end
 
   create_table "compras", force: :cascade do |t|

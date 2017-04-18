@@ -18,6 +18,10 @@ class ComprasController < ApplicationController
   def show
   end
 
+  def consulta_compras
+    
+  end
+
   def create
     @compra = Compra.new(compra_params)
     @proveedores = current_user.sucursal.proveedores

@@ -40,6 +40,18 @@
     </div>
   </div>
 
+  <div class="item form-group<%= @cliente.errors[:fecha_nac].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :fecha_nac, "Fecha de nacimiento: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+      <%= f.date_picker :fecha_nac, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"fecha de nacimiento..."} do%>
+      <%end%>
+      <%if @cliente.errors[:fecha_nac].any? %>
+        <p class="bg-danger"><%= @cliente.errors[:fecha_nac].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
   <div class="item form-group">
     <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Dirección del Cliente:</h2>
   </div>
