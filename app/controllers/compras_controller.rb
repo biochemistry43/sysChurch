@@ -2,7 +2,7 @@ class ComprasController < ApplicationController
   before_action :set_compra, only: [:edit, :update, :destroy]
 
   def index
-    if can? :update, Negocio
+    if can? :create, Negocio
       @compras = current_user.negocio.compras
     else
       @compras = current_user.sucursal.compras
@@ -19,7 +19,25 @@ class ComprasController < ApplicationController
   end
 
   def consulta_compras
-    
+
+    if request.post?
+      fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @resCompras = current_user.negocio.compras.where(fecha: fechaInicial..fechaFinal)
+      else
+        @resCompras = current_user.sucursal.compras.where(fecha: fechaInicial..fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+
+    end
+
+
   end
 
   def create

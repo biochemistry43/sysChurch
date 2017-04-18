@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'compras/edit'
   get 'compras/update'
   get 'compras/destroy'
+  post 'compras/consulta_compras'
 
   resources :presentacion_productos
   resources :marca_productos

@@ -4,7 +4,7 @@ ruby "2.2.2"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.2'
 
-# Gema que permite subir imágenes al proyecto
+# Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'
 
 gem 'mini_magick'
@@ -21,7 +21,7 @@ gem 'coffee-rails', '~> 4.1.0'
 # gem 'therubyracer', platforms: :ruby
 gem "font-awesome-rails"
 
-#gema para data picker
+#gema para date picker
 gem 'date_picker'
 
 #La gema devise se utiliza para la autenticación de usuarios
