@@ -72,6 +72,9 @@
                 <button type="button" class="btn btn-round btn-default btn-xs" id="cambiarClienteBtn">
                   <i class="fa fa-user"> </i> Cambiar cliente
                 </button>
+                <%=link_to url = {controller: "clientes", action: "new"}, html_options = {class: "btn btn-round btn-default btn-xs", remote: true} do %>
+                  <i class="fa fa-plus"> </i> Nuevo cliente
+                <% end %>
               </div>
             </div>
 
@@ -241,7 +244,7 @@
       </div>
     </div>
     
-    <div class="modal" id="modalClientes">
+    <div class="modal" id="modalClie">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -273,6 +276,8 @@
       </div>
       <!-- /.modal-dialog -->
     </div>
+
+    <%= render 'modalClientes'%>
 
     <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.nombre ? current_user.negocio.nombre : ' ' %>">
     <input type="hidden" id="nombre_negocio_fiscal" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal : ' ' %>">

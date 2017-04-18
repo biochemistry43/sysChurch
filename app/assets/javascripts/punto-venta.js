@@ -176,7 +176,7 @@ $(document).ready(function(){
   //Esta acción abre el modal que permite cambiar el cliente de una venta
   $("#cambiarClienteBtn").on("click", function(e){
 
-    $('#modalClientes').modal('show');
+    $('#modalClie').modal('show');
 
   });
 
@@ -840,6 +840,6 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#nom_cliente_venta").html("<strong>"+nombre+"</strong>");
   $("#email_cliente").html("Email: <strong>"+email+"</strong>");
   $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
-  $("#modalClientes").modal("hide");
+  $("#modalClie").modal("hide");
 }
 

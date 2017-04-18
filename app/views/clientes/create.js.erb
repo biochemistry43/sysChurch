@@ -1,5 +1,16 @@
 $('#modalClientes').modal('toggle');
 $('#tb_clientes').append('<%= j render (@cliente) %>');
-if (location.pathname != "/punto_venta/index"){
+if (location.pathname != "/punto_venta"){
 	location.reload(false);
+}
+else{
+  $("#lista_clientes").append(""+
+
+    "<tr class='even pointer'><td><%= @cliente.nombre << " " << @cliente.ape_pat << " " << @cliente.ape_mat %></td>"+
+    "<td><%= @cliente.telefono1 %></td>"+
+    "<td><%= @cliente.email %></td>"+
+    "<td><button class='btn btn-success btn-xs' "+
+      "onclick='cambiarCliente(\"<%= @cliente.id %>\", \"<%= @cliente.nombre%>\", \"<%= @cliente.telefono1 %>\", \"<%= @cliente.email %>\")' >"+
+        "<i class='fa fa-check-square'></i> Seleccionar </button></td></tr>");
+
 }
