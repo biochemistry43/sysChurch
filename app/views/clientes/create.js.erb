@@ -1,3 +1,5 @@
 $('#modalClientes').modal('toggle');
 $('#tb_clientes').append('<%= j render (@cliente) %>');
-window.location.reload(true);
+if (location.pathname != "/punto_venta/index"){
+	location.reload(false);
+}

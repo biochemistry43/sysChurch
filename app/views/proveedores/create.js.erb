@@ -1,3 +1,12 @@
 $('#modalProveedores').modal('toggle');
 $('#tb_proveedores').append('<%= j render (@proveedor) %>');
-window.location.reload(true);
+if (location.pathname != "/compras/new"){
+	location.reload(false);
+}
+else{
+  $('#compra_proveedor_id').append($('<option>', {
+      value: "<%= @proveedor.id %>",
+      text: "<%= @proveedor.nombre %>"
+    }
+  ));
+}

@@ -1,6 +1,6 @@
 <tr id="articulo_<%= articulo.id%>" class="rowsearch">
-  <td><%= articulo.clave %></td>
-  <td><%if articulo.nombre %>
+  <td width="10%"><%= articulo.clave %></td>
+  <td align="justify" width="30%"><%if articulo.nombre %>
         <%= articulo.nombre %>
       <% end %>
       <% if articulo.marca_producto  %>
@@ -10,8 +10,8 @@
         <%= " presentación: "<<articulo.presentacion_producto.nombre  %>
       <% end %>
   </td>
-  <td class="center-td"><%= articulo.stock %></td>
-  <td class="center-td">
+  <td class="center-td" width="10%"><%= articulo.stock %></td>
+  <td class="center-td" width="10%">
     <% if articulo.existencia < articulo.stock %>
     <div style="background: #ff9999; color: red;">
     <%= articulo.existencia %>
@@ -20,8 +20,8 @@
     <%= articulo.existencia %>
     <% end %>
   </td>
-  <td class="center-td"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
-
+  <td class="center-td" width="15%"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
+  <td class="center-td" width="15%"><%= articulo.sucursal.nombre %></td>
 
   <td>
     <% if can? :update, articulo %>

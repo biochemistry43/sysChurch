@@ -12,6 +12,7 @@ class ComprasController < ApplicationController
   def new
     @proveedores = current_user.sucursal.proveedores
     @compra = Compra.new
+    @proveedor = Proveedor.new
   end
 
   def show
