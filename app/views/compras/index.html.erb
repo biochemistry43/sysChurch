@@ -2,40 +2,38 @@
   <div class="page-title">
     <div class="title_left">
       <h1>Compras realizadas</h1>
-      <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
-        <div class="col-md-4 col-sm-6 col-xs-12">
-          <div class="text-center">
-            Seleccione un rango de fechas:
-          </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
-          </div>
-        </div>
-        
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
-            
-          </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= submit_tag 'Consultar Compras', {:class=>"btn btn-success"} %>
-          </div>
-        </div>
-
-
-        
-
-      <% end %>
     </div>
   </div>
   <div class="clearfix"></div>
-  
+  <hr>
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Seleccione un rango de fechas:
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+        </div>
+      </div>
+        
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar Compras', {:class=>"btn btn-success"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
   <div class="col-md-12 col-sm-12 col-xs-12">
     
 
