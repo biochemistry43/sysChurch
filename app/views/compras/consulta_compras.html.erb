@@ -9,13 +9,48 @@
 
   <div class="clearfix"></div>
   
-  
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Seleccione un rango de fechas:
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+        </div>
+      </div>
+        
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar Compras', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="row">
+    <div class="col-md-12" style="color: gray; margin-bottom: 30px;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @resCompras.size %></span>  resultados en la búsqueda.
+    </div>
+    
+  </div>
+
   <div class="col-md-12 col-sm-12 col-xs-12">
     
 
     <div class="row">
       <div>
 
+       
 
         <table class="table table-striped responsive-utilities jambo_table data-table">
           <thead>
@@ -32,14 +67,14 @@
           <tbody>
             <% @resCompras.each do |compra| %>
 	            <tr>
-				  <td><%= compra.fecha %></td>
-				  <td><%= compra.folio_compra %></td>
-				  <td><%= compra.fecha %></td>
-				  <td><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
-				  <td><%= compra.monto_compra %></td>
-				  <td><%= compra.user.sucursal.nombre %></td>
-				</tr>
-			<% end %>
+      				  <td><%= compra.fecha %></td>
+      				  <td><%= compra.folio_compra %></td>
+      				  <td><%= compra.fecha %></td>
+      				  <td><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
+      				  <td><%= compra.monto_compra %></td>
+      				  <td><%= compra.user.sucursal.nombre %></td>
+      				</tr>
+      			<% end %>
           </tbody>
         </table>
       </div>

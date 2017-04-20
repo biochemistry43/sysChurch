@@ -1,11 +1,21 @@
 class VentasController < ApplicationController
 
+  before_action :set_venta, only: [:show, :edit, :update, :destroy]
+
   def index
     @ventas = Venta.all
 
   end
 
   def show
+    @cliente = @venta.cliente.nombre
+    @sucursal = @venta.sucursal.nombre
+    @cajero = @venta.user.perfil ? @venta.user.perfil.nombre : @venta.user.email
+    @items = @venta.item_ventas
+    @formaPago = @venta.venta_forma_pago.forma_pago.nombre
+    @camposFormaPago = @venta.venta_forma_pago.venta_forma_pago_campos
+
+
   end
 
   def new
@@ -21,6 +31,24 @@ class VentasController < ApplicationController
   end
 
   def destroy
+  end
+
+  def consulta_ventas
+    if request.post?
+      fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @resVentas = current_user.negocio.ventas.where(fechaVenta: fechaInicial..fechaFinal)
+      else
+        @resVentas = current_user.sucursal.ventas.where(fechaVenta: fechaInicial..fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
   end
 
   def venta_del_dia
@@ -77,4 +105,10 @@ class VentasController < ApplicationController
 
 
   end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_venta
+      @venta = Venta.find(params[:id])
+    end
 end

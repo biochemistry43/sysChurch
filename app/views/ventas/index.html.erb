@@ -1,24 +1,54 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Listado de Ventas</h1>
+      <h1>Ventas realizadas</h1>
     </div>
   </div>
   <div class="clearfix"></div>
-  
-  <div class="col-md-10 col-sm-10 col-xs-10">
-    <div class="x_panel" style="height: 600px;">
-      <p id="notice"><%= notice %></p>
+  <hr>
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Seleccione un rango de fechas:
+        </div>
+      </div>
 
-      <h1>Ventas</h1>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+        </div>
+      </div>
+        
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
+            
+        </div>
+      </div>
 
-      <table class="table table-striped responsive-utilities jambo_table">
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar Ventas', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    
+
+    <div class="row">
+      <div>
+
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
             <th class="column-title">Fecha </th>
             <th class="column-title">Monto Venta</th>
             <th class="column-title">Caja #</th>
             <th class="column-title">Cajero</th>
+            <th class="column-title"></th>
           </tr>
         </thead>
 
@@ -28,13 +58,43 @@
               <td><%= venta.fechaVenta %></td>
               <td><%= venta.montoVenta %></td>
               <td><%= venta.caja %></td>
-              <td><%= User.find(venta.user_id).email %></td>
+              <td><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
+              <td> 
+                <% if can? :read, venta %> 
+                  <%= link_to 'Mostrar', venta_path(venta), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+                <% end %>
+
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <br>
 
+      </div>
     </div>
+    <%= render 'modalVentas' %>
+    
   </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+    });
+  </script>
 </div>

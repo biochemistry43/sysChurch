@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-ventas-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar Producto");
+ 
+// Render the new form
+$('.modal-body-ventas').html('<%= j render("venta") %>');
+ 
+// Show the dynamic dialog
+$('#modalVentas').modal("show");
+ 
+// Set focus to the first element
+$('#modalVentas').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

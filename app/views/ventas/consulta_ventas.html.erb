@@ -1,13 +1,13 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Compras realizadas</h1>
+      <h1>Ventas realizadas</h1>
     </div>
   </div>
   <div class="clearfix"></div>
   <hr>
   <div class="row" style="margin-bottom: 30px;"> 
-    <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
+    <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
           Seleccione un rango de fechas:
@@ -29,7 +29,7 @@
 
       <div class="col-md-1 col-sm-5 col-xs-12">
         <div class="text-center">
-          <%= submit_tag 'Consultar Compras', {:class=>"btn btn-info"} %>
+          <%= submit_tag 'Consultar Ventas', {:class=>"btn btn-info"} %>
         </div>
       </div>
     <% end %>
@@ -42,33 +42,38 @@
 
 
         <table class="table table-striped responsive-utilities jambo_table data-table">
-          <thead>
-            <tr>
-              <th class="column-title">Fecha</th>
-              <th class="column-title">Factura de compra</th>
-              <th class="column-title">Proveedor</th>
-              <th class="column-title">Usuario que compró</th>
-              <th class="column-title">Monto de compra</th>
-              <th class="column-title">Sucursal</th>
-            </tr>
-          </thead>
+        <thead>
+          <tr>
+            <th class="column-title">Fecha </th>
+            <th class="column-title">Monto Venta</th>
+            <th class="column-title">Caja #</th>
+            <th class="column-title">Cajero</th>
+            <th class="column-title"> </th>
+          </tr>
+        </thead>
 
-          <tbody>
-            <% @compras.each do |compra| %>
-	            <tr>
-      				  <td><%= compra.fecha %></td>
-      				  <td><%= compra.folio_compra %></td>
-      				  <td><%= compra.proveedor.nombre %></td>
-      				  <td><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
-      				  <td><%= compra.monto_compra %></td>
-      				  <td><%= compra.user.sucursal.nombre %></td>
-      				</tr>
-      			<% end %>
-          </tbody>
-        </table>
+        <tbody>
+          <% @resVentas.each do |venta| %>
+            <tr>
+              <td><%= venta.fechaVenta %></td>
+              <td><%= venta.montoVenta %></td>
+              <td><%= venta.caja %></td>
+              <td><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
+              <td> 
+                <% if can? :read, venta %> 
+                  <%= link_to 'Mostrar', venta_path(venta), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+                <% end %>
+
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
       </div>
     </div>
-    
+    <%= render 'modalVentas' %>
   </div>
   <script>
     $(document).ready(function(){

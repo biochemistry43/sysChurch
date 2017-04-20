@@ -1,0 +1,41 @@
+<div id="fecha_monto" class="row">
+  <div id="fecha_venta" class="col-md-6 col-sm-6 col-xs-12">
+    Fecha: <%= @venta.fechaVenta %>
+  </div>
+  <div id="monto_venta" class="col-md-6 col-sm-6 col-xs-12">
+    Importe: $<%= @venta.montoVenta %>
+  </div>
+</div>
+<div id="cliente_sucursal" class="row">
+  <div id="cliente_venta" class="col-md-8 col-sm-8 col-xs-12">
+    Cliente: <%= @cliente %>
+  </div>
+  <div id="sucursal_venta" class="col-md-4 col-sm-4 col-xs-12">
+    Sucursal: <%= @sucursal %>
+  </div>
+</div>
+<div id="cajero_caja" class="row">
+  <div id="cajero_venta" class="col-md-8 col-sm-8 col-xs-12">
+    Cajero: <%= @cajero  %>
+  </div>
+  <div id="caja_venta" class="col-md-4 col-sm-4 col-xs-12">
+    Caja: <%= @venta.caja %>
+  </div>
+</div>
+<div id="forma_pago_venta" class="row">
+  <div id="forma_pago" class="col-md-12 col-sm-12 col-xs-12">
+    Forma de pago: <%= @formaPago %>
+  </div>
+</div>
+<div id="datos_forma_pago" class="row">
+  <div id="datos_forma_pago_col" class="col-md-12 col-sm-12 col-xs-12">
+    <% @camposFormaPago.each do |campo|  %>
+      <%= campo.campo_forma_pago.nombrecampo %> : <%= campo.ValorCampo %> <br>
+    <% end %>
+  </div>
+</div>
+<div id="items_venta" class="row">
+  <div id="items_venta_col" class="col-md-12-col-sm-12-col-xs-12">
+             
+  </div>
+</div>

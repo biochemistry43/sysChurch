@@ -6,7 +6,7 @@
 
       <div class="navbar nav_title" style="border: 0;">
         <%= link_to root_path, :class => "site_title" do %>
-          <i class="fa fa-cubes"></i> <span>M  Y  B  U</span>
+          <i class="fa fa-car"></i> <span>A D I S</span>
         <% end %>
       </div>
       <div class="clearfix"></div>
@@ -63,6 +63,22 @@
                   </li>
                 <% end %>
 
+                <li><a><i class="fa fa-shopping-cart"></i>Ventas<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu" style="display: none">
+                    <li><%= link_to punto_venta_index_path, {id: "pos-mod"} do%>
+                           Punto de venta
+                        <%end%>
+                    </li>
+                    
+                    <%if can? :read, Venta%>
+                      <li><%= link_to "Registro de ventas", ventas_path %>
+                      </li>
+                    <%end%>
+                  </ul>
+                </li>
+
+
+
                 <% if can? :read, Proveedor %>
                   <li><a><i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none">
@@ -74,11 +90,7 @@
                   </li>
                 <% end %>
 
-                <li><%= link_to punto_venta_index_path, {id: "pos-mod"} do%>
-                       <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                       Punto de venta
-                    <%end%>
-                </li>
+                
                 <% if can? :read, Compra %>
                 
                   <li><a><i class="fa fa-cc-visa"></i> Compras<span class="fa fa-chevron-down"></span></a>
