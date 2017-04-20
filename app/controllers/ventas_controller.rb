@@ -9,6 +9,7 @@ class VentasController < ApplicationController
 
   def show
     @cliente = @venta.cliente.nombre
+    @cliente << " " << @venta.cliente.ape_pat << " " << @venta.cliente.ape_mat
     @sucursal = @venta.sucursal.nombre
     @cajero = @venta.user.perfil ? @venta.user.perfil.nombre : @venta.user.email
     @items = @venta.item_ventas

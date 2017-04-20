@@ -181,6 +181,8 @@ class PuntoVentaController < ApplicationController
             #guardados correctamente en la base de datos
             if ventaFPCSaved 
 
+              @venta.status = "activo"
+
               #Si los campos fueron guardados correctamente, procede a guardar la venta
               if @venta.save && recordVentaFormaPago.save
 	            if itemSaved
