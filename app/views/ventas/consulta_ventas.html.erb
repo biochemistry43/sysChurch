@@ -44,12 +44,12 @@
         <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
-            <th class="column-title">Fecha </th>
-            <th class="column-title">Monto Venta</th>
-            <th class="column-title">Caja #</th>
-            <th class="column-title">Cajero</th>
-            <th class="column-title">Status</th>
-            <th class="column-title"> </th>
+            <th class="column-title" style="text-align: center;">Fecha </th>
+            <th class="column-title"  style="text-align: center;">Monto Venta</th>
+            <th class="column-title"  style="text-align: center;">Caja #</th>
+            <th class="column-title"  style="text-align: center;">Cajero</th>
+            <th class="column-title"  style="text-align: center;">Status</th>
+            <th class="column-title"  style="text-align: center;"> </th>
 
           </tr>
         </thead>
@@ -58,26 +58,28 @@
           <% @resVentas.each do |venta| %>
             <tr>
               <td><%= venta.fechaVenta %></td>
-              <td><%= venta.montoVenta %></td>
-              <td><%= venta.caja %></td>
-              <td><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
-              <td>
+              <td  style="text-align: center;"><%= venta.montoVenta %></td>
+              <td  style="text-align: center;"><%= venta.caja %></td>
+              <td  style="text-align: center;"><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
+              <td  style="text-align: center;">
                 <% if venta.status.eql?("activo") %>
-                  <span class="btn btn-success"> Activo </span>
+                  <span class="btn btn-success"> Activa </span>
                 <% else %>
-                  <span class="btn btn-warning"> Cancelado </span>
+                  <span class="btn btn-warning"> Cancelada </span>
                 <% end %>    
               </td>
-              <td> 
+              <td  style="text-align: center;"> 
                 <% if can? :read, venta %> 
-                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info btn-xs", remote: true} do %>
+                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true} do %>
                   <i class="fa fa-info-circle"></i>
                   <% end %>
                 <% end %>
 
                 <% if can? :destroy, venta %> 
-                  <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger btn-xs", remote: true}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
-                   <i class="fa fa-close"></i>
+                  <% if venta.status.eql?("activo") %>
+                    <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                     <i class="fa fa-close"></i>
+                    <% end %>
                   <% end %>
                 <% end %>
               </td>

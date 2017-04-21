@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   get 'ventas/venta_del_dia'
   post 'ventas/venta_del_dia'
   post 'ventas/consulta_ventas'
+  post 'ventas/consulta_avanzada'
 
 
   devise_for :users, controllers: { sessions: "users/sessions" }

@@ -295,6 +295,21 @@ thead > tr {
   color: #2e4309;
 }
 
+.filtros .opciones_filtros{
+    padding: 5px;
+    text-align: center;
+    border: solid 1px #c3c3c3;
+}
+
+.filtros:hover{
+  cursor: pointer;
+}
+
+.opciones_filtros{
+  padding: 50px;
+  display: none;
+}
+
 
 
 

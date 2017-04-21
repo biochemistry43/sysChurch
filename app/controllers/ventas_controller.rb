@@ -1,10 +1,14 @@
 class VentasController < ApplicationController
 
   before_action :set_venta, only: [:show, :edit, :update, :destroy]
+  before_action :set_cajeros, only: [:index, :consulta_ventas, :consulta_avanzada]
 
   def index
-    @ventas = Venta.all
-
+    if can? :create, Negocio
+      @ventas = current_user.negocio.ventas
+    else
+      @ventas = current_user.sucursal.ventas
+    end
   end
 
   def show
@@ -29,6 +33,16 @@ class VentasController < ApplicationController
   end
 
   def update
+    respond_to do |format|
+      observaciones = params[:observaciones]
+      if @venta.update(:observaciones=>observaciones, :status=>"cancelado")
+        format.json { head :no_content}
+        format.js
+      else
+        format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
+        format.js {render :edit}
+      end
+    end
   end
 
   def destroy
@@ -49,6 +63,12 @@ class VentasController < ApplicationController
         format.json
         format.js
       end
+    end
+  end
+
+  def consulta_avanzada
+    if request.post?
+      
     end
   end
 
@@ -112,4 +132,18 @@ class VentasController < ApplicationController
     def set_venta
       @venta = Venta.find(params[:id])
     end
+
+    def set_cajeros
+      @cajeros = []
+      if can? :create, Negocio
+        current_user.negocio.users.each do |cajero|
+          @cajeros.push(cajero.perfil)
+        end
+      else
+        current_user.sucursal.users.each do |cajero|
+          @cajeros.push(cajero.perfil)
+        end
+      end
+    end
+
 end
