@@ -1,0 +1,234 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Ventas realizadas</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row">
+    <% if can? :read, Venta %> 
+      <%= link_to ventas_path, html_options = {class: "btn btn-success"} do %>
+      <i class="fa fa-shopping-cart"> Mostrar todas las ventas </i>
+      <% end %>
+    <% end %>
+
+    <% if can? :create, Negocio %> 
+      <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal"} do %>  
+        <span class="fa fa-shopping-cart" style=""></span>
+      <% end %>
+    <% end %>
+  </div>
+  <hr>
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Seleccione un rango de fechas:
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+        </div>
+      </div>
+        
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar Ventas', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="filtros_avanzados" class="row filtros" style="margin-bottom: 30px;"> 
+
+      <span class="input-group-addon" style="background: #CBCDFF;">Filtros Avanzados <i class="fa fa-sort-down"></i></span>
+
+  
+  </div>
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "ventas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Cajero:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :perfil_id, @cajeros, :id, :nombre, {:prompt => 'Elija un cajero'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Status de la venta:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>  
+          </div>
+        </div>
+      </div>
+      
+      <% if can? :create, Negocio %>
+        
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(:venta, :suc_elegida, @sucursales, :nombre, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    
+
+    <div class="row">
+      <div>
+
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Fecha </th>
+            <th class="column-title" style="text-align: center;">Monto Venta</th>
+            <th class="column-title" style="text-align: center;">Caja #</th>
+            <th class="column-title" style="text-align: center;">Cajero</th>
+            <% if can? :create, Negocio %>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+            <% end %>
+            <th class="column-title" style="text-align: center;">Status</th>
+            <th class="column-title" style="text-align: center;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @ventas.each do |venta| %>
+            <tr>
+              <td style="text-align: center;"><%= venta.fechaVenta %></td>
+              <td style="text-align: center;"><%= venta.montoVenta %></td>
+              <td style="text-align: center;"><%= venta.caja %></td>
+              <td style="text-align: center;"><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
+              <% if can? :create, Negocio %>
+                <td style="text-align: center;">
+                  <%= venta.sucursal.nombre %>
+                </td>
+              <% end %>
+              <td style="text-align: center;">
+                <% if venta.status.eql?("Activa") %>
+                  <span class="btn btn-success"> Activa </span>
+                <% else %>
+                  <span class="btn btn-warning"> Cancelada </span>
+                <% end %>    
+              </td>
+              <td style="text-align: center;"> 
+                <% if can? :read, venta %> 
+                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true} do %>
+                  <i class="fa fa-info-circle"></i>
+                  <% end %>
+                <% end %>
+
+                <% if can? :destroy, venta %> 
+                  <% if venta.status.eql?("Activa") %>
+                    <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                     <i class="fa fa-close"></i>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      </div>
+    </div>
+    <%= render 'modalVentas' %>
+    
+  </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+    });
+  </script>
+  <%= javascript_include_tag "ventas" %>
+</div>

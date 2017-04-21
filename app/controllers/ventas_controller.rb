@@ -2,6 +2,7 @@ class VentasController < ApplicationController
 
   before_action :set_venta, only: [:show, :edit, :update, :destroy]
   before_action :set_cajeros, only: [:index, :consulta_ventas, :consulta_avanzada]
+  before_action :set_sucursales, only: [:index, :consulta_ventas, :consulta_avanzada]
 
   def index
     if can? :create, Negocio
@@ -35,7 +36,7 @@ class VentasController < ApplicationController
   def update
     respond_to do |format|
       observaciones = params[:observaciones]
-      if @venta.update(:observaciones=>observaciones, :status=>"cancelado")
+      if @venta.update(:observaciones=>observaciones, :status=>"Cancelada")
         format.json { head :no_content}
         format.js
       else
@@ -53,9 +54,9 @@ class VentasController < ApplicationController
       fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
       fechaFinal = DateTime.parse(params[:fecha_final]).to_date
       if can? :create, Negocio
-        @resVentas = current_user.negocio.ventas.where(fechaVenta: fechaInicial..fechaFinal)
+        @ventas = current_user.negocio.ventas.where(fechaVenta: fechaInicial..fechaFinal)
       else
-        @resVentas = current_user.sucursal.ventas.where(fechaVenta: fechaInicial..fechaFinal)
+        @ventas = current_user.sucursal.ventas.where(fechaVenta: fechaInicial..fechaFinal)
       end
 
       respond_to do |format|
@@ -68,7 +69,34 @@ class VentasController < ApplicationController
 
   def consulta_avanzada
     if request.post?
-      
+      fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
+      fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
+      perfil_id = params[:perfil_id]
+      usuario = Perfil.find(perfil_id).user
+      status = params[:status]
+      sucursal = params[:suc_elegida]
+      if can? :create, Negocio
+        @ventas = current_user.negocio.ventas.where(fechaVenta: fechaInicial..fechaFinal, user: usuario, status: status, sucursal: sucursal)
+      else
+        @ventas = current_user.sucursal.ventas.where(fechaVenta: fechaInicial..fechaFinal, user: usuario, status: status)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+  def solo_sucursal
+    if request.post?
+      @ventas = current_user.sucursal.ventas
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
     end
   end
 
@@ -144,6 +172,10 @@ class VentasController < ApplicationController
           @cajeros.push(cajero.perfil)
         end
       end
+    end
+
+    def set_sucursales
+      @sucursales = current_user.negocio.sucursals
     end
 
 end

@@ -49,7 +49,7 @@ Rails.application.routes.draw do
   post 'ventas/venta_del_dia'
   post 'ventas/consulta_ventas'
   post 'ventas/consulta_avanzada'
-
+  post 'ventas/solo_sucursal'
 
   devise_for :users, controllers: { sessions: "users/sessions" }
   resources :bancos
