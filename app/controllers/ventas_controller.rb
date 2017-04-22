@@ -44,7 +44,12 @@ class VentasController < ApplicationController
     respond_to do |format|
       venta = params[:venta]
       observaciones = venta[:observaciones]
+      #todo: terminar la cancelación puntual de ventas.
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
+        @venta.item_ventas.each do |itemVenta|
+          VentaCancelada.create(:articulo => itemVenta.articulo, :itemVenta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal)
+        end
+
         format.json { head :no_content}
         format.js
       else

@@ -74,6 +74,12 @@
                       <li><%= link_to "Registro de ventas", ventas_path %>
                       </li>
                     <%end%>
+
+                    <%if can? :create, Negocio%>
+                      <li><%= link_to "Categorías de cancelación", cat_venta_canceladas_path %>
+                      </li>
+                    <%end%>
+
                   </ul>
                 </li>
 

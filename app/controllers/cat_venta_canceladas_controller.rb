@@ -4,7 +4,9 @@ class CatVentaCanceladasController < ApplicationController
   # GET /cat_venta_canceladas
   # GET /cat_venta_canceladas.json
   def index
-    @cat_venta_canceladas = CatVentaCancelada.all
+    if can? :create, Negocio
+      @cat_venta_canceladas = current_user.negocio.cat_venta_canceladas
+    end
   end
 
   # GET /cat_venta_canceladas/1
@@ -25,14 +27,21 @@ class CatVentaCanceladasController < ApplicationController
   # POST /cat_venta_canceladas.json
   def create
     @cat_venta_cancelada = CatVentaCancelada.new(cat_venta_cancelada_params)
+    @cat_venta_cancelada.negocio = current_user.negocio
 
     respond_to do |format|
-      if @cat_venta_cancelada.save
-        format.html { redirect_to @cat_venta_cancelada, notice: 'Cat venta cancelada was successfully created.' }
-        format.json { render :show, status: :created, location: @cat_venta_cancelada }
+      if @cat_venta_cancelada.valid?
+        if @cat_venta_cancelada.save
+
+          format.json { head :no_content }
+          format.js
+        else
+
+          format.json { render json: @cat_venta_cancelada.errors, status: :unprocessable_entity }
+        end
       else
-        format.html { render :new }
-        format.json { render json: @cat_venta_cancelada.errors, status: :unprocessable_entity }
+        format.js { render :new }
+        format.json { render json: @cat_venta_cancelada.errors.full_messages, status: :unprocessable_entity }
       end
     end
   end
@@ -42,11 +51,10 @@ class CatVentaCanceladasController < ApplicationController
   def update
     respond_to do |format|
       if @cat_venta_cancelada.update(cat_venta_cancelada_params)
-        format.html { redirect_to @cat_venta_cancelada, notice: 'Cat venta cancelada was successfully updated.' }
-        format.json { render :show, status: :ok, location: @cat_venta_cancelada }
+        format.json { head :no_content}
       else
-        format.html { render :edit }
         format.json { render json: @cat_venta_cancelada.errors, status: :unprocessable_entity }
+        format.js { render :edit }
       end
     end
   end
@@ -56,7 +64,8 @@ class CatVentaCanceladasController < ApplicationController
   def destroy
     @cat_venta_cancelada.destroy
     respond_to do |format|
-      format.html { redirect_to cat_venta_canceladas_url, notice: 'Cat venta cancelada was successfully destroyed.' }
+      format.js
+      format.html { redirect_to cat_venta_canceladas_url, notice: 'La categoría ha sido eliminada.' }
       format.json { head :no_content }
     end
   end

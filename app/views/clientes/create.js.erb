@@ -1,9 +1,12 @@
 $('#modalClientes').modal('toggle');
 $('#tb_clientes').append('<%= j render (@cliente) %>');
+//Si la creación de el cliente se está haciendo en un módulo diferente del punto de venta, entonces se recarga la página
+//en punto de venta, sólo se "refresca" la lista de clientes.
 if (location.pathname != "/punto_venta"){
 	location.reload(false);
 }
 else{
+  //Esta acción refresca la lista de clientes dentro del módulo de punto de venta.
   $("#lista_clientes").append(""+
 
     "<tr class='even pointer'><td><%= @cliente.nombre << " " << @cliente.ape_pat << " " << @cliente.ape_mat %></td>"+
