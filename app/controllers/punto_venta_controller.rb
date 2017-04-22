@@ -169,11 +169,13 @@ class PuntoVentaController < ApplicationController
                 
 			  itemV = ItemVenta.new
 
-	          
 	          itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
 	          itemV.cantidad = itemVenta["cantidad"]
               @venta.item_ventas << itemV
               itemV.articulo.existencia = itemV.articulo.existencia - itemV.cantidad
+
+              itemV.articulo.save
+
 			end
             
             #Para cerrar la venta, primero evalúa mediante la variable booleana
@@ -181,7 +183,7 @@ class PuntoVentaController < ApplicationController
             #guardados correctamente en la base de datos
             if ventaFPCSaved 
 
-              @venta.status = "activo"
+              @venta.status = "Activa"
 
               #Si los campos fueron guardados correctamente, procede a guardar la venta
               if @venta.save && recordVentaFormaPago.save

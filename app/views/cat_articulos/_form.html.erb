@@ -9,7 +9,7 @@
       <%= f.label :nombreCatArticulo, "Nombre de Categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-        <%= f.text_field :nombreCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el tipo de cuenta..."} do%>
+        <%= f.text_field :nombreCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el nombre de la categoría..."} do%>
         <%end%>
         <%if @cat_articulo.errors[:nombreCatArticulo].any? %>
           <p class="bg-danger"><%= @cat_articulo.errors[:nombreCatArticulo].to_s[/\w([^"]*)/] %></p>
@@ -21,7 +21,7 @@
       <%= f.label :descripcionCatArticulo, "Descripción de la categoría: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
-        <%= f.text_area :descripcionCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
+        <%= f.text_area :descripcionCatArticulo, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Introduzca la descripción de la categoría..."} do%>
         <%end%>
         <%if @cat_articulo.errors[:descripcionCatArticulo].any? %>
           <p class="bg-danger"><%= @cat_articulo.errors[:descripcionCatArticulo].to_s[/\w([^"]*)/] %></p>

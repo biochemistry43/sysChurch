@@ -7,6 +7,46 @@
   <div class="clearfix"></div>
   <hr>
   <div class="row">
+    <div class="col-md-12" style="color: gray;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @ventas.size %></span>  ventas con este criterio.
+    </div>
+    
+  </div>
+  <% if @consulta %>
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> a <%= @fechaFinal %></span>
+        </div>
+        
+        <% if @avanzada %>
+          <div class="col-md-12">
+            <% if @cajero %>
+              Cajero: <span style="color:#5B7ECC; font-size: 16px;"> <%= @cajero.perfil.nombre %></span>
+            <% else %>
+              Cajero: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+          <div class="col-md-12">
+            Status: <span style="color:#5B7ECC; font-size: 16px;"> <%= @status %></span>
+          </div>
+          <% if can? :create, Negocio %>
+            <div class="col-md-12">
+              <% if @sucursal %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+              <% else %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+
+      </div>
+      
+    </div>
+  <% end %>
+  <hr>
+  <div class="row">
     <% if can? :read, Venta %> 
       <%= link_to ventas_path, html_options = {class: "btn btn-success"} do %>
       <i class="fa fa-shopping-cart"> Mostrar todas las ventas </i>
@@ -14,8 +54,8 @@
     <% end %>
 
     <% if can? :create, Negocio %> 
-      <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal"} do %>  
-        <span class="fa fa-shopping-cart" style=""></span>
+      <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal", method: :post} do %>  
+        <span class="fa fa-shopping-cart" style=""> Sólo ventas de mi sucursal</span>
       <% end %>
     <% end %>
   </div>
@@ -24,19 +64,31 @@
     <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
-          Seleccione un rango de fechas:
+          Búsqueda por fechas:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Desde: 
         </div>
       </div>
 
-      <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
-          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Hasta:
         </div>
       </div>
         
-      <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
-          <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field"}, {})%>
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
             
         </div>
       </div>
@@ -49,12 +101,10 @@
     <% end %>
   </div>
 
-  <div id="filtros_avanzados" class="row filtros" style="margin-bottom: 30px;"> 
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
 
-      <span class="input-group-addon" style="background: #CBCDFF;">Filtros Avanzados <i class="fa fa-sort-down"></i></span>
-
-  
-  </div>
   <div id="opciones_filtros_avanzados" class="opciones_filtros row">
     <%= form_tag({ controller: "ventas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="item form-group">
@@ -121,7 +171,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center">
-              <%= collection_select(:venta, :suc_elegida, @sucursales, :nombre, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
             </div>
           </div>
         </div>
