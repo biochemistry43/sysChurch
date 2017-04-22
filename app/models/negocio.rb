@@ -13,4 +13,6 @@ class Negocio < ActiveRecord::Base
 	has_many :presentacion_productos
 	has_many :ventas
 	has_many :compras
+	has_many :cat_venta_canceladas
+	has_many :venta_canceladas
 end

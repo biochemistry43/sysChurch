@@ -7,6 +7,7 @@ class Articulo < ActiveRecord::Base
 	belongs_to :presentacion_producto
 	has_many :entrada_almacens
 	has_many :detalle_compras
+	has_many :venta_canceladas
 
 
 	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }

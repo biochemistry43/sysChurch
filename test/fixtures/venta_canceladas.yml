@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  articulo_id: 1
+  item_venta_id: 1
+  venta_id: 1
+  cat_venta_cancelada_id: 1
+  user_id: 1
+  fecha: 2017-04-21
+  observaciones: MyText
+
+two:
+  articulo_id: 1
+  item_venta_id: 1
+  venta_id: 1
+  cat_venta_cancelada_id: 1
+  user_id: 1
+  fecha: 2017-04-21
+  observaciones: MyText

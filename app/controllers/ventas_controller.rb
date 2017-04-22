@@ -42,8 +42,9 @@ class VentasController < ApplicationController
 
   def update
     respond_to do |format|
-      observaciones = params[:observaciones]
-      if @venta.update(:observaciones=>observaciones, :status=>"Cancelada")
+      venta = params[:venta]
+      observaciones = venta[:observaciones]
+      if @venta.update(:observaciones => observaciones, :status => "Cancelada")
         format.json { head :no_content}
         format.js
       else
@@ -54,6 +55,7 @@ class VentasController < ApplicationController
   end
 
   def destroy
+
   end
 
   def consulta_ventas

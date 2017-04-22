@@ -3,7 +3,7 @@
     <%= f.label :folio_compra, "Factura de compra*: ", {class: "control-label"} %>
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-      <%= f.text_field :folio_compra, {class: "form-control text_field first_input", :placeholder=>"Factura de compra..."} do%>
+      <%= f.text_field :folio_compra, {class: "form-control text_field first_input", :placeholder=>"Factura de compra...", required: :true } do%>
       <%end%>
       <%if @compra.errors[:folio_compra].any? %>
         <p class="bg-danger"><%= @compra.errors[:folio_compra].to_s[/\w([^"]*)/] %></p>
@@ -15,7 +15,7 @@
     <%= f.label :ticket_compra, "Ticket de compra*: ", {class: "control-label"} %>
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-      <%= f.text_field :ticket_compra, {class: "form-control text_field first_input", :placeholder=>"Ticket de compra..."} do%>
+      <%= f.text_field :ticket_compra, {class: "form-control text_field first_input", :placeholder=>"Ticket de compra...", required: :true } do%>
       <%end%>
       <%if @compra.errors[:ticket_compra].any? %>
         <p class="bg-danger"><%= @compra.errors[:ticket_compra].to_s[/\w([^"]*)/] %></p>
@@ -41,7 +41,7 @@
     <%= f.label :proveedor_id, "Proveedor*: ", {class: "control-label"} %>
     <div class="input-group ">
       <span class="input-group-addon"><i class="fa fa-truck"></i></span>
-      <%= collection_select(:compra, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control", style: "display:inline"})%>
+      <%= collection_select(:compra, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control", required: :true})%>
     </div>
     <%=link_to "Nuevo proveedor", {controller: "proveedores", action: "new"}, html_options = {class: "btn btn-info", remote: true} %>
     

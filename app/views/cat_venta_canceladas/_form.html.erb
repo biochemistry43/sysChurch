@@ -1,0 +1,25 @@
+<%= form_for(@cat_venta_cancelada) do |f| %>
+  <% if @cat_venta_cancelada.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@cat_venta_cancelada.errors.count, "error") %> prohibited this cat_venta_cancelada from being saved:</h2>
+
+      <ul>
+      <% @cat_venta_cancelada.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :clave %><br>
+    <%= f.text_field :clave %>
+  </div>
+  <div class="field">
+    <%= f.label :descripcion %><br>
+    <%= f.text_field :descripcion %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

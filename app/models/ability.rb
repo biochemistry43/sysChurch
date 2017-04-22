@@ -30,6 +30,8 @@ class Ability
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
        elsif user.role == "administrador"
+         can :crud, CatVentaCancelada
+         can :crud, VentaCancelada
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil
@@ -60,6 +62,8 @@ class Ability
          can :cru, DetalleCompra
          can :cru, EntradaAlmacen
        elsif user.role == "subadministrador"
+         can :crud, CatVentaCancelada
+         can :crud, VentaCancelada
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil
@@ -90,6 +94,8 @@ class Ability
          can :cru, DetalleCompra
          can :cru, EntradaAlmacen
        elsif user.role == "gerente"
+         can :crud, CatVentaCancelada
+         can :crud, VentaCancelada
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil

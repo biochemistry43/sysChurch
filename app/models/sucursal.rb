@@ -8,4 +8,5 @@ class Sucursal < ActiveRecord::Base
 	has_many :compras
 	belongs_to :negocio
 	has_one :datos_fiscales_sucursal
+	has_many :venta_canceladas
 end

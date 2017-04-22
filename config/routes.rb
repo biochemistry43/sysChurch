@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :cat_venta_canceladas
   resources :compras
   get 'compras/index'
   get 'compras/new'

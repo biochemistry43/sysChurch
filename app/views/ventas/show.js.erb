@@ -1,6 +1,6 @@
 // Add the dialog title
 
-<%if @venta.status.eql?("cancelado")%>
+<%if @venta.status.eql?("Cancelada")%>
   $('#modal-ventas-title').html("<i class='fa fa-trash'></i> Venta cancelada");
   $('#modal-ventas-title').parent().css("background-color", "yellow");
   $('#modal-ventas-title').parent().css("color", "gray");
