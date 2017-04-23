@@ -35,6 +35,7 @@ class VentasController < ApplicationController
   end
 
   def edit
+    @items = @venta.item_ventas
   end
 
   def create
@@ -44,6 +45,7 @@ class VentasController < ApplicationController
     respond_to do |format|
       venta = params[:venta]
       observaciones = venta[:observaciones]
+      @items = @venta.item_ventas
       #todo: terminar la cancelación puntual de ventas.
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
         @venta.item_ventas.each do |itemVenta|
