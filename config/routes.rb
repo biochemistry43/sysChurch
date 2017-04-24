@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  get 'devoluciones/index'
+
+  get 'devoluciones/show'
+
+  get 'devoluciones/consultaVenta'
+
   resources :cat_venta_canceladas
   resources :compras
   get 'compras/index'
