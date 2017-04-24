@@ -1,12 +1,21 @@
 class DevolucionesController < ApplicationController
+   before_action :set_devolucion, only: [:show]
+
   def index
+  	if can? :create, Negocio
+  		@devoluciones = current_user.negocio.venta_canceladas
+  	else
+  		@devoluciones = current_user.sucursal.venta_canceladas
+  	end
   end
 
   def show
   end
 
-  def consultaVenta
+  def devolucion
+  	@consulta = false
   	if request.post?
+  	  @consulta = true
       @venta = Venta.find(params[:folio])
       @itemsVenta = @venta.item_ventas
   	end
@@ -25,5 +34,11 @@ class DevolucionesController < ApplicationController
 
   	end
   end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_devolucion
+      @devolucion = VentaCancelada.find(params[:id])
+    end
 
 end

@@ -4,7 +4,11 @@ Rails.application.routes.draw do
 
   get 'devoluciones/show'
 
-  get 'devoluciones/consultaVenta'
+  get 'devoluciones/devolucion'
+
+  post 'devoluciones/devolucion'
+
+  post 'devoluciones/hacerDevolucion'
 
   resources :cat_venta_canceladas
   resources :compras

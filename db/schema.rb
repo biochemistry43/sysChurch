@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170424202107) do
+ActiveRecord::Schema.define(version: 20170424230240) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -336,6 +336,7 @@ ActiveRecord::Schema.define(version: 20170424202107) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
+    t.string   "clave"
   end
 
   create_table "telefono_personas", force: :cascade do |t|
@@ -430,6 +431,8 @@ ActiveRecord::Schema.define(version: 20170424202107) do
     t.integer  "negocio_id"
     t.string   "status"
     t.text     "observaciones"
+    t.string   "folio"
+    t.integer  "consecutivo"
   end
 
 end
