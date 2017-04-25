@@ -65,6 +65,13 @@ class VentasController < ApplicationController
 
   end
 
+  def buscarUltimoFolio
+    @folio = current_user.sucursal.ventas.last.folio
+
+    render :json => @folio
+
+  end
+
   def consulta_ventas
     @consulta = true
     @avanzada = false

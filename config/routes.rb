@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   post 'ventas/consulta_ventas'
   post 'ventas/consulta_avanzada'
   post 'ventas/solo_sucursal'
+  get 'ventas/buscarUltimoFolio'
 
   devise_for :users, controllers: { sessions: "users/sessions" }
   resources :bancos
@@ -93,10 +94,12 @@ Rails.application.routes.draw do
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'articulos/getById/:criteria' => 'articulos#getById'
+  get 'ventas/buscarUltimoFolio/:criteria' => 'ventas#buscarUltimoFolio'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
   get 'ventas/venta_del_dia' => 'ventas#venta_del_dia'
   post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
+  get 'punto_venta/index/:venta' => 'punto_venta#index'
   
   
   root :to=> 'plainpage#index'

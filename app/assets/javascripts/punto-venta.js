@@ -4,6 +4,7 @@ var plazoCredito;
 var referenciaOxxo;
 var referenciaPaypal
 var copiaFormaPago = {};
+var ultimoFolio = "";
 
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
@@ -221,6 +222,9 @@ $(document).ready(function(){
     }
   });
 
+  $("#fecha_ticket").html("Fecha: " + fecha.getDate()+"/"+
+       (fecha.getMonth()+1)+"/"+fecha.getFullYear());
+
 
   //Acción para guardar la venta en un objeto JSON.
   $("#cobrarVenta").on("click", function() {
@@ -404,7 +408,9 @@ function completarVenta(){
   
 
   if($("#isPrintTicket").attr("checked")){
-    imprimirTicket();
+    var form = $("#ventaForm");
+    form.submit(); //Se submite el form con los datos de la venta.
+    //imprimirTicket();
   }
   else{
     var form = $("#ventaForm");
@@ -421,283 +427,6 @@ function completarVenta(){
 
 }//Termina función completar venta
 
-/**
- * Función que crea e imprime un ticket de compra
- */
-function imprimirTicket(){
-var div_print = document.createElement("div");
-    div_print.setAttribute("id", "print-div")
-    div_print.setAttribute("style", "font-size: 11px; width:200px;");
-    var div_print_1 = document.createElement("div");
-    div_print_1.className = "col-md-3";
-
-    //logo del negocio
-    var filalogo = document.createElement("div");
-    filalogo.className = "row"
-    var divlogo = document.createElement("div");
-    divlogo.className = "col-md-12";
-    divlogo.setAttribute("style","width: 100%;");
-    div_print_1.appendChild(filalogo);
-    filalogo.appendChild(divlogo);
-    var logoNegocio = document.createElement("img")
-    //logoNegocio.setAttribute("width", "70px");
-    //logoNegocio.setAttribute("height", "45px");
-    //rutaLogo = document.getElementById('logo_negocio').src;
-    //logoNegocio.setAttribute("src", rutaLogo);
-    //logoNegocio.setAttribute("style","horizontal-align:middle;");
-    //divlogo.appendChild(logoNegocio);
-
-
-    //Primer fila del ticket
-    var div_print_1_1 = document.createElement("div");
-    div_print_1_1.className = "row";
-
-    var div_print_1_1_1 = document.createElement("div");
-    div_print_1_1_1.className = "col-md-12";
-    div_print_1_1_1.setAttribute("style", "text-align:center;");
-
-    var nomNegocio = document.createElement("h5");
-    nomNegocio.setAttribute("id", "nombre_negocio_ticket");
-    var nomFiscalNegocio = document.createElement("h6");
-    nomFiscalNegocio.setAttribute("id", "nombre_fiscal_negocio_ticket");
-    var rfcNegocio = document.createElement("p");
-    rfcNegocio.setAttribute("style", "font-size: 9px;");
-    rfcNegocio.setAttribute("id", "rfc_negocio_ticket")
-    var dirNegocio = document.createElement("p");
-    dirNegocio.setAttribute("style", "font-size: 9px;");
-    dirNegocio.setAttribute("id", "dir_negocio_ticket")
-    var nomSucursal = document.createElement("h5");
-    nomSucursal.setAttribute("id", "nombre_sucursal_ticket");
-    //Termina primer fila del ticket
-
-    //Segunda fila del ticket
-    var div_print_1_2 = document.createElement("div");
-    div_print_1_2.className = "row";
-    div_print_1_2.setAttribute("style", "text-align:center;");
-    var div_print_1_2_1 = document.createElement("p");
-    div_print_1_2_1.className = "col-md-12";
-    div_print_1_2_1.setAttribute("id", "direccion_sucursal_ticket");
-    div_print_1_2_1.setAttribute("style", "font-size:9px;");
-    //Termina segunda fila del ticket
-
-    //Tercera fila del ticket
-    var div_print_1_3 = document.createElement("div");
-    div_print_1_3.className = "row";
-    div_print_1_3.setAttribute("style", "text-align:center;");
-    var div_print_1_3_1 = document.createElement("div");
-    div_print_1_3_1.className = "col-md-12";
-    div_print_1_3_1.setAttribute("id", "fecha_ticket");
-    div_print_1_3_1.setAttribute("style", "font-size: 9px;");
-    //Termina tercer fila del ticket
-
-    //Cuarta fila del ticket
-    var div_print_1_4 = document.createElement("div");
-    div_print_1_4.className = "row";
-    var div_print_1_4_1 = document.createElement("div");
-    div_print_1_4_1.className = "col-md-12";
-    div_print_1_4_1.setAttribute("id", "datos_cliente_ticket");
-    div_print_1_4_1.setAttribute("style", "font-size: 9px;");
-    //Termina la cuarta fila del ticket
-
-    var filaCajero = document.createElement("div");
-    filaCajero.className = "row";
-    var divCajero = document.createElement("div");
-    divCajero.className = "col-md-12";
-    divCajero.setAttribute("id", "datos_cajero");
-    divCajero.setAttribute("style", "font-size: 9px;");
-
-
-
-    //Quinta fila del ticket
-    var div_print_1_5 = document.createElement("div");
-    div_print_1_5.className = "row";
-    var div_print_1_5_1 = document.createElement("div");
-    div_print_1_5_1.className = "col-md-12";
-    div_print_1_5_1.setAttribute("id", "productos_ticket");
-    div_print_1_5_1.setAttribute("style", "width: 100%;");
-    var tablaProductos = document.createElement("table");
-    tablaProductos.className = "col-md-12"
-    tablaProductos.setAttribute("style","font-size: 9px;");
-    tablaProductos.setAttribute("width", "95%");
-    tablaProductos.setAttribute("id", "tabla_productos_ticket");
-    tBodyProductos = document.createElement("tbody");
-    //Termina quinta fila
-    
-    //Sexta fila del ticket
-    var div_print_1_6 = document.createElement("div");
-    div_print_1_6.className = "row";
-    var div_print_1_6_1 = document.createElement("div");
-    div_print_1_6_1.className = "col-md-12";
-    var importeTotal = document.createElement("p");
-    importeTotal.setAttribute("id", "importe_total_ticket");
-    //Termina sexta fila del ticket
-
-    //Septima fila del ticket
-    var div_print_1_7 = document.createElement("div");
-    div_print_1_7.className = "row";
-    var div_print_1_7_1 = document.createElement("div");
-    div_print_1_7_1.className = "col-md-12";
-    var forma_Pago = document.createElement("p");
-    forma_Pago.setAttribute("id", "forma_pago");
-    forma_Pago.setAttribute("style", "font-size: 9px;")
-    //Termina septima fila del ticket
-
-    //Construccion del arbol dom del ticket
-    div_print.appendChild(div_print_1);
-    div_print_1.appendChild(div_print_1_1);
-    div_print_1.appendChild(div_print_1_2);
-    div_print_1.appendChild(div_print_1_3);
-    div_print_1.appendChild(div_print_1_4);
-    div_print_1.appendChild(filaCajero);
-    div_print_1.appendChild(div_print_1_5);
-    div_print_1.appendChild(div_print_1_6);
-    div_print_1.appendChild(div_print_1_7);
-    
-    //Construccion de la primer fila
-    div_print_1_1.appendChild(div_print_1_1_1);
-    div_print_1_1_1.appendChild(nomNegocio);
-    div_print_1_1_1.appendChild(nomFiscalNegocio);
-    div_print_1_1_1.appendChild(dirNegocio);
-    div_print_1_1_1.appendChild(rfcNegocio);
-    div_print_1_1_1.appendChild(nomSucursal);
-    //Termina construcción de la primer fila
-
-    //Construcción de la segunda fila
-    div_print_1_2.appendChild(div_print_1_2_1);
-    //Termina construcción de la segunda fila
-
-    //Construcción de la tercer fila
-    div_print_1_3.appendChild(div_print_1_3_1);
-    //Termina construcción de la tercer fila
-
-    //Construcción de la cuarta fila
-    div_print_1_4.appendChild(div_print_1_4_1);
-    //Termina construcción de la cuarta fila
-
-    filaCajero.appendChild(divCajero);
-
-    //Construcción de la quinta fila
-    div_print_1_5.appendChild(div_print_1_5_1);
-    div_print_1_5_1.appendChild(tablaProductos);
-    tablaProductos.appendChild(tBodyProductos);
-    //Termina construcción de la quinta fila
-
-    //Construcción de la sexta fila
-    div_print_1_6.appendChild(div_print_1_6_1);
-    div_print_1_6_1.appendChild(importeTotal);
-    //Termina construcción de la sexta fila
-
-    //Construcción de la septima fila
-    div_print_1_7.appendChild(div_print_1_7_1);
-    div_print_1_7_1.appendChild(forma_Pago);
-    //Termina construcción de la septima fila
-
-    //alert(JSON.stringify(copiaFormaPago));
-
-    document.getElementById('print-div2').appendChild(div_print);
-
-
-
-    $("#nombre_negocio_ticket").append($("#nombre_negocio").val() );
-    $("#nombre_fiscal_negocio_ticket").append($("#nombre_negocio_fiscal").val() );
-
-    $("#dir_negocio_ticket").append($("#direccion_negocio").val())
-    $("#rfc_negocio_ticket").append($("#rfc_negocio").val())
-    $("#nombre_sucursal_ticket").append("Sucursal: "+$("#nombre_sucursal").val());
-    $("#direccion_sucursal_ticket").append($("#direccion_sucursal").val());
-    $("#fecha_ticket").append("Fecha: " + fecha.getDate()+"/"+
-                              (fecha.getMonth()+1)+"/"+fecha.getFullYear());
-
-    $("#datos_cliente_ticket").html("Cliente: "+$("#nom_cliente_venta").text());
-    $("#datos_cajero").html("Cajero: "+$("#nombre_cajero").val());
-
-    $("#tabla_productos_ticket").html(""+
-      
-        "<thead>"+
-          "<tr style='background-color: gray;'>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Cant</th>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Prod</th>"+
-            "<th style='text-align:center; border-bottom: 1px solid #ddd;'>Imp</th>"+
-          "</tr>"+ 
-        "</thead>"
-
-    );
-
-    $('#table_sales tr').each(function (i, el) {
-      //Se discrimina la primer fila (que corresponde al encabezado)
-      
-      if(i!=0){
-      //El código del producto se encuentra en la primer columna de 
-      //de la tabla de venta actual.
-        var nombreProd = $(this).find("td").eq(1).text();
-        //La cantidad vendida del producto se encuentra en la tercera
-        //columna de la tabla de venta actual.
-        var precio = $(this).find("td").eq(2).text();
-        //El importe total del producto vendido se encuentra en la
-        //quinta columna de la tabla de venta actual.
-        var cantidad = $(this).find("td").eq(3).text();
-        //itemVenta es el objeto JSON que guarda toda la fila de un articulo
-        //vendido
-        var importe = $(this).find("td").eq(4).text();
-        itemVenta = {};
-        
-        $("#tabla_productos_ticket").append(""+
-       
-          "<tr style='border-bottom: 1px solid #ddd;'>"+
-            "<td>"+cantidad+"</td>"+
-            "<td style='text-align: justify;' >"+nombreProd+"</td>"+
-            "<td style='text-align:right;'>"+importe+"</td>"+
-          "</tr>"
-    
-        );
-
-      }
-
-    }); //Termina recorrido de la tabla de venta actual
-
-    $("#importe_total_ticket").html("Total: <strong>$"+$("#importe").text()+"</strong>");
-
-    
-    if(formaPago.toLowerCase() == "efectivo"){
-       $("#forma_pago").html("Forma de Pago: <strong>"+ formaPago + "</strong>");
-    }
-
-    else{
-
-      for (x in copiaFormaPago) {
-        if(x.includes("tarjeta")){
-          nTarjeta = copiaFormaPago[x];
-          terminacion = nTarjeta.substr(12, 4);
-          document.getElementById("forma_pago").innerHTML += x + ": ************" +terminacion + "<br>"; 
-        }
-        else{
-          document.getElementById("forma_pago").innerHTML += x + ": " +copiaFormaPago[x] + "<br>";  
-        }
-      }
-    }
-
-
-    $("#print-div2").print({
-
-      globalStyles: true,
-      mediaPrint: true,
-      stylesheet: null,
-      noPrintSelector: ".no-print",
-      iframe: true,
-      append: null,
-      prepend: null,
-      manuallyCopyFormValues: true,
-      deferred: $.Deferred().done(function(){
-        $("#print-div").empty();
-        var form = $("#ventaForm");
-        form.submit(); //Se submite el form con los datos de la venta.
-      }),
-      timeout: 750,
-      title: null,
-      doctype: '<!doctype html>'
-
-    });   
-}
 
 /**
  * Establece el valor de la forma de pago que el cliente eligió

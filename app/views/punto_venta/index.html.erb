@@ -1,6 +1,5 @@
 <div class="right_col" role="main" >
   <div id="div_pos" class="row main-row-pos" tabindex="0">
-
     <div class="col-md-5 datosVenta">
       <div class="row">
         <div class="col-md-6">
@@ -290,6 +289,33 @@
     <div id="print-div2"></div>
     <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
       <%= hidden_field_tag(:dataVenta) %>
+    <% end %>
+    <% if @venta %>
+      <%= render ("ticket") %>
+      <script>
+        
+        $("#print-div").print({
+
+          globalStyles: true,
+          mediaPrint: true,
+          stylesheet: null,
+          noPrintSelector: ".no-print",
+          iframe: true,
+          append: null,
+          prepend: null,
+          manuallyCopyFormValues: true,
+          deferred: $.Deferred().done(function(){
+            $("#print-div").empty();
+            window.location.href = "/punto_venta";
+          }),
+          timeout: 750,
+          title: null,
+          doctype: '<!doctype html>'
+
+        });
+
+      </script>
+
     <% end %>
   </div>
 </div>

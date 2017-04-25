@@ -16,8 +16,12 @@ class DevolucionesController < ApplicationController
   	@consulta = false
   	if request.post?
   	  @consulta = true
-      @venta = Venta.find(params[:folio])
-      @itemsVenta = @venta.item_ventas
+      @venta = Venta.find_by :folio=>params[:folio]
+      if @venta
+        @itemsVenta  = @venta.item_ventas
+      else
+        @folio = params[:folio]
+      end
   	end
   end
 

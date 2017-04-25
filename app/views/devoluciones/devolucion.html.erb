@@ -8,7 +8,7 @@
 
   <hr>
 
-  <% if @consulta %>
+  <% if @consulta && @venta%>
   	<div class="row">
   	  <div class="col-md-12" style="color: gray;">
   	    Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
@@ -20,6 +20,23 @@
       <div class="col-md-12" style="color: gray;">
         <div class="col-md-12">
           Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+  <% else %>
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        No hay ventas registradas con este folio
+      </div>
+        
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
         </div>
       </div>
     </div>
@@ -67,6 +84,38 @@
     <% end %>
 
   </div>
+
+  <% if @consulta && @venta%>
+  <div class="row">
+    <div id="items_encontrados">
+      <table id="tabla_items_encontrados" class="table table-striped responsive-utilities jambo_table data-table">
+        <thead>
+          <tr style='background-color: gray;'>
+            <th style='text-align:center;'>Clave</th>
+            <th style='text-align:center;'>Producto</th>
+            <th style='text-align:center;'>Cantidad</th>
+            <th style='text-align:center;'>Importe</th>
+            <th style="text-align: center;"></th>
+          </tr>  
+        </thead>
+        <tbody>
+          <% @itemsVenta.each do |item| %>
+          <tr>
+            <td style='text-align:center;'><%= item.articulo.clave %></td>
+            <td style='text-align:center;'><%=item.articulo.nombre%></td>
+            <td style='text-align:center;'><%= item.cantidad %></td>
+            <td style='text-align:center;'><%=item.cantidad * item.articulo.precioVenta%></td>
+            <td></td>
+          </tr>
+          <% end %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+  <% end %>
 
   <script>
     $(document).ready(function(){
