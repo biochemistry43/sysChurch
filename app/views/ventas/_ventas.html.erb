@@ -47,12 +47,16 @@
   <% end %>
   <hr>
   <div class="row">
+    <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
+    en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
     <% if can? :read, Venta %> 
       <%= link_to ventas_path, html_options = {class: "btn btn-success"} do %>
       <i class="fa fa-shopping-cart"> Mostrar todas las ventas </i>
       <% end %>
     <% end %>
 
+    <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las ventas
+    de todas las sucursales, vea únicamente las ventas de su propia sucursal -->
     <% if can? :create, Negocio %> 
       <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal", method: :post} do %>  
         <span class="fa fa-shopping-cart" style=""> Sólo ventas de mi sucursal</span>
@@ -60,6 +64,8 @@
     <% end %>
   </div>
   <hr>
+
+  <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
   <div class="row" style="margin-bottom: 30px;"> 
     <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
@@ -100,11 +106,14 @@
       </div>
     <% end %>
   </div>
+  <!-- Termina buscador por rango de fechas -->
 
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
   <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
     Filtros Avanzados <i class="fa fa-sort-down"></i>
   </button>
 
+  <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
   <div id="opciones_filtros_avanzados" class="opciones_filtros row">
     <%= form_tag({ controller: "ventas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="item form-group">
@@ -202,6 +211,7 @@
         <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
+            <th class="column-title" style="text-align: center;">Folio </th>
             <th class="column-title" style="text-align: center;">Fecha </th>
             <th class="column-title" style="text-align: center;">Monto Venta</th>
             <th class="column-title" style="text-align: center;">Caja #</th>
@@ -217,6 +227,7 @@
         <tbody>
           <% @ventas.each do |venta| %>
             <tr>
+              <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;"><%= venta.montoVenta %></td>
               <td style="text-align: center;"><%= venta.caja %></td>
@@ -229,8 +240,10 @@
               <td style="text-align: center;">
                 <% if venta.status.eql?("Activa") %>
                   <span class="btn btn-success"> Activa </span>
-                <% else %>
-                  <span class="btn btn-warning"> Cancelada </span>
+                <% elsif venta.status.eql?("Con devoluciones")%>
+                  <span class="btn btn-warning"> Con devoluciones </span>
+                <% elsif venta.status.eql?("Cancelada") %>
+                  <span class="btn btn-danger"> Cancelada </span>
                 <% end %>    
               </td>
               <td style="text-align: center;"> 

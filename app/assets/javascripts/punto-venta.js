@@ -107,7 +107,8 @@ $(document).ready(function(){
   $(document).delegate("tr", "dblclick", function(e) {
 
     cantidad = $(this).find("#cantidadProducto").html();
-    cambiarCantidadProducto($(this).index(), cantidad);
+    existencia = $(this).find("#existenciaProducto").html();
+    cambiarCantidadProducto($(this).index(), cantidad, existencia);
 
   });
 
@@ -189,17 +190,17 @@ $(document).ready(function(){
    * param indice indica la fila de la tabla en donde se están intentando cambiar la cantidad.
    * param valor indica la cantidad actual de producto.
    */
-  function cambiarCantidadProducto(indice, valor){
+  function cambiarCantidadProducto(indice, valor, existencia){
     //Se actualiza el "body" del modal actualizar cantidad
     //Se asignan métodos para actualizar la cantidad dando click en el botón o con la tecla enter
     $('#modal-body-actualizar-cantidad').html('<div class="form-inline">'+
         '<div class="form-group">'+
           '<label for="cantidad">Nueva Cantidad:</label>'+
-          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'" onkeyup="enterActualizar(event, '+indice+')">'+
+          '<input type="text" class="form-control" id="nuevaCantidad'+indice+'" value="'+valor+'" onkeyup="enterActualizar(event, '+indice+', '+existencia+')">'+
         '</div>'+
       '</div>');
     //Se añade un botón en el footer del modal que permite actualizar la cantidad.
-    $('#modal-footer').html('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actualizarCantidad('+indice+')">Aceptar</button>')
+    $('#modal-footer').html('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actualizarCantidad('+indice+', '+existencia+')">Aceptar</button>')
     
     //Se muestra el modal.  
     $('#actualizarCantidad').modal('show');
@@ -435,19 +436,51 @@ function setFormaPago(forma){
   formaPago = forma;
 }
 
-function enterActualizar(event, indice){
+function enterActualizar(event, indice, existencia){
   if (event.keyCode == 13) {
-    actualizarCantidad(indice);
-    $('#actualizarCantidad').modal('hide');
+    
+    cantidad = $("#nuevaCantidad"+indice).val();
+    
+    if(cantidad <= existencia){
+      actualizarCantidad(indice, existencia);
+      $('#actualizarCantidad').modal('hide');  
+    }
+    else{
+      alert("No hay suficiente existencia para vender esta cantidad de producto.\n La existencia del producto es: "+existencia);
+      return;
+    }
+    
+    
   }
 }
 
-function actualizarCantidad(indice){
+function actualizarCantidad(indice, existencia){
+
   cantidad = $("#nuevaCantidad"+indice).val();
-  $($('#table_sales').find('tbody > tr')[indice]).children('td')[3].innerHTML = cantidad;
-  precioVenta = $($('#table_sales').find('tbody > tr')[indice]).children('td')[2].innerHTML;
-  importe = cantidad * precioVenta;
-  $($('#table_sales').find('tbody > tr')[indice]).children('td')[4].innerHTML = importe;
+  
+  //Si la cantidad no sobrepasa la existencia
+  if(cantidad <= existencia){
+
+    //Se cambia el valor encontrado en la celda que tiene la cantidad de producto a vender
+    $($('#table_sales').find('tbody > tr')[indice]).children('td')[3].innerHTML = cantidad;
+
+    //Se obtiene el precio de venta encontrado en la tabla
+    precioVenta = $($('#table_sales').find('tbody > tr')[indice]).children('td')[2].innerHTML;
+
+    //Se obtiene el importe a raíz del precio de venta y la cantidad introducida por el usuario
+    importe = cantidad * precioVenta;
+
+    //Se actualiza la celda que contiene el importe de venta de este producto en particular
+    //con el calculado a partir del precio de venta y la nueva cantidad.
+    $($('#table_sales').find('tbody > tr')[indice]).children('td')[4].innerHTML = importe;
+
+  }
+  else{
+    alert("No hay suficiente existencia para vender esta cantidad de producto.\n La existencia del producto es: "+existencia);
+  }
+
+  
+
 }
 
 function addProduct(elem){
@@ -477,8 +510,10 @@ function addProduct(elem){
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
+                                    "<td id='existenciaProducto' style='visibility:hidden;'>"+element.existencia+"</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
-                                    "<i class='fa fa-trash-o'></i></button></td></tr>");
+                                    "<i class='fa fa-trash-o'></i></button></td>"+
+                                    "</tr>");
           }
 
         }

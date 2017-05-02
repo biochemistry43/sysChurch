@@ -105,6 +105,7 @@
                     <th class="column-title">Cantidad </th>
                     <th class="column-title">Importe </th>
                     <th class="column-title"></th>
+                    <th class="column-title"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,9 +218,13 @@
                           <h2><label for="<%= "campo-" << nCampo << "-" << nombre_forma %>"><%= campo.nombrecampo.capitalize << ":"%></label></h2>
                           <% if nCampo.include?"plazo" %>
                             <%= select_tag "campo-plazo-credito", "<option>Ninguno</option><option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
+                            <!-- Todo: Desplegar las subopciones o items particulares
+                            de cada dato de las formas de pago cuando estos items existan -->
+                          <%#elsif campo.campo_forma_pago_items%>
+                            <%#= #select_tag "opciones", options_from_collection_for_select(campo.campo_forma_pago_items, "id", "valor_item")%>
                           <%else%>
                             <input type="text" class="form-control campo-pago" id="<%= "campo-" << nCampo %>">
-                          <%end%>
+                          <% end %>
                         </div>
                       <%end%>
                     </div>

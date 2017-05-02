@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  
   get 'devoluciones/index'
 
   get 'devoluciones/show'
@@ -9,6 +10,14 @@ Rails.application.routes.draw do
   post 'devoluciones/devolucion'
 
   post 'devoluciones/hacerDevolucion'
+
+  get 'devoluciones/new'
+
+  post 'devoluciones/consulta_por_fecha'
+
+  post 'devoluciones/consulta_por_producto'
+
+  post 'devoluciones/consulta_avanzada'
 
   resources :cat_venta_canceladas
   resources :compras
@@ -97,6 +106,7 @@ Rails.application.routes.draw do
   get 'ventas/buscarUltimoFolio/:criteria' => 'ventas#buscarUltimoFolio'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'
   get 'ventas/venta_del_dia' => 'ventas#venta_del_dia'
+  post 'ventas/venta_del_dia' => 'ventas#venta_del_dia'
   post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   get 'punto_venta/index/:venta' => 'punto_venta#index'

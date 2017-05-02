@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-devoluciones-title').html("<i class='fa fa-tras'></i> Hacer devolución");
+ 
+// Render the new form
+$('.modal-body-devoluciones').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalDevoluciones').modal("show");
+ 
+// Set focus to the first element
+$('#modalDevoluciones').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

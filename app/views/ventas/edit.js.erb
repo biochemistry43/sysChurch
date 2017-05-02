@@ -1,5 +1,16 @@
-// Add the dialog title
-$('#modal-ventas-title').html("<i class='fa fa-trash'></i> Cancelar Venta");
+<%if @venta.status.eql?("Cancelada")%>
+  $('#modal-ventas-title').html("<i class='fa fa-trash'></i> Cancelar Venta");
+  $('#modal-ventas-title').parent().css("background-color", "#ff1a1a");
+  $('#modal-ventas-title').parent().css("color", "gray");
+<%elsif @venta.status.eql?("Con devoluciones")%>
+  $('#modal-ventas-title').parent().css("background-color", "#ffd633");
+  $('#modal-ventas-title').parent().css("color", "white");
+  $('#modal-ventas-title').html("<i class='fa fa-trash'></i> Cancelar Venta");
+<%elsif @venta.status.eql?("Activa")%>
+  $('#modal-ventas-title').parent().css("background-color", "#92c33c");
+  $('#modal-ventas-title').parent().css("color", "white");
+  $('#modal-ventas-title').html("<i class='fa fa-trash'></i> Cancelar Venta");
+<%end%>
  
 // Render the new form
 $('.modal-body-ventas').html('<%= j render("cancelaVenta") %>');

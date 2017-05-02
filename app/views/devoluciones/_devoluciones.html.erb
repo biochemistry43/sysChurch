@@ -1,0 +1,370 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Devoluciones realizadas</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row">
+    <div class="col-md-12" style="color: gray;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @devoluciones.size %></span>  devoluciones.
+    </div>
+    
+  </div>
+
+  <!-- Cuando se realicen consultas, esta sección desplegará los criterios con los cuales se hicieron
+  los respectivos filtros de devoluciones -->
+  <% if @consulta %>
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <% if @fechas %>
+          <div class="col-md-12">
+            Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> </span> AL <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaFinal %></span>
+          </div>
+        <% end %>
+
+        <% if @por_producto %>
+          <div class="col-md-12">
+            Filtro por producto con clave: <span style="color:#5B7ECC; font-size: 16px;"> <%= @clave %></span>
+          </div>
+        <% end %>
+        
+        
+        <% if @avanzada %>
+          Criterios de búsqueda de filtro avanzado
+          <div class="col-md-12">
+            Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> </span> AL <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaFinal %></span>
+          </div>
+          <div class="col-md-12">
+            <% if @venta %>
+              Folio de venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+            <% else %>
+              Folio de venta: <span style="color:#5B7ECC; font-size: 16px;"> Todos </span>
+            <% end %>            
+          </div>
+          <div class="col-md-12">
+            <% if @producto %>
+              Clave de producto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @producto.clave %></span>
+            <% else %>
+              Clave de producto: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+            <% end %>
+            
+          </div>
+
+          <div class="col-md-12">
+            <% if @cat_cancelacion %>
+              Categoría de devolución: <span style="color:#5B7ECC; font-size: 16px;"> <%= @cat_cancelacion.clave %></span>
+            <% else %>
+              Categoría de devolución: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+            <% end %>
+          </div>
+          <% if can? :create, Negocio %>
+            <div class="col-md-12">
+              <% if @sucursal %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+              <% else %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="col-md-12">
+            <% if @usuario %>
+              Autorizó: <span style="color:#5B7ECC; font-size: 16px;"> <%= @usuario.perfil.nombre %></span>
+            <% else %>
+              Autorizó: <span style="color:#5B7ECC; font-size: 16px;"> Sin filtro </span>
+            <% end %>
+          </div>
+        <% end %>
+
+      </div>
+      
+    </div>
+  <% end %>
+
+  <hr>
+  
+  <!-- Este form permite buscar devoluciones por un rango de de fechas de creación -->
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "devoluciones", action: "consulta_por_fecha" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Filtro por fechas:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Desde: 
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Hasta:
+        </div>
+      </div>
+        
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Filtro por fechas', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <!-- Termina buscador por rango de fechas -->
+
+  <hr>
+
+  <!-- Este form permite buscar devoluciones por una clave de producto -->
+  <div class="row" style="margin-bottom: 30px;"> 
+    <%= form_tag({ controller: "devoluciones", action: "consulta_por_producto" }, {:class=> "form-horizontal", :method => :post}) do %>
+      
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Filtro por clave de producto:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Clave: 
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= text_field_tag :clave_producto, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Clave del producto..."} do%>
+            <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+          <%end%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Filtro por producto', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+      
+    <% end %>
+  </div>
+  <!-- Termina buscador por clave de producto -->
+
+  <hr>
+
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
+
+  <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "devoluciones", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Número de venta:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= text_field_tag :folio_venta, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de la venta..."} do%>
+              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%end%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Clave de producto:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= text_field_tag :clave_producto, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Clave del producto..."} do%>
+              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%end%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Categoría de devolución:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= collection_select(nil, :cat_elegida, @categorias, :id, :clave, {:prompt => 'Elija una categoria de devolución'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+      
+      <% if can? :create, Negocio %>
+        
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Quién autorizó:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :perfil_id, @usuarios, :id, :nombre, {:prompt => 'Elija un usuario'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Filtro avanzado', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <hr> 
+
+
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    
+
+    <div class="row">
+      <div>
+
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Clave producto</th>
+            <th class="column-title" style="text-align: center;">Producto</th>
+            <th class="column-title" style="text-align: center;">Categoría</th>
+            <th class="column-title" style="text-align: center;">Cantidad devuelta</th>
+            <th class="column-title" style="text-align: center;">Fecha</th>
+            <% if can? :create, Negocio %>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+            <% end %>
+            
+            <th class="column-title" style="text-align: center;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @devoluciones.each do |devolucion| %>
+            <tr>
+              <td style="text-align: center;"><%= devolucion.articulo.clave %></td>
+              <td style="text-align: center;"><%= devolucion.articulo.nombre %></td>
+              <td style="text-align: center;"><%= devolucion.cat_venta_cancelada.clave %></td>
+              <td style="text-align: center;"><%= devolucion.cantidad_devuelta %></td>
+              <td style="text-align: center;"><%= devolucion.created_at %></td>
+              <% if can? :create, Negocio %>
+                <td style="text-align: center;">
+                  <%= devolucion.sucursal.nombre %>
+                </td>
+              <% end %>
+              <td style="text-align: center;"> 
+                <% if can? :read, VentaCancelada %> 
+                  <%= link_to url = {action: "show", controller: "devoluciones", id: devolucion}, html_options = {class: "btn btn-info", remote: true} do %>
+                  <i class="fa fa-info-circle"></i>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      </div>
+    </div>
+    <%= render 'modalDevolucion' %>
+    
+  </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+    });
+  </script>
+  <%= javascript_include_tag "ventas" %>
+</div>

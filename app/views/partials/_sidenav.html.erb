@@ -75,8 +75,20 @@
                       </li>
                     <%end%>
 
+                    <% if can? :read, VentaCancelada %>
+                      <li><%= link_to "Devoluciones", devoluciones_index_path %>
+                      </li>
+                    <% end %>
+
+                    <% if can? :create, VentaCancelada %>
+                      <li><%= link_to "Hacer devolución", devoluciones_devolucion_path %>
+                      </li>
+                    <% end %>
+                   
+                    <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
+                    para los administradores de la empresa -->
                     <%if can? :create, Negocio%>
-                      <li><%= link_to "Categorías de cancelación", cat_venta_canceladas_path %>
+                      <li><%= link_to "Cat devolución", cat_venta_canceladas_path %>
                       </li>
                     <%end%>
 
@@ -137,7 +149,7 @@
               <%if can? :create, Sucursal%>
                   <li><a><i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none">
-                      <li class="sub_menu"><%= link_to "Ventas", ventas_venta_del_dia_path%>
+                      <li class="sub_menu"><%= link_to "Ventas", controller: "ventas", action: "venta_del_dia"%>
                       </li>
                     </ul>
                   </li>

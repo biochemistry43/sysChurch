@@ -7,46 +7,53 @@
   <div class="clearfix"></div>
 
   <hr>
+  
+  <!-- Esta sección solamente se muestra si se encontró una venta y si se determina que se está
+  haciendo una consulta -->
+  <% if @venta %>
+    <% if @consulta && @itemsVenta%>
+      <!-- Despliega los resultados encontrados en la búsqueda -->
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
+        </div>
+          
+      </div>
 
-  <% if @consulta && @venta%>
-  	<div class="row">
-  	  <div class="col-md-12" style="color: gray;">
-  	    Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
-  	  </div>
-  	    
-  	</div>
-
-    <div class="row">
-      <div class="col-md-12" style="color: gray;">
-        <div class="col-md-12">
-          Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          <div class="col-md-12">
+            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <hr>
-  <% else %>
-    <div class="row">
-      <div class="col-md-12" style="color: gray;">
-        No hay ventas registradas con este folio
+      <hr>
+    <% else %>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          No hay ventas registradas con este folio
+        </div>
+          
       </div>
-        
-    </div>
 
-    <div class="row">
-      <div class="col-md-12" style="color: gray;">
-        <div class="col-md-12">
-          Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          <div class="col-md-12">
+            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <hr>
+      <hr>
+    <% end %>
   <% end %>
+  
 
 
   <div class="row" style="margin-bottom: 30px;"> 
 
+    <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
     <%= form_tag({ controller: "devoluciones", action: "devolucion" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="item form-group">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -85,28 +92,79 @@
 
   </div>
 
+  <!-- La tabla de resultados sólo es visible si se está esperando el resultado de una
+       consulta  -->
   <% if @consulta && @venta%>
   <div class="row">
     <div id="items_encontrados">
       <table id="tabla_items_encontrados" class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
-          <tr style='background-color: gray;'>
-            <th style='text-align:center;'>Clave</th>
+          <tr>
+            <th style='text-align:center;'>Clave producto</th>
             <th style='text-align:center;'>Producto</th>
             <th style='text-align:center;'>Cantidad</th>
+            <th style="text-align: center;">Cantidad devuelta</th>
             <th style='text-align:center;'>Importe</th>
+            <!-- Si el status de la venta es "con devoluciones", entonces permite que se muestre
+            el encabezado status -->
+            <% if  @venta.status.eql?("Con devoluciones") %>
+            <th style='text-align:center;'>
+              Status
+            </th>
+            <% end %>
             <th style="text-align: center;"></th>
           </tr>  
         </thead>
         <tbody>
+          <!-- Itera a través de todos los items de venta -->
           <% @itemsVenta.each do |item| %>
-          <tr>
+          <!-- Si el item de venta tiene devoluciones, sombrea la fila de color rojo -->
+          <!-- Todo: Esta acción genera los pipes encima de la tabla. Verificar el porqué -->
+          <% if item.status.eql?("Con devoluciones") %>
+            <tr style="background: #ffb3b3; color: blue;" >|
+          <% else %>
+            <tr>
+          <% end %>
+          
             <td style='text-align:center;'><%= item.articulo.clave %></td>
             <td style='text-align:center;'><%=item.articulo.nombre%></td>
             <td style='text-align:center;'><%= item.cantidad %></td>
+            <!-- Si el item de venta tiene devoluciones, entonces calcula la cantidad
+            de devoluciones realizadas y las despliega en la celda -->
+            <% if item.status.eql?("Con devoluciones") %>
+              <% @cantidad = 0 %>
+              <% item.venta_canceladas.each do |venta_cancelada|%>
+                <% @cantidad += venta_cancelada.cantidad_devuelta %>
+              <% end %>
+              <td style='text-align:center;'><%= @cantidad %></td>
+            <% else %>
+              <td style='text-align:center;'>0</td>
+            <% end %>
+
             <td style='text-align:center;'><%=item.cantidad * item.articulo.precioVenta%></td>
-            <td></td>
-          </tr>
+            <!-- Si el item de venta tiene devoluciones, despliega el texto "Este item tiene devoluciones" -->
+            <% if item.status.eql?("Con devoluciones") %>
+              <% if item.cantidad <= 0 %>
+                <td style='text-align:center;'>Venta sin productos</td>
+              <% else %>
+                <td style='text-align:center;'>Venta con devoluciones</td>
+              <% end %>
+              
+            <% else %>
+              <td style='text-align:center;'>Sin devoluciones</td>
+            <% end %>
+            <td style='text-align:center;'>
+              <% if can? :create, VentaCancelada %>
+                <!-- No mostrar el botón de hacer devolución si el item de venta ya no tiene 
+                productos por devolver -->
+                <% if item.cantidad > 0 %>
+                  <%= link_to url = {controller:"devoluciones", action:"new", id: item}, html_options =  {remote: true, class: "btn btn-danger", title: "Devolver artículo"} do %>  
+                    <span class="fa fa-trash" style=""> Hacer devoĺución</span>
+                  <% end %>  
+                <% end %>
+              <% end %>
+            </td>
+          </tr> 
           <% end %>
 
         </tbody>
@@ -115,6 +173,7 @@
 
     </div>
   </div>
+  <%= render ("modalDevolver") %>
   <% end %>
 
   <script>

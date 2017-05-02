@@ -2,12 +2,16 @@
 
 <%if @venta.status.eql?("Cancelada")%>
   $('#modal-ventas-title').html("<i class='fa fa-trash'></i> Venta cancelada");
-  $('#modal-ventas-title').parent().css("background-color", "yellow");
-  $('#modal-ventas-title').parent().css("color", "gray");
-<%else%>
+  $('#modal-ventas-title').parent().css("background-color", "#ff1a1a");
+  $('#modal-ventas-title').parent().css("color", "white");
+<%elsif @venta.status.eql?("Con devoluciones")%>
+  $('#modal-ventas-title').parent().css("background-color", "#ffd633");
+  $('#modal-ventas-title').parent().css("color", "white");
+  $('#modal-ventas-title').html("<i class='fa fa-warning'></i> Venta con devoluciones");
+<%elsif @venta.status.eql?("Activa")%>
   $('#modal-ventas-title').parent().css("background-color", "#92c33c");
   $('#modal-ventas-title').parent().css("color", "white");
-  $('#modal-ventas-title').html("<i class='fa fa-check'></i> Detalles de venta");
+  $('#modal-ventas-title').html("<i class='fa fa-info'></i> Detalles de venta");
 <%end%>
 
 

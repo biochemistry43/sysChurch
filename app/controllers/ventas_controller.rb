@@ -3,6 +3,7 @@ class VentasController < ApplicationController
   before_action :set_venta, only: [:show, :edit, :update, :destroy]
   before_action :set_cajeros, only: [:index, :consulta_ventas, :consulta_avanzada, :solo_sucursal]
   before_action :set_sucursales, only: [:index, :consulta_ventas, :consulta_avanzada, :solo_sucursal]
+  before_action :set_categorias_cancelacion, only: [:index, :consulta_ventas, :consulta_avanzada, :solo_sucursal, :edit, :update, :show]
 
   def index
     @consulta = false
@@ -25,6 +26,9 @@ class VentasController < ApplicationController
     @sucursal = @venta.sucursal.nombre
     @cajero = @venta.user.perfil ? @venta.user.perfil.nombre : @venta.user.email
     @items = @venta.item_ventas
+    if @venta.venta_canceladas
+      @devoluciones = @venta.venta_canceladas
+    end
     @formaPago = @venta.venta_forma_pago.forma_pago.nombre
     @camposFormaPago = @venta.venta_forma_pago.venta_forma_pago_campos
 
@@ -43,13 +47,18 @@ class VentasController < ApplicationController
 
   def update
     respond_to do |format|
+      categoria = params[:cat_cancelacion]
+      cat_venta_cancelada = CatVentaCancelada.find(categoria)
       venta = params[:venta]
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
       #todo: terminar la cancelación puntual de ventas.
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
         @venta.item_ventas.each do |itemVenta|
-          VentaCancelada.create(:articulo => itemVenta.articulo, :itemVenta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal)
+          VentaCancelada.create(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad)
+          itemVenta.cantidad = 0
+          itemVenta.status = "Con devoluciones"
+          itemVenta.save
         end
 
         format.json { head :no_content}
@@ -112,7 +121,7 @@ class VentasController < ApplicationController
         @sucursal = Sucursal.find(@suc)
       end
       
-      #Resultados paa usuario administrador o subadministrador
+      #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
         unless @suc.empty?
           #valida si se eligió un cajero específico para esta consulta
@@ -290,6 +299,11 @@ class VentasController < ApplicationController
 
     def set_sucursales
       @sucursales = current_user.negocio.sucursals
+    end
+
+    #Asigna lista de categorias de devolucion de ventas
+    def set_categorias_cancelacion
+        @categorias_devolucion = current_user.negocio.cat_venta_canceladas
     end
 
 end

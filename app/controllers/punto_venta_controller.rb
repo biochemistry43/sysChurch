@@ -149,7 +149,7 @@ class PuntoVentaController < ApplicationController
           #ninguna venta, entonces asigna el número 1.
           consecutivo = 0
 
-          if current_user.sucursal.ventas.last.consecutivo
+          if current_user.sucursal.ventas.last
             consecutivo = current_user.sucursal.ventas.last.consecutivo
             consecutivo += 1
           else

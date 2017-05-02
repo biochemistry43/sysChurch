@@ -68,7 +68,8 @@
           <% end %>
         </div>
 
-
+        <!-- Esta sección contiene las productos o servicios vendidos en esta venta
+        en particular -->
         <div class="tab-pane" id="detalles">
           <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
             <thead>
@@ -93,6 +94,41 @@
             </tbody>
           </table>
         </div>
+        
+        <!-- Esta sección es para ver las devoluciones que pueda tener la venta. Si la venta no tiene
+        devoluciones, entonces esta sección no se verá -->
+        <!-- Además, sólo usuarios con privilegios pueden ver las devoluciones de una venta -->
+        <% if can? :read, VentaCancelada %>
+          <% if @devoluciones %>
+            <div class="tab-pane" id="devoluciones">
+              <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
+                <thead>
+                  <tr class="headings">
+                    <th class="column-title">Clave Producto</th>
+                    <th class="column-title">Nombre</th>
+                    <th class="column-title">Cantidad</th>
+                    <th class="column-title">Fecha</th>
+                    <th class="column-title">Categoría </th>
+                    <th class="column-title">Quién autorizó </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @devoluciones.each do |devolucion| %>
+                    <tr>
+                      <td> <%= devolucion.articulo.clave %> </td>
+                      <td> <%= devolucion.articulo.nombre %> </td>
+                      <td> <%= devolucion.cantidad_devuelta %> </td>
+                      <td> <%= devolucion.created_at %> </td>
+                      <td> <%= devolucion.cat_venta_cancelada.clave %> </td>
+                      <td> <%= devolucion.user.perfil.nombre %> </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        <% end %>
+
       </div>
     </div>
 
@@ -106,6 +142,10 @@
         </li>
         <li><a href="#detalles" data-toggle="tab">Detalle de venta</a>
         </li>
+        <% if can? :read, VentaCancelada && @devoluciones %>
+        <li><a href="#devoluciones" data-toggle="tab">Devoluciones</a>
+        </li>
+        <% end %>
       </ul>
     </div>
   </div>
