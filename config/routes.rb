@@ -80,6 +80,9 @@ Rails.application.routes.draw do
   resources :articulos
   get 'articulos/showByCriteria'
   get 'articulos/getById'
+  post 'articulos/consulta_avanzada'
+  post 'articulos/solo_sucursal'
+  post 'articulos/baja_existencia'
   get 'plainpage/index'
 
 

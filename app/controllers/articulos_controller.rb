@@ -2,6 +2,9 @@ class ArticulosController < ApplicationController
   #before_filter :authenticate_user!
   load_and_authorize_resource
   before_action :set_articulo, only: [:edit, :update, :destroy]
+  before_action :set_art_categories, only: [:index, :consulta_avanzada, :solo_sucursal, :baja_existencia]
+  before_action :set_marcas, only: [:index, :consulta_avanzada, :solo_sucursal, :baja_existencia]
+  before_action :set_sucursales, only: [:index, :consulta_avanzada, :solo_sucursal, :baja_existencia]
 
 
   # GET /articulos
@@ -11,6 +14,7 @@ class ArticulosController < ApplicationController
       if can? :create, Negocio
         @articulos = current_user.negocio.articulos
       else
+        @solo_sucursal = true
         @articulos = current_user.sucursal.articulos
       end
     else
@@ -41,6 +45,116 @@ class ArticulosController < ApplicationController
 
     #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
     render :json => articulos
+  end
+
+  def solo_sucursal
+    @solo_sucursal = true
+    @articulos = current_user.sucursal.articulos
+  end
+
+  #llena una array con los articulos que tengan una existencia menor o igual
+  #a la de su stock
+  def baja_existencia
+    @articulos = []
+
+    current_user.sucursal.articulos.each do |articulo|
+      if articulo.existencia <= articulo.stock
+        @articulos << articulo
+      end
+    end
+  end
+
+  def consulta_avanzada
+    @consulta = true
+    @avanzada = true
+    if request.post?
+      cat = params[:cat_elegida]
+      mar = params[:marca_elegida]
+      suc = params[:suc_elegida]
+      @categoria = nil
+      @marca = nil
+      @sucursal = nil
+      
+      unless cat.empty?
+        @categoria = CatArticulo.find(cat)
+      end
+      
+      unless mar.empty?
+        @marca = MarcaProducto.find(mar)
+      end
+
+      unless suc.empty?
+        @sucursal = Sucursal.find(suc)
+      end
+      
+      if @categoria
+        unless @sucursal && @marca
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:cat_articulo=>@categoria)
+          else
+            @articulos = current_user.negocio.articulos.where(:cat_articulo=>@categoria)
+          end
+        end
+      end
+
+      if @marca
+        unless @categoria && @sucursal
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:marca_producto=>@marca)
+          else
+            @articulos = current_user.negocio.articulos.where(:marca_producto=>@marca)
+          end
+        end
+      end
+
+      if @sucursal
+        unless @marca && @categoria
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:sucursal=>@sucursal)
+          else
+            @articulos = current_user.sucursal.articulos.where(:sucursal=>@sucursal)
+          end
+        end
+      end
+
+      if @sucursal && @marca
+        unless @categoria
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:sucursal=>@sucursal, :marca_producto=>@marca)
+          else
+            @articulos = current_user.sucursal.articulos.where(:sucursal=>@sucursal, :marca_producto=>@marca)
+          end
+        end
+      end
+
+      if @sucursal && @categoria
+        unless @marca
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:sucursal=>@sucursal, :cat_articulo=>@categoria)
+          else
+            @articulos = current_user.sucursal.articulos.where(:sucursal=>@sucursal, :cat_articulo=>@categoria)
+          end
+        end
+      end
+
+      if @marca && @categoria
+        unless @sucursal
+          if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:marca_producto=>@marca, :cat_articulo=>@categoria)
+          else
+            @articulos = current_user.sucursal.articulos.where(:marca_producto=>@marca, :cat_articulo=>@categoria)
+          end
+        end
+      end
+
+      if @marca && @categoria && @sucursal
+        if can? :create, Negocio
+            @articulos = current_user.negocio.articulos.where(:marca_producto=>@marca, :cat_articulo=>@categoria, :sucursal=>@sucursal)
+          else
+            @articulos = current_user.sucursal.articulos.where(:marca_producto=>@marca, :cat_articulo=>@categoria, :sucursal=>@sucursal)
+          end
+      end
+    end
   end
 
   # GET /articulos/new
@@ -179,12 +293,20 @@ class ArticulosController < ApplicationController
     end
 
     def set_art_categories
-      @categories = CatArticulo.all
+      @categories = current_user.negocio.cat_articulos
     end
 
+    def set_marcas
+      @marcas = current_user.negocio.marca_productos
+    end
+
+    def set_sucursales
+      @sucursales = current_user.negocio.sucursals
+    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
       params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :suc_elegida)
     end
+
 end
