@@ -48,28 +48,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Este div tiene botones de consulta rápida -->
     <div class="row">
           
-          <% if can? :read, Venta %> 
-            <%= link_to articulos_path, html_options = {class: "btn btn-success", method: :get} do %>
-            <i class="fa fa-tags"> Mostrar todos los productos </i>
-            <% end %>
-          <% end %>
+      <% if can? :read, Venta %> 
+        <%= link_to articulos_path, html_options = {class: "btn btn-success", method: :get} do %>
+          <i class="fa fa-tags"> Mostrar todos los productos </i>
+        <% end %>
+      <% end %>
 
-          <%= link_to url = {controller:"articulos", action:"baja_existencia"}, html_options = {class: "btn btn-warning", method: :post} do %>
-            <i class="fa fa-tags"> Productos baja existencia </i>
-          <% end %>
+      <%= link_to url = {controller:"articulos", action:"baja_existencia"}, html_options = {class: "btn btn-warning", method: :post} do %>
+        <i class="fa fa-tags"> Productos baja existencia </i>
+      <% end %>
           
 
-          <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las ventas
+      <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las ventas
           de todas las sucursales, vea únicamente las ventas de su propia sucursal -->
-          <% if can? :create, Negocio %> 
-            <%= link_to url = {controller:"articulos", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo productos de mi sucursal", method: :post} do %>  
-              <span class="fa fa-tags" style=""> Sólo ventas de mi sucursal</span>
-            <% end %>
-          <% end %>
-        </div>
+      <% if can? :create, Negocio %> 
+        <%= link_to url = {controller:"articulos", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo productos de mi sucursal", method: :post} do %>  
+          <span class="fa fa-tags" style=""> Sólo ventas de mi sucursal</span>
+        <% end %>
+      <% end %>
+    
+    </div>
 
+    <!-- Div con una leyenda que indica la cantidad de productos encontrados en base a los criterios
+    de búsqueda -->
     <div class="row">
       <div class="col-md-12" style="color: gray;">
           Se <% if @articulos.size == 1 %>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @articulos.size %></span>  <% if @articulos.size == 1 %>producto<% else %>productos <% end %> <% if @solo_sucursal %>en la sucursal <% if can? :create, Negocio %> <strong><%= current_user.sucursal.nombre %></strong>  <% end %><% end %>.
@@ -78,9 +83,7 @@
 
     <div class="row">
       
-
-      <!-- Cuando se realicen consultas, esta sección desplegará los criterios con los cuales se hicieron
-      los respectivos filtros de devoluciones -->
+      <!-- Esta sección despliega los criterios de búsqueda -->
       <% if @consulta %>
         
 
