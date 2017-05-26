@@ -22,36 +22,25 @@ var fecha = new Date();
 
 //jquery
 $(document).ready(function(){
+
+
+  $("#filtros_avanzados").click(function(e){
+    if( $("#opciones_filtros_avanzados").is(":visible") ){
+      $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
+    }
+    else{
+      $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
+    }
+      
+    $("#opciones_filtros_avanzados").slideToggle("fast");
+
+  });
+
   
 
   /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase
   autocomplete. Ver /assets/javascripts/autocomplete.jquery.js */
   $(".autocomplete").autocomplete();
-
-  /**
-   * Aquí se añadirán todas las funcionalidades mediante los botones de teclado
-   * que el módulo de punto de venta va a tener.
-   */
-  $('#div_pos').bind('keydown', function(event) {
-    
-
-    switch(event.keyCode){
-
-      case 115: //Tecla f4 abre el modal de pago.
-       //primero verifica que la tabla de ventas tenga al menos un artículo agregado
-        if ($('#table_sales >tbody >tr').length == 0){
-          alert ( "No hay productos añadidos a la venta" );
-        }
-        else{
-          $('#modalPago').modal('show');
-          $("#importePagar").text($("#importe").text());
-          $('#campo-paga-con').select();
-        }
-        event.stopPropagation();
-        break;
-    }
-
-  });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
 
   //Se aseguro que el campo de búsqueda esté vacío cada vez que se inicia el punto de venta.
@@ -65,7 +54,7 @@ $(document).ready(function(){
     //Obtiene el código del evento
     var code=event.keyCode;
 
-      // Si es Enter y el valor no está vacío, añade el producto a la venta.
+      // Si es Enter y el valor no está vacío, añade el producto a la compra.
       if (code==13 && $("#search-product").val()!="")
       {
         //añade el producto a la venta actual.

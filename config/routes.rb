@@ -29,6 +29,9 @@ Rails.application.routes.draw do
   get 'compras/update'
   get 'compras/destroy'
   post 'compras/consulta_compras'
+  post 'compras/consulta_avanzada'
+  post 'compras/solo_sucursal'
+  get 'compras/buscarUltimoFolio'
 
   resources :presentacion_productos
   resources :marca_productos
