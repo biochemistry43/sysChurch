@@ -1,0 +1,25 @@
+// Add the dialog title
+
+<%if @compra.status.eql?("Cancelada")%>
+  $('#modal-compras-title').html("<i class='fa fa-trash'></i> Compra cancelada");
+  $('#modal-compras-title').parent().css("background-color", "#ff1a1a");
+  $('#modal-compras-title').parent().css("color", "white");
+<%elsif @compra.status.eql?("Activa")%>
+  $('#modal-compras-title').parent().css("background-color", "#92c33c");
+  $('#modal-compras-title').parent().css("color", "white");
+  $('#modal-compras-title').html("<i class='fa fa-info'></i> Detalles de compra");
+<%end%>
+
+
+
+ 
+// Render the new form
+$('.modal-body-compras').html('<%= j render("compra") %>');
+ 
+// Show the dynamic dialog
+$('#modalCompras').modal("show");
+ 
+// Set focus to the first element
+$('#modaCompras').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

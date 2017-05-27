@@ -1,0 +1,344 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Compras realizadas</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+
+  <!-- todo: Verificar la variable compras en el controlador -->
+  <div class="row">
+    <div class="col-md-12" style="color: gray;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @compras.size %></span>  compras con este criterio.
+    </div>
+    
+  </div>
+
+  <!-- todo: verificar en el controlador la variable consulta -->
+  <!-- Si se trata de una consulta, mostrar este contenido -->
+  <% if @consulta %>
+    
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          <!-- todo: Verificar las variables de fechaFinal y fechaInicial -->
+          Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> a <%= @fechaFinal %></span>
+        </div>
+        
+        <!-- todo: Verificar que se encuentre la variable avanzada -->
+        <!-- Si se trata de una consulta avanzada, entonces debe mostrar estos criterios de consulta -->
+        <% if @avanzada %>
+
+          <!-- Muestra la factura de compra o dice que cualquiera si no se escribió ninguna -->
+          <div class="col-md-12">
+            <!-- Todo: programar los datos que devolverá la variable factura -->
+            <% if @factura %>
+              Factura: <span style="color:#5B7ECC; font-size: 16px;"> <%= @factura %></span>
+            <% else %>
+              Cajero: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+
+          <!-- Muestra el proveedor con quien se realizó la compra, o dice "todos" si no se eligió ningún proveedor
+          al momento de hacer la consulta -->
+          <div class="col-md-12">
+            <!-- Todo: programar los datos que devolverá la variable proveedor -->
+            <% if @proveedor %>
+              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> <%= @proveedor %></span>
+            <% else %>
+              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+
+          <!-- Muestra el comprador que realizó el registro de la compra o dice "todos" si no se eligió ningún comprador -->
+          <div class="col-md-12">
+            <!-- Todo: programar los datos que devolverá la variable comprador -->
+            <% if @comprador %>
+              Comprador: <span style="color:#5B7ECC; font-size: 16px;"> <%= @comprador %></span>
+            <% else %>
+              Comprador: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+
+          <!-- Si se tienen privilegios adecuados, verifica si el filtro incluye las sucursales e indica la sucursal que se
+          eligió para realizar el filtro  -->
+          <% if can? :create, Negocio %>
+            <div class="col-md-12">
+            <!-- todo: Programar los datos que devolverá la variable sucursal -->
+              <% if @sucursal %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+              <% else %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+              <% end %>
+            </div>
+          <% end %>
+          
+
+        <% end %> <!-- Fin de criterios mostrados cuando se hace una consulta avanzada -->
+
+      </div>
+      
+    </div>
+      
+
+  <% end %> <!-- Termina el div que muestra los criterios de búsqueda cuando se realiza una consulta -->
+
+  <hr>
+
+  <div class="row">
+    <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
+    en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
+    <% if can? :read, Compra %> 
+      <%= link_to compras_path, html_options = {class: "btn btn-success"} do %>
+      <i class="fa fa-shopping-cart"> Mostrar todas las compras </i>
+      <% end %>
+    <% end %>
+
+    <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las compras
+    de todas las sucursales, vea únicamente las compras de su propia sucursal -->
+    <% if can? :create, Negocio %> 
+      <!-- Todo: definir en el controlador, la funcion solo_sucursal -->
+      <%= link_to url = {controller:"compras", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo compras de mi sucursal", method: :post} do %>  
+        <span class="fa fa-shopping-cart" style=""> Sólo compras de mi sucursal</span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <hr>
+
+   <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+  <div class="row" style="margin-bottom: 30px;"> 
+    <!-- Todo: Definir en el controlador la funcion consulta_compras -->
+    <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Búsqueda por fechas:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Desde: 
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Hasta:
+        </div>
+      </div>
+        
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar compras', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <!-- Termina buscador por rango de fechas -->
+
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
+
+  <!-- Los filtros avanzados permiten al usuario "filtrar compras" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "compras", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Proveedor:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Elija un proveedor'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Comprador:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :perfil_id, @compradores, :id, :nombre, {:prompt => 'Elija un comprador'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Status de la compra:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>  
+          </div>
+        </div>
+      </div>
+      
+      <% if can? :create, Negocio %>
+        
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div> <!-- Termina zona de selección de filtros avanzados -->
+  
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    
+
+    <div class="row">
+      <div>
+
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Factura de compra</th>
+              <th class="column-title" style="text-align: center;">Proveedor</th>
+              <th class="column-title" style="text-align: center;">Comprador</th>
+              <th class="column-title" style="text-align: center;">Monto de compra</th>
+              <th class="column-title" style="text-align: center;">Status</th>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+              <th class="column-title" style="text-align: center;"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @compras.each do |compra| %>
+	            <tr>
+      				  <td style="text-align: center;"><%= compra.fecha %></td>
+      				  <td style="text-align: center;"><%= compra.folio_compra %></td>
+      				  <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
+      				  <td style="text-align: center;"><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
+               
+      				  <td style="text-align: center;"><%= compra.monto_compra %></td>
+                 <td style="text-align: center;">
+                  <% if compra.status.eql?("Activa") %>
+                    <span class="btn btn-success"> Activa </span>
+                  <% elsif compra.status.eql?("Cancelada") %>
+                    <span class="btn btn-danger"> Cancelada </span>
+                  <% end %>    
+                </td>
+      				  <td style="text-align: center;"><%= compra.user.sucursal.nombre %></td>
+                <td style="text-align: center;"> 
+                  <% if can? :read, compra %> 
+                    <%= link_to compra_path(compra), html_options = {class: "btn btn-info", remote: true} do %>
+                    <i class="fa fa-info-circle"></i>
+                    <% end %>
+                  <% end %>
+
+                  <% if can? :destroy, compra %> 
+                    <% if compra.status.eql?("Activa") %>
+                      <%= link_to edit_compra_path(compra),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta compra? Se borrarán todos los datos relacionados con ella"} do %>
+                       <i class="fa fa-close"></i>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </td>
+      				</tr>
+      			<% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+  </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+    });
+  </script>
+
+  <%= javascript_include_tag "ventas" %>
+</div>

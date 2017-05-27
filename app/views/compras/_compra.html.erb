@@ -1,0 +1,85 @@
+<form action="">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="col-xs-9">
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div class="tab-pane active" id="generales">
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @compra.fecha %>" >
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Importe:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "$ <%= @venta.monto_compra %>">
+              </div>
+            </div>
+
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Proveedor:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @proveedor %>" >
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Sucursal:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @sucursal %>">
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Comprador:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @comprador %>" >
+              </div>
+            </div>
+        </div>
+
+        <!-- Esta sección contiene las productos o servicios vendidos en esta venta
+        en particular -->
+        <div class="tab-pane" id="detalles">
+          <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr class="headings">
+                <th class="column-title">Clave </th>
+                <th class="column-title">Nombre </th>
+                <th class="column-title">Precio</th>
+                <th class="column-title">Cantidad </th>
+                <th class="column-title">Importe </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @items.each do |item| %>
+                <tr>
+                  <td> <%= item.articulo.clave %> </td>
+                  <td> <%= item.articulo.nombre %> </td>
+                  <td> <%= item.articulo.precioCompra %> </td>
+                  <td> <%= item.cantidad %> </td>
+                  <td> <%= item.articulo.precioCompra * item.cantidad %> </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-3">
+      <!-- required for floating -->
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs tabs-right">
+        <li class="active"><a href="#generales" data-toggle="tab">Datos Generales</a>
+        </li>
+        <li><a href="#detalles" data-toggle="tab">Detalle de compra</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</form>

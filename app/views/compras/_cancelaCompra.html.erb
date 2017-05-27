@@ -1,0 +1,26 @@
+<%= form_for @compra,  remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <!-- grupo de categoría de cancelación -->
+    <div class="item form-group">
+      <%= f.label :cat_cancelacion, "Categoria de devolución*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <%= collection_select(nil, :cat_cancelacion, @categorias_devolucion, :id, :clave, {:prompt => 'Elija una categoria de devolución'}, { class: "form-control col-md-7 col-xs-12", required: :true})%>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <%= f.label :observaciones, "Razón de la cancelación*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <%= f.text_area :observaciones, {class: "form-control col-md-7 col-xs-12 text_field", required:true} do%>
+        <%end%>
+      </div>
+    </div>
+
+    <div class="actions">
+      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+        <%= f.submit "Cancelar compra", :class => "btn btn-danger"%>
+      </div>
+    </div>
+  
+<% end %>
