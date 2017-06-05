@@ -3,6 +3,7 @@ class ComprasController < ApplicationController
   before_action :set_compradores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_sucursales, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
+  before_action :set_categorias_cancelacion, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :edit, :update, :show]
 
   def index
     @consulta = false
@@ -21,18 +22,22 @@ class ComprasController < ApplicationController
   end
 
   def show
+    @items = @compra.detalle_compras
+    @proveedor = @compra.proveedor.nombre
+    @sucursal = @compra.sucursal.nombre
+    @comprador = @compra.user.perfil ? @compra.user.perfil.nombre : @compra.user.email
   end
 
   def consulta_compras
     @consulta = true
     @avanzada = false
     if request.post?
-      fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
-      fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
       if can? :create, Negocio
-        @compras = current_user.negocio.compras.where(fecha: fechaInicial..fechaFinal)
+        @compras = current_user.negocio.compras.where(fecha: @fechaInicial..@fechaFinal)
       else
-        @compras = current_user.sucursal.compras.where(fecha: fechaInicial..fechaFinal)
+        @compras = current_user.sucursal.compras.where(fecha: @fechaInicial..@fechaFinal)
       end
 
       respond_to do |format|
@@ -223,9 +228,32 @@ class ComprasController < ApplicationController
   end
 
   def edit
+    @items = @compra.detalle_compras
   end
 
   def update
+    respond_to do |format|
+      categoria = params[:cat_cancelacion]
+      cat_venta_cancelada = CatCompraCancelada.find(categoria)
+      compra = params[:compra]
+      observaciones = compra[:observaciones]
+      @items = @compra.detalle_compras
+      #todo: terminar la cancelación puntual de ventas.
+      if @compra.update(:observaciones => observaciones, :status => "Cancelada")
+        @compra.detalle_compras.each do |itemCompra|
+          CompraCancelada.create(:articulo => itemCompra.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad)
+          itemVenta.cantidad = 0
+          itemVenta.status = "Con devoluciones"
+          itemVenta.save
+        end
+
+        format.json { head :no_content}
+        format.js
+      else
+        format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
+        format.js {render :edit}
+      end
+    end
   end
 
   def destroy
@@ -271,6 +299,11 @@ class ComprasController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def compra_params
       params.require(:compra).permit(:fecha, :tipo_pago, :plazo_pago, :folio_compra, :proveedor_id, :forma_pago, :articulos, :monto_compra, :ticket_compra)
+    end
+
+     #Asigna lista de categorias de devolucion de compras
+    def set_categorias_cancelacion
+        @categorias_devolucion = current_user.negocio.cat_compra_canceladas
     end
 
 end

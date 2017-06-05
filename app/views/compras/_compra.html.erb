@@ -15,7 +15,7 @@
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Importe:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-money"></i></span>
-                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "$ <%= @venta.monto_compra %>">
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "$ <%= @compra.monto_compra %>">
               </div>
             </div>
 
@@ -61,8 +61,8 @@
                   <td> <%= item.articulo.clave %> </td>
                   <td> <%= item.articulo.nombre %> </td>
                   <td> <%= item.articulo.precioCompra %> </td>
-                  <td> <%= item.cantidad %> </td>
-                  <td> <%= item.articulo.precioCompra * item.cantidad %> </td>
+                  <td> <%= item.cantidad_comprada %> </td>
+                  <td> <%= item.articulo.precioCompra * item.cantidad_comprada %> </td>
                 </tr>
               <% end %>
             </tbody>

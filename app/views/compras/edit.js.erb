@@ -2,7 +2,7 @@
   $('#modal-compras-title').html("<i class='fa fa-trash'></i> Cancelar Compra");
   $('#modal-compras-title').parent().css("background-color", "#ff1a1a");
   $('#modal-compras-title').parent().css("color", "gray");
-<%elsif @venta.status.eql?("Activa")%>
+<%elsif @compra.status.eql?("Activa")%>
   $('#modal-compras-title').parent().css("background-color", "#92c33c");
   $('#modal-compras-title').parent().css("color", "white");
   $('#modal-compras-title').html("<i class='fa fa-trash'></i> Cancelar Compra");

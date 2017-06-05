@@ -1,6 +1,7 @@
 class Compra < ActiveRecord::Base
 	has_many :detalle_compras
 	has_many :entrada_almacens
+	has_many :compra_canceladas
 	belongs_to :proveedor
 	belongs_to :user
 	belongs_to :sucursal

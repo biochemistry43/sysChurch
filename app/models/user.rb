@@ -10,6 +10,8 @@ class User < ActiveRecord::Base
   has_many :compras
   #El usuario que cancela debe tener los privilegios para cancelar una venta
   has_many :venta_canceladas
+  #El usuario que cancela debe tener los privilegios para cancelar una compra
+  has_many :compra_canceladas
   belongs_to :negocio
   belongs_to :sucursal
 end
