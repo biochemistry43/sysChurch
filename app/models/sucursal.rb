@@ -7,6 +7,7 @@ class Sucursal < ActiveRecord::Base
 	has_many :ventas
 	has_many :compras
 	has_many :compra_canceladas
+	has_many :compra_articulos_devueltos
 	belongs_to :negocio
 	has_one :datos_fiscales_sucursal
 	has_many :venta_canceladas

@@ -12,6 +12,9 @@ class User < ActiveRecord::Base
   has_many :venta_canceladas
   #El usuario que cancela debe tener los privilegios para cancelar una compra
   has_many :compra_canceladas
+  #El usuario que devuelve un artículo comprado, debe tener los privilegios para cancelar una compra.
+  #Cuando se cancela una compra, todos los artículos de esa compra son devueltos.
+  has_many :compra_articulos_devueltos
   belongs_to :negocio
   belongs_to :sucursal
 end

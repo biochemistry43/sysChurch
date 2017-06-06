@@ -1,7 +1,7 @@
 class DetalleCompra < ActiveRecord::Base
 	belongs_to :articulo
 	belongs_to :compra
-	has_one :compra_cancelada
+	has_one :compra_articulos_devueltos
 
 	validates :cantidad_comprada, :precio_compra, :importe, :presence => { message: "Dato necesario" }
 	validates :cantidad_comprada, :precio_compra, :importe, :numericality => { message: "campo numérico" }

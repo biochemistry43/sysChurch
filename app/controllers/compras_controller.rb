@@ -177,7 +177,7 @@ class ComprasController < ApplicationController
   def create
     @compra = Compra.new(compra_params)
     @proveedores = current_user.sucursal.proveedores
-     
+    @compra.status = "Activa"
     respond_to do |format|
       if @compra.valid?
         if @compra.save
@@ -201,7 +201,7 @@ class ComprasController < ApplicationController
             cantidad = articulo["cantidad"]
             importe = articulo["importe"]
             
-            detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe)
+            detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
             entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
             bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
             bd_articulo.detalle_compras << detalleCompra
@@ -256,9 +256,20 @@ class ComprasController < ApplicationController
       if @compra.update(:observaciones => observaciones, :status => "Cancelada")
         @compra.detalle_compras.each do |itemCompra|
           CompraCancelada.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
+          articulo = itemCompra.articulo
+          articulo.existencia = articulo.existencia - itemCompra.cantidad_comprada
+          articulo.save
+
           itemCompra.cantidad_comprada = 0
-          itemCompra.status = "Con devoluciones"
+          itemCompra.status = "Cancelada"
           itemCompra.save
+
+          entradasAlmacen = EntradaAlmacen.where(:compra=>@compra)
+          
+          entradasAlmacen.each do |entradaAlmacen|
+            entradaAlmacen.destroy
+          end
+
         end
 
         format.json { head :no_content}
