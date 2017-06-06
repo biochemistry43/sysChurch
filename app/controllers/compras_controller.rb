@@ -5,6 +5,7 @@ class ComprasController < ApplicationController
   before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_categorias_cancelacion, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :edit, :update, :show]
 
+  #Se despliegan todas las compras del negocio o de la sucursal dependiendo los privilegios del usuario.
   def index
     @consulta = false
     @avanzada = false
@@ -15,12 +16,15 @@ class ComprasController < ApplicationController
     end
   end
 
+  #Se crea una nueva compra
   def new
     @proveedores = current_user.sucursal.proveedores
     @compra = Compra.new
     @proveedor = Proveedor.new
   end
 
+  #Se muestran los detalles de una compra realizada. Para ello, se le pasan los items de compra
+  #Su proveedor, sucursal y comprador. Todo esto se despliega en un modal de la vista.
   def show
     @items = @compra.detalle_compras
     @proveedor = @compra.proveedor.nombre
@@ -28,12 +32,15 @@ class ComprasController < ApplicationController
     @comprador = @compra.user.perfil ? @compra.user.perfil.nombre : @compra.user.email
   end
 
+  #Este método devuelve un listado de compras en base a un rango de fechas. 
   def consulta_compras
     @consulta = true
     @avanzada = false
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      #Si tiene privilegios de Administrador, devolverá las compras de todo el negocio pero con el filtro respectivo
+      #de lo contrario, sólo devolverá las compras de su propia sucursal con el filtro respectivo.
       if can? :create, Negocio
         @compras = current_user.negocio.compras.where(fecha: @fechaInicial..@fechaFinal)
       else
@@ -49,6 +56,9 @@ class ComprasController < ApplicationController
     end
   end
 
+  #Consulta avanzada devolverá una lista de compras en base en una serie de criterios que pueden ser combinables entre si.
+  #Los criterios pueden ser: Rango de fechas, proveedor, comprador, status de la compra, 
+  #sucursal (en el caso de administradores)
   def consulta_avanzada
     @consulta = true
     @avanzada = true
@@ -148,6 +158,9 @@ class ComprasController < ApplicationController
     end
   end
 
+  #Los administradores tendrán disponible esta funcionalidad. Dado que a los administradores se les muestran las compras
+  #de todas las sucursales, puede resultarles deseable que se les muestren solo las compras hechas en su propia sucursal
+  #(que generalmente será la matriz)
   def solo_sucursal
     @consulta = false
     @avanzada = false
@@ -190,17 +203,17 @@ class ComprasController < ApplicationController
             
             detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe)
             entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-            articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-            articulo.detalle_compras << detalleCompra
-            articulo.entrada_almacens << entradaAlmacen
+            bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+            bd_articulo.detalle_compras << detalleCompra
+            bd_articulo.entrada_almacens << entradaAlmacen
 
-            existencia = articulo.existencia
+            existencia = bd_articulo.existencia
 
             nuevaExistencia = existencia + entradaAlmacen.cantidad
 
-            articulo[:existencia] = nuevaExistencia
+            bd_articulo.existencia = nuevaExistencia
 
-            articulo.save
+            bd_articulo.save
 
 
           }
