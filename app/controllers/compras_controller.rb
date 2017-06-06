@@ -231,20 +231,21 @@ class ComprasController < ApplicationController
     @items = @compra.detalle_compras
   end
 
+  #El método update de compras se utiliza específicamente para cancelar una compra completmente.
   def update
     respond_to do |format|
       categoria = params[:cat_cancelacion]
-      cat_venta_cancelada = CatCompraCancelada.find(categoria)
+      cat_compra_cancelada = CatCompraCancelada.find(categoria)
       compra = params[:compra]
       observaciones = compra[:observaciones]
       @items = @compra.detalle_compras
-      #todo: terminar la cancelación puntual de ventas.
+      #todo: terminar la cancelación puntual de compras.
       if @compra.update(:observaciones => observaciones, :status => "Cancelada")
         @compra.detalle_compras.each do |itemCompra|
-          CompraCancelada.create(:articulo => itemCompra.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad)
-          itemVenta.cantidad = 0
-          itemVenta.status = "Con devoluciones"
-          itemVenta.save
+          CompraCancelada.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
+          itemCompra.cantidad_comprada = 0
+          itemCompra.status = "Con devoluciones"
+          itemCompra.save
         end
 
         format.json { head :no_content}
@@ -303,7 +304,7 @@ class ComprasController < ApplicationController
 
      #Asigna lista de categorias de devolucion de compras
     def set_categorias_cancelacion
-        @categorias_devolucion = current_user.negocio.cat_compra_canceladas
+        @categorias_cancelacion = current_user.negocio.cat_compra_canceladas
     end
 
 end
