@@ -1,25 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  articulo_id: 1
-  detalle_compra: 1
   compra_id: 1
-  cat_compra_cancelada: 1
+  cat_compra_cancelada_id: 1
   user_id: 1
-  fecha: 2017-05-26
   observaciones: MyString
-  negocio_id: 1
-  sucursal_id: 1
-  cantidad_devuelta: 
 
 two:
-  articulo_id: 1
-  detalle_compra: 1
   compra_id: 1
-  cat_compra_cancelada: 1
+  cat_compra_cancelada_id: 1
   user_id: 1
-  fecha: 2017-05-26
   observaciones: MyString
-  negocio_id: 1
-  sucursal_id: 1
-  cantidad_devuelta: 
