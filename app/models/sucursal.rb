@@ -11,4 +11,5 @@ class Sucursal < ActiveRecord::Base
 	belongs_to :negocio
 	has_one :datos_fiscales_sucursal
 	has_many :venta_canceladas
+	has_many :historial_ediciones_compras
 end

@@ -18,4 +18,5 @@ class Negocio < ActiveRecord::Base
 	has_many :compra_canceladas
 	has_many :compra_articulos_devueltos
 	has_many :venta_canceladas
+	has_many :historial_ediciones_compras
 end
