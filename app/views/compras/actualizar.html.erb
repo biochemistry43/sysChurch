@@ -1,0 +1,166 @@
+<div class="right_col" role="main" >
+  <div id="div_pos" class="row main-row-pos" tabindex="0">
+    <div class="col-md-4 datosVenta">
+
+      <div class="row">
+                
+        <div class="col-md-12 col-sm-12 col-xs-12 datos-cliente">
+          <div class="well profile_view">
+          	<h3 style="margin-left: 20px;">Datos de la compra:</h3>
+          	<hr>
+            <div class="row">
+		        <div class="col-md-9 center-margin">
+		          <div class="animated flipInY sumatoria">
+		            <div class="tile-stats" style="text-align: center;">
+		              <div id="importe" class="count"><%= @compra.monto_compra %></div>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+            <div class="col-sm-12">
+              <div class="col-md-10 center-margin">
+                <%= render 'form' %>
+              </div>
+              <div class="right col-xs-5 text-center"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-md-7 col-md-offset-1 col-pos">
+      <div class="panel panel-primary panel-pos">
+        <div class="panel-body" id="panel-pos-body">
+          <div class="form-group top_search">
+            <div class="autocomplete input-group">
+              <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
+              <span class="input-group-btn">
+                <button class="" type="button"></button>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12" id="div-tabla-ventas">
+              <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
+                <thead>
+                  <tr class="headings">
+                    <th class="column-title">Clave </th>
+                    <th class="column-title">Nombre </th>
+                    <th class="column-title">Precio</th>
+                    <th class="column-title">Cantidad </th>
+                    <th class="column-title">Importe </th>
+                    <th class="column-title"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if @compra %>
+                    <% @compra.detalle_compras.each do |detalle| %>
+                      <tr class="even pointer">
+                        <td><%= detalle.articulo.clave %></td>
+                        <td><%= detalle.articulo.nombre %></td>
+                        <td id='precioProducto'><%= detalle.precio_compra %></td>
+                        <td id='cantidadProducto'><%= detalle.cantidad_comprada %></td>
+                        <td><%= detalle.precio_compra * detalle.cantidad_comprada %></td>
+                        <td><button class='btn btn-danger btn-xs borrar_item_venta'><i class='fa fa-trash-o'></i></button></td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                        
+                </tbody>
+              </table>
+            </div>
+            
+          </div>
+          <!-- <div class="row" id="botones-venta">
+
+              <div class="col-md-12 form-group">
+
+                <div class="col-md-6">
+                  <button class="btn btn-round btn-success form-control" id="comprarBtn">
+                  <i class="glyphicon glyphicon-usd"> </i>Realizar Compra</button>
+                </div>
+              </div>
+            
+          </div>  --><!-- Terminar div fila de botones venta -->  
+
+        </div> <!-- Terminar panel-pos-body -->  
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 col-sm-12 col-xs-12">
+  <%if current_user.negocio%>
+    <%= image_tag(current_user.negocio.logo_url, id: "logo_negocio") if current_user.negocio.logo.present? %>
+  <%end%>
+    
+    <!--modal para actuailización de cantidad de proudcto-->
+    <div class="modal" id="actualizarCantidad">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Actualizar cantidad</h4>
+          </div>
+          <div class="modal-body" id="modal-body-actualizar-cantidad">
+          </div>
+          <div class="modal-footer" id="modal-footer">
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    
+    <div class="modal" id="modalClientes">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Selecciona un cliente</h4>
+          </div>
+          <div class="modal-body" id="modal-body-clientes">
+            <div class="form-group">
+              <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
+                <thead>
+                  <tr class='headings'>
+                    <th class='column-title'>Nombre Cliente </th>
+                    <th class='column-title'>Teléfono </th>
+                    <th class='column-title'>Email </th>
+                    <th class='column-title'>Elegir </th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-clientes">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <%= render 'modalProveedores'%>
+    <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
+    <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle : "Sin calle" %>">
+    <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">
+    <input type="hidden" id="direccion_sucursal" value="<%=current_user.sucursal.calle%>">
+    <input type="hidden" id="fecha" value="<%= Time.now %>">
+    <input type="hidden" id="nombre_cajero" value="<%= current_user.perfil.nombre%>">
+    <div id="print-div2"></div>
+    <%= form_tag '/punto_venta/realizarVenta', {:method => 'post', :id=>'ventaForm', :enctype=>'application/json'} do %>
+      <%= hidden_field_tag(:dataVenta) %>
+    <% end %>
+  </div>
+</div>
+<%= javascript_include_tag "autocomplete.jquery" %>
+<%= javascript_include_tag "jQuery.print" %>
+<%= javascript_include_tag "compras" %>
+<%= stylesheet_link_tag "autocomplete" %>
+<%= stylesheet_link_tag "compras" %>

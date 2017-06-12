@@ -40,6 +40,45 @@
                 <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @comprador %>" >
               </div>
             </div>
+            <% if @compra.compra_cancelada %>
+              
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <hr>
+              </div>
+              
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                Detalles de cancelación</h2>
+              </div>
+              
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Autorizó:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                  <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @autorizacion %>">
+                </div>
+              </div>
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                  <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @fechaCancelacion %>">
+                </div>
+              </div>
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Categoría:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                  <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @categoriaCancelacion %>">
+                </div>
+              </div>
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Observaciones:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                  <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @observacionesCancelacion %>">
+                </div>
+              </div>
+            <% end %>
         </div>
 
         <!-- Esta sección contiene las productos o servicios vendidos en esta venta

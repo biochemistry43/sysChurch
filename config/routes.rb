@@ -32,6 +32,8 @@ Rails.application.routes.draw do
   post 'compras/consulta_avanzada'
   post 'compras/solo_sucursal'
   get 'compras/buscarUltimoFolio'
+  get 'compras/actualizar'
+  post 'compras/actualizar'
 
   resources :presentacion_productos
   resources :marca_productos
@@ -116,6 +118,7 @@ Rails.application.routes.draw do
   post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   get 'punto_venta/index/:venta' => 'punto_venta#index'
+  get 'compras/actualizar/:compra' => 'compras#actualizar'
   
   
   root :to=> 'plainpage#index'

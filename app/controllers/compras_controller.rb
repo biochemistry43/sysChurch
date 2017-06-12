@@ -2,7 +2,7 @@ class ComprasController < ApplicationController
   before_action :set_compra, only: [:show, :edit, :update, :destroy]
   before_action :set_compradores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_sucursales, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
-  before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
+  before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :actualizar]
   before_action :set_categorias_cancelacion, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :edit, :update, :show]
 
   #Se despliegan todas las compras del negocio o de la sucursal dependiendo los privilegios del usuario.
@@ -30,6 +30,16 @@ class ComprasController < ApplicationController
     @proveedor = @compra.proveedor.nombre
     @sucursal = @compra.sucursal.nombre
     @comprador = @compra.user.perfil ? @compra.user.perfil.nombre : @compra.user.email
+    if @compra.compra_cancelada
+      @autorizacion = @compra.compra_cancelada.user.perfil ? @compra.compra_cancelada.user.perfil.nombre + ' ' + @compra.compra_cancelada.user.perfil.ape_paterno + ' ' + @compra.compra_cancelada.user.perfil.ape_materno : @compra.compra_cancelada.user.email
+      @fechaCancelacion = @compra.compra_cancelada.created_at
+      @observacionesCancelacion = @compra.compra_cancelada.observaciones
+      @categoriaCancelacion = @compra.compra_cancelada.cat_compra_cancelada.clave
+    end
+  end
+
+  def actualizar
+    @compra = Compra.find(params[:compra])
   end
 
   #Este método devuelve un listado de compras en base a un rango de fechas. 
@@ -254,13 +264,14 @@ class ComprasController < ApplicationController
       @items = @compra.detalle_compras
       #todo: terminar la cancelación puntual de compras.
       if @compra.update(:observaciones => observaciones, :status => "Cancelada")
+        
+        CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones)
         @compra.detalle_compras.each do |itemCompra|
-          CompraCancelada.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
+          CompraArticulosDevuelto.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
           articulo = itemCompra.articulo
           articulo.existencia = articulo.existencia - itemCompra.cantidad_comprada
           articulo.save
 
-          itemCompra.cantidad_comprada = 0
           itemCompra.status = "Cancelada"
           itemCompra.save
 

@@ -301,9 +301,15 @@
                     <% end %>
                   <% end %>
 
-                  <% if can? :destroy, compra %> 
+                  <% if can? :update, compra %>
+                    <%= link_to url={:controller=>"compras", :action=>"actualizar", :compra=>compra},  html_options = {class: "btn btn-warning"}, data: { confirm: "¿Desea actualizar esta compra?"} do %>
+                       <i class="fa fa-warning"></i>
+                      <% end %>
+                  <% end %>
+
+                  <% if can? :destroy, compra %>
                     <% if compra.status.eql?("Activa") %>
-                      <%= link_to edit_compra_path(compra),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta compra? Se borrarán todos los datos relacionados con ella"} do %>
+                      <%= link_to edit_compra_path(compra),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta compra?"} do %>
                        <i class="fa fa-close"></i>
                       <% end %>
                     <% end %>
