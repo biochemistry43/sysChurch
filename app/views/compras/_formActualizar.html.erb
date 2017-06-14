@@ -1,4 +1,4 @@
-<%= form_for @compra, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+<%= form_for @compra, url: {action: "actualizar"}, :html => {:class=>'form-horizontal form-label-left', :role=>"form", onsubmit: "if($('#razon_edicion').val()==''){alert('Debe ponerse la razón por la cual se está editando la compra'); return false;}" } do |f| %>
   
   <div class="item form-group<%= @compra.errors[:folio_compra].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :folio_compra, "Factura de compra*: ", {class: "control-label"} %>
@@ -124,6 +124,7 @@
 
   <div class="item form-group<%= @compra.errors[:articulos].any? ? ' has-error has-feedback' : '' %>">
     <div class="input-group">
+      <%= hidden_field :compra_razon, "edicion"%>
       <%= f.hidden_field :articulos %>
       <%if @compra.errors[:articulos].any? %>
         <p class="bg-danger"><%= @compra.errors[:articulos].to_s[/\w([^"]*)/] %></p>
@@ -134,7 +135,7 @@
 
   <div class="actions">
     <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-        <%= f.submit "realizar compra", :class => "btn btn-success"%>
+        <%= f.submit "Actualizar compra", :class => "btn btn-success", :id=>"actualizar_compra_btn"%>
       </div>
   </div>
 

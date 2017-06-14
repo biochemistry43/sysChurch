@@ -19,7 +19,7 @@
 		      </div>
             <div class="col-sm-12">
               <div class="col-md-10 center-margin">
-                <%= render 'form' %>
+                <%= render 'formActualizar' %>
               </div>
               <div class="right col-xs-5 text-center"></div>
             </div>
@@ -30,6 +30,10 @@
     </div>
 
     <div class="col-md-7 col-md-offset-1 col-pos">
+      <div class="item form-group">
+        <label for="razon_edicion"> Escriba la razón por la cual está editando esta compra *</label>
+        <textarea class="form-control" name="" id="razon_edicion" rows="3" required="true" placeholder="Indique aquí, la razón por la cual está editando esta compra. Campo obligatorio." required="true"></textarea>  
+      </div>      
       <div class="panel panel-primary panel-pos">
         <div class="panel-body" id="panel-pos-body">
           <div class="form-group top_search">

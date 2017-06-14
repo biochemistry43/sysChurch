@@ -47,9 +47,15 @@ $(document).ready(function(){
   $("#search-product" ).val("");
 
   /**
-   * Esta porción de código identifica si se ha presionado enter en el campo de búsqueda de un
-   * producto. Si es así, añade el producto encontrado a la lista de venta actual
+   * En el caso de edición de compra, esta función copia el contenido del área de texto
+   * razon_edicion en el campo oculto compra_razon_edicion
    */
+  $("#razon_edicion" ).keyup(function(event) {
+
+    $("#compra_razon_edicion").val($("#razon_edicion").val());
+  });
+  
+
   $("#search-product" ).keyup(function(event) {
     //Obtiene el código del evento
     var code=event.keyCode;
@@ -241,6 +247,7 @@ function enterActualizar(event, indice){
   }
 }
 
+
 function actualizarCantidad(indice){
   cantidad = $("#nuevaCantidad"+indice).val();
   precio = $("#precio"+indice).val();
@@ -390,6 +397,7 @@ jQuery.fn.contentChange = function(callback){
     $("#compra_monto_compra").val(sumatoria);
 
     //Se anade los valores de la compra en el textfield hidden #compra_articulos
+    //Llamado simplemente "articulos" en la vista rails
     $("#compra_articulos").val(JSON.stringify(itemsCompra));
     
     //Se reinicia el arreglo de items de la compra

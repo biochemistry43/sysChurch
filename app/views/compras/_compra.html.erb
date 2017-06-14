@@ -99,7 +99,7 @@
                 <tr>
                   <td> <%= item.articulo.clave %> </td>
                   <td> <%= item.articulo.nombre %> </td>
-                  <td> <%= item.articulo.precioCompra %> </td>
+                  <td> <%= item.precio_compra %> </td>
                   <td> <%= item.cantidad_comprada %> </td>
                   <td> <%= item.articulo.precioCompra * item.cantidad_comprada %> </td>
                 </tr>
@@ -107,6 +107,35 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Esta sección se desplegará solamente si esta compra tiene historial de ediciones -->
+        <% if @compra.historial_ediciones_compras.size > 0 %>
+        <div class="tab-pane" id="historial">
+          <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr class="headings">
+                <th class="column-title"> Fecha </th>
+                <th class="column-title"> Monto anterior </th>
+                <th class="column-title"> Autorización</th>
+                <th class="column-title"> Motivo de edición </th>
+                <th class="column-title"> Sucursal </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @compra.historial_ediciones_compras.each do |historial| %>
+                <tr>
+                  <td> <%= historial.created_at %> </td>
+                  <td> <%= historial.monto_anterior %> </td>
+                  <td> <%= historial.user.perfil ? historial.user.perfil.nombre + ' ' + historial.user.perfil.ape_paterno + ' ' + historial.user.perfil.ape_materno : historial.user.email %> </td>
+                  <td> <%= historial.razon_edicion %> </td>
+                  <td> <%= historial.sucursal.nombre %> </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <% end %>
+        
       </div>
     </div>
 
@@ -118,6 +147,10 @@
         </li>
         <li><a href="#detalles" data-toggle="tab">Detalle de compra</a>
         </li>
+        <% if @compra.historial_ediciones_compras.size > 0 %>
+        <li><a href="#historial" data-toggle="tab">Historial de ediciones</a>
+        </li>
+        <% end %>
       </ul>
     </div>
   </div>

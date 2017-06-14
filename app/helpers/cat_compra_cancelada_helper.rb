@@ -1,0 +1,2 @@
+module CatCompraCanceladaHelper
+end

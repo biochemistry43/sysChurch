@@ -296,20 +296,27 @@
       				  <td style="text-align: center;"><%= compra.user.sucursal.nombre %></td>
                 <td style="text-align: center;"> 
                   <% if can? :read, compra %> 
-                    <%= link_to compra_path(compra), html_options = {class: "btn btn-info", remote: true} do %>
+                    <%= link_to compra_path(compra), html_options = {class: "btn btn-info", remote: true , title: 'Detalles compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <i class="fa fa-info-circle"></i>
                     <% end %>
                   <% end %>
 
                   <% if can? :update, compra %>
-                    <%= link_to url={:controller=>"compras", :action=>"actualizar", :compra=>compra},  html_options = {class: "btn btn-warning"}, data: { confirm: "¿Desea actualizar esta compra?"} do %>
-                       <i class="fa fa-warning"></i>
+                    <% @historial = compra.historial_ediciones_compras.size %>
+                    <% if @historial <= 3 %>
+                      <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: 'Editar compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
+                        <i class="fa fa-pencil"></i>
                       <% end %>
+                    <% else %>
+                      <button class="btn btn-warning" title="Sólo se permiten tres ediciones" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>
+                      
+                    <% end %>
+                    
                   <% end %>
 
                   <% if can? :destroy, compra %>
                     <% if compra.status.eql?("Activa") %>
-                      <%= link_to edit_compra_path(compra),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta compra?"} do %>
+                      <%= link_to edit_compra_path(compra),  html_options = {class: "btn btn-danger", remote: true, title: 'Cancelar compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea cancelar esta compra?'} do %>
                        <i class="fa fa-close"></i>
                       <% end %>
                     <% end %>

@@ -1,5 +1,5 @@
 class ComprasController < ApplicationController
-  before_action :set_compra, only: [:show, :edit, :update, :destroy]
+  before_action :set_compra, only: [:show, :edit, :update, :destroy, :actualizar]
   before_action :set_compradores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_sucursales, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
   before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :actualizar]
@@ -9,6 +9,7 @@ class ComprasController < ApplicationController
   def index
     @consulta = false
     @avanzada = false
+    
     if can? :create, Negocio
       @compras = current_user.negocio.compras
     else
@@ -30,6 +31,7 @@ class ComprasController < ApplicationController
     @proveedor = @compra.proveedor.nombre
     @sucursal = @compra.sucursal.nombre
     @comprador = @compra.user.perfil ? @compra.user.perfil.nombre : @compra.user.email
+
     if @compra.compra_cancelada
       @autorizacion = @compra.compra_cancelada.user.perfil ? @compra.compra_cancelada.user.perfil.nombre + ' ' + @compra.compra_cancelada.user.perfil.ape_paterno + ' ' + @compra.compra_cancelada.user.perfil.ape_materno : @compra.compra_cancelada.user.email
       @fechaCancelacion = @compra.compra_cancelada.created_at
@@ -38,10 +40,7 @@ class ComprasController < ApplicationController
     end
   end
 
-  def actualizar
-    @compra = Compra.find(params[:compra])
-  end
-
+  
   #Este método devuelve un listado de compras en base a un rango de fechas. 
   def consulta_compras
     @consulta = true
@@ -184,6 +183,7 @@ class ComprasController < ApplicationController
     end
   end
 
+
   def create
     @compra = Compra.new(compra_params)
     @proveedores = current_user.sucursal.proveedores
@@ -252,6 +252,109 @@ class ComprasController < ApplicationController
 
   def edit
     @items = @compra.detalle_compras
+  end
+
+  def actualizar
+    #if request.get?
+    #  @compra = Compra.find(params[:compra])
+    #end
+    
+    #Si la petición ha venido por el método post, entonces se procede a la actualización de la compra.
+    if request.patch?
+      @monto_anterior = @compra.monto_compra
+      respond_to do |format|
+        if @compra.update(compra_params)
+          #Se borran los destalles de compra y entradas de almacen relacionados con la compra.
+          @compra.detalle_compras.each do |detalle|
+            #antes de borrar el detalle de compra, se obtiene la cantidad que fue comprada para descontarla del
+            #inventario del articulo
+            cantidadComprada = detalle.cantidad_comprada
+            existenciaActual = detalle.articulo.existencia
+            nuevaExistenciaArticulo = existenciaActual - cantidadComprada
+
+            #Se eliminan todas las existencias del articulo que estén relacionadas con la compra.
+            #Más adelante se actualizará la existencia del articulo en base a los datos editados.
+            detalle.articulo.existencia = nuevaExistenciaArticulo
+
+            detalle.save
+
+            #Una vez obtenidos los datos necesarios, se destruye el detalle de compra.
+            #Posteriormente se añadiran los nuevos detalles en base a la edición del usuario.
+            detalle.destroy
+
+          end
+
+          #Así mismo, este bucle destruye todas las entradas de almacén de esta compra.
+          @compra.entrada_almacens.each do |entrada_almacen|
+            entrada_almacen.destroy
+          end
+
+          
+          articulos = compra_params[:articulos]
+          fecha = DateTime.parse(compra_params[:fecha]).to_date
+          razon_edicion = params[:compra_razon]
+
+          #Ahora se crea un registro en el historia de ediciones de compra
+          historial = HistorialEdicionesCompra.create(:monto_anterior=>@monto_anterior, :razon_edicion=>razon_edicion[:edicion])
+          @compra.historial_ediciones_compras << historial
+          current_user.negocio.historial_ediciones_compras << historial
+          current_user.sucursal.historial_ediciones_compras << historial
+          current_user.historial_ediciones_compras << historial
+
+          
+
+          hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+
+          codigo = ""
+          cantidad = 0
+          precio = 0
+          importe = 0
+          existencia = 0
+          nuevaExistencia = 0
+
+
+          hashArticulos.collect { |articulo|  
+
+            codigo = articulo["codigo"]
+            precio = articulo["precio"]
+            cantidad = articulo["cantidad"]
+            importe = articulo["importe"]
+                
+            detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+            entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+            bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+
+            #Se relaciona el artículo comprado con la compra
+            bd_articulo.detalle_compras << detalleCompra
+
+            #Se relaciona una entrada al almacén con un artículo 
+            bd_articulo.entrada_almacens << entradaAlmacen
+
+            #obtiene la existencia actual del artículo para actualizarla posteriormente añadiendole las nuevas
+            #compras
+            existencia_actual = bd_articulo.existencia
+
+            #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de 
+            #esta compra.
+            nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
+
+            #Se actualiza también el precio de compra del artículo. TODO hacer un historial de precios de compra por artículo.
+            bd_articulo.precioCompra = detalleCompra.precio_compra
+
+            #Se actualiza la nueva existencia y se guarda el artículo 
+            bd_articulo.existencia = nuevaExistencia
+            bd_articulo.save
+          }
+            
+          format.html { redirect_to compras_path, notice: 'Compra actualizada' }
+          format.json { render :index, status: :created, location: @compra }
+        else
+          format.html { render :index }
+          format.json { render json: @compra.errors, status: :unprocessable_entity }
+        end
+      end
+
+    end
   end
 
   #El método update de compras se utiliza específicamente para cancelar una compra completmente.
@@ -334,7 +437,7 @@ class ComprasController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def compra_params
-      params.require(:compra).permit(:fecha, :tipo_pago, :plazo_pago, :folio_compra, :proveedor_id, :forma_pago, :articulos, :monto_compra, :ticket_compra)
+      params.require(:compra).permit(:fecha, :tipo_pago, :plazo_pago, :folio_compra, :proveedor_id, :forma_pago, :articulos, :monto_compra, :ticket_compra, :compra_razon, :fecha_limite_pago)
     end
 
      #Asigna lista de categorias de devolucion de compras

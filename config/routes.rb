@@ -1,6 +1,20 @@
 Rails.application.routes.draw do
 
   
+  get 'cat_compra_cancelada/index'
+
+  get 'cat_compra_cancelada/new'
+
+  get 'cat_compra_cancelada/show'
+
+  get 'cat_compra_cancelada/create'
+
+  get 'cat_compra_cancelada/edit'
+
+  get 'cat_compra_cancelada/update'
+
+  get 'cat_compra_cancelada/destroy'
+
   get 'devoluciones/index'
 
   get 'devoluciones/show'
@@ -118,7 +132,10 @@ Rails.application.routes.draw do
   post 'punto_venta/obtenerCamposFormaPago/:formaPago' => 'punto_venta#obtenerCamposFormaPago'
   post 'punto_venta/realizarVenta/:venta' => 'punto_venta#realizarVenta'
   get 'punto_venta/index/:venta' => 'punto_venta#index'
-  get 'compras/actualizar/:compra' => 'compras#actualizar'
+  get 'compras/actualizar/:id' => 'compras#actualizar'
+  post 'compras/actualizar/:id' => 'compras#actualizar'
+  put 'compras/actualizar/:id' => 'compras#actualizar'
+  patch 'compras/actualizar/:id' => 'compras#actualizar'
   
   
   root :to=> 'plainpage#index'
