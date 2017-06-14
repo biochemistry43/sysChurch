@@ -1,36 +1,15 @@
 Rails.application.routes.draw do
 
-  
-  get 'cat_compra_cancelada/index'
-
-  get 'cat_compra_cancelada/new'
-
-  get 'cat_compra_cancelada/show'
-
-  get 'cat_compra_cancelada/create'
-
-  get 'cat_compra_cancelada/edit'
-
-  get 'cat_compra_cancelada/update'
-
-  get 'cat_compra_cancelada/destroy'
+  resources :cat_compra_canceladas
 
   get 'devoluciones/index'
-
   get 'devoluciones/show'
-
   get 'devoluciones/devolucion'
-
   post 'devoluciones/devolucion'
-
   post 'devoluciones/hacerDevolucion'
-
   get 'devoluciones/new'
-
   post 'devoluciones/consulta_por_fecha'
-
   post 'devoluciones/consulta_por_producto'
-
   post 'devoluciones/consulta_avanzada'
 
   resources :cat_venta_canceladas

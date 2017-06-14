@@ -125,6 +125,13 @@
                         Compras realizadas
                         <%end%>
                       </li>
+
+                      <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
+                    para los administradores de la empresa -->
+                    <%if can? :create, Negocio%>
+                      <li><%= link_to "Cat cancelación", cat_compra_canceladas_path %>
+                      </li>
+                    <%end%>
                     </ul>
                   </li>
 

@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-cat_compra_cancelada-title').html("<i class='fa fa-pencil'></i> Editar categoría");
+ 
+// Render the new form
+$('.modal-body_cat_compra_cancelada').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalCatCompraCancelada').modal("show");
+ 
+// Set focus to the first element
+$('#modalCatCompraCancelada').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})
