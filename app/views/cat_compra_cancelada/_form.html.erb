@@ -1,0 +1,30 @@
+<%= form_for @cat_venta_cancelada, remote: true, :html=>{:class=>'form-horizontal form-label-left', :role=>'form'} do |f| %>
+
+  <div class="item form-group<%= @cat_venta_cancelada.errors[:clave].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :clave, "Clave*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-code"></i></span>
+      <%= f.text_field :clave, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Clave, abreviatura o palabra que describa la categoría"} do%>
+      <%end%>
+      <%if @cat_venta_cancelada.errors[:clave].any? %>
+        <p class="bg-danger"><%= @cat_venta_cancelada.errors[:clave].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @cat_venta_cancelada.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :descripcion, "Descripción: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Descripción de esta categoría de cancelación"} do%>
+      <%end%>
+      <%if @cat_venta_cancelada.errors[:descripcion].any? %>
+        <p class="bg-danger"><%= @cat_venta_cancelada.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+    <%= f.submit @cat_venta_cancelada.new_record? ? "Crear categoría" : "Actualizar categoría", :class => "btn btn-success"%>
+  </div>
+
+<% end %>

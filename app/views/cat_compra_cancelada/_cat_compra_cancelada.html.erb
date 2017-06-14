@@ -1,0 +1,15 @@
+<tr id="cat_venta_cancelada_<%= cat_venta_cancelada.id %>">
+  <td><%= cat_venta_cancelada.clave %></td>
+  <td><%= cat_venta_cancelada.descripcion %></td>
+   <td>
+    <% if can? :update, cat_venta_cancelada %>
+      <%= link_to 'Editar', edit_cat_venta_cancelada_path(cat_venta_cancelada), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>  
+    <% end %>
+  </td>
+
+  <td>
+    <% if can? :destroy, cat_venta_cancelada %>
+      <%= link_to 'Eliminar', cat_venta_cancelada, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_venta_cancelada.clave}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+</tr>
