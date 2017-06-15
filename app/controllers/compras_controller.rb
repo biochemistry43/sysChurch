@@ -1,14 +1,16 @@
 class ComprasController < ApplicationController
   before_action :set_compra, only: [:show, :edit, :update, :destroy, :actualizar]
-  before_action :set_compradores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
-  before_action :set_sucursales, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal]
-  before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :actualizar]
-  before_action :set_categorias_cancelacion, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :edit, :update, :show]
+  before_action :set_compradores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :consulta_compra_factura]
+  before_action :set_sucursales, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :consulta_compra_factura]
+  before_action :set_proveedores, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :actualizar, :consulta_compra_factura]
+  before_action :set_categorias_cancelacion, only: [:index, :consulta_compras, :consulta_avanzada, :solo_sucursal, :edit, :update, :show, :consulta_compra_factura]
 
   #Se despliegan todas las compras del negocio o de la sucursal dependiendo los privilegios del usuario.
   def index
     @consulta = false
     @avanzada = false
+    @rangoFechas = false
+    @porFactura = false
     
     if can? :create, Negocio
       @compras = current_user.negocio.compras
@@ -40,10 +42,28 @@ class ComprasController < ApplicationController
     end
   end
 
+  def consulta_compra_factura
+    @consulta = true
+    @porFactura = true
+    @rangoFechas = false
+    @avanzada = false
+    if request.post?
+      #la variable factura puede ser una factura o un ticket
+      @factura = params[:factura_compra]
+      if can? :create, Negocio
+        @compras = current_user.negocio.compras.where(["folio_compra = ? or ticket_compra=?", @factura, @factura])
+      else
+      end
+      
+    end
+  end
+
   
   #Este método devuelve un listado de compras en base a un rango de fechas. 
   def consulta_compras
     @consulta = true
+    @porFactura = false
+    @rangoFechas = true
     @avanzada = false
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
@@ -70,6 +90,8 @@ class ComprasController < ApplicationController
   #sucursal (en el caso de administradores)
   def consulta_avanzada
     @consulta = true
+    @porFactura = false
+    @rangoFechas = false
     @avanzada = true
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
@@ -172,7 +194,9 @@ class ComprasController < ApplicationController
   #(que generalmente será la matriz)
   def solo_sucursal
     @consulta = false
+    @rangoFechas = false
     @avanzada = false
+    @porFactura = false
     if request.post?
       @compras = current_user.sucursal.compras
       respond_to do |format|

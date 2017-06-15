@@ -9,6 +9,7 @@
 
   <!-- todo: Verificar la variable compras en el controlador -->
   <div class="row">
+
     <div class="col-md-12" style="color: gray;">
         Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @compras.size %></span>  compras con este criterio.
     </div>
@@ -21,10 +22,18 @@
     
     <div class="row">
       <div class="col-md-12" style="color: gray;">
-        <div class="col-md-12">
-          <!-- todo: Verificar las variables de fechaFinal y fechaInicial -->
-          Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> a <%= @fechaFinal %></span>
-        </div>
+
+        <% if @rangoFechas %>
+          <div class="col-md-12">
+            <!-- todo: Verificar las variables de fechaFinal y fechaInicial -->
+            Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> a <%= @fechaFinal %></span>
+          </div>
+        <% end %>
+
+        <% if @porFactura %>
+          Compras que coinciden con la factura o ticket: <span style="color:#5B7ECC; font-size: 16px;"> <%= @factura %></span>
+        <% end %>
+        
         
         <!-- todo: Verificar que se encuentre la variable avanzada -->
         <!-- Si se trata de una consulta avanzada, entonces debe mostrar estos criterios de consulta -->
@@ -87,8 +96,8 @@
   <hr>
 
   <div class="row">
-    <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
-    en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
+    <!-- Si el usuario puede ver las compras, Este botón le permitirá ver todas las compras de su sucursal o todas las compras del negocio dependiendo sus privilegios.
+    Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
     <% if can? :read, Compra %> 
       <%= link_to compras_path, html_options = {class: "btn btn-success"} do %>
       <i class="fa fa-shopping-cart"> Mostrar todas las compras </i>
@@ -107,7 +116,42 @@
 
   <hr>
 
-   <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+   <!-- Este buscador sencillo, permite al usuario buscar compras por número de ticket o factura -->
+  <div class="row" style="margin-bottom: 30px;"> 
+    <!-- Todo: Definir en el controlador la funcion consulta_compras -->
+    <%= form_tag({ controller: "compras", action: "consulta_compra_factura" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Búsqueda por ticket o factura:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Factura No.: 
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= text_field_tag :factura_compra, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Factura o ticket de la compra...", :required=>"true"} do%>
+            <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+          <%end%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consulta por ticket', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <!-- Termina buscador por rango numero de ticket o factura -->
+
+  <hr>
+
+   <!-- Este buscador sencillo, permite al usuario buscar compras realizadas en determinado rango de fechas -->
   <div class="row" style="margin-bottom: 30px;"> 
     <!-- Todo: Definir en el controlador la funcion consulta_compras -->
     <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
@@ -150,6 +194,8 @@
     <% end %>
   </div>
   <!-- Termina buscador por rango de fechas -->
+
+  <hr>
 
   <!-- Este botón despliega el div con las opciones para filtros avanzados -->
   <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
@@ -267,7 +313,7 @@
           <thead>
             <tr>
               <th class="column-title" style="text-align: center;">Fecha</th>
-              <th class="column-title" style="text-align: center;">Factura de compra</th>
+              <th class="column-title" style="text-align: center;">Factura/ticket</th>
               <th class="column-title" style="text-align: center;">Proveedor</th>
               <th class="column-title" style="text-align: center;">Comprador</th>
               <th class="column-title" style="text-align: center;">Monto de compra</th>
@@ -281,7 +327,7 @@
             <% @compras.each do |compra| %>
 	            <tr>
       				  <td style="text-align: center;"><%= compra.fecha %></td>
-      				  <td style="text-align: center;"><%= compra.folio_compra %></td>
+      				  <td style="text-align: center;"><%= compra.folio_compra %> / <%= compra.ticket_compra %></td>
       				  <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
       				  <td style="text-align: center;"><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
                
@@ -303,8 +349,9 @@
 
                   <% if can? :update, compra %>
                     <% @historial = compra.historial_ediciones_compras.size %>
-                    <% if @historial <= 3 %>
-                      <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: 'Editar compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
+
+                    <% if @historial <= 3 && compra.status.eql?("Activa")%>
+                      <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: 'compra.status.eql?("Activa")Editar compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
                         <i class="fa fa-pencil"></i>
                       <% end %>
                     <% else %>
