@@ -71,9 +71,9 @@ class ComprasController < ApplicationController
       #Si tiene privilegios de Administrador, devolverá las compras de todo el negocio pero con el filtro respectivo
       #de lo contrario, sólo devolverá las compras de su propia sucursal con el filtro respectivo.
       if can? :create, Negocio
-        @compras = current_user.negocio.compras.where(fecha: @fechaInicial..@fechaFinal)
+        @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day)
       else
-        @compras = current_user.sucursal.compras.where(fecha: @fechaInicial..@fechaFinal)
+        @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day)
       end
 
       respond_to do |format|
@@ -94,90 +94,206 @@ class ComprasController < ApplicationController
     @rangoFechas = false
     @avanzada = true
     if request.post?
+      #obtiene la fecha inicial del rango de fechas
       @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
+
+      #obtiene la fecha final del rango de fechas
       @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
+
+      #id del perfil del comprador
       perfil_id = params[:perfil_id]
-      @cajero = nil
+
+      proveedor_id = params[:proveedor_id]
+
+      #variable de instancia que guardará el proveedor elegido (en caso de haber elegido uno al momento del filtrado)
+      @proveedor = nil
+
+
+      #variable de instancia que guardará al comprador elegido (en caso de haber elegido uno al momento del filtrado)
+      @comprador = nil
+
+      #Si el perfil no está vacío, significa que se escogió un perfil, por tanto, se busca el usuario
+      #relacionado con este perfil y se asigna a la variable de instancia comprador
       unless perfil_id.empty?
-        @cajero = Perfil.find(perfil_id).user
+        @comprador = Perfil.find(perfil_id).user
+        @nombreComprador = @comprador.perfil.nombre + " " + @comprador.perfil.ape_paterno + " " + @comprador.perfil.ape_materno
       end
 
+      unless proveedor_id.empty?
+        @proveedor = Proveedor.find(proveedor_id)
+      end
+
+      #status de la compra: cancelada o activa (si es que se eligió una)
       @status = params[:status]
 
+      if @status.eql?("Todas")
+        @status = nil
+      end
+
+      #sucursal elegida de la compra (para usuarios con privilegios de administrador y es en caso de que haya elegido una)
       @suc = params[:suc_elegida]
 
+      #Si la sucursal no está vacía, significa que se escogió una sucursal en la vista, por tanto, se busca la sucursal
+      #en la base de datos que coincida con este id.
       unless @suc.empty?
         @sucursal = Sucursal.find(@suc)
       end
       
       #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
-        unless @suc.empty?
-          #valida si se eligió un cajero específico para esta consulta
-          if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @compras = current_user.negocio.compras.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
-            else
-              @compras = current_user.negocio.compras.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)  
-            end
 
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-          else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status, sucursal: @sucursal)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)  
-            end
+        #Si el único criterio elegido fue la sucursal.
+        if @sucursal
+          unless @comprador && @proveedor && @status
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)
           end
+        end
 
-        #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
-        else
-          #valida si se eligió un cajero específico para esta consulta
-          if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
-            end
+        #Si el único criterio elegido fue el comprador.
+        if @comprador
+          unless @sucursal && @proveedor && @status
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador)
+          end
+        end
 
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-          else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
-            end
+        #Si el único criterio elegido fue el status
+        if @status
+          unless @comprador && @sucursal && @proveedor
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)  
+          end
+        end
+
+        #Si el único criterio elegido fue el proveedor
+        if @proveedor
+          unless @sucursal && @status && @comprador
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)  
+          end
+        end
+
+        #Si se filtra por sucursal y comprador
+        if @sucursal && @comprador
+          unless @status && @proveedor
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador)  
+          end
+        end
+
+        #Si se filtra por sucursal y status
+        if @sucursal && @status
+          unless @comprador && @proveedor
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, status: @status)  
+          end
+        end
+
+        #Si se filtra por sucursal y proveedor
+        if @sucursal && @proveedor
+          unless @status && @usuario
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor)  
           end
         end
         
+        #Si se filtra por comprador y status
+        if @comprador && @status
+          unless @sucursal && @proveedor
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)  
+          end
+        end
+
+        #Si se filtra por comprador y proveedor
+        if @comprador && @proveedor
+          unless @sucursal && @status
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)              
+          end
+        end
+
+        #Si se filtra por status y proveedor
+        if @status && @proveedor
+          unless @sucursal && @comprador
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)              
+          end
+        end
+
+        #Si se filtra por sucursal, comprador y status
+        if @sucursal && @comprador && @status
+          unless @proveedor
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador, status: @status)              
+          end
+        end
+
+        #Si se filtra por sucursal, status, proveedor
+        if @sucursal && @status && @proveedor
+          unless @comprador
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, status: @status, proveedor: @proveedor)
+          end
+        end
+
+        #Si se filtra por sucursal, proveedor y comprador
+        if @sucursal && @proveedor && @comprador
+          unless @status
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor, user: @comprador)              
+          end
+        end
+
+        #Si se filtra por comprador, status y proveedor
+        if @comprador && @status && @proveedor
+          unless @sucursal
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)              
+          end
+        end
+
+        #Cuando se elige una opción en cada uno de los criterios de filtrado: comprador, status, proveedor, sucursal
+        if @comprador && @status && @proveedor && @sucursal
+          @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor, sucursal:@sucursal)              
+        end
+      #################################################################################################################
       #Si el usuario no es un administrador o subadministrador
       else
         
-        #valida si se eligió un cajero específico para esta consulta
-        if @cajero
-          
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
-          unless @status.eql?("Todas")
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
-          else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
-          end #Termina unless @status.eql?("Todas")
+        #Si el único criterio elegido fue el comprador.
+        if @comprador
+          unless @proveedor && @status
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador)
+          end
+        end
 
-        # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-        else
+        #Si el único criterio elegido fue el status
+        if @status
+          unless @comprador && @proveedor
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)  
+          end
+        end
 
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
-          unless @status.eql?("Todas")
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
-          else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
-          end #Termina unless @status.eql?("Todas")
+        #Si el único criterio elegido fue el proveedor
+        if @proveedor
+          unless @status && @comprador
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)  
+          end
+        end
+        
+        #Si se filtra por comprador y status
+        if @comprador && @status
+          unless @proveedor
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)  
+          end
+        end
 
-        end #Termina if @cajero
+        #Si se filtra por comprador y proveedor
+        if @comprador && @proveedor
+          unless @status
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)              
+          end
+        end
+
+        #Si se filtra por status y proveedor
+        if @status && @proveedor
+          unless @comprador
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)              
+          end
+        end
+
+        #Si se filtra por comprador, status y proveedor
+        if @comprador && @status && @proveedor
+          @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)              
+        end
 
       end
 
@@ -434,8 +550,8 @@ class ComprasController < ApplicationController
         current_user.negocio.users.each do |comprador|
           #Llena un array con todos los compradores del negocio
           #(usuarios del negocio que pueden hacer una compra)
-          #Siempre y cuando no sean auxiliares o almacenistas o cajeros pues no tienen autorización para comprar
-          if comprador.role != "auxiliar" || comprador.role != "almacenista" || comprador.role != "cajero"
+          #Siempre y cuando no sean auxiliares o almacenistas o compradors pues no tienen autorización para comprar
+          if comprador.role != "auxiliar" || comprador.role != "almacenista" || comprador.role != "comprador"
             @compradores.push(comprador.perfil)
           end
         end
@@ -443,8 +559,8 @@ class ComprasController < ApplicationController
         current_user.sucursal.users.each do |comprador|
           #Llena un array con todos los compradores de la sucursal 
           #(usuarios de la sucursal que pueden hacer una compra)
-          #Siempre y cuando no sean auxiliares o almacenistas o cajeros pues no tiene autorización para comprar
-          if comprador.role != "auxiliar" || comprador.role != "almacenista" || comprador.role != "cajero"
+          #Siempre y cuando no sean auxiliares o almacenistas o compradors pues no tiene autorización para comprar
+          if comprador.role != "auxiliar" || comprador.role != "almacenista" || comprador.role != "comprador"
             @compradores.push(comprador.perfil)
           end
         end

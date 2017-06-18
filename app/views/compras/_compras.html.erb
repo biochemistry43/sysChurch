@@ -39,39 +39,35 @@
         <!-- Si se trata de una consulta avanzada, entonces debe mostrar estos criterios de consulta -->
         <% if @avanzada %>
 
-          <!-- Muestra la factura de compra o dice que cualquiera si no se escribió ninguna -->
+          <!-- Muestra el proveedor elegido en el filtro avanzado o muestra todos si no se eligió ninguno -->
           <div class="col-md-12">
-            <!-- Todo: programar los datos que devolverá la variable factura -->
-            <% if @factura %>
-              Factura: <span style="color:#5B7ECC; font-size: 16px;"> <%= @factura %></span>
-            <% else %>
-              Cajero: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
-            <% end %>
-          </div>
-
-          <!-- Muestra el proveedor con quien se realizó la compra, o dice "todos" si no se eligió ningún proveedor
-          al momento de hacer la consulta -->
-          <div class="col-md-12">
-            <!-- Todo: programar los datos que devolverá la variable proveedor -->
             <% if @proveedor %>
-              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> <%= @proveedor %></span>
+              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> <%= @proveedor.nombre %></span>
             <% else %>
               Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
             <% end %>
           </div>
 
-          <!-- Muestra el comprador que realizó el registro de la compra o dice "todos" si no se eligió ningún comprador -->
+          <!-- Muestra el comprador que se eligió para hacer el filtrado de compras o dice "todos" si no se eligió ningún comprador al momento de hacer la consulta -->
           <div class="col-md-12">
-            <!-- Todo: programar los datos que devolverá la variable comprador -->
             <% if @comprador %>
-              Comprador: <span style="color:#5B7ECC; font-size: 16px;"> <%= @comprador %></span>
+              Comprador: <span style="color:#5B7ECC; font-size: 16px;"> <%= @nombreComprador %></span>
             <% else %>
               Comprador: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
             <% end %>
           </div>
 
-          <!-- Si se tienen privilegios adecuados, verifica si el filtro incluye las sucursales e indica la sucursal que se
-          eligió para realizar el filtro  -->
+          <!-- Muestra el status que se eligió para hacer el filtrado de compras o dice "todos" si no se eligió ningún status -->
+          <div class="col-md-12">
+            <!-- Todo: programar los datos que devolverá la variable comprador -->
+            <% if @status %>
+              Status: <span style="color:#5B7ECC; font-size: 16px;"> <%= @status %></span>
+            <% else %>
+              Status: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+
+          <!-- Si se tienen privilegios adecuados, verifica si el filtro incluye las sucursales e indica la sucursal que se eligió para realizar el filtro  -->
           <% if can? :create, Negocio %>
             <div class="col-md-12">
             <!-- todo: Programar los datos que devolverá la variable sucursal -->
