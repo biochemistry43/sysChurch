@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620040313) do
+ActiveRecord::Schema.define(version: 20170620050102) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -42,6 +42,29 @@ ActiveRecord::Schema.define(version: 20170620040313) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
     t.integer  "negocio_id"
+  end
+
+  create_table "caja_chicas", force: :cascade do |t|
+    t.decimal  "monto_movimiento"
+    t.decimal  "saldo"
+    t.string   "concepto"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  create_table "caja_ventas", force: :cascade do |t|
+    t.decimal  "entrada"
+    t.decimal  "salida"
+    t.decimal  "saldo"
+    t.integer  "venta_id"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "campo_forma_pago_items", force: :cascade do |t|
@@ -254,6 +277,31 @@ ActiveRecord::Schema.define(version: 20170620040313) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "gasto_corrientes", force: :cascade do |t|
+    t.decimal  "monto"
+    t.string   "concepto"
+    t.integer  "gasto_id"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "gastos", force: :cascade do |t|
+    t.decimal  "monto"
+    t.string   "concepto"
+    t.string   "tipo"
+    t.integer  "categoria_gasto_id"
+    t.integer  "caja_chica_id"
+    t.integer  "caja_venta_id"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
   create_table "historial_ediciones_compras", force: :cascade do |t|
     t.integer  "compra_id"
     t.integer  "sucursal_id"
@@ -304,6 +352,29 @@ ActiveRecord::Schema.define(version: 20170620040313) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
+  end
+
+  create_table "pago_devolucions", force: :cascade do |t|
+    t.decimal  "monto"
+    t.integer  "venta_cancelada_id"
+    t.integer  "gasto_id"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  create_table "pago_proveedores", force: :cascade do |t|
+    t.decimal  "monto"
+    t.integer  "compra_id"
+    t.integer  "gasto_id"
+    t.integer  "proveedor_id"
+    t.integer  "usuario_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "perdidas", force: :cascade do |t|

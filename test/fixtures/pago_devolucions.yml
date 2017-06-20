@@ -2,22 +2,16 @@
 
 one:
   monto: 
-  concepto: MyString
-  tipo: MyString
-  categoria_gasto_id: 1
-  caja_chica_id: 1
-  caja_venta_id: 1
+  venta_cancelada_id: 1
+  gasto_id: 1
   user_id: 1
   sucursal_id: 1
   negocio_id: 1
 
 two:
   monto: 
-  concepto: MyString
-  tipo: MyString
-  categoria_gasto_id: 1
-  caja_chica_id: 1
-  caja_venta_id: 1
+  venta_cancelada_id: 1
+  gasto_id: 1
   user_id: 1
   sucursal_id: 1
   negocio_id: 1
