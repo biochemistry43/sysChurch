@@ -105,13 +105,9 @@
             <th style='text-align:center;'>Cantidad</th>
             <th style="text-align: center;">Cantidad devuelta</th>
             <th style='text-align:center;'>Importe</th>
-            <!-- Si el status de la venta es "con devoluciones", entonces permite que se muestre
-            el encabezado status -->
-            <% if  @venta.status.eql?("Con devoluciones") %>
             <th style='text-align:center;'>
               Status
             </th>
-            <% end %>
             <th style="text-align: center;"></th>
           </tr>  
         </thead>

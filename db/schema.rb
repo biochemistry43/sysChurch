@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170620050102) do
+ActiveRecord::Schema.define(version: 20170623060249) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -45,14 +45,15 @@ ActiveRecord::Schema.define(version: 20170620050102) do
   end
 
   create_table "caja_chicas", force: :cascade do |t|
-    t.decimal  "monto_movimiento"
+    t.decimal  "entrada"
     t.decimal  "saldo"
     t.string   "concepto"
     t.integer  "user_id"
     t.integer  "sucursal_id"
     t.integer  "negocio_id"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.decimal  "salida"
   end
 
   create_table "caja_ventas", force: :cascade do |t|
@@ -284,8 +285,9 @@ ActiveRecord::Schema.define(version: 20170620050102) do
     t.integer  "user_id"
     t.integer  "sucursal_id"
     t.integer  "negocio_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "proveedor_id"
   end
 
   create_table "gastos", force: :cascade do |t|
@@ -433,6 +435,16 @@ ActiveRecord::Schema.define(version: 20170620050102) do
     t.text     "observaciones"
     t.decimal  "saldo_deuda"
     t.string   "puesto_contacto"
+  end
+
+  create_table "retiro_caja_ventas", force: :cascade do |t|
+    t.decimal  "monto_retirado"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.integer  "caja_ventas_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "sucursals", force: :cascade do |t|

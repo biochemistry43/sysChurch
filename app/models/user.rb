@@ -17,6 +17,21 @@ class User < ActiveRecord::Base
   has_many :compra_articulos_devueltos
   #El usuario que realiza una edicion de compra, debe tener los privilegios para realizarlo.
   has_many :historial_ediciones_compras
+
+  #El usuario que realiza un pago por concepto de devolución de venta, debe tener los privilegios para realizarlo.
+  has_many :pago_devolucions
+
+  #El usuario que realiza un pago a proveedores, debe tener los privilegios para realizarlo.
+  has_many :pago_proveedores
+
+  has_many :gastos
+
+  has_many :gasto_corrientes
+
+  #Se trata del usuario que hace un retiro de efectivo de alguna de las cajas.
+  has_many :retiro_caja_ventas
+
+  
   belongs_to :negocio
   belongs_to :sucursal
 

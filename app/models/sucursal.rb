@@ -12,4 +12,8 @@ class Sucursal < ActiveRecord::Base
 	has_one :datos_fiscales_sucursal
 	has_many :venta_canceladas
 	has_many :historial_ediciones_compras
+	has_many :pago_proveedores
+	has_many :pago_devolucions
+	has_many :gasto_corrientes
+	has_many :retiro_caja_ventas
 end

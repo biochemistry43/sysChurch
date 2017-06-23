@@ -6,5 +6,7 @@ class VentaCancelada < ActiveRecord::Base
   belongs_to :item_venta
   belongs_to :venta
   belongs_to :cat_venta_cancelada
+
+  has_many :pago_devolucions
   
 end

@@ -4,6 +4,7 @@ class Compra < ActiveRecord::Base
 	has_one :compra_cancelada
 	has_many :compra_articulos_devueltos
 	has_many :historial_ediciones_compras
+	has_many :pago_proveedores
 	belongs_to :proveedor
 	belongs_to :user
 	belongs_to :sucursal

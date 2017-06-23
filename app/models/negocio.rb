@@ -19,4 +19,9 @@ class Negocio < ActiveRecord::Base
 	has_many :compra_articulos_devueltos
 	has_many :venta_canceladas
 	has_many :historial_ediciones_compras
+	has_many :pago_proveedores
+	has_many :pago_devolucions
+	has_many :gastos
+	has_many :gasto_corrientes
+	has_many :retiro_caja_ventas
 end

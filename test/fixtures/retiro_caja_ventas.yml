@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  monto_retirado: 9.99
+  user_id: 1
+  sucursal_id: 1
+  negocio_id: 1
+  caja_ventas_id: 1
+
+two:
+  monto_retirado: 9.99
+  user_id: 1
+  sucursal_id: 1
+  negocio_id: 1
+  caja_ventas_id: 1
