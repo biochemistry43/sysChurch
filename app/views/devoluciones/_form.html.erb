@@ -1,7 +1,7 @@
 <%= form_tag({ controller: "devoluciones", action: "hacerDevolucion" }, {:class=> "form-horizontal", :method => :post}) do %>
 
     <div class="item form-group">
-      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución*</label>
+      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución*:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-tag"></i></span>
         <%= collection_select(:devolucion, :cat_devolucion, @categorias, :id, :clave, {:prompt => 'Seleccione categoria' }, { class: "form-control col-md-7 col-xs-12", required: :true, title: "Indica una categoria de devolución   " })%>
@@ -9,7 +9,7 @@
     </div>
 
     <div class="item form-group">
-      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Razón de la devolución*</label>
+      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Razón de la devolución*:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <%= text_area_tag :observaciones, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba la razón por la cual se está devolviendo este producto...", required: :true} do%>
         <%end%>
@@ -17,10 +17,19 @@
     </div>
 
     <div class="item form-group">
-      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad a devolver*</label>
+      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Unidades devueltas*:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-        <%= number_field_tag :cantidad_devuelta, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba la cantidad a devolver...", required: :true, title: "Indica cuánto devolver", min: "1.0", max: @itemVenta.cantidad } do%>
+        <%= number_field_tag :cantidad_devuelta, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Por ejemplo 1 pieza 0.5 kilogramos, etc...", required: :true, title: "Indica cuánto devolver", min: "1.0", max: @itemVenta.cantidad } do%>
         <%end%>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Importe de devolución:</label>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>  
+        <input type="hidden" value="<%= @itemVenta.precio_venta %>"> >
+        <input type="text" id="importe_devolucion" class="form-control col-md-7 col-xs-1 text_field" value="0.0" disabled>
       </div>
     </div>
 

@@ -244,6 +244,7 @@ class PuntoVentaController < ApplicationController
             itemV = ItemVenta.new
 
             itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
+            itemV.precio_venta = itemV.articulo.Venta
             itemV.cantidad = itemVenta["cantidad"]
             @venta.item_ventas << itemV
             itemV.articulo.existencia = itemV.articulo.existencia - itemV.cantidad
