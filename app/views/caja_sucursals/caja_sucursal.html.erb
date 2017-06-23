@@ -1,0 +1,17 @@
+<tr id="caja_sucursal_<%= caja_sucursal.id%>" class="rowsearch">
+  <td><%= caja_sucursal.numero_caja %></td>
+  <td><%= caja_sucursal.nombre %></td>
+  
+  <td>
+    <% if can? :edit, caja_sucursal %>
+      <%= link_to 'Editar', edit_caja_sucursal_path(caja_sucursal), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td>
+    <% if can? :destroy, caja_sucursal %>
+      <%= link_to 'Borrar', caja_sucursal, remote: true, method: :delete, data: { confirm: "¿Borrar caja: #{caja_sucursal.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
+</tr>

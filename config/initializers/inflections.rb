@@ -17,6 +17,7 @@
    inflect.irregular 'gasto', 'gastos'
    inflect.irregular 'inventario', 'inventario'
    inflect.irregular 'entradainventario', 'entradasinventario'
+   inflect.irregular 'MovimientoCajaSucursal', 'movimientoscajasucursal'
 #   inflect.uncountable %w( fish sheep )
  end
 

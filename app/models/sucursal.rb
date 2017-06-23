@@ -16,4 +16,5 @@ class Sucursal < ActiveRecord::Base
 	has_many :pago_devolucions
 	has_many :gasto_corrientes
 	has_many :retiro_caja_ventas
+	has_many :caja_sucursals
 end

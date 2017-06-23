@@ -19,8 +19,21 @@
     <div class="item form-group">
       <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Unidades devueltas*:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-        <%= number_field_tag :cantidad_devuelta, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Por ejemplo 1 pieza 0.5 kilogramos, etc...", required: :true, title: "Indica cuánto devolver", min: "1.0", max: @itemVenta.cantidad } do%>
+        <%= number_field_tag :cantidad_devuelta, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Por ejemplo 1 pieza 1.5 kilogramos, etc...", required: :true, title: "Indica cuánto devolver", min: "1.0", max: @itemVenta.cantidad } do%>
         <%end%>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Origen del recurso*:</label>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-archive"></i></span>  
+        <select name="" id="select_origen_recurso" class="form-control">
+          <option value="venta1">Caja venta 1</option>
+          <option value="venta2">Caja venta 2</option>
+          <option value="venta3">Caja venta 3</option>
+          <option value="venta3">Caja venta 4</option>
+        </select>
       </div>
     </div>
 
@@ -28,7 +41,7 @@
       <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Importe de devolución:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-money"></i></span>  
-        <input type="hidden" value="<%= @itemVenta.precio_venta %>"> >
+        <input id="precio_venta" type="hidden" value="<%= @itemVenta.precio_venta %>">
         <input type="text" id="importe_devolucion" class="form-control col-md-7 col-xs-1 text_field" value="0.0" disabled>
       </div>
     </div>
@@ -46,7 +59,7 @@
       </div>
     </div>
 
-
+<%= javascript_include_tag "devoluciones" %>
 <% end %>
 
 

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :caja_sucursals
   resources :cat_compra_canceladas
 
   get 'devoluciones/index'

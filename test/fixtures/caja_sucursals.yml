@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  numero_caja: 1
+  nombre: MyString
+  sucursal_id: 1
+
+two:
+  numero_caja: 1
+  nombre: MyString
+  sucursal_id: 1

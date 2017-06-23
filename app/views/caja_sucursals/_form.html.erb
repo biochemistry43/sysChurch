@@ -1,0 +1,30 @@
+<%= form_for @caja_sucursal, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"}  do |f| %>
+  
+  <div class="item form-group<%= @caja_sucursal.errors[:numero_caja].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :numero_caja, "Número de caja*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%= f.text_field :numero_caja, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el número de la caja..."} do%>
+      <%end%>
+      <%if @caja_sucursal.errors[:numero_caja].any? %>
+        <p class="bg-danger"><%= @caja_sucursal.errors[:numero_caja].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @caja_sucursal.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre, "Nombre de caja*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Por ejemplo: dulcería o souvenirs, etc..."} do%>
+      <%end%>
+      <%if @caja_sucursal.errors[:nombre].any? %>
+        <p class="bg-danger"><%= @caja_sucursal.errors[:nombre].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="actions">
+    <%= f.submit @caja_sucursal.new_record? ? "Crear caja" : "Actualizar caja", :class => "btn btn-success"%>
+  </div>
+<% end %>
