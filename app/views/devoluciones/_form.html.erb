@@ -28,11 +28,11 @@
       <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Origen del recurso*:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-archive"></i></span>  
-        <select name="" id="select_origen_recurso" class="form-control">
-          <option value="venta1">Caja venta 1</option>
-          <option value="venta2">Caja venta 2</option>
-          <option value="venta3">Caja venta 3</option>
-          <option value="venta3">Caja venta 4</option>
+        <select name="" id="select_origen_recurso" class="form-control" required="true">
+        <% @cajas.each do |caja| %>
+          <option value="caja_venta_<%= caja.id %>">Caja <%= caja.nombre %></option>
+        <% end %>
+          <option value="caja_chica">Caja chica</option>
         </select>
       </div>
     </div>
@@ -41,8 +41,8 @@
       <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Importe de devolución:</label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-money"></i></span>  
-        <input id="precio_venta" type="hidden" value="<%= @itemVenta.precio_venta %>">
-        <input type="text" id="importe_devolucion" class="form-control col-md-7 col-xs-1 text_field" value="0.0" disabled>
+        <%= hidden_field_tag :precio_venta, @itemVenta.precio_venta %>
+        <%= text_field_tag :importe_devolucion, nil, {class: "form-control col-md-7 col-xs-12 text_field"} %>
       </div>
     </div>
 

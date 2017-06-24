@@ -505,6 +505,7 @@ class DevolucionesController < ApplicationController
   def new
   	@itemVenta = ItemVenta.find(params[:id])
   	@categorias = current_user.negocio.cat_venta_canceladas
+    @cajas = current_user.sucursal.caja_sucursals
   end
 
   def devolucion
