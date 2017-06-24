@@ -3,5 +3,5 @@ class CajaChica < ActiveRecord::Base
 	
 	belongs_to :user
 	belongs_to :sucursal
-	belongs_to negocio
+	belongs_to :negocio
 end
