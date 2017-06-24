@@ -163,20 +163,29 @@
                 <%end%>
 
             </li>
-            <%if can? :create, Negocio%>
+            
             <li><a><i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span></a>
               <ul class="nav child_menu" style="display: none">
-                
+                <%if can? :read, CajaSucursal%>
+                  <li>
+                    <%= link_to caja_sucursals_path do%>
+                      <i class="fa fa-database"></i>
+                      Cajas de venta
+                    <% end %>
+                  </li>
+                <%end%>
+                <%if can? :create, Negocio%>
                   <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
                         <i class="fa fa-rocket"></i>
                         Negocio
                       <% end %>
                   </li>
                   <li><%= link_to sucursals_path do%>
-                        <i class="fa fa-truck"></i>
+                        <i class="fa fa-building"></i>
                         Sucursales
                       <% end %>
                   </li>
+                  
                   <li><%= link_to empleados_path do%>
                         <i class="fa fa-child"></i>
                         Empleados

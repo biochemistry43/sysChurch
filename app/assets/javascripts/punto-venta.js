@@ -232,7 +232,10 @@ $(document).ready(function(){
     
     //Se añade la caja a la que pertenece esta venta.
     caja = { };
-    caja["caja"] = $("#caja").val();
+    caja["caja"] = $("#_caja").val();
+    if (caja["caja"] == null){
+      caja["caja"] = $("#caja").val();
+    }
     datosVenta.push(caja);
 
     //Este objeto guarda el id del cliente a quien se vendió

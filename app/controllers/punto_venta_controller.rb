@@ -5,6 +5,8 @@ class PuntoVentaController < ApplicationController
 
 	def index
     @formas_pago = FormaPago.all
+    @cajas = current_user.sucursal.caja_sucursals
+    @cajaAsignada = CajaSucursal.where("user_id = ?", current_user.id).take
     @pos = true
     if params[:venta]
       @venta = Venta.find(params[:venta])
@@ -244,7 +246,7 @@ class PuntoVentaController < ApplicationController
             itemV = ItemVenta.new
 
             itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
-            itemV.precio_venta = itemV.articulo.Venta
+            itemV.precio_venta = itemV.articulo.precioVenta
             itemV.cantidad = itemVenta["cantidad"]
             @venta.item_ventas << itemV
             itemV.articulo.existencia = itemV.articulo.existencia - itemV.cantidad

@@ -30,15 +30,21 @@
                 <div class="col-md-4">
                   <form class="form">
                     <div  class="form-group">
-                        Caja Número: 
-                        <%= select_tag "caja", "<option>1</option><option>2</option><option>3</option><option>4</option>".html_safe,  class: 'form-control' %>  
+                      <% if current_user.role == "cajero" %>
+                        Caja asignada: <%= @cajaAsignada.numero_caja %> <%= @cajaAsignada.nombre.capitalize %>
+                        <%= hidden_field_tag :caja,  @cajaAsignada.numero_caja %>
+                      <% else %>
+                        Elija una caja:
+                         <%= collection_select(nil, :caja, @cajas, :id, :nombre, {:prompt => 'Seleccione una caja', :selected=>@cajaAsignada}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <% end %>
+                      
                     </div>
                   </form>
                 </div>
 
                 <div class="col-md-6 col-md-offset-1">
                   <ul class="list-unstyled ">
-                    <li><i class="fa fa-user"></i> Nombre: <strong><%=current_user.perfil.nombre%></strong>  </li>
+                    <li><i class="fa fa-user"></i> Nombre: <strong><%=current_user.perfil.nombre_completo%></strong>  </li>
                     <li><i class="fa fa-envelope"></i> Email: <strong><%=current_user.email%></strong>  </li>
                   </ul>
                 </div>

@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-cajas-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar Caja");
+ 
+// Render the new form
+$('.modal-body-cajas').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalCaja').modal("show");
+ 
+// Set focus to the first element
+$('#modalCaja').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

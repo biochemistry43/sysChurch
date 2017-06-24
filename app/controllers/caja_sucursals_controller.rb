@@ -1,5 +1,6 @@
 class CajaSucursalsController < ApplicationController
   before_action :set_caja_sucursal, only: [:show, :edit, :update, :destroy]
+  before_action :set_usuarios, only: [:new, :edit, :update, :destroy]
 
   # GET /caja_sucursals
   # GET /caja_sucursals.json
@@ -25,14 +26,21 @@ class CajaSucursalsController < ApplicationController
   # POST /caja_sucursals.json
   def create
     @caja_sucursal = CajaSucursal.new(caja_sucursal_params)
-
+    user = Perfil.find(params[:perfil_id]).user
+    @caja_sucursal.user_id = user.id
     respond_to do |format|
       if @caja_sucursal.save
-        format.html { redirect_to @caja_sucursal, notice: 'Se creo una caja para esta sucursal.' }
-        format.json { render :show, status: :created, location: @caja_sucursal }
+
+        #format.html { redirect_to @caja_sucursal, notice: 'Se creo una caja para esta sucursal.' }
+        #format.json { render :show, status: :created, location: @caja_sucursal }
+        current_user.sucursal.caja_sucursals << @caja_sucursal
+        format.json { head :no_content}
+        format.js
       else
-        format.html { render :new }
-        format.json { render json: @caja_sucursal.errors, status: :unprocessable_entity }
+        format.json {render json: @caja_sucursal.errors.full_messages, status: :unprocessable_entity}
+        format.js {render :new}
+        #format.html { render :new }
+        #format.json { render json: @caja_sucursal.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -41,7 +49,11 @@ class CajaSucursalsController < ApplicationController
   # PATCH/PUT /caja_sucursals/1.json
   def update
     respond_to do |format|
+      
       if @caja_sucursal.update(caja_sucursal_params)
+        user = Perfil.find(params[:perfil_id]).user
+        @caja_sucursal.user_id = user.id
+        @caja_sucursal.save
         #format.html { redirect_to @caja_sucursal, notice: 'Caja sucursal was successfully updated.' }
         #format.json { render :show, status: :ok, location: @caja_sucursal }
         format.json { head :no_content}
@@ -73,6 +85,13 @@ class CajaSucursalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def caja_sucursal_params
-      params.require(:caja_sucursal).permit(:numero_caja, :nombre, :sucursal_id)
+      params.require(:caja_sucursal).permit(:numero_caja, :nombre, :saldo, :sucursal_id, :perfil_id)
+    end
+
+    def set_usuarios
+      @usuarios = []
+      current_user.sucursal.users.each do |usuario|
+        @usuarios << usuario.perfil
+      end
     end
 end

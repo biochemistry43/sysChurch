@@ -15,7 +15,7 @@
   <div class="item form-group<%= @caja_sucursal.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :nombre, "Nombre de caja*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <span class="input-group-addon"><i class="fa fa-user"></i></span>
       <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Por ejemplo: dulcería o souvenirs, etc..."} do%>
       <%end%>
       <%if @caja_sucursal.errors[:nombre].any? %>
@@ -24,7 +24,46 @@
     </div>
   </div>
 
-  <div class="actions">
-    <%= f.submit @caja_sucursal.new_record? ? "Crear caja" : "Actualizar caja", :class => "btn btn-success"%>
+  <div class="item form-group<%= @caja_sucursal.errors[:perfil_id].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :perfil_id, "Asignada a*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-user"></i></span>
+      <% if @caja_sucursal.new_record? %>
+        <%= collection_select(nil, :perfil_id, @usuarios, :id, :nombre_completo, {:prompt => 'Asigne un usuario a esta caja'}, { class: "form-control col-md-7 col-xs-12" })%>
+      <% else %>
+        <% @perfil = User.find(@caja_sucursal.user_id).perfil %>
+        <%= collection_select(nil, :perfil_id, @usuarios, :id, :nombre_completo, {:prompt => 'Asigne un usuario a esta caja', :selected => @perfil.id}, { class: "form-control col-md-7 col-xs-12" })%>
+      <% end %>
+      
+      <%if @caja_sucursal.errors[:perfil_id].any? %>
+        <p class="bg-danger"><%= @caja_sucursal.errors[:perfil_id].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
   </div>
+
+  <% if @caja_sucursal.new_record? %>
+    <div class="item form-group<%= @caja_sucursal.errors[:saldo].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :saldo, "Saldo inicial*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+        <%= f.number_field :saldo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Escriba el saldo inicial con que se creará esta caja de venta (puede ser 0)..."} do%>
+        <%end%>
+        <%if @caja_sucursal.errors[:saldo].any? %>
+          <p class="bg-danger"><%= @caja_sucursal.errors[:saldo].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-3 col-xs-12">
+         
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-left">
+        <%= f.submit @caja_sucursal.new_record? ? "Crear caja" : "Actualizar caja", :class => "btn btn-success"%>
+      </div>
+    </div>
+  </div>
+
 <% end %>
