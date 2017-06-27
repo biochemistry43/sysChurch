@@ -9,4 +9,5 @@ class Venta < ActiveRecord::Base
 	belongs_to :cliente
 	belongs_to :sucursal
 	belongs_to :negocio
+	belongs_to :caja_sucursal
 end

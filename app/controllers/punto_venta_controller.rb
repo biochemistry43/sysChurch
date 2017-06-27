@@ -283,6 +283,7 @@ class PuntoVentaController < ApplicationController
               current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.negocio.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
+              cajaBD.ventas << @venta
 
               movimiento_caja_suc.save
 
@@ -290,7 +291,7 @@ class PuntoVentaController < ApplicationController
 
               saldoActualizado = saldoActualCaja + @venta.montoVenta
               cajaBD.saldo = saldoActualizado
-              cajaBD.save
+              
 
 
             end
