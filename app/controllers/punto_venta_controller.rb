@@ -291,6 +291,7 @@ class PuntoVentaController < ApplicationController
 
               saldoActualizado = saldoActualCaja + @venta.montoVenta
               cajaBD.saldo = saldoActualizado
+              cajaBD.save
               
 
 
