@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170623225051) do
+ActiveRecord::Schema.define(version: 20170627031916) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -294,7 +294,7 @@ ActiveRecord::Schema.define(version: 20170623225051) do
     t.string   "tipo"
     t.integer  "categoria_gasto_id"
     t.integer  "caja_chica_id"
-    t.integer  "caja_venta_id"
+    t.integer  "caja_sucursal_id"
     t.integer  "user_id"
     t.integer  "sucursal_id"
     t.integer  "negocio_id"
@@ -341,8 +341,6 @@ ActiveRecord::Schema.define(version: 20170623225051) do
   create_table "movimiento_caja_sucursals", force: :cascade do |t|
     t.decimal  "entrada"
     t.decimal  "salida"
-    t.decimal  "saldo"
-    t.integer  "venta_id"
     t.integer  "user_id"
     t.integer  "sucursal_id"
     t.integer  "negocio_id"

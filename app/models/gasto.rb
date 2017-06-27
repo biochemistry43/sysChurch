@@ -9,7 +9,7 @@ class Gasto < ActiveRecord::Base
 
 	#En caso de que el pago se haya hecho con la caja de venta, el registro de gasto se relacionará
 	#con el registro de movimiento de la caja de venta.
-	belongs_to :caja_venta
+	belongs_to :caja_sucursal
 
 	#Se trata del usuario que registra el gasto
 	belongs_to :user
