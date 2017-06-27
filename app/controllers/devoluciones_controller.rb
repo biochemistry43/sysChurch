@@ -563,7 +563,7 @@ class DevolucionesController < ApplicationController
       #################  creando los registros por concepto de gastos por devolucion de productos #####################
       #################################################################################################################
 
-      @categoriaGasto = negocio.categoria_gastos.where("nombre = Devoluciones").take
+      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombreCategoria = ?", "Devoluciones").take
 
       #Esta variable recoge el parámetro del origen del recurso con el que se va a pagar la devolución.
       #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
@@ -585,11 +585,11 @@ class DevolucionesController < ApplicationController
         @cajaVenta = CajaSucursal.find(id_caja_sucursal)
 
         #Verifico que la caja tenga el saldo necesario para realizar la operación de devolución.
-        if @cajaVenta.saldo >= importe_devolucion
+        if @cajaVenta.saldo >= importe_devolucion.to_f
           @gasto = Gasto.new(:monto=>importe_devolucion, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
           
           #creación y relación del registro de pago de devolución
-          @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion)
+          @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
           @gasto.pago_devolucion = @pagoDevolucion
           @devolucion.pago_devolucions << @pagoDevolucion
           current_user.pago_devolucions << @pagoDevolucion
@@ -604,18 +604,17 @@ class DevolucionesController < ApplicationController
           current_user.negocio.gastos << @gasto
 
           #Se actualiza el saldo de la caja de venta
-          saldo = @cajaVenta.saldo - importe_devolucion
+          saldo = @cajaVenta.saldo - importe_devolucion.to_f
           @cajaVenta.saldo = saldo
 
           #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
-          @movimientoCaja = MovimientoCajaSucursal.new(:salida=>importe_devolucion, :caja_sucursal=>@cajaVenta)
+          @movimientoCaja = MovimientoCajaSucursal.new(:salida=>importe_devolucion.to_f, :caja_sucursal=>@cajaVenta)
           current_user.movimiento_caja_sucursals << @movimientoCaja
           current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
           current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
 
         else
           flash[:notice] = "No hay saldo suficiente en esta caja para hacer la devolución"
-          format.html { redirect_to action: "devolucion" }
         end
 
       end
@@ -627,14 +626,14 @@ class DevolucionesController < ApplicationController
           #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
           #dicho registro. En esto se determina si hay saldo suficiente para cubrir la devolución.
           @cajaChicaLast = sucursal.caja_chicas.last
-          if @cajaChicaLast.saldo >= importe_devolucion
+          if @cajaChicaLast.saldo >= importe_devolucion.to_f
 
             saldo_en_caja_chica = @cajaChicaLast.saldo
           
-            @gasto = Gasto.new(:monto=>importe_devolucion, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
+            @gasto = Gasto.new(:monto=>importe_devolucion.to_f, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
           
             #creación y relación del registro de pago de devolución
-            @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion)
+            @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
             @gasto.pago_devolucion = @pagoDevolucion
             @devolucion.pago_devolucions << @pagoDevolucion
             current_user.pago_devolucions << @pagoDevolucion
@@ -648,10 +647,10 @@ class DevolucionesController < ApplicationController
             current_user.negocio.gastos << @gasto
 
             #Se hace un registro en caja chica
-            @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion)
+            @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion.to_f)
 
             #Se actualiza el saldo de la caja chica
-            nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion
+            nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
             @cajaChica.saldo = nvo_saldo_caja_chica
 
             #Se hacen las relaciones de pertenencia para la caja chica.
@@ -661,7 +660,6 @@ class DevolucionesController < ApplicationController
 
           else
             flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la devolución"
-            format.html { redirect_to action: "devolucion" }
           end
         end
       end
@@ -670,7 +668,7 @@ class DevolucionesController < ApplicationController
 	    if @devolucion.valid?
 	      if @devolucion.save && @itemVenta.save && @venta.save 
 
-          if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && movimientoCaja.save
+          if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
 	          flash[:notice] = "La devolución se realizó con éxito"
 	          format.html { redirect_to action: "devolucion" }
           elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save

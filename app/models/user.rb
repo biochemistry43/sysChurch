@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   #Se trata del usuario que hace un retiro de efectivo de alguna de las cajas.
   has_many :retiro_caja_ventas
 
+  has_many :movimiento_caja_sucursals
+
   
   belongs_to :negocio
   belongs_to :sucursal

@@ -20,4 +20,6 @@ class Sucursal < ActiveRecord::Base
 
 	#Se refiere a los registros de caja chica (no a varias cajas chicas)
 	has_many :caja_chicas
+
+	has_many :movimiento_caja_sucursals
 end

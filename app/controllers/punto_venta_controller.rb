@@ -153,7 +153,10 @@ class PuntoVentaController < ApplicationController
 
           if current_user.sucursal.ventas.last
             consecutivo = current_user.sucursal.ventas.last.consecutivo
-            consecutivo += 1
+
+            if consecutivo
+              consecutivo += 1
+            end
           else
             consecutivo = 1
           end
@@ -163,7 +166,6 @@ class PuntoVentaController < ApplicationController
           @venta = Venta.new
           @venta.fechaVenta = Time.now
           @venta.montoVenta = montoVenta
-          @venta.caja = caja
           
           unless cliente.eql?("")
             Cliente.find(cliente).ventas << @venta
@@ -267,6 +269,32 @@ class PuntoVentaController < ApplicationController
             folio = claveSucursal + "V"
             folio << consecutivo.to_s
             @venta.folio = folio
+
+            #En caso de que el tipo de pago haya sido efectivo, se hace un registro de movimiento
+            #en la caja de venta elegida por el usuario.
+
+            if nombreFormaPago.eql?("efectivo")
+              movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta)
+
+              #Se obtiene el registro de la caja de venta elegida o asignada.
+              cajaBD = CajaSucursal.find(caja)
+
+              current_user.movimiento_caja_sucursals << movimiento_caja_suc
+              current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
+              current_user.negocio.movimiento_caja_sucursals << movimiento_caja_suc
+              cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
+
+              movimiento_caja_suc.save
+
+              saldoActualCaja = cajaBD.saldo
+
+              saldoActualizado = saldoActualCaja + @venta.montoVenta
+              cajaBD.saldo = saldoActualizado
+              cajaBD.save
+
+
+            end
+
             #Si los campos fueron guardados correctamente, procede a guardar la venta
             if @venta.save && recordVentaFormaPago.save
               if itemSaved

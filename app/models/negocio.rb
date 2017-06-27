@@ -24,4 +24,5 @@ class Negocio < ActiveRecord::Base
 	has_many :gastos
 	has_many :gasto_corrientes
 	has_many :retiro_caja_ventas
+	has_many :movimiento_caja_sucursals
 end
