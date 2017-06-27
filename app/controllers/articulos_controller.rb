@@ -244,7 +244,7 @@ class ArticulosController < ApplicationController
           #format.html { render :new }
           #format.json { render json: @articulo.errors, status: :unprocessable_entity }
           format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
-          format.js {render :new}
+          format.js {render :new} 
         end
       else
         format.js { render :new }
