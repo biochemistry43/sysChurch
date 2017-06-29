@@ -136,6 +136,21 @@
                   </li>
 
                 <% end %>
+
+                <% if can? :read, Gasto %>
+                
+                  <li><a><i class="fa fa-calculator"></i> Gastos<span class="fa fa-chevron-down"></span></a>
+
+                    <ul class="nav child_menu" style="display: none">
+                      <li><%= link_to caja_chicas_path, {id: "pos-mod"} do%>
+                        
+                        Caja chica
+                        <%end%>
+                      </li>
+                    </ul>
+                  </li>
+
+                <% end %>
                 
                 
                 <%if can? :read, Banco%>

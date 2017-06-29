@@ -33,8 +33,13 @@ class User < ActiveRecord::Base
 
   has_many :movimiento_caja_sucursals
 
+  #caja_chicas son los movimientos de caja chica los usuarios hacen. El tipo de movimientos que un usuario puede hacer son:
+  #reposición o gasto.
+  has_many :caja_chicas
+
   
   belongs_to :negocio
+
   belongs_to :sucursal
 
 end

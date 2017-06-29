@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-caja-chica-title').html("<i class='glyphicon glyphicon-plus'></i> Reposición de caja");
+ 
+// Render the new form
+$('.modal-body-caja-chica').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalCajaChica').modal("show");
+ 
+// Set focus to the first element
+$('#modalCajaChica').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

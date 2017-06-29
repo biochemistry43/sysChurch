@@ -1,16 +1,13 @@
 Rails.application.routes.draw do
 
-  get 'caja_chica/index'
-
-  get 'caja_chica/show'
-
-  get 'caja_chica/create'
-
-  get 'caja_chica/edit'
-
-  get 'caja_chica/update'
-
-  get 'caja_chica/destroy'
+  resources 'caja_chicas'
+  get 'caja_chicas/index'
+  get 'caja_chicas/show'
+  get 'caja_chicas/create'
+  get 'caja_chicas/edit'
+  get 'caja_chicas/update'
+  get 'caja_chicas/destroy'
+  get 'caja_chicas/new'
 
   resources :caja_sucursals
   resources :cat_compra_canceladas
