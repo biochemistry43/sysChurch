@@ -3,12 +3,15 @@ class CajaChicasController < ApplicationController
 
   def index
     @movimientos_caja = current_user.sucursal.caja_chicas
-    if current_user.sucursal.caja_chicas.count > 0
-      last = current_user.sucursal.caja_chicas.last
-      @saldo = last.saldo
-    else
-      @saldo = 0.0
-    end
+    entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+    salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+    @saldo = entradas - salidas
+    #if current_user.sucursal.caja_chicas.count > 0
+     # last = current_user.sucursal.caja_chicas.last
+     # @saldo = last.saldo
+    #else
+    #  @saldo = 0.0
+    #end
     @caja_chicas = current_user.sucursal.caja_chicas
   end
 

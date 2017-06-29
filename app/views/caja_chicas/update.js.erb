@@ -1,2 +1,3 @@
 $('#modalCajaChica').modal('toggle');
 $('#caja_chica_<%= @caja_chica.id %>').replaceWith('<%= j render (@caja_chica) %>')
+window.location.reload(true);
