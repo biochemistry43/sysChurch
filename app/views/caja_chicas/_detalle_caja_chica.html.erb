@@ -1,0 +1,183 @@
+<form action="">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="col-xs-9">
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div class="tab-pane active" id="generales">
+          <!-- Fecha del egreso -->
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha de operación:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+              <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @fechaOperacion %>" >
+            </div>
+          </div>
+
+          <!-- Importe del movimiento -->
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Importe:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-money"></i></span>
+              <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "$ <%= @importeOperacion %>">
+            </div>
+          </div>
+
+
+          <!-- Concepto del gastos -->
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Concepto del gasto:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-user"></i></span>
+              <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @conceptoOperacion %>" >
+            </div>
+          </div>
+
+
+          <!--  usuario que hizo el movimiento -->
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Usuario que autorizó:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+              <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @usuarioOperacion %>">
+            </div>
+          </div>
+             
+        </div>
+        
+        <!-- Si el movimiento de caja chica fue un gasto, esta sección muestra algunos detalles de dicho gasto realizado -->       
+        <% if @gasto %>
+        <div class="tab-pane" id="detalles">
+          
+          <!-- Si el gasto realizado es un gasto corriente, entonces... -->
+          <% if @gastoCorriente %>
+            <!--  Número de factura -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Factura #:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @facturaGasto %>">
+              </div>
+            </div>
+
+            <!--  Número de ticket -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Ticket #:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @ticketGasto %>">
+              </div>
+            </div>
+            
+            <!-- Proveedor al que se le pago este gasto -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Proveedor:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @proveedor %>">
+              </div>
+            </div>
+
+          <% end %>
+
+          <!-- Si el gasto realizado es un pago a un proveedor, entonces... -->
+          <% if @pagoProveedor %>
+            <!--  Número de factura -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Factura #:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @facturaCompra %>">
+              </div>
+            </div>
+
+            <!--  Número de ticket -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Ticket #:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @ticketCompra %>">
+              </div>
+            </div>
+
+            <!--  Fecha de compra -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha compra:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @fechaCompra %>">
+              </div>
+            </div>
+
+            <!--  Proveedor al que se hizo el pago -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Proveedor:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @proveedorCompra %>">
+              </div>
+            </div>
+
+            <!--  Esta sección indica si el pago realizado liquidó la compra o es simplemente un abono -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Status del pago:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @statusPagoCompra %>">
+              </div>
+            </div>
+
+          <% end %>
+
+          <!-- Si el gasto realizado es un pago por devolución, entonces... -->
+          <% if @pagoDevolucion %>
+            <!--  Folio de la venta -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Folio venta:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @folioVenta %>">
+              </div>
+            </div>
+
+            <!--  Folio de la venta -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha venta:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @fechaVenta %>">
+              </div>
+            </div>
+
+            <!--  Cliente de la venta -->
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Cliente:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+                <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%= @clienteVenta %>">
+              </div>
+            </div>
+
+          <% end %>
+
+        </div> <!-- Termina el tab-pane detalles -->
+        <% end %>
+       
+      <!-- </div> Termina tab-content -->
+      </div>
+    </div>
+
+    <!-- Esta sección contiene las pestañas abren los divs #generales y #detalles -->
+    <div class="col-xs-3">
+      
+      <ul class="nav nav-tabs tabs-right">
+        <li class="active"><a href="#generales" data-toggle="tab">Datos Generales</a>
+        </li>
+        <li><a href="#detalles" data-toggle="tab">Detalle del gasto</a>
+        </li>
+      </ul>
+
+    </div>
+
+
+  </div>
+</form>

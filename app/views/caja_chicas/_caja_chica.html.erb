@@ -1,21 +1,21 @@
-<tr id="caja_chica_<%= caja_chica.id%>" class="rowsearch">
+<tr id="caja_chica_<%= caja_chica.id%>" class="rowsearch <%= caja_chica.salida ? 'salida_caja' : '' %>">
   <td class="center-td"><%= caja_chica.created_at.strftime("%d/%m/%Y") %></td>
-  <td class="center-td"><%= caja_chica.entrada %></td>
+  <td class="center-td"><%= caja_chica.entrada ? caja_chica.entrada : 0 %></td>
   <td class="center-td"><%= caja_chica.salida ? caja_chica.salida : 0 %></td>
   <td class="center-td"><%= caja_chica.concepto %></td>
   <td class="center-td">
     <% if caja_chica.salida == nil %>
-      <%= link_to edit_caja_chica_path(caja_chica), html_options = {class: "btn btn-info btn-xs", remote: true} do %>
-	    <i class="fa fa-pencil"></i>
-	    Editar reposición
-	  <% end %>
+      <%= link_to edit_caja_chica_path(caja_chica), html_options = {class: "btn btn-warning btn-xs", remote: true} do %>
+  	    <i class="fa fa-pencil"></i>
+  	    Editar reposición
+  	  <% end %>
+    <% else %>
+      <%= link_to caja_chica_path(caja_chica), html_options = {class: "btn btn-primary btn-xs", remote: true} do %>
+        <i class="fa fa-pencil"></i>
+        Mostrar detalles
+      <% end %>
     <% end %>
     
   </td>
 </tr>
 
-<style>
-	/*.salida-caja{
-		background: red;
-	}*/
-</style>

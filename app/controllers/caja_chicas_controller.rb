@@ -1,5 +1,5 @@
 class CajaChicasController < ApplicationController
-  before_action :set_caja_chica, only: [:edit, :update, :destroy]
+  before_action :set_caja_chica, only: [:edit, :update, :destroy, :show]
 
   def index
     @movimientos_caja = current_user.sucursal.caja_chicas
@@ -20,6 +20,50 @@ class CajaChicasController < ApplicationController
   end 
 
   def show
+    
+    @fechaOperacion = @caja_chica.created_at.strftime("%d/%m/%Y") 
+    @importeOperacion = 0
+    if @caja_chica.salida > 0
+      @importeOperacion = -1 * @caja_chica.salida
+    elsif @caja_chica.entrada > 0
+      @importeOperacion = @caja_chica.entrada
+    end
+    @conceptoOperacion = @caja_chica.concepto
+    @usuarioOperacion = @caja_chica.user.perfil ? @caja_chica.user.perfil.nombre_completo : @caja_chica.user.email
+
+    @gasto = nil
+    @gastoCorriente = nil
+    @pagoProveedor = nil
+    @pagoDevolucion = nil
+
+    if @caja_chica.gasto
+      @gasto = @caja_chica.gasto
+
+      if @gasto.pago_devolucion
+        @pagoDevolucion = @gasto.pago_devolucion
+        @folioVenta = @pagoDevolucion.venta_cancelada.venta.folio
+        @fechaVenta = @pagoDevolucion.venta_cancelada.venta.created_at.strftime("%d/%m/%Y") 
+        @clienteVenta = @pagoDevolucion.venta_cancelada.venta.cliente ? @pagoDevolucion.venta_cancelada.venta.cliente.nombre_completo : "general"
+      end
+
+      if @gasto.pago_proveedor
+        @pagoProveedor = @gasto.pago_proveedor
+        @facturaCompra = @pagoProveedor.compra.folio_compra ? @pagoProveedor.compra.folio_compra : "No aplica"
+        @ticketCompra = @pagoProveedor.compra.ticket_compra ? @pagoProveedor.compra.ticket_compra : "No aplica"
+        @fechaCompra = @pagoProveedor.compra.created_at.strftime("%d/%m/%Y") 
+        @proveedorCompra = @pagoProveedor.compra.proveedor.nombre
+        @statusPagoCompra = 0
+      end
+
+      if @gasto.gasto_corriente
+        @gastoCorriente = @gasto.gasto_corriente
+        @facturaGasto = @gastoCorriente.folio_gasto ? @gastoCorriente.folio_gasto : "No aplica"
+        @ticketGasto = @gastoCorriente.ticket_gasto ? @gastoCorriente.ticket_gasto : "No aplica"
+        @proveedor = @gastoCorriente.proveedor.nombre
+      end
+
+    end
+
   end
 
   def create

@@ -4,4 +4,8 @@ class Cliente < ActiveRecord::Base
 	has_many :ventas
 
 	validates :nombre, :ape_pat, :ape_mat, :presence => { message: "Este campo no puede ir vacío" }
+
+	def nombre_completo
+      "#{nombre} #{ape_pat} #{ape_mat}"
+	end
 end

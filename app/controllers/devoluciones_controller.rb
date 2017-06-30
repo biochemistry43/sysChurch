@@ -622,13 +622,18 @@ class DevolucionesController < ApplicationController
       #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
       if origen.include? "caja_chica"
         #Verifica si existen registros de caja chica para esta sucursal
-        if sucursal.caja_chicas
+        if current_user.sucursal.caja_chicas
           #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
           #dicho registro. En esto se determina si hay saldo suficiente para cubrir la devolución.
-          @cajaChicaLast = sucursal.caja_chicas.last
-          if @cajaChicaLast.saldo >= importe_devolucion.to_f
+          entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+          salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+          @saldoCajaChica = entradas - salidas
 
-            saldo_en_caja_chica = @cajaChicaLast.saldo
+
+          #@cajaChicaLast = sucursal.caja_chicas.last
+          if @saldoCajaChica >= importe_devolucion.to_f
+
+            saldo_en_caja_chica = @saldoCajaChica
           
             @gasto = Gasto.new(:monto=>importe_devolucion.to_f, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
           
@@ -646,12 +651,12 @@ class DevolucionesController < ApplicationController
             current_user.sucursal.gastos << @gasto
             current_user.negocio.gastos << @gasto
 
-            #Se hace un registro en caja chica
+            #Se hace un registro en caja chica y se relaciona con el gasto
             @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion.to_f)
-
+            @cajaChica.gastos << @gasto
             #Se actualiza el saldo de la caja chica
-            nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
-            @cajaChica.saldo = nvo_saldo_caja_chica
+            #nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
+            #@cajaChica.saldo = nvo_saldo_caja_chica
 
             #Se hacen las relaciones de pertenencia para la caja chica.
             current_user.caja_chicas << @cajaChica
@@ -663,6 +668,8 @@ class DevolucionesController < ApplicationController
           end
         end
       end
+
+
 
       respond_to do |format|
 	    if @devolucion.valid?

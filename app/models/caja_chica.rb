@@ -1,5 +1,5 @@
 class CajaChica < ActiveRecord::Base
-	has_many :gastos
+	has_one :gasto
 	
 	belongs_to :user
 	belongs_to :sucursal

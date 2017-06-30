@@ -1,0 +1,20 @@
+// Add the dialog title
+
+
+  $('#modal-caja-chica-title').html("<i class='fa fa-eye'></i> Detalles de registro");
+  $('#modal-caja_chica-title').parent().css("background-color", "#ff1a1a");
+  $('#modal-caja_chica-title').parent().css("color", "white");
+
+ 
+	// Render the new form
+	$('#modal-body-caja-chica').html('<%= j render("detalle_caja_chica") %>');
+	 
+	// Show the dynamic dialog
+	$('#modalCajaChica').modal("show");
+	 
+	// Set focus to the first element
+	$('#modalCajaChica').on('shown.bs.modal', function () {
+		  $('.first_input').focus();
+	})
+
+	//fecha, monto, concepto y usuario
