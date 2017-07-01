@@ -22,7 +22,27 @@ var fecha = new Date();
 
 //jquery
 $(document).ready(function(){
+  
+  function disableF5(e) { if ((e.which || e.keyCode) == 116) e.preventDefault(); };
+  $(document).on("keydown", disableF5);
 
+  $("#compra_tipo_pago").on("change", function(e){
+    seleccion = this.value;
+    if (seleccion == "Credito"){
+      $("#opciones_compra_contado").css("display", "none");
+      $("#opciones_compra_credito").slideDown();  
+    }
+    else if (seleccion == "Contado"){
+      $("#opciones_compra_credito").css("display", "none");
+      $("#opciones_compra_contado").slideDown(); 
+      $('#compra_tipo_pago').prop('required',true);
+    }
+    
+  });
+
+
+
+  $('#compra_tipo_pago option:contains("Contado")').prop('selected',true);
 
   $("#filtros_avanzados").click(function(e){
     if( $("#opciones_filtros_avanzados").is(":visible") ){
@@ -305,10 +325,6 @@ function addProduct(elem){
 
 } //Termina la función addProduct
 
-function toggleCredito(event){
-  alert("hello" + event);
-}
-
 
 $(document).on('click', '.borrar_item_venta', function (event) {
     event.preventDefault();
@@ -421,4 +437,3 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
   $("#modalClientes").modal("hide");
 }
-

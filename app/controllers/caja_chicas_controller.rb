@@ -43,7 +43,7 @@ class CajaChicasController < ApplicationController
         @pagoDevolucion = @gasto.pago_devolucion
         @folioVenta = @pagoDevolucion.venta_cancelada.venta.folio
         @fechaVenta = @pagoDevolucion.venta_cancelada.venta.created_at.strftime("%d/%m/%Y") 
-        @clienteVenta = @pagoDevolucion.venta_cancelada.venta.cliente ? @pagoDevolucion.venta_cancelada.venta.cliente.nombre_completo : "general"
+        @clienteVenta = @pagoDevolucion.venta_cancelada.venta.cliente ? @pagoDevolucion.venta_cancelada.venta.cliente.nombre_completo : "<ge></ge>neral"
       end
 
       if @gasto.pago_proveedor
@@ -52,7 +52,7 @@ class CajaChicasController < ApplicationController
         @ticketCompra = @pagoProveedor.compra.ticket_compra ? @pagoProveedor.compra.ticket_compra : "No aplica"
         @fechaCompra = @pagoProveedor.compra.created_at.strftime("%d/%m/%Y") 
         @proveedorCompra = @pagoProveedor.compra.proveedor.nombre
-        @statusPagoCompra = 0
+        @statusPagoCompra = @pagoProveedor.statusPago
       end
 
       if @gasto.gasto_corriente

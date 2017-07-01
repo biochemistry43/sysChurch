@@ -653,7 +653,7 @@ class DevolucionesController < ApplicationController
 
             #Se hace un registro en caja chica y se relaciona con el gasto
             @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion.to_f)
-            @cajaChica.gastos << @gasto
+            @cajaChica.gasto = @gasto
             #Se actualiza el saldo de la caja chica
             #nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
             #@cajaChica.saldo = nvo_saldo_caja_chica
