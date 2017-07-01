@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170701064807) do
+ActiveRecord::Schema.define(version: 20170701073855) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -380,6 +380,17 @@ ActiveRecord::Schema.define(version: 20170701064807) do
     t.datetime "updated_at",         null: false
   end
 
+  create_table "pago_pendientes", force: :cascade do |t|
+    t.date     "fecha_vencimiento"
+    t.decimal  "saldo"
+    t.integer  "compra_id"
+    t.integer  "proveedor_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "pago_proveedores", force: :cascade do |t|
     t.decimal  "monto"
     t.integer  "compra_id"
@@ -388,9 +399,10 @@ ActiveRecord::Schema.define(version: 20170701064807) do
     t.integer  "user_id"
     t.integer  "sucursal_id"
     t.integer  "negocio_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.string   "statusPago"
+    t.integer  "pago_pendiente_id"
   end
 
   create_table "perdidas", force: :cascade do |t|
