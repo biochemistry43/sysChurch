@@ -1,0 +1,17 @@
+<tr id="pago_pendiente_<%= pago_pendiente.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= pago_pendiente.proveedor.nombre %></td>
+
+  <td style="text-align: center;"><%= pago_pendiente.compra.folio_compra %>/<%= pago_pendiente.compra.ticket_compra %></td>
+
+  <td style="text-align: center;"><%= pago_pendiente.fecha_vencimiento.strftime("%d/%m/%Y") %></td>
+  
+  <td style="text-align: center;"><%= pago_pendiente.saldo %></td>
+
+  <td style="text-align: center;"> <%= link_to 'Detalles', pago_pendiente_path(pago_pendiente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-eye"></i> 
+  </td>
+
+  <td style="text-align: center;"> <%= link_to 'Aplicar pago', edit_pago_pendiente_path(pago_pendiente), html_options = {class: "btn btn-primary btn-xs", remote: true} %><i class="fa fa-pencil"></i> 
+  </td>
+
+  <td></td>
+</tr>

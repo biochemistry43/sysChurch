@@ -550,10 +550,12 @@ class ComprasController < ApplicationController
           end
         end
         
-      else #Si el pago no es de contado
+      elsif tipo_pago.eql?("Credito") #Si la compra es a crédito
         
+        fecha_limite = DateTime.parse(compra_params[:fecha_limite_pago]).to_date
+        @pagoPendiente = PagoPendiente.new(:fecha_vencimiento=>fecha_limite, :saldo=>monto_compra, :compra=>@compra, :proveedor=>@compra.proveedor, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio)
         if @compra.valid?
-          if @compra.save
+          if @compra.save && @pagoPendiente.save
             articulos = compra_params[:articulos]
             fecha = DateTime.parse(compra_params[:fecha]).to_date
             tipo_pago = compra_params[:tipo_pago]

@@ -1,0 +1,39 @@
+<%= form_for @pago_pendiente,  {:class=> "form-horizontal", :method => :post} do %>
+  
+  <div class="item form-group">
+    <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Pago a aplicar*:</label>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <%= number_field_tag :pago_aplicar, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Indique él monto del pago que se va a aplicar...", required: :true, title: "Indica cuánto pagar" } do%>
+      <%end%>
+    </div>
+  </div>
+
+  <div class="item form-group %>">
+    <%= f.label :origen_recurso, "Orígen del recurso para pagar la compra*: ", {class: "control-label"} %>
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-smile-archive"></i></span>
+      <select name="select_origen_recurso" id="select_origen_recurso" class="form-control" required="true">
+        <% @cajas.each do |caja| %>
+        <option value="caja_venta_<%= caja.id %>">Caja <%= caja.nombre %> Saldo: <%=  caja.saldo %></option>
+        <% end %>
+        <option value="caja_chica">Caja chica</option>
+      </select>
+    </div>
+  </div>
+
+    
+    
+  <div class="item form-group">
+    <div class="col-md-4 col-sm-3 col-xs-12">
+        
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-left">
+        <%= submit_tag 'Aplicar pago', {:class=>"btn btn-primary"} %>
+      </div>
+    </div>
+  </div>
+
+<% end %>
+
+

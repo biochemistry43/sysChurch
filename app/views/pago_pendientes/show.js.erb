@@ -1,0 +1,14 @@
+$('#modal-pagos-pendientes-title').html("<i class='fa fa-money'></i> Pago pendiente");
+$('#modal-pagos-pendientes-title').parent().css("background-color", "#92c33c");
+$('#modal-pagos-pendientes-title').parent().css("color", "white");
+
+ // Render the new form
+$('.modal-body-pagos-pendientes').html('<%= j render("formPagoPendiente") %>');
+ 
+// Show the dynamic dialog
+$('#modalPagosPendientes').modal("show");
+ 
+// Set focus to the first element
+$('#modaPagosPendientes').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

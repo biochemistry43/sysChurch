@@ -5,4 +5,5 @@ class PagoProveedor < ActiveRecord::Base
 	belongs_to :sucursal
 	belongs_to :negocio
 	belongs_to :user
+	belongs_to :pago_pendiente
 end

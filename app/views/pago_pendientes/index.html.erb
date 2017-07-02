@@ -1,0 +1,89 @@
+<div class="right_col" role="main">
+  <% flash.each do |key, value| %>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+  <%end%>
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Pagos pendientes</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div> 
+  <hr>
+  <div class="col-md-12 col-sm-12 col-xs-12 ">
+    <div>
+
+      <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_productos">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Proveedor</th>
+            <th class="column-title" style="text-align: center;">Factura/Ticket</th>
+            <th class="column-title" style="text-align: center;" >Fecha vencimiento</th>
+            <th class="column-title" style="text-align: center;">Adeudo</th>
+            <th class="column-title" style="text-align: center;"></th>
+            <th class="column-title" style="text-align: center;"></th>
+              
+          </tr>
+        </thead>
+
+        <tbody id="tb_pagos_pendientes">
+           <%= render @pagosPendientes %>
+        </tbody>
+      </table>
+      <%= render 'modalPagoPendiente' %>
+    </div>
+  </div>
+    
+  </div>
+  <script>
+
+    $(document).ready(function(){
+
+      $("#filtros_avanzados").click(function(e){
+        if( $("#opciones_filtros_avanzados").is(":visible") ){
+           $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
+        }
+        else{
+          $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
+        }
+        
+        $("#opciones_filtros_avanzados").slideToggle("fast");
+
+      });
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        },
+        scrollY: "480px",
+        scrollCollapse: true,
+        //dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+      });
+
+    });
+
+  </script>
+  
+</div>

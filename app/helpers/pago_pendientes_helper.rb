@@ -1,0 +1,2 @@
+module PagoPendientesHelper
+end

@@ -17,6 +17,7 @@ class Sucursal < ActiveRecord::Base
 	has_many :gasto_corrientes
 	has_many :retiro_caja_ventas
 	has_many :caja_sucursals
+	has_many :pago_pendientes
 
 	#Se refiere a los registros de caja chica (no a varias cajas chicas)
 	has_many :caja_chicas

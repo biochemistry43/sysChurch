@@ -97,6 +97,22 @@
   </div>
 
   <div id="opciones_compra_contado">
+    
+    <div class="item form-group<%= @compra.errors[:forma_pago].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :forma_pago, "Forma de pago*: ", {class: "control-label"} %>
+      <div class="input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+        <%= f.select :forma_pago, {}, {}, {:class=> "form-control"} do %>
+          <% [['Efectivo', 'Efectivo'], ['Depósito/Transferencia/Tarjeta', 'Deposito']].each do |c| -%>
+            <%= content_tag(:option, c.first, value: c.last) %>
+          <% end %>
+        <% end %>
+        <%if @compra.errors[:forma_pago].any? %>
+          <p class="bg-danger"><%= @compra.errors[:forma_pago].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
     <div class="item form-group %>">
       <%= f.label :origen_recurso, "Orígen del recurso para pagar la compra*: ", {class: "control-label"} %>
       <div class="input-group">
@@ -110,22 +126,6 @@
       </div>
     </div>
 
-
-    <div class="item form-group<%= @compra.errors[:forma_pago].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :forma_pago, "Forma de pago*: ", {class: "control-label"} %>
-      <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-money"></i></span>
-        <%= f.select :forma_pago, {}, {}, {:class=> "form-control"} do %>
-          <% [['Efectivo', 'Efectivo'], ['Tarjeta Débito', 'Tarjeta Debito'], ['Tarjeta Crédito', 'Tarjeta Credito'], ['Cheques', 'Cheques'], ['Vales', 'Vales']].each do |c| -%>
-            <%= content_tag(:option, c.first, value: c.last) %>
-          <% end %>
-        <% end %>
-        <%if @compra.errors[:forma_pago].any? %>
-          <p class="bg-danger"><%= @compra.errors[:forma_pago].to_s[/\w([^"]*)/] %></p>
-        <% end %>
-      </div>
-    </div>
-    
   </div>
   
   <div class="item form-group<%= @compra.errors[:monto_compra].any? ? ' has-error has-feedback' : '' %>">

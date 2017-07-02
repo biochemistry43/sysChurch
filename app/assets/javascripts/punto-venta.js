@@ -339,7 +339,7 @@ $(document).ready(function(){
   
 });//Fin de JQuery
 
-window.onload = function() {
+/*window.onload = function() {
 
   if ($BODY.hasClass('nav-md')) {
     $BODY.removeClass('nav-md').addClass('nav-sm');
@@ -355,7 +355,7 @@ window.onload = function() {
       $SIDEBAR_MENU.find('li.active-sm').addClass('active').removeClass('active-sm');
     }
   }
-};
+};*/
 
 
 

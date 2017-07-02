@@ -1,74 +1,74 @@
 <form action="">
 	
-        <!-- contenido con los detalles de la devolucion -->
-        <div class="item form-group">
-          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Fecha de devolución:</label>
-          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-            <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-              <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.created_at%>" disabled>
-            </div>
-          </div>
-        </div>  
+<!-- contenido con los detalles de la devolucion -->
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Fecha de devolución:</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.created_at%>" disabled>
+    </div>
+  </div>
+</div>  
 
-        <div class="item form-group">
-          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Folio de venta:</label>
-          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-            <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-              <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.venta.folio%>" disabled>
-            </div>
-          </div>
-        </div>
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Folio de venta:</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.venta.folio%>" disabled>
+    </div>
+  </div>
+</div>
 
-        <div class="item form-group">
-          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Clave de producto</label>
-          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-            <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-              <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.articulo.clave%>" disabled>
-            </div>
-          </div>
-        </div>
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Clave de producto</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.articulo.clave%>" disabled>
+    </div>
+  </div>
+</div>
 
-        <div class="item form-group">
-          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución:</label>
-          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-            <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-              <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cat_venta_cancelada.clave%>" disabled>
-            </div>
-          </div>
-        </div>
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución:</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="input-group">
+      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cat_venta_cancelada.clave%>" disabled>
+    </div>
+  </div>
+</div>
 
-        <div class="item form-group">
-          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Razón de la devolución:</label>
-          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-            <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-            <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.observaciones%>" disabled>
-          </div>
-        </div>
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Razón de la devolución:</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+    <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.observaciones%>" disabled>
+  </div>
+</div>
 
-          <div class="item form-group">
-            <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad devuelta:</label>
-            <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-              <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-                <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-                <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cantidad_devuelta%>" disabled>
-              </div>
-            </div>
-          </div>
-          
-          <% @cantidadVendida = @devolucion.cantidad_devuelta + @devolucion.item_venta.cantidad %>
+  <div class="item form-group">
+    <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad devuelta:</label>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+        <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cantidad_devuelta%>" disabled>
+      </div>
+    </div>
+  </div>
+  
+  <% @cantidadVendida = @devolucion.cantidad_devuelta + @devolucion.item_venta.cantidad %>
 
-          <div class="item form-group">
-            <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad vendida originalmente:</label>
-            <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-              <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-                <span class="input-group-addon"><i class="fa fa-tag"></i></span>
-                <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@cantidadVendida%>" disabled>
-              </div>
-            </div>
-          </div>
+  <div class="item form-group">
+    <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad vendida originalmente:</label>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+        <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@cantidadVendida%>" disabled>
+      </div>
+    </div>
+  </div>
 
 </form>

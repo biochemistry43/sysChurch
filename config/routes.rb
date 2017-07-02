@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  
+  resources :pago_pendientes
+  get 'pago_pendientes/index'
+  get 'pago_pendientes/show'
+  get 'pago_pendientes/edit'
+  get 'pago_pendientes/update'
+  get 'pago_pendientes/destroy'
 
   resources 'caja_chicas'
   get 'caja_chicas/index'
