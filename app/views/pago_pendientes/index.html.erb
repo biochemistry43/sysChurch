@@ -1,16 +1,4 @@
 <div class="right_col" role="main">
-  <% flash.each do |key, value| %>
-    <script>
-      $(document).ready(function(){
-        new PNotify({
-          title: 'Mensaje de la aplicación',
-          text: '<%= value %>!',
-          type: 'success'
-        });
-      });
-    </script>
-  <%end%>
-
   <div class="page-title">
     <div class="title_left">
       <h1>Pagos pendientes</h1>

@@ -1,4 +1,4 @@
-<tr id="caja_chica_<%= caja_chica.id%>" class="rowsearch <%= caja_chica.salida ? 'salida_caja' : '' %>">
+<tr id="caja_chica_<%= caja_chica.id%>" class="rowsearch">
   <td class="center-td"><%= caja_chica.created_at.strftime("%d/%m/%Y") %></td>
   <td class="center-td"><%= caja_chica.entrada ? caja_chica.entrada : 0 %></td>
   <td class="center-td"><%= caja_chica.salida ? caja_chica.salida : 0 %></td>

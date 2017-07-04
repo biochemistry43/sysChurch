@@ -44,7 +44,7 @@
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Caja:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-paw"></i></span>
-                <input type="text" class="form-control col-md-3 col-xs-12 text_field" value= "<%= @venta.caja %>">
+                <input type="text" class="form-control col-md-3 col-xs-12 text_field" value= "<%= @venta.caja_sucursal.nombre %>">
               </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
         devoluciones, entonces esta sección no se verá -->
         <!-- Además, sólo usuarios con privilegios pueden ver las devoluciones de una venta -->
         <% if can? :read, VentaCancelada %>
-          <% if @devoluciones %>
+          <% if @devoluciones.size > 0 %>
             <div class="tab-pane" id="devoluciones">
               <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
                 <thead>
@@ -142,9 +142,11 @@
         </li>
         <li><a href="#detalles" data-toggle="tab">Detalle de venta</a>
         </li>
-        <% if can? :read, VentaCancelada && @devoluciones %>
-        <li><a href="#devoluciones" data-toggle="tab">Devoluciones</a>
-        </li>
+        <% if can? :read, VentaCancelada  %>
+          <% if @devoluciones.size > 0 %>
+            <li><a href="#devoluciones" data-toggle="tab">Devoluciones</a>
+            </li>
+          <% end %>
         <% end %>
       </ul>
     </div>

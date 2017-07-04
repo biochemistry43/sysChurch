@@ -1,0 +1,3 @@
+$('#modalPagosPendientes').modal('toggle');
+$('#pago_pendiente_<%= @pago_pendiente.id %>').replaceWith('<%= j render (@pago_pendiente) %>');
+window.location.reload(true);

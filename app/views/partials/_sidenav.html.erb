@@ -88,7 +88,7 @@
                     <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
                     para los administradores de la empresa -->
                     <%if can? :create, Negocio%>
-                      <li><%= link_to "Cat devolución", cat_venta_canceladas_path %>
+                      <li><%= link_to "Categorías de devolución", cat_venta_canceladas_path %>
                       </li>
                     <%end%>
 
@@ -130,7 +130,7 @@
                       <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
                     para los administradores de la empresa -->
                     <%if can? :create, Negocio%>
-                      <li><%= link_to "Cat cancelación", cat_compra_canceladas_path %>
+                      <li><%= link_to "Categorias de cancelación", cat_compra_canceladas_path %>
                       </li>
                     <%end%>
                     </ul>
