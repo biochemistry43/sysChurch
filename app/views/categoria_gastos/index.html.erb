@@ -12,8 +12,8 @@
         <div class="div-add-button">
 
            <%= link_to new_categoria_gasto_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-gasto-btn"}  do %>
-             <span class="fa fa-plus-square" style=""></span>
-             Añadir Categoría de gasto
+             <span class="fa fa-plus" style=""></span>
+             Crear categoría
           <%end%>
 
         </div>
@@ -27,31 +27,46 @@
       
         <table class="table table-striped responsive-utilities jambo_table responsive no-wrap data-table" id="tabla_categorias">
           <thead>
-            <tr>
-              <th class="column-title">Nombre de Categoría</th>
-              <th class="column-title">Descripción</th>
-              <th class="column-title">Categoría Padre</th>
-              <th class="column-title"></th>
+            <tr >
+              <th class="column-title" style="text-align: center;">Nombre de Categoría</th>
+              <th class="column-title" style="text-align: center;">Descripción</th>
+              <th class="column-title" style="text-align: center;"></th>
               <th class="column-title"></th>
             </tr>
           </thead>
 
           <tbody id="tb_categorias_gastos">
             <%= render @categoria_gastos%>
-            <!--<% @categoria_gastos.each do |categoria_gasto| %>
-      <tr>
-        <td><%= categoria_gasto.nombreCategoria %></td>
-        <td><%= categoria_gasto.descripcionCategoria %></td>
-        <td><%= categoria_gasto.idCategoriaPadre %></td>
-        <td><%= link_to 'Show', categoria_gasto %></td>
-        <td><%= link_to 'Edit', edit_categoria_gasto_path(categoria_gasto) %></td>
-        <td><%= link_to 'Destroy', categoria_gasto, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>-->
           </tbody>
         </table>
 
-        <%= render 'modalGastos'%>
+        <%= render 'modalCategoriaGastos'%>
       </div>
     </div>
   </div>
+  <script>  
+  
+    $('.data-table').DataTable({
+      responsive: true,
+      "language":{
+        "info": "Mostrar pag _PAGE_ de _PAGES_",
+        "lengthMenu": "Mostrar _MENU_ registros",
+        "zeroRecords": "No hay coincidencias",
+        "search": "Buscar: _INPUT_",
+        "infoFiltered": " - encontrados en _MAX_ registros",
+        "paginate": {
+          "previous": "Anterior",
+          "next" : "siguiente",
+          "last" : "último",
+          "first" : "primero"
+        }
+      },
+      scrollY: "480px",
+      scrollCollapse: true,
+      //dom: 'Bfrtip',
+      buttons: [
+          'copy', 'csv', 'excel', 'pdf', 'print'
+      ]
+    });
+
+  </script>

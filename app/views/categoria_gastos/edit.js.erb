@@ -8,6 +8,6 @@ $('.modal-body-categoria-gastos').html('<%= j render("form") %>');
 $('#modalCategoriaGastos').modal("show");
  
 // Set focus to the first element
-$('#modalGastos').on('shown.bs.modal', function () {
+$('#modalCategoriaGastos').on('shown.bs.modal', function () {
 	  $('.first_input').focus();
 })

@@ -1,13 +1,13 @@
 // Add the dialog title
-$('#modal-gastos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nueva categoria de gasto");
+$('#modal-categoria-gastos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nueva categoria");
  
 // Render the new form
-$('.modal-body-categorias-gastos').html('<%= j render("form") %>');
+$('.modal-body-categoria-gastos').html('<%= j render("form") %>');
  
 // Show the dynamic dialog
-$('#modalGastos').modal("show");
+$('#modalCategoriaGastos').modal("show");
  
 // Set focus to the first element
-$('#modalGastos').on('shown.bs.modal', function () {
+$('#modalCategoriaGastos').on('shown.bs.modal', function () {
 	  $('.first_input').focus();
 })
