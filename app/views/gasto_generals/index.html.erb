@@ -1,0 +1,50 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Gastos generales</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+      <div class="col-ms-12">
+        <div class="div-add-button">
+
+           <%= link_to new_gasto_general_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"}  do %>
+             <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+             Registrar gasto
+          <%end%>
+
+        </div>
+      </div>
+    </div>
+    
+    <hr style="border-style: solid; border-width: 2px;">
+
+    <div class="row">
+      <div>
+      
+        <table class="table table-striped responsive-utilities jambo_table responsive no-wrap data-table" id="tabla_gastos">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Ticket/Factura</th>
+              <th class="column-title" style="text-align: center;">Monto</th>
+              <th class="column-title" style="text-align: center;">Concepto</th>
+              <th class="column-title" style="text-align: center;">Proveedor</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;"></th>
+              <th class="column-title" style="text-align: center;"></th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_gastos">
+            <%= render @gasto_generals%>
+          </tbody>
+        </table>
+
+        <%= render 'modalGastos'%>
+      </div>
+    </div>
+  </div>

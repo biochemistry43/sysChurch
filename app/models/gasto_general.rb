@@ -1,4 +1,4 @@
-class GastoCorriente < ActiveRecord::Base
+class GastoGeneral < ActiveRecord::Base
 	belongs_to :gasto
 	belongs_to :user
 	belongs_to :sucursal

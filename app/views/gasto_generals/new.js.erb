@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-gastos-title').html("<i class='glyphicon glyphicon-plus'></i> Registrar nuevo gasto");
+ 
+// Render the new form
+$('.modal-body-gastos').html('<%= j render("form") %>');
+ 
+// Show the dynamic dialog
+$('#modalGastos').modal("show");
+ 
+// Set focus to the first element
+$('#modalGastos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

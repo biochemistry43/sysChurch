@@ -11,6 +11,6 @@ class MovimientoCajaSucursal < ActiveRecord::Base
 	belongs_to :negocio
 	belongs_to :sucursal
 	belongs_to :caja_sucursal
-	has_many :gastos
-	has_one :retiros_caja_venta
+	belongs_to :gasto
+	belongs_to :retiro_caja_venta
 end

@@ -214,9 +214,9 @@
           <tr>
             <th class="column-title" style="text-align: center;">Folio </th>
             <th class="column-title" style="text-align: center;">Fecha </th>
-            <th class="column-title" style="text-align: center;">Monto Venta</th>
+            <th class="column-title" style="text-align: center;">Monto de venta</th>
+            <th class="column-title" style="text-align: center;">Monto de devolución</th>
             <th class="column-title" style="text-align: center;">Caja </th>
-            <th class="column-title" style="text-align: center;">Cajero</th>
             <% if can? :create, Negocio %>
               <th class="column-title" style="text-align: center;">Sucursal</th>
             <% end %>
@@ -232,7 +232,6 @@
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;"><%= venta.montoVenta %></td>
               <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
-              <td style="text-align: center;"><%= venta.user.perfil ? venta.user.perfil.nombre : venta.user.email %></td>
               <% if can? :create, Negocio %>
                 <td style="text-align: center;">
                   <%= venta.sucursal.nombre %>

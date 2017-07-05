@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   
+  resources :gasto_generals
   resources :pago_pendientes
   get 'pago_pendientes/index'
   get 'pago_pendientes/show'
@@ -103,6 +104,7 @@ Rails.application.routes.draw do
 
 
   resources :gastos
+  resources :gasto_corrientes
   resources :categoria_gastos
   resources :cat_articulos
   resources :usuarios
@@ -133,6 +135,7 @@ Rails.application.routes.draw do
   post 'compras/actualizar/:id' => 'compras#actualizar'
   put 'compras/actualizar/:id' => 'compras#actualizar'
   patch 'compras/actualizar/:id' => 'compras#actualizar'
+  get 'gastos_generales' => 'gasto_corrientes#index'
   
   
   root :to=> 'plainpage#index'

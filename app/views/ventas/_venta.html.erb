@@ -104,23 +104,21 @@
               <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
                 <thead>
                   <tr class="headings">
-                    <th class="column-title">Clave Producto</th>
-                    <th class="column-title">Nombre</th>
-                    <th class="column-title">Cantidad</th>
-                    <th class="column-title">Fecha</th>
-                    <th class="column-title">Categoría </th>
-                    <th class="column-title">Quién autorizó </th>
+                    <th class="column-title" style="text-align: center;">Clave producto</th>
+                    <th class="column-title" style="text-align: center;">Cantidad</th>
+                    <th class="column-title" style="text-align: center;">Fecha/Hora</th>
+                    <th class="column-title" style="text-align: center;">Categoría </th>
+                    <th class="column-title" style="text-align: center;">Quién autorizó </th>
                   </tr>
                 </thead>
                 <tbody>
                   <% @devoluciones.each do |devolucion| %>
                     <tr>
-                      <td> <%= devolucion.articulo.clave %> </td>
-                      <td> <%= devolucion.articulo.nombre %> </td>
-                      <td> <%= devolucion.cantidad_devuelta %> </td>
-                      <td> <%= devolucion.created_at %> </td>
-                      <td> <%= devolucion.cat_venta_cancelada.clave %> </td>
-                      <td> <%= devolucion.user.perfil.nombre %> </td>
+                      <td style="text-align: center;"> <%= devolucion.articulo.clave %> </td>
+                      <td style="text-align: center;"> <%= devolucion.cantidad_devuelta %> </td>
+                      <td style="text-align: center;"> <%= devolucion.created_at.strftime("%d/%m/%Y - %H:%M") %> </td>
+                      <td style="text-align: center;"> <%= devolucion.cat_venta_cancelada.clave %> </td>
+                      <td style="text-align: center;"> <%= devolucion.user.perfil.nombre_completo %> </td>
                     </tr>
                   <% end %>
                 </tbody>

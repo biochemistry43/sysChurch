@@ -22,7 +22,7 @@ class Negocio < ActiveRecord::Base
 	has_many :pago_proveedores
 	has_many :pago_devolucions
 	has_many :gastos
-	has_many :gasto_corrientes
+	has_many :gasto_generals
 	has_many :retiro_caja_ventas
 	has_many :movimiento_caja_sucursals
 	has_many :caja_chicas

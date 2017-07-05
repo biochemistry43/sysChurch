@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
 
   has_many :gastos
 
-  has_many :gasto_corrientes
+  has_many :gasto_generals
 
   #Se trata del usuario que hace un retiro de efectivo de alguna de las cajas.
   has_many :retiro_caja_ventas

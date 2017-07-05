@@ -1,0 +1,76 @@
+<%= form_for @gasto_corriente, remote: true, :html=> {:class=>'form-horizontal form-label-left input_mask', :role=>"form"} do |f| %>
+
+  <div class="item form-group<%= @gasto_corriente.errors[:folio_gasto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :folio_gasto, "Factura #*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%= f.text_field :folio_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la factura del gasto a registrar..."} do%>
+      <%end%>
+      <%if @gasto_corriente.errors[:folio_gasto].any? %>
+        <p class="bg-danger"><%= @gasto_corriente.errors[:folio_gasto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @gasto_corriente.errors[:ticket_gasto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :ticket_gasto, "Ticket #*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%= f.text_field :ticket_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca clave o número de ticket (si no tiene, ponga 0)..."} do%>
+      <%end%>
+      <%if @gasto_corriente.errors[:ticket_gasto].any? %>
+        <p class="bg-danger"><%= @gasto_corriente.errors[:ticket_gasto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @gasto_corriente.errors[:monto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :monto, "Monto del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-money"></i></span>
+      <%= f.text_field :monto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el importe del gasto..."} do%>
+      <%end%>
+      <%if @gasto_corriente.errors[:monto].any? %>
+        <p class="bg-danger"><%= @gasto_corriente.errors[:monto].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @gasto_corriente.errors[:categoria_gasto].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :categoria_gasto, "Categoría del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+      <%= collection_select(nil, :categoria_gasto, @categorias, :id, :nombreCategoria, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @gasto_corriente.errors[:proveedor].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :proveedor, "Proveedor: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+      <%= collection_select(nil, :proveedor, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+      <%if @gasto_corriente.errors[:proveedor].any? %>
+        <p class="bg-danger"><%= @gasto_corriente.errors[:proveedor].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group">
+    <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Origen del recurso*:</label>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-archive"></i></span>  
+      <select name="select_origen_recurso" id="select_origen_recurso" class="form-control col-md-7 col-xs-12" required="true">
+      <% @cajas.each do |caja| %>
+        <option value="caja_venta_<%= caja.id %>">Caja <%= caja.nombre %></option>
+      <% end %>
+        <option value="caja_chica">Caja chica</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="actions">
+    <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <%= f.submit @gasto_corriente.new_record? ? "Registrar gasto" : "Editar gasto", :class => "btn btn-success"%>
+    </div>
+  </div>
+<% end %>

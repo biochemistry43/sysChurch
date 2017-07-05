@@ -1,0 +1,10 @@
+<tr id="gasto_corriente<%= gasto_corriente.id%>">
+   <td style="text-align: center;"><%= gasto_corriente.created_at.strftime("%d/%m/%Y") %></td>
+   <td style="text-align: center;"><%= gasto_corriente.folio_gasto %>/<%= gasto_corriente.ticket_gasto %></td>
+   <td style="text-align: center;"><%= gasto_corriente.monto %></td>
+   <td style="text-align: center;"><%= gasto_corriente.concepto %></td>
+   <td style="text-align: center;"><%= gasto_corriente.proveedor.nombre %></td>
+   <td style="text-align: center;"><%= gasto_corriente.gasto.categoria_gasto.nombreCategoria %></td>
+   <td style="text-align: center;"><%= link_to 'Editar', edit_gasto_corriente_path(gasto_corriente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+   <td><%= link_to 'Borrar', gasto_corriente, remote: true, method: :delete, data: { confirm: "¿Desea borrar este registro de gasto?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
+</tr>
