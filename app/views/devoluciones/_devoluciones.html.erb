@@ -304,7 +304,7 @@
             <th class="column-title" style="text-align: center;">Clave producto</th>
             <th class="column-title" style="text-align: center;">Producto</th>
             <th class="column-title" style="text-align: center;">Categoría</th>
-            <th class="column-title" style="text-align: center;">Cantidad devuelta</th>
+            <th class="column-title" style="text-align: center;">Importe devuelto</th>
             <th class="column-title" style="text-align: center;">Fecha</th>
             <% if can? :create, Negocio %>
               <th class="column-title" style="text-align: center;">Sucursal</th>
@@ -320,7 +320,7 @@
               <td style="text-align: center;"><%= devolucion.articulo.clave %></td>
               <td style="text-align: center;"><%= devolucion.articulo.nombre %></td>
               <td style="text-align: center;"><%= devolucion.cat_venta_cancelada.clave %></td>
-              <td style="text-align: center;"><%= devolucion.cantidad_devuelta %></td>
+              <td style="text-align: center;">$ <%= devolucion.monto %></td>
               <td style="text-align: center;"><%= devolucion.created_at %></td>
               <% if can? :create, Negocio %>
                 <td style="text-align: center;">

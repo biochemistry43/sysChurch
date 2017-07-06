@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170706015224) do
+ActiveRecord::Schema.define(version: 20170706032217) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170706015224) do
     t.integer  "marca_producto_id"
     t.integer  "presentacion_producto_id"
     t.string   "suc_elegida"
+    t.string   "tipo"
   end
 
   create_table "bancos", force: :cascade do |t|

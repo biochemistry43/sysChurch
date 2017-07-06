@@ -550,14 +550,14 @@ class DevolucionesController < ApplicationController
       @itemVenta.status = "Con devoluciones"
 
       #Se crea el registro de una venta cancelada y se relaciona con su categoría de devolución
-      @devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones)
+      @devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones, :monto=>@itemVenta.precio_venta)
       @categoriaCancelacion.venta_canceladas << @devolucion
 
       #Dado que se hizo una devolución, se aumenta la existencia en inventarios de dicho producto.
       @itemVenta.articulo.existencia += @cantidad_devuelta.to_f
 
       #Se disminuye la cantidad devuelta, respecto del item de venta.
-      @itemVenta.cantidad -= @cantidad_devuelta.to_f
+      #@itemVenta.cantidad -= @cantidad_devuelta.to_f
 
       #################################################################################################################
       #################  creando los registros por concepto de gastos por devolucion de productos #####################

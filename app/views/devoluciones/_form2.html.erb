@@ -5,7 +5,7 @@
   <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Fecha de devolución:</label>
   <div class="col-md-6 col-sm-6 col-xs-12 input-group">
     <div class="input-group">
-      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
       <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.created_at%>" disabled>
     </div>
   </div>
@@ -15,7 +15,7 @@
   <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Folio de venta:</label>
   <div class="col-md-6 col-sm-6 col-xs-12 input-group">
     <div class="input-group">
-      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
       <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.venta.folio%>" disabled>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución:</label>
   <div class="col-md-6 col-sm-6 col-xs-12 input-group">
     <div class="input-group">
-      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <span class="input-group-addon"><i class="fa fa-tags"></i></span>
       <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cat_venta_cancelada.clave%>" disabled>
     </div>
   </div>
@@ -44,8 +44,16 @@
 <div class="item form-group">
   <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Razón de la devolución:</label>
   <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-    <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+    <span class="input-group-addon"><i class="fa fa-check"></i></span>
     <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.observaciones%>" disabled>
+  </div>
+</div>
+
+<div class="item form-group">
+  <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Usuario que autorizó:</label>
+  <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+    <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.user.perfil.nombre_completo%>" disabled>
   </div>
 </div>
 
@@ -53,7 +61,7 @@
     <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad devuelta:</label>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+        <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
         <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.cantidad_devuelta%>" disabled>
       </div>
     </div>
@@ -65,8 +73,18 @@
     <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad vendida originalmente:</label>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+        <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
         <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@cantidadVendida%>" disabled>
+      </div>
+    </div>
+  </div>
+
+  <div class="item form-group">
+    <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Importe de devolución:</label>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+        <input type="text" class="form-control" aria-describedby="basic-addon1" value="$ <%=@devolucion.monto%>" disabled>
       </div>
     </div>
   </div>

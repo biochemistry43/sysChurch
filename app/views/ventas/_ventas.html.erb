@@ -227,11 +227,24 @@
 
         <tbody>
           <% @ventas.each do |venta| %>
+          <% if venta.venta_canceladas.size > 0 %>
+            <% @devoluciones = true 
+               @monto_devolucion = 0
+               venta.venta_canceladas.each do |devolucion|
+                 @monto_devolucion += devolucion.monto
+               end
+            %>
+          <% else %>
+            <% @devoluciones = false
+               @monto_devolucion = 0 %>
+          <% end %>
             <tr>
               <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
-              <td style="text-align: center;"><%= venta.montoVenta %></td>
+              <td style="text-align: center;">$ <%= venta.montoVenta %></td>
+              <td style="text-align: center;">$ <%= @monto_devolucion %></td>     
               <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
+
               <% if can? :create, Negocio %>
                 <td style="text-align: center;">
                   <%= venta.sucursal.nombre %>
