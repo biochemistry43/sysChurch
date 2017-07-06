@@ -37,7 +37,7 @@
   </div>
 
   <div class="item form-group<%= @gasto_general.errors[:concepto].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :concepto, "Monto del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <%= f.label :concepto, "Concepto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <%= f.text_area :concepto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el concepto del gasto..."} do%>
       <%end%>
@@ -47,30 +47,61 @@
     </div>
   </div>
 
-  <div class="item form-group<%= @gasto_general.errors[:categoria_gasto].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :categoria_gasto, "Categoría del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-tags"></i></span>
-      <%= collection_select(nil, :categoria_gasto, @categorias, :id, :nombreCategoria, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+  <% if  @gasto_general.new_record? %>
+    
+    <div class="item form-group<%= @gasto_general.errors[:categoria_gasto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :categoria_gasto, "Categoría del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+        <%= collection_select(@gasto, :categoria_gasto_id, @categorias, :id, :nombreCategoria, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+      </div>
     </div>
-  </div>
 
-  <div class="item form-group<%= @gasto_general.errors[:proveedor].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :proveedor, "Proveedor: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-truck"></i></span>
-      <%= collection_select(nil, :proveedor, @proveedores, :id, :nombre, {:prompt => 'Seleccione un proveedor'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
-      <%if @gasto_general.errors[:proveedor].any? %>
-        <p class="bg-danger"><%= @gasto_general.errors[:proveedor].to_s[/\w([^"]*)/] %></p>
-      <% end %>
+
+    <div class="item form-group<%= @gasto_general.errors[:proveedor].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :proveedor, "Proveedor: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+        <%= collection_select(nil, :proveedor, @proveedores, :id, :nombre,  {:prompt => 'Seleccione un proveedor'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+        <%if @gasto_general.errors[:proveedor].any? %>
+          <p class="bg-danger"><%= @gasto_general.errors[:proveedor].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
     </div>
-  </div>
+
+
+  <% else %>
+
+
+    <div class="item form-group<%= @gasto_general.errors[:categoria_gasto].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :categoria_gasto, "Categoría del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+        <%= collection_select(@gasto, :categoria_gasto_id, @categorias, :id, :nombreCategoria, {:prompt => 'Seleccione categoria'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+      </div>
+    </div>
+
+
+    <div class="item form-group<%= @gasto_general.errors[:proveedor].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :proveedor, "Proveedor: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-truck"></i></span>
+        <%= collection_select(:gasto_general, :proveedor_id, @proveedores, :id, :nombre,  {:prompt => 'Seleccione un proveedor'}, { class: "form-control col-md-7 col-xs-12", :required=>"required"})%>
+        <%if @gasto_general.errors[:proveedor].any? %>
+          <p class="bg-danger"><%= @gasto_general.errors[:proveedor].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  
 
   <div class="item form-group">
     <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Origen del recurso*:</label>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-archive"></i></span>  
-      <select name="select_origen_recurso" id="select_origen_recurso" class="form-control col-md-7 col-xs-12" required="true">
+      <select name="select_origen_recurso" id="select_origen_recurso" class="form-control col-md-7 col-xs-12" required="required">
+        <option selected disabled value="">Selecciona una opción</option>
       <% @cajas.each do |caja| %>
         <option value="caja_venta_<%= caja.id %>">Caja <%= caja.nombre %></option>
       <% end %>

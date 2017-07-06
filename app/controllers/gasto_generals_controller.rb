@@ -22,6 +22,7 @@ class GastoGeneralsController < ApplicationController
 
   # GET /gasto_generals/1/edit
   def edit
+    @gasto = @gasto_general.gasto
   end
 
   # POST /gasto_generals
@@ -170,13 +171,13 @@ class GastoGeneralsController < ApplicationController
       end
     end
 
-
-
     respond_to do |format|
+
       if @cajaChica && @gasto && @pagoProveedor
         if @gasto_general.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
           format.js
           format.json { head :no_content}
+          flash[:notice] = "Gasto registrado"
         else
           format.js {render :new} 
           format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
@@ -185,6 +186,7 @@ class GastoGeneralsController < ApplicationController
         if @gasto_general.save && @cajaVenta.save && @gasto.save && @movimientoCaja.save && @pagoProveedor.save
           format.js
           format.json { head :no_content}
+          flash[:notice] = "Gasto registrado"
         else
           format.js {render :new} 
           format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
@@ -199,15 +201,148 @@ class GastoGeneralsController < ApplicationController
   # PATCH/PUT /gasto_generals/1
   # PATCH/PUT /gasto_generals/1.json
   def update
-    respond_to do |format|
-      if @gasto_general.update(gasto_general_params)
-        format.json { head :no_content}
-        format.js
+    @cajaChica = nil
+    @cajaVenta = nil
+    @movimientoCaja = nil
+    @gasto = nil
+    @pagoProveedor = nil
+
+    
+    #Esta variable recoge el parámetro del origen del recurso con el que se va a pagar la devolución.
+    #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
+    origen = params[:select_origen_recurso]
+
+    categoria_gasto = params[:categoria_gasto]
+
+    proveedor_id = params[:proveedor]
+
+    @categoriaGasto = CategoriaGasto.find(categoria_gasto)
+
+    @proveedor = Proveedor.find(proveedor_id)
+
+    #almacena el importe monetario que será devuelto al cliente.
+    monto_gasto = gasto_general_params[:monto].to_f
+
+    concepto = gasto_general_params[:concepto]
+
+    #Si se cumple esta condición, significa que el recurso para actualizar los datos del gasto, 
+    #provendrán de alguna de las cajas de sucursal.La cadena contiene el id de la caja de venta seleccionada.
+    
+    if origen.include? "caja_venta"
+      tamano_cadena_origen = origen.length
+
+      #aquí extraigo el id de la caja de venta contenido en la cadena de texto
+      #el número "11" corresponde a la cantidad de caracteres de la cadena "caja_venta_"
+      id_caja_sucursal = origen[11..tamano_cadena_origen]
+
+      #En base al id extraido de la cadena, busco la Caja de Venta en la base de datos
+      @cajaVenta = CajaSucursal.find(id_caja_sucursal)
+
+      @cajaVentaOriginal = @gasto_general.gasto.caja_sucursal.id
+
+      comparandoOrigen = (@cajaVentaOriginal == @cajaVenta.id)
+
+      if comparandoOrigen
+        saldo_a_comparar = @cajaVenta.saldo + @gasto_general.monto
       else
-        format.json {render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
-        format.js {render :edit}
+        saldo_a_comparar = @cajaVenta.saldo
+      end
+
+      #Verifico que la caja tenga el saldo necesario para realizar la operación de devolución.
+      #Sin embargo, dado que existe la posibilidad de que el monto del gasto haya sido cambiado, sumo momentaneamente
+      #el gasto original
+      if saldo_a_comparar >= monto_gasto
+
+        @gasto = @gasto_general.gasto
+        @gasto.monto = monto_gasto
+        @gasto.concepto = concepto
+        @gasto.categoria_gasto = @categoriaGasto
+
+        #Se actualiza el saldo de la caja de venta
+        saldo = saldo_a_comparar - monto_gasto
+        @cajaVenta.saldo = saldo
+
+        #Relación del proveedor con el gasto
+        @gasto_general.proveedor = @proveedor
+
+        #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
+        @movimientoCaja = @gasto.movimiento_caja_sucursal 
+        @movimientoCaja.salida = monto_gasto
+        @movimientoCaja.caja_sucursal = @cajaVenta
+        
+        @pagoProveedor = @gasto.pago_proveedor
+        @pagoProveedor.monto = monto_gasto
+
+      else
+        flash[:notice] = "No hay saldo suficiente en la caja #{@cajaVenta.nombre} para hacer el pago"
+      end
+
+    end #Termina la condición caja venta
+
+    #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
+    if origen.include? "caja_chica"
+      #Verifica si existen registros de caja chica para esta sucursal
+      if current_user.sucursal.caja_chicas
+        #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
+        #dicho registro. En esto se determina si hay saldo suficiente para cubrir la devolución.
+        entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+        salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+        @saldoCajaChica = entradas - salidas + @gasto_general.monto
+
+
+        #@cajaChicaLast = sucursal.caja_chicas.last
+        if @saldoCajaChica >= monto_gasto
+
+          saldo_en_caja_chica = @saldoCajaChica
+        
+          #Obtengo el registro de gasto relacionado con el gasto general y actualizo sus valores
+          @gasto = @gasto_general.gasto
+          @gasto.monto = monto_gasto
+          @gasto.categoria_gasto = @categoria_gasto
+
+          #relaciones del registro de gasto
+          @gasto.categoria_gasto = @categoriaGasto
+
+          #Se obtiene el registro de caja chica en base al gasto
+          @cajaChica = @gasto.caja_chica
+
+          @gasto_general.proveedor = @proveedor
+
+          @pagoProveedor = @gasto.pago_proveedor
+          @pagoProveedor.monto = monto_gasto
+
+        else
+          flash[:notice] = "No hay saldo suficiente en la caja chica para hacer el pago"
+        end
       end
     end
+
+    respond_to do |format|
+      if @cajaChica && @gasto && @pagoProveedor
+
+        if @gasto_general.update(gasto_general_params) && @cajaChica.save && @gasto.save && @pagoProveedor.save
+          format.json { head :no_content}
+          format.js
+        else
+          format.json {render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
+          format.js {render :edit}
+        end
+
+      elsif @cajaVenta && @gasto && @movimientoCaja && @pagoProveedor
+        
+        if @gasto_general.update(gasto_general_params) && @cajaVenta.save && @gasto.save && @movimientoCaja.save && @pagoProveedor.save
+          format.json { head :no_content}
+          format.js
+        else
+          format.json {render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
+          format.js {render :edit}
+        end
+
+      else
+        format.html { redirect_to gasto_generals_path}
+      end
+    end
+
   end
 
   # DELETE /gasto_generals/1
@@ -221,8 +356,10 @@ class GastoGeneralsController < ApplicationController
       @gasto_general.gasto.movimiento_caja_sucursal.destroy
     end
 
+    @gasto_general.gasto.pago_proveedor.destroy
     @gasto_general.gasto.destroy
     @gasto_general.destroy
+
     respond_to do |format|
       format.js
       format.html { redirect_to gasto_general_url, notice: 'El gasto fue eliminado completamente' }

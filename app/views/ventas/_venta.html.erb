@@ -86,9 +86,9 @@
                 <tr>
                   <td> <%= item.articulo.clave %> </td>
                   <td> <%= item.articulo.nombre %> </td>
-                  <td> <%= item.articulo.precioVenta %> </td>
+                  <td> <%= item.precio_venta %> </td>
                   <td> <%= item.cantidad %> </td>
-                  <td> <%= item.articulo.precioVenta * item.cantidad %> </td>
+                  <td> <%= item.precio_venta * item.cantidad %> </td>
                 </tr>
               <% end %>
             </tbody>
@@ -108,7 +108,7 @@
                     <th class="column-title" style="text-align: center;">Cantidad</th>
                     <th class="column-title" style="text-align: center;">Fecha/Hora</th>
                     <th class="column-title" style="text-align: center;">Categoría </th>
-                    <th class="column-title" style="text-align: center;">Quién autorizó </th>
+                    <th class="column-title" style="text-align: center;">Autorizó </th>
                   </tr>
                 </thead>
                 <tbody>
