@@ -47,6 +47,19 @@ class ArticulosController < ApplicationController
     render :json => articulos
   end
 
+  def showByCriteriaForPos
+    @criteria = params[:criteria]
+
+    if Rails.env.development?
+      articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?) AND (tipo = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable')
+    elsif Rails.env.production?
+      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (tipo = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable')
+    end
+
+    #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
+    render :json => articulos
+  end
+
   def solo_sucursal
     @solo_sucursal = true
     @articulos = current_user.sucursal.articulos
@@ -306,7 +319,7 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :suc_elegida)
+      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :suc_elegida, :tipo)
     end
 
 end

@@ -141,6 +141,33 @@
       </div>
     </div>
 
+    <div class="item form-group<%= @articulo.errors[:tipo].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :tipo, "Tipo de uso:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-code-fork"></i></span>
+        <%= f.select :tipo, {}, {}, {:class=> "form-control"} do %>
+        <% [['Comercializable', 'comercializable'], ['Otros usos', 'otros usos']].each do |c| -%>
+          <% if @articulo.tipo.eql?("comercializable") %>
+            <% if c.last.eql?("comercializable") %>
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+            <% end %>
+          <% elsif @articulo.tipo.eql?("otros usos") %>
+            <% if c.last.eql?("otros usos") %>
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+            <% end %>
+          <% else %>
+            <%= content_tag(:option, c.first, value: c.last) %>    
+          <% end %>
+        <% end %>
+        <%if @articulo.errors[:tipo].any? %>
+          <p class="bg-danger"><%= @articulo.errors[:tipo].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+
+        
+      <% end %>
+      </div>
+    </div>
+
     <!--<div class="field col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
        f.label :foto
        f.file_field :fotoProducto, class: "form-control has-feedback-left"

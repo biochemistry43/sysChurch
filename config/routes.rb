@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   
+  get 'reporte_gastos/reporte_gastos'
+
+  get 'reporte_ventas/reporte_ventas'
+
   resources :gasto_generals
   resources :pago_pendientes
   get 'pago_pendientes/index'
@@ -96,6 +100,7 @@ Rails.application.routes.draw do
   
   resources :articulos
   get 'articulos/showByCriteria'
+  get 'articulos/showByCriteriaForPos'
   get 'articulos/getById'
   post 'articulos/consulta_avanzada'
   post 'articulos/solo_sucursal'
@@ -123,6 +128,7 @@ Rails.application.routes.draw do
   
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
+  get 'articulos/showByCriteriaForPos/:criteria' => 'articulos#showByCriteriaForPos'
   get 'articulos/getById/:criteria' => 'articulos#getById'
   get 'ventas/buscarUltimoFolio/:criteria' => 'ventas#buscarUltimoFolio'
   get 'inventarios/showByCriteria/:criteria' => 'inventarios#showByCriteria'

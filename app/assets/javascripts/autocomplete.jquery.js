@@ -95,13 +95,26 @@
                     url+=value;
                     //busco en el server la info 
 
+                    var urlCorrecta = ""
+                    
+                    
+
                     var criteria = $("#search-product").val();
+
+                    if(window.location.pathname == "/punto_venta"){
+                       urlCorrecta = "/articulos/showByCriteriaForPos/" + criteria;
+                    }
+                    else{
+                       urlCorrecta = "/articulos/showByCriteria/" + criteria;   
+                    }
+
+
                       if(criteria == ""){
                          $("#list-search-products").empty();
                       }
                       else{
                          $.ajax({
-                            url: "/articulos/showByCriteria/" + criteria,
+                            url: urlCorrecta,
                             dataType: "JSON",
                             timeout: 10000,
                             beforeSend: function(){
