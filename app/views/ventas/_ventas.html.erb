@@ -63,11 +63,20 @@
         <span class="fa fa-shopping-cart" style=""> Sólo ventas de mi sucursal</span>
       <% end %>
     <% end %>
+    <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+      <li class="fa fa-file-excel-o">
+        Exportar a xlsx    
+      </li>
+    </a>
   </div>
+  
   <hr>
 
+  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros por fecha <i class="fa fa-sort-down"></i>
+  </button>
   <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
-  <div class="row" style="margin-bottom: 30px;"> 
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha"> 
     <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
@@ -209,7 +218,7 @@
       <div>
 
 
-        <table class="table table-striped responsive-utilities jambo_table data-table">
+        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla-ventas2">
         <thead>
           <tr>
             <th class="column-title" style="text-align: center;">Folio </th>
@@ -221,7 +230,7 @@
               <th class="column-title" style="text-align: center;">Sucursal</th>
             <% end %>
             <th class="column-title" style="text-align: center;">Status</th>
-            <th class="column-title" style="text-align: center;"></th>
+            <th class="column-title" style="text-align: center;">Acciones</th>
           </tr>
         </thead>
 
@@ -261,14 +270,14 @@
               </td>
               <td style="text-align: center;"> 
                 <% if can? :read, venta %> 
-                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true} do %>
+                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true, title: "Mostrar detalles"} do %>
                   <i class="fa fa-info-circle"></i>
                   <% end %>
                 <% end %>
 
                 <% if can? :destroy, venta %> 
                   <% if venta.status.eql?("Activa") %>
-                    <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                    <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
                      <i class="fa fa-close"></i>
                     <% end %>
                   <% end %>
@@ -278,6 +287,78 @@
           <% end %>
         </tbody>
       </table>
+
+      <div class="row" style="display: none;">
+        <table class="table table-striped responsive-utilities jambo_table" id="tabla-ventas">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Folio </th>
+            <th class="column-title" style="text-align: center;">Fecha </th>
+            <th class="column-title" style="text-align: center;">Venta Original</th>
+            <th class="column-title" style="text-align: center;">Devoluciones</th>
+            <th class="column-title" style="text-align: center;">Caja </th>
+            <% if can? :create, Negocio %>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+            <% end %>
+            <th class="column-title" style="text-align: center;">Status</th>
+            <th class="column-title" style="text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @ventas.each do |venta| %>
+          <% if venta.venta_canceladas.size > 0 %>
+            <% @devoluciones = true 
+               @monto_devolucion = 0
+               venta.venta_canceladas.each do |devolucion|
+                 @monto_devolucion += devolucion.monto
+               end
+            %>
+          <% else %>
+            <% @devoluciones = false
+               @monto_devolucion = 0 %>
+          <% end %>
+            <tr>
+              <td style="text-align: center;"><%= venta.folio %></td>
+              <td style="text-align: center;"><%= venta.fechaVenta %></td>
+              <td style="text-align: center;">$ <%= venta.montoVenta %></td>
+              <td style="text-align: center;">$ <%= @monto_devolucion %></td>     
+              <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
+
+              <% if can? :create, Negocio %>
+                <td style="text-align: center;">
+                  <%= venta.sucursal.nombre %>
+                </td>
+              <% end %>
+              <td style="text-align: center;">
+                <% if venta.status.eql?("Activa") %>
+                  <span class="btn btn-success"> Activa </span>
+                <% elsif venta.status.eql?("Con devoluciones")%>
+                  <span class="btn btn-warning"> Con devoluciones </span>
+                <% elsif venta.status.eql?("Cancelada") %>
+                  <span class="btn btn-danger"> Cancelada </span>
+                <% end %>    
+              </td>
+              <td style="text-align: center;"> 
+                <% if can? :read, venta %> 
+                  <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true, title: "Mostrar detalles"} do %>
+                  <i class="fa fa-info-circle"></i>
+                  <% end %>
+                <% end %>
+
+                <% if can? :destroy, venta %> 
+                  <% if venta.status.eql?("Activa") %>
+                    <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                     <i class="fa fa-close"></i>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      </div>
 
       </div>
     </div>
@@ -305,6 +386,39 @@
       });
 
     });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de ventas</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla-ventas').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de ventas.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de ventas.xls');
+      }
+
+    }
   </script>
   <%= javascript_include_tag "ventas" %>
 </div>

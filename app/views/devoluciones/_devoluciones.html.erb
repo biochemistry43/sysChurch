@@ -12,7 +12,15 @@
     </div>
     
   </div>
-
+  <hr>
+  <div class="row">
+    <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+      <li class="fa fa-file-excel-o">
+        Exportar a xlsx    
+      </li>
+    </a>
+  </div>
+  <hr>
   <!-- Cuando se realicen consultas, esta sección desplegará los criterios con los cuales se hicieron
   los respectivos filtros de devoluciones -->
   <% if @consulta %>
@@ -83,10 +91,12 @@
     </div>
   <% end %>
 
-  <hr>
+  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros por fecha <i class="fa fa-sort-down"></i>
+  </button>
   
   <!-- Este form permite buscar devoluciones por un rango de de fechas de creación -->
-  <div class="row" style="margin-bottom: 30px;"> 
+  <div class="opciones_filtros row" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha"> 
     <%= form_tag({ controller: "devoluciones", action: "consulta_por_fecha" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
@@ -121,17 +131,18 @@
 
       <div class="col-md-1 col-sm-5 col-xs-12">
         <div class="text-center">
-          <%= submit_tag 'Filtro por fechas', {:class=>"btn btn-info"} %>
+          <%= submit_tag 'Filtrar por fechas', {:class=>"btn btn-info"} %>
         </div>
       </div>
     <% end %>
   </div>
   <!-- Termina buscador por rango de fechas -->
 
-  <hr>
-
+  <button id="filtro_por_clave" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros por clave <i class="fa fa-sort-down"></i>
+  </button>
   <!-- Este form permite buscar devoluciones por una clave de producto -->
-  <div class="row" style="margin-bottom: 30px;"> 
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_clave"> 
     <%= form_tag({ controller: "devoluciones", action: "consulta_por_producto" }, {:class=> "form-horizontal", :method => :post}) do %>
       
       <div class="col-md-2 col-sm-6 col-xs-12">
@@ -156,15 +167,13 @@
 
       <div class="col-md-1 col-sm-5 col-xs-12">
         <div class="text-center">
-          <%= submit_tag 'Filtro por producto', {:class=>"btn btn-info"} %>
+          <%= submit_tag 'Filtrar por clave', {:class=>"btn btn-info"} %>
         </div>
       </div>
       
     <% end %>
   </div>
   <!-- Termina buscador por clave de producto -->
-
-  <hr>
 
   <!-- Este botón despliega el div con las opciones para filtros avanzados -->
   <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
@@ -298,7 +307,7 @@
       <div>
 
 
-        <table class="table table-striped responsive-utilities jambo_table data-table">
+        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla-devoluciones">
         <thead>
           <tr>
             <th class="column-title" style="text-align: center;">Clave producto</th>
@@ -367,6 +376,39 @@
       
 
     });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de devoluciones</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla-devoluciones').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de devoluciones.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de devoluciones.xls');
+      }
+
+    }
   </script>
   <%= javascript_include_tag "ventas" %>
   

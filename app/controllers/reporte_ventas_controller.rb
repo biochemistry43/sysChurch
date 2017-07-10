@@ -1,6 +1,6 @@
 class ReporteVentasController < ApplicationController
   def reporte_ventas
-@ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
+    @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
   	if request.get?
   	  
   	  @ventas_negocio_mes = current_user.negocio.ventas.where(created_at: Date.today.beginning_of_month.to_datetime..Date.today.to_datetime.end_of_day).sum(:montoVenta)

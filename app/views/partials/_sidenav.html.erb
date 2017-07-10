@@ -184,7 +184,9 @@
               <%if can? :create, Sucursal%>
                   <li><a><i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu" style="display: none">
-                      <li class="sub_menu"><%= link_to "Ventas", controller: "reporte_ventas", action: "reporte_ventas"%>
+                      <li class="sub_menu"><%= link_to "Reporte de ventas", controller: "reporte_ventas", action: "reporte_ventas"%>
+                      </li>
+                      <li class="sub_menu"><%= link_to "Reporte de gastos", controller: "reporte_gastos", action: "reporte_gastos"%>
                       </li>
                     </ul>
                   </li>
