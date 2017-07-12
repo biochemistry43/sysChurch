@@ -37,7 +37,7 @@
 
     <div class="row">
       <div>
-        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_proveedores">
+        <table class="table table-striped responsive-utilities jambo_table data-table">
           <thead>
             <tr>
               <th class="column-title" style="text-align: center;">Nombre</th>
@@ -55,6 +55,29 @@
         </table>
           <%= render 'modalProveedores'%>
       </div>
+    </div>
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_proveedores">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Nombre</th>
+              <th class="column-title" style="text-align: center;">Contacto</th>
+              <th class="column-title" style="text-align: center;">Telefono</th>
+              <th class="column-title" style="text-align: center;">Email</th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_proveedores">
+            <% @proveedores.each do |proveedor| %>
+              <tr>
+                <td style="text-align: center;"><%= proveedor.nombre %></td>
+                <td style="text-align: center;"><%= proveedor.nombreContacto %></td>
+                <td style="text-align: center;"><%= proveedor.telefono %></td>
+                <td style="text-align: center;"><%= proveedor.email %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
     </div>
   </div>
   <script>

@@ -307,7 +307,7 @@
       <div>
 
 
-        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla-devoluciones">
+        <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
             <th class="column-title" style="text-align: center;">Clave producto</th>
@@ -330,7 +330,7 @@
               <td style="text-align: center;"><%= devolucion.articulo.nombre %></td>
               <td style="text-align: center;"><%= devolucion.cat_venta_cancelada.clave %></td>
               <td style="text-align: center;">$ <%= devolucion.monto %></td>
-              <td style="text-align: center;"><%= devolucion.created_at %></td>
+              <td style="text-align: center;"><%= devolucion.created_at.strftime("%d/%m/%Y") %></td>
               <% if can? :create, Negocio %>
                 <td style="text-align: center;">
                   <%= devolucion.sucursal.nombre %>
@@ -347,6 +347,40 @@
           <% end %>
         </tbody>
       </table>
+
+      <div class="row" style="display: none;">
+        <table class="table table-striped responsive-utilities jambo_table" id="tabla-devoluciones">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Clave producto</th>
+            <th class="column-title" style="text-align: center;">Producto</th>
+            <th class="column-title" style="text-align: center;">Categoría</th>
+            <th class="column-title" style="text-align: center;">Importe devuelto</th>
+            <th class="column-title" style="text-align: center;">Fecha</th>
+            <% if can? :create, Negocio %>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+            <% end %>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @devoluciones.each do |devolucion| %>
+            <tr>
+              <td style="text-align: center;"><%= devolucion.articulo.clave %></td>
+              <td style="text-align: center;"><%= devolucion.articulo.nombre %></td>
+              <td style="text-align: center;"><%= devolucion.cat_venta_cancelada.clave %></td>
+              <td style="text-align: center;">$ <%= devolucion.monto %></td>
+              <td style="text-align: center;"><%= devolucion.created_at.strftime("%d/%m/%Y") %></td>
+              <% if can? :create, Negocio %>
+                <td style="text-align: center;">
+                  <%= devolucion.sucursal.nombre %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      </div>
 
       </div>
     </div>

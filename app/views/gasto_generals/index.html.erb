@@ -9,6 +9,13 @@
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="row">
       <div class="col-ms-12">
+        <div class="left-buttons">
+          <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+            <li class="fa fa-file-excel-o">
+              Exportar a xlsx    
+            </li>
+          </a>
+        </div>
         <div class="div-add-button">
 
            <%= link_to new_gasto_general_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"}  do %>
@@ -20,7 +27,7 @@
       </div>
     </div>
     
-    <hr style="border-style: solid; border-width: 2px;">
+    <hr>
 
     <div class="row">
       <div>
@@ -48,6 +55,39 @@
         <%= render 'modalGastos'%>
       </div>
     </div>
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_gastos_generales">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Ticket/Factura</th>
+              <th class="column-title" style="text-align: center;">Monto</th>
+              <th class="column-title" style="text-align: center;">Concepto</th>
+              <th class="column-title" style="text-align: center;">Proveedor</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;">Origen recurso</th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_gastos">
+            <% @gasto_generals.each do |gasto_general| %>
+              <tr>
+               <td style="text-align: center;"><%= gasto_general.created_at.strftime("%d/%m/%Y") %></td>
+               <td style="text-align: center;"><%= gasto_general.folio_gasto %>/<%= gasto_general.ticket_gasto %></td>
+               <td style="text-align: center;"><%= gasto_general.monto %></td>
+               <td style="text-align: center;"><%= gasto_general.concepto %></td>
+               <td style="text-align: center;"><%= gasto_general.proveedor.nombre %></td>
+               <td style="text-align: center;"><%= gasto_general.gasto.categoria_gasto.nombreCategoria %></td>
+               <% if gasto_general.gasto.caja_sucursal %>
+                 <td style="text-align: center;">Caja <%= gasto_general.gasto.caja_sucursal.nombre %></td>  
+               <% elsif gasto_general.gasto.caja_chica %>
+                 <td style="text-align: center;">Caja chica</td>  
+               <% end %>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
     <script>
     $(document).ready(function(){
   
@@ -67,7 +107,39 @@
           }
         }
       });
-
     });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de gastos generales</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla_gastos_generales').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de gastos generales.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de gastos generales.xls');
+      }
+
+    }
   </script>
   </div>

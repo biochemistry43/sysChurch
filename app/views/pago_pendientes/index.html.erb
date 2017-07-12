@@ -17,7 +17,7 @@
   <div class="col-md-12 col-sm-12 col-xs-12 ">
     <div>
 
-      <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_pagos_pendientes">
+      <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
             <th class="column-title" style="text-align: center;">Proveedor</th>
@@ -35,6 +35,31 @@
         </tbody>
       </table>
       <%= render 'modalPagoPendiente' %>
+
+    </div>
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_pagos_pendientes">
+        <thead>
+          <tr>
+            <th class="column-title" style="text-align: center;">Proveedor</th>
+            <th class="column-title" style="text-align: center;">Factura/Ticket</th>
+            <th class="column-title" style="text-align: center;" >Fecha vencimiento</th>
+            <th class="column-title" style="text-align: center;">Adeudo</th>
+              
+          </tr>
+        </thead>
+
+        <tbody id="tb_pagos_pendientes">
+          <% @pagosPendientes.each do |pago_pendiente| %>
+            <tr>
+              <td style="text-align: center;"><%= pago_pendiente.proveedor.nombre %></td>
+  <td style="text-align: center;"><%= pago_pendiente.compra.folio_compra %>/<%= pago_pendiente.compra.ticket_compra %></td>
+              <td style="text-align: center;"><%= pago_pendiente.fecha_vencimiento.strftime("%d/%m/%Y") %></td>
+              <td style="text-align: center;"><%= pago_pendiente.saldo %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
     

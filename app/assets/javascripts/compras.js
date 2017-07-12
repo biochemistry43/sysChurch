@@ -56,6 +56,30 @@ $(document).ready(function(){
 
   });
 
+  $("#filtros_por_fecha").click(function(e){
+    if( $("#opciones_filtros_por_fecha").is(":visible") ){
+      $(this).html('Filtros por fechas <i class="fa fa-sort-down"></i>');
+    }
+    else{
+      $(this).html('Filtros por fechas <i class="fa fa-sort-up"></i>');
+    }
+      
+    $("#opciones_filtros_por_fecha").slideToggle("fast");
+
+  });
+
+  $("#filtros_por_factura").click(function(e){
+    if( $("#opciones_filtros_por_factura").is(":visible") ){
+      $(this).html('Filtro por factura o ticket<i class="fa fa-sort-down"></i>');
+    }
+    else{
+      $(this).html('Filtro por factura o ticket<i class="fa fa-sort-up"></i>');
+    }
+      
+    $("#opciones_filtros_por_factura").slideToggle("fast");
+
+  });
+
   
 
   /*El método autocomplete, asigna las funcionalidades de autocompletado a todos los campos con la clase

@@ -210,7 +210,7 @@
       </div>
 
       <div>
-        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_productos">
+        <table class="table table-striped responsive-utilities jambo_table data-table">
           <thead>
             <tr>
               <th class="column-title" style="text-align: center;" >Clave</th>
@@ -235,6 +235,51 @@
         <%= render 'modalMarcaProductos'%>
         <%= render 'modalProveedores'%>
       </div>
+    </div>
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_productos">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Clave</th>
+              <th class="column-title" style="text-align: center;">Nombre</th>
+              <th class="column-title" style="text-align: center;">Stock</th>
+              <th class="column-title" style="text-align: center;">Existencia</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;">Sucursal</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_articulos">
+             <%  @articulos.each do |articulo| %>
+               <tr>
+                <td width="10%"><%= articulo.clave %></td>
+                <td align="justify" width="30%"><%if articulo.nombre %>
+                      <%= articulo.nombre %>
+                    <% end %>
+                    <% if articulo.marca_producto  %>
+                      <%= " marca: "<<articulo.marca_producto.nombre %>
+                    <% end %>
+                    <% if articulo.presentacion_producto %>
+                      <%= " presentación: "<<articulo.presentacion_producto.nombre  %>
+                    <% end %>
+                </td>
+                <td class="center-td" width="10%"><%= articulo.stock %></td>
+                <td class="center-td" width="10%">
+                  <% if articulo.existencia < articulo.stock %>
+                  <div style="background: #ff9999; color: red;">
+                  <%= articulo.existencia %>
+                  </div>
+                  <% else %>
+                  <%= articulo.existencia %>
+                  <% end %>
+                </td>
+                <td class="center-td" width="15%"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
+                <td class="center-td" width="15%"><%= articulo.sucursal.nombre %></td>
+              </tr>
+             <% end %>
+          </tbody>
+        </table>
     </div>
     <div class="table-buttons"></div>
 

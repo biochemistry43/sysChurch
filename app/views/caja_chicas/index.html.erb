@@ -22,6 +22,11 @@
     <div class="row">
       <div class="col-ms-12">
         <div class="div-left-buttons">
+          <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+            <li class="fa fa-file-excel-o">
+              Exportar a xlsx    
+            </li>
+          </a>
         </div>
 
         <div class="div-add-button">
@@ -34,12 +39,12 @@
     </div>
     
 
-    <hr style="border-style: solid; border-width: 2px;">
+    <hr >
 
     <div class="row">
       <div>
 
-        <table class="table table-striped responsive-utilities jambo_table data-table" id="tabla_caja_chica">
+        <table class="table table-striped responsive-utilities jambo_table data-table">
           <thead>
             <tr>
               <th class="column-title" style="text-align: center;" >Fecha</th>
@@ -57,6 +62,49 @@
         </table>
         <%= render "modalCajaChica" %>
       </div>
+    </div>
+
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Fecha</th>
+              <th class="column-title" style="text-align: center;">Entrada</th>
+              <th class="column-title" style="text-align: center;">Salida</th>
+              <th class="column-title" style="text-align: center;">concepto</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+            <%= render @caja_chicas %>
+          </tbody>
+        </table>
+    </div>
+
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_caja_chica">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Fecha</th>
+              <th class="column-title" style="text-align: center;">Entrada</th>
+              <th class="column-title" style="text-align: center;">Salida</th>
+              <th class="column-title" style="text-align: center;">concepto</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+            <% @caja_chicas.each do |caja_chica| %>
+              <tr>
+                <td class="center-td"><%= caja_chica.created_at.strftime("%d/%m/%Y") %></td>
+                <td class="center-td"><%= caja_chica.entrada ? caja_chica.entrada : 0 %></td>
+                <td class="center-td"><%= caja_chica.salida ? caja_chica.salida : 0 %></td>
+                <td class="center-td"><%= caja_chica.concepto %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
     </div>
     
   </div>
@@ -81,6 +129,39 @@
       });
 
     });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de caja chica</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla_caja_chica').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de caja chica.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de caja chica.xls');
+      }
+
+    }
   </script>
 
   
