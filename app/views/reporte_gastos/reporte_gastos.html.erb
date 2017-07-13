@@ -1,4 +1,25 @@
 <div class="right_col" role="main">
+      
+      <%= form_tag({ controller: "reporte_gastos", action: "reporte_gastos" }, {:class=> "form-horizontal", :method => :post}) do %>
+        
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Elija una fecha: 
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_reporte", nil, {class: "form-control", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Consultar', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      <% end %>
 
         <!-- Encabezado de resultados  -->
        <!--  Esta primera sección de resultados, es para el negocio como un todo y sólo podrá ser visto por usuarios con
@@ -6,19 +27,89 @@
         <% if can? :create, Negocio %>
           
         <div class="row tile_count">
-          <h2 class="dark">REPORTE DE GASTOS Y COMPRAS DEL NEGOCIO</h2>
+          <h2 class="dark">REPORTE DE GASTOS Y COMPRAS DEL NEGOCIO CON FECHA <%= @fecha %></h2>
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
-              <span class="count_top"><i class="fa fa-money"></i> Gastos en el mes</span>
+              <span class="count_top"><i class="fa fa-money"></i> Total de gastos mes</span>
               <div class="count">$ <%= @gastos_negocio_mes %></div>
             </div>
           </div>
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
-              <span class="count_top"><i class="fa fa-money"></i> Gastos de hoy</span>
+              <span class="count_top"><i class="fa fa-money"></i> Total de gastos del día</span>
               <div class="count">$ <%= @gastos_negocio_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del mes</span>
+              <div class="count green">$ <%= @compras_negocio_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del día</span>
+              <div class="count green">$ <%= @compras_negocio_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras en el mes</span>
+              <div class="count purple">$ <%= @pagos_compras_negocio_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras del día</span>
+              <div class="count purple">$ <%= @pagos_compras_negocio_hoy %> </div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos vencen este mes</span>
+              <div class="count red">$ <%= @pagos_pendientes_negocio_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos que vencen este día</span>
+              <div class="count red">$ <%= @pagos_pendientes_negocio_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del mes </span>
+              <div class="count blue">$ <%= @gastos_generales_negocio_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del día </span>
+              <div class="count blue">$ <%= @gastos_generales_negocio_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas mes</span>
+              <div class="count dark">$ <%= @suma_compras_canceladas_negocio_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas del día</span>
+              <div class="count dark">$ <%= @suma_compras_canceladas_negocio_hoy %></div>
             </div>
           </div>
         </div>
@@ -27,7 +118,7 @@
 
         <% @sucursales.each do |key, value| %>
         <div class="row tile_count">
-          <h2 class="green">REPORTE DE GASTOS Y COMPRAS DE LA SUCURSAL <%= value[:nombre].upcase %> </h2>
+          <h2 class="dark">REPORTE DE GASTOS Y COMPRAS DE LA SUCURSAL <%= value[:nombre].upcase %> </h2>
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
@@ -38,8 +129,78 @@
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
-              <span class="count_top"><i class="fa fa-money"></i> Gastos de hoy</span>
+              <span class="count_top"><i class="fa fa-money"></i> Gastos del día</span>
               <div class="count">$ <%= value[:gastos_del_dia] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del mes</span>
+              <div class="count green">$ <%= value[:compras_del_mes] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del día</span>
+              <div class="count green">$ <%= value[:compras_de_hoy] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras en el mes</span>
+              <div class="count purple">$ <%= value[:pagos_compras_mes] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras del día</span>
+              <div class="count purple">$ <%= value[:pagos_compras_hoy] %> </div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos vencen este mes</span>
+              <div class="count red">$ <%= value[:pagos_pendientes_mes] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos que vencen este día</span>
+              <div class="count red">$ <%= value[:pagos_pendientes_hoy] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del mes </span>
+              <div class="count blue">$ <%= value[:gastos_generales_del_mes] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del día </span>
+              <div class="count blue">$ <%= value[:gastos_generales_de_hoy] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas mes</span>
+              <div class="count dark">$ <%= value[:compras_canceladas_del_mes] %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas del día</span>
+              <div class="count dark">$ <%= value[:compras_canceladas_de_hoy] %></div>
             </div>
           </div>
         </div>
@@ -50,19 +211,89 @@
         <% else #Fin de vista con privilegios de administrador%>
         
          <div class="row tile_count">
-          <h2 class="dark">REPORTE DE GASTOS Y COMPRAS DE LA SUCURSAL <%= current_user.sucursal.nombre.upcase %></h2>
+          <h2 class="dark">REPORTE DE GASTOS Y COMPRAS DE LA SUCURSAL <%= current_user.sucursal.nombre.upcase %> CON FECHA <%= @fecha %></h2>
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
-              <span class="count_top"><i class="fa fa-money"></i> Gastos en el mes</span>
+              <span class="count_top"><i class="fa fa-money"></i> Total de gastos mes</span>
               <div class="count">$ <%= @gastos_sucursal_mes %></div>
             </div>
           </div>
           <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
             <div class="left"></div>
             <div class="right">
-              <span class="count_top"><i class="fa fa-money"></i> Gastos de hoy</span>
+              <span class="count_top"><i class="fa fa-money"></i> Total de gastos del día</span>
               <div class="count">$ <%= @gastos_sucursal_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del mes</span>
+              <div class="count green">$ <%= @compras_sucursal_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top green"><i class="fa fa-money"></i> Compras del día</span>
+              <div class="count green">$ <%= @compras_sucursal_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras en el mes</span>
+              <div class="count purple">$ <%= @pagos_compras_sucursal_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top purple"><i class="fa fa-money"></i> Pagos a compras del dia</span>
+              <div class="count purple">$ <%= @pagos_compras_sucursal_hoy %> </div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos vencen este mes</span>
+              <div class="count red">$ <%= @pagos_pendientes_sucursal_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top red"><i class="fa fa-money"></i> Pagos que vencen este día</span>
+              <div class="count red">$ <%= @pagos_pendientes_sucursal_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del mes </span>
+              <div class="count blue">$ <%= @gastos_generales_sucursal_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top blue"><i class="fa fa-money"></i> Gastos generales del día </span>
+              <div class="count blue">$ <%= @gastos_generales_sucursal_hoy %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas mes</span>
+              <div class="count dark">$ <%= @suma_compras_canceladas_sucursal_mes %></div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top dark"><i class="fa fa-money"></i> Compras canceladas del día</span>
+              <div class="count dark">$ <%= @suma_compras_canceladas_sucursal_hoy %></div>
             </div>
           </div>
         </div>

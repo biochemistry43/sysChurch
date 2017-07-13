@@ -1487,7 +1487,8 @@ span.right {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  position: relative; }
+  position: relative; 
+}
 
 @media (min-width: 992px) {
   .tile_count .tile_stats_count {

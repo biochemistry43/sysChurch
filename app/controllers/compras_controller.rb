@@ -722,7 +722,7 @@ class ComprasController < ApplicationController
     end
   end
 
-  #El método update de compras se utiliza específicamente para cancelar una compra completmente.
+  #El método update de compras se utiliza para cancelar una compra completamente.
   def update
     respond_to do |format|
       categoria = params[:cat_cancelacion]
@@ -730,10 +730,10 @@ class ComprasController < ApplicationController
       compra = params[:compra]
       observaciones = compra[:observaciones]
       @items = @compra.detalle_compras
-      #todo: terminar la cancelación puntual de compras.
+      
       if @compra.update(:observaciones => observaciones, :status => "Cancelada")
         
-        CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones)
+        CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>current_user.negocio, :sucursal=>current_user.sucursal)
         @compra.detalle_compras.each do |itemCompra|
           CompraArticulosDevuelto.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
           articulo = itemCompra.articulo
@@ -747,6 +747,25 @@ class ComprasController < ApplicationController
           
           entradasAlmacen.each do |entradaAlmacen|
             entradaAlmacen.destroy
+          end
+
+          #Se eliminan todos los pagos y egresos que hayan sido registrados para esta compra.
+          if @compra.pago_proveedores
+            caja_chica = nil
+            caja_sucursal = nil
+            @compra.pago_proveedores.each do |pago|
+              gasto = pago.gasto
+              if gasto.caja_chica
+                caja_chica = gasto.caja_chica
+                caja_chica.destroy
+              end
+              if gasto.movimiento_caja_sucursals
+                movimiento_caja_sucursal = gasto.movimiento_caja_sucursals
+                movimiento_caja_sucursal.destroy
+              end
+              gasto.destroy
+              pago.destroy
+            end
           end
 
         end

@@ -4,6 +4,10 @@ Rails.application.routes.draw do
 
   get 'reporte_ventas/reporte_ventas'
 
+  post 'reporte_gastos/reporte_gastos'
+
+  post 'reporte_ventas/reporte_ventas'
+
   resources :gasto_generals
   resources :pago_pendientes
   get 'pago_pendientes/index'
