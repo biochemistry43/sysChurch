@@ -38,32 +38,41 @@
         <div class="menu_section">
           <h3>General</h3>  
           <ul class="nav side-menu">
-            <li><a><i class="fa fa-home"></i> Módulos <span class="fa fa-chevron-down"></span></a>
+            <li>
+              <a>
+                <i class="fa fa-home"></i> Módulos <span class="fa fa-chevron-down"></span>
+              </a>
               <ul class="nav child_menu" style="display: none">
-                <% if can? :read, Articulo %>
-                  <li><a><i class="fa fa-tags"></i>Productos<span class="fa fa-chevron-down"></span></a>
+                <% if can? :create, Articulo %>
+                  <li>
+                    <a>
+                      <i class="fa fa-tags"></i>Productos<span class="fa fa-chevron-down"></span>
+                    </a>
                     <ul class="nav child_menu" style="display: none">
-                      <%if can? :read, CatArticulo%>
+                      <%if can? :create, CatArticulo%>
                         <li><%= link_to "Categorias", cat_articulos_path %>
                         </li>
                       <%end%>
-                      <%if can? :read, Articulo%>
+                      <%if can? :create, Articulo%>
                         <li><%= link_to "Catálogo productos", articulos_path %>
                         </li>
                       <%end%>
-                      <%if can? :read, MarcaProducto%>
+                      <%if can? :create, MarcaProducto%>
                         <li><%= link_to "Marcas", marca_productos_path %>
                         </li>
                       <%end%>
-                      <%if can? :read, PresentacionProducto%>
+                      <%if can? :create, PresentacionProducto%>
                         <li><%= link_to "Presentaciones", presentacion_productos_path %>
                         </li>
                       <%end%>
                     </ul>
                   </li>
-                <% end %>
+                <% end %> <!-- Fin if can create Articulo -->
 
-                <li><a><i class="fa fa-shopping-cart"></i>Ventas<span class="fa fa-chevron-down"></span></a>
+                <li>
+                  <a>
+                    <i class="fa fa-shopping-cart"></i>Ventas<span class="fa fa-chevron-down"></span>
+                  </a>
                   <ul class="nav child_menu" style="display: none">
                     <li><%= link_to punto_venta_index_path, {id: "pos-mod"} do%>
                            Punto de venta
@@ -93,77 +102,74 @@
                     <%end%>
 
                   </ul>
-                </li>
+                </li> 
 
-
-
-                <% if can? :read, Proveedor %>
-                  <li><a><i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span></a>
+                <% if can? :create, Proveedor %>
+                  <li>
+                    <a>
+                      <i class="fa fa-truck"></i>Proveedores<span class="fa fa-chevron-down"></span>
+                    </a>
                     <ul class="nav child_menu" style="display: none">
-                      <%if can? :update, Proveedor%>
+                      <%if can? :read, Proveedor%>
                         <li><%= link_to "Proveedores", proveedores_path%>
                         </li>
                       <%end%>
-                      <li><%= link_to "Pagos pendientes", pago_pendientes_path %></li>
+                      <% if can? :read, PagoPendiente %>
+                        <li><%= link_to "Pagos pendientes", pago_pendientes_path %></li>
+                      <% end %>
                     </ul>
                   </li>
                 <% end %>
 
                 
                 <% if can? :read, Compra %>
-                
-                  <li><a><i class="fa fa-cc-visa"></i> Compras<span class="fa fa-chevron-down"></span></a>
-
+                  <li>
+                    <a>
+                      <i class="fa fa-cc-visa"></i> Compras<span class="fa fa-chevron-down"></span>
+                    </a>
                     <ul class="nav child_menu" style="display: none">
                       <li><%= link_to compras_new_path, {id: "pos-mod"} do%>
-                        
-                        Registrar compra
-                        <%end%>
+                            Registrar compra
+                          <%end%>
                       </li>
-
-
                       <li><%= link_to compras_path, {id: "pos-mod"} do%>
-                        Compras realizadas
-                        <%end%>
+                            Compras realizadas
+                           <%end%>
                       </li>
 
                       <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
-                    para los administradores de la empresa -->
-                    <%if can? :create, Negocio%>
-                      <li><%= link_to "Categorias de cancelación", cat_compra_canceladas_path %>
-                      </li>
-                    <%end%>
+                      para los administradores de la empresa -->
+                      <%if can? :create, Negocio%>
+                        <li><%= link_to "Categorias de cancelación", cat_compra_canceladas_path %>
+                        </li>
+                      <%end%>
                     </ul>
                   </li>
-
-                <% end %>
+                <% end %> <!-- Fin if can read Compra -->
 
                 <% if can? :read, Gasto %>
                 
-                  <li><a><i class="fa fa-calculator"></i> Gastos<span class="fa fa-chevron-down"></span></a>
-
+                  <li>
+                    <a>
+                      <i class="fa fa-calculator"></i> Gastos<span class="fa fa-chevron-down"></span>
+                    </a>
                     <ul class="nav child_menu" style="display: none">
                       <li><%= link_to caja_chicas_path, {id: "pos-mod"} do%>
-                        
-                        Caja chica
-                        <%end%>
+                            Caja chica
+                          <%end%>
                       </li>
-
                       <li><%= link_to categoria_gastos_path, {id: "pos-mod"} do%>
-                        
-                        Categoría de gastos
-                        <%end%>
+                            Categoría de gastos
+                          <%end%>
                       </li>
-
                       <li><%= link_to gasto_generals_path, {id: "pos-mod"} do%>
-                        
-                        Gastos generales
-                        <%end%>
+                            Gastos generales
+                          <%end%>
                       </li>
                     </ul>
                   </li>
 
-                <% end %>
+                <% end %>  <!-- Fin if can read Gasto -->
                 
                 
                 <%if can? :read, Banco%>
@@ -172,60 +178,70 @@
                         Bancos
                       <%end%>
                   </li>
-                <%end%>
+                <%end%> <!-- Fin if can read Banco -->
                 <%if can? :read, Cliente%>
                   <li><%= link_to clientes_path do%>
                         <i class="fa fa-users"></i>
                         Clientes
                       <%end%>
                   </li>
-                <%end%>
+                <%end%> <!-- Fin if can read cliente -->
               </ul>
               <%if can? :create, Sucursal%>
-                  <li><a><i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu" style="display: none">
-                      <li class="sub_menu"><%= link_to "Reporte de ventas", controller: "reporte_ventas", action: "reporte_ventas"%>
-                      </li>
-                      <li class="sub_menu"><%= link_to "Reporte de gastos", controller: "reporte_gastos", action: "reporte_gastos"%>
-                      </li>
-                    </ul>
-                  </li>
-                <%end%>
+                <li>
+                  <a>
+                    <i class="fa fa-filter"></i>Reportes<span class="fa fa-chevron-down"></span>
+                  </a>
+                  <ul class="nav child_menu" style="display: none">
+                    <li class="sub_menu"><%= link_to "Reporte de ventas", controller: "reporte_ventas", action: "reporte_ventas"%>
+                    </li>
+                    <li class="sub_menu"><%= link_to "Reporte de gastos", controller: "reporte_gastos", action: "reporte_gastos"%>
+                    </li>
+                  </ul>
+                </li>
+              <%end%>
 
             </li>
             
-            <li><a><i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span></a>
-              <ul class="nav child_menu" style="display: none">
-                <%if can? :read, CajaSucursal%>
-                  <li>
-                    <%= link_to caja_sucursals_path do%>
-                      <i class="fa fa-database"></i>
-                      Cajas de venta
-                    <% end %>
-                  </li>
-                <%end%>
-                <%if can? :create, Negocio%>
-                  <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
-                        <i class="fa fa-rocket"></i>
-                        Negocio
-                      <% end %>
-                  </li>
-                  <li><%= link_to sucursals_path do%>
-                        <i class="fa fa-building"></i>
-                        Sucursales
-                      <% end %>
-                  </li>
-                  
-                  <li><%= link_to empleados_path do%>
-                        <i class="fa fa-child"></i>
-                        Empleados
-                      <% end %>
-                  </li>
-                
-              </ul>
+            <% if can? :update, Sucursal %>
               
-            </li>
+              <li>
+                <a>
+                  <i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span>
+                </a>
+                <ul class="nav child_menu" style="display: none">
+                  <%if can? :create, CajaSucursal%>
+                    <li>
+                      <%= link_to caja_sucursals_path do%>
+                        <i class="fa fa-database"></i>
+                        Cajas de venta
+                      <% end %>
+                    </li>
+                  <%end%>  <!-- Fin if can create caja sucursal -->
+                  <%if can? :create, Negocio%>
+                    <li><%= link_to controller: "negocios", action: "show", id: current_user.negocio_id do%>
+                          <i class="fa fa-rocket"></i>
+                          Negocio
+                        <% end %>
+                    </li>
+                    <li><%= link_to sucursals_path do%>
+                          <i class="fa fa-building"></i>
+                          Sucursales
+                        <% end %>
+                    </li>
+                    
+                    <li><%= link_to empleados_path do%>
+                          <i class="fa fa-child"></i>
+                          Empleados
+                        <% end %>
+                    </li>
+                  <% end %>
+                </ul>
+                
+              </li>
+            
             <%end%>
+
           </ul>
 
         </div>

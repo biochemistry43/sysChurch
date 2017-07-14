@@ -15,20 +15,32 @@ class Ability
        if user.role == "root"
          can :manage, :all
        elsif user.role == "cajero"
+         can :ru, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
-         can :r, Articulo
-         can :r, MarcaProducto
-         can :r, PresentacionProducto
-         can :cru, Perfil
+         can :ru, CajaSucursal
+         can :cru, CampoFormaPago
+         can :ru, CatArticulo
          can :cru, Cliente
-         can :crud, DatosFiscalesCliente
-         can :crud, Venta
+         can :cru, DatosFiscalesCliente
+         can :r, DatosFiscalesNegocio
+         can :r, DatosFiscalesSucursal
+         can :ru, FormaPago
          can :crud, ItemVenta
+         can :r, MarcaProducto
+         can :cru, MovimientoCajaSucursal
          can :ru, Negocio
-         can :ru, Sucursal
+         can :cru, Perfil
+         can :r, PresentacionProducto
+         can :ru, Proveedor
+         can :crud, RetiroCajaVenta
+         can :r, Sucursal
+         can :crud, TelefonoPersona
+         can :ru, User
+         can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+         
        elsif user.role == "administrador"
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
@@ -59,9 +71,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
-         can :cru, Compra
-         can :cru, DetalleCompra
-         can :cru, EntradaAlmacen
+         can :crud, Compra
+         can :crud, DetalleCompra
+         can :crud, EntradaAlmacen
        elsif user.role == "subadministrador"
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
@@ -92,9 +104,9 @@ class Ability
          can :crud, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
-         can :cru, Compra
-         can :cru, DetalleCompra
-         can :cru, EntradaAlmacen
+         can :crud, Compra
+         can :crud, DetalleCompra
+         can :crud, EntradaAlmacen
        elsif user.role == "gerente"
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
@@ -168,9 +180,9 @@ class Ability
          can :r, DatosFiscalesSucursal
          can :crud, TelefonoPersona
          can :ru, User
-         can :cr, Compra
-         can :cr, DetalleCompra
-         can :cr, EntradaAlmacen
+         can :crud, Compra
+         can :crud, DetalleCompra
+         can :crud, EntradaAlmacen
        end
     #
     # The first argument to `can` is the action you are giving the user
