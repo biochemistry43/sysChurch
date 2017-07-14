@@ -15,8 +15,10 @@ class Ability
        if user.role == "root"
          can :manage, :all
        elsif user.role == "cajero"
+
          can :ru, Articulo
          can :getById, Articulo
+         can :showByCriteriaForPos, Articulo
          can :showByCriteria, Articulo
          can :ru, CajaSucursal
          can :cru, CampoFormaPago
@@ -38,10 +40,14 @@ class Ability
          can :crud, TelefonoPersona
          can :ru, User
          can :crud, Venta
+         can :buscarUltimoFolio, Venta
+         can :consulta_ventas, Venta
+         can :consulta_avanzada, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
          
        elsif user.role == "administrador"
+
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
          can :crud, VentaCancelada
@@ -74,7 +80,9 @@ class Ability
          can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+
        elsif user.role == "subadministrador"
+
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
          can :crud, VentaCancelada
@@ -107,7 +115,11 @@ class Ability
          can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+
+
        elsif user.role == "gerente"
+
+
          can :crud, CatCompraCancelada
          can :crud, CatVentaCancelada
          can :crud, VentaCancelada
@@ -140,7 +152,11 @@ class Ability
          can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+
+
        elsif user.role == "auxiliar"
+
+
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :cru, Perfil
@@ -165,7 +181,11 @@ class Ability
          can :cr, Compra
          can :cr, DetalleCompra
          can :cr, EntradaAlmacen
+
+
        elsif user.role == "almacenista"
+
+
          can :cru, Perfil
          can :cru, Cliente
          can :cru, DatosFiscalesCliente
@@ -183,6 +203,7 @@ class Ability
          can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+         
        end
     #
     # The first argument to `can` is the action you are giving the user

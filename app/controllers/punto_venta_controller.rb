@@ -4,6 +4,7 @@ class PuntoVentaController < ApplicationController
    # before_filter :authenticate_user!
 
 	def index
+    if current_user.caja_sucursal
     @formas_pago = FormaPago.all
     @cajas = current_user.sucursal.caja_sucursals
     @cajaAsignada = CajaSucursal.where("user_id = ?", current_user.id).take
@@ -73,6 +74,10 @@ class PuntoVentaController < ApplicationController
       if @venta.venta_forma_pago.venta_forma_pago_campos
         @camposFormaPago = @venta.venta_forma_pago.venta_forma_pago_campos
       end
+    end
+    else
+      flash[:notice] = "No ha asignado una caja de venta a este usuario, no puede acceder al módulo de punto de venta. Verifique con el administrador del sistema."
+      redirect_to root_path
     end
 	end
 
@@ -170,7 +175,7 @@ class PuntoVentaController < ApplicationController
           unless cliente.eql?("")
             Cliente.find(cliente).ventas << @venta
           else
-            Cliente.find_by  nombre: "general"
+            Cliente.where(nombre: "General", negocio: current_user.negocio).ventas << @venta
           end
 
           current_user.ventas << @venta
@@ -277,7 +282,7 @@ class PuntoVentaController < ApplicationController
               movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta)
 
               #Se obtiene el registro de la caja de venta elegida o asignada.
-              cajaBD = CajaSucursal.find(caja)
+              cajaBD = CajaSucursal.find_by_numero_caja(caja)
 
               current_user.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc

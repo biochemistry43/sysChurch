@@ -2,7 +2,7 @@ class ClientesController < ApplicationController
   before_action :set_cliente, only: [:edit, :update, :destroy]
 
   def index
-    @clientes = current_user.negocio.clientes
+    @clientes = current_user.negocio.clientes.order(:nombre)
   end
 
   def edit

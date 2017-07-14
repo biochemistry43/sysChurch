@@ -51,7 +51,7 @@
     <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
     en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
     <% if can? :read, Venta %> 
-      <%= link_to ventas_path, html_options = {class: "btn btn-success"} do %>
+      <%= link_to ventas_path, html_options = {class: "btn btn-success", method: :post} do %>
       <i class="fa fa-shopping-cart"> Mostrar todas las ventas </i>
       <% end %>
     <% end %>
@@ -275,7 +275,7 @@
                   <% end %>
                 <% end %>
 
-                <% if can? :destroy, venta %> 
+                <% if can? :create, VentaCancelada %> 
                   <% if venta.status.eql?("Activa") %>
                     <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
                      <i class="fa fa-close"></i>
@@ -354,6 +354,7 @@
   
       $('.data-table').DataTable({
         responsive: true,
+        "order": [],
         "language":{
           "info": "Mostrar pag _PAGE_ de _PAGES_",
           "lengthMenu": "Mostrar _MENU_ registros",

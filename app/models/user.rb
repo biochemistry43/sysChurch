@@ -42,4 +42,6 @@ class User < ActiveRecord::Base
 
   belongs_to :sucursal
 
+  has_one :caja_sucursal
+
 end
