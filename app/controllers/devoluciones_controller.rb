@@ -6,15 +6,19 @@ class DevolucionesController < ApplicationController
 
   def index
   	if can? :create, Negocio
-  		@devoluciones = current_user.negocio.venta_canceladas
+  		@devoluciones = current_user.negocio.venta_canceladas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_day)
   	else
-  		@devoluciones = current_user.sucursal.venta_canceladas
+  		@devoluciones = current_user.sucursal.venta_canceladas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_day)
   	end
   end
 
   def show
   end
 
+  #Este método realiza una consulta de las devoluciones realizadas en un rango de fechas y devuelve la consulta a
+  #la vista.
+  #El usuario administrador consulta las devoluciones de todo el negocio, otro tipo de privilegios, solamente puede
+  #consultar las de su propia sucursal.
   def consulta_por_fecha
     @consulta = true
     @avanzada = false

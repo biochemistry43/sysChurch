@@ -14,9 +14,9 @@ class ComprasController < ApplicationController
     @porFactura = false
     
     if can? :create, Negocio
-      @compras = current_user.negocio.compras
+      @compras = current_user.negocio.compras.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
     else
-      @compras = current_user.sucursal.compras
+      @compras = current_user.sucursal.compras.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
     end
   end
 
@@ -33,10 +33,10 @@ class ComprasController < ApplicationController
     @items = @compra.detalle_compras
     @proveedor = @compra.proveedor.nombre
     @sucursal = @compra.sucursal.nombre
-    @comprador = @compra.user.perfil ? @compra.user.perfil.nombre : @compra.user.email
+    @comprador = @compra.user.perfil ? @compra.user.perfil.nombre_completo : @compra.user.email
 
     if @compra.compra_cancelada
-      @autorizacion = @compra.compra_cancelada.user.perfil ? @compra.compra_cancelada.user.perfil.nombre + ' ' + @compra.compra_cancelada.user.perfil.ape_paterno + ' ' + @compra.compra_cancelada.user.perfil.ape_materno : @compra.compra_cancelada.user.email
+      @autorizacion = @compra.compra_cancelada.user.perfil ? @compra.compra_cancelada.user.perfil.nombre_completo  : @compra.compra_cancelada.user.email
       @fechaCancelacion = @compra.compra_cancelada.created_at
       @observacionesCancelacion = @compra.compra_cancelada.observaciones
       @categoriaCancelacion = @compra.compra_cancelada.cat_compra_cancelada.clave
@@ -117,7 +117,7 @@ class ComprasController < ApplicationController
       #relacionado con este perfil y se asigna a la variable de instancia comprador
       unless perfil_id.empty?
         @comprador = Perfil.find(perfil_id).user
-        @nombreComprador = @comprador.perfil.nombre + " " + @comprador.perfil.ape_paterno + " " + @comprador.perfil.ape_materno
+        @nombreComprador = @comprador.perfil.nombre_completo
       end
 
       unless proveedor_id.empty?

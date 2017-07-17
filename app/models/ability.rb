@@ -22,6 +22,7 @@ class Ability
          can :showByCriteria, Articulo
          can :ru, CajaSucursal
          can :cru, CampoFormaPago
+         can :ru, CampoFormaPagoItem
          can :ru, CatArticulo
          can :cru, Cliente
          can :cru, DatosFiscalesCliente
@@ -48,161 +49,327 @@ class Ability
          
        elsif user.role == "administrador"
 
-         can :crud, CatCompraCancelada
-         can :crud, CatVentaCancelada
-         can :crud, VentaCancelada
+         can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
-         can :cru, Perfil
-         can :crud, Cliente
-         can :cru, DatosFiscalesCliente
-         can :crud, Articulo
-         can :crud, CatArticulo
-         can :crud, MarcaProducto
-         can :crud, PresentacionProducto
+         can :showByCriteriaForPos, Articulo
+         can :solo_sucursal, Articulo
+         can :baja_existencia, Articulo
+         can :consulta_avanzada, Articulo
          can :crud, Banco
+         can :crud, CajaChica
+         can :crud, CajaSucursal
+         can :ru, CampoFormaPago
+         can :ru, CampoFormaPagoItem
+         can :crud, CatArticulo
+         can :crud, CatCompraCancelada
+         can :crud, CatVentaCancelada
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
+         can :crud, Cliente
+         can :crud, Compra 
+         can :consulta_compra_factura, Compra
+         can :consulta_compras, Compra
+         can :consulta_avanzada, Compra
+         can :solo_sucursal, Compra
+         can :actualizar, Compra
+         can :crud, CompraArticulosDevuelto
+         can :crud, CompraCancelada
+         can :crud, DatosFiscalesCliente
+         can :ru, DatosFiscalesNegocio
          can :crud, DatosFiscalesSucursal
-         can :crud, DatosFiscalesNegocio
-         can :crud, Gasto
-         can :crud, ItemVenta
-         can :cru, Negocio
-         can :crud, Perdida
-         can :cru, Perfil
-         can :crud, Proveedor
-         can :crud, Sucursal
-         can :crud, TelefonoPersona
-         can :crud, User
-         can :crud, Venta
-         can :crud, VentaFormaPago
-         can :crud, VentaFormaPagoCampo
-         can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+         can :crud, EntradaInventario
+         can :ru, FormaPago
+         can :crud, Gasto
+         can :crud, GastoGeneral
+         can :crud, HistoriaEdicionesCompra
+         can :crud, ItemVenta
+         can :crud, MarcaProducto
+         can :crud, MovimientoCajaSucursal
+         can :cru, Negocio
+         can :updateDatosFiscales, Negocio
+         can :crud, PagoDevolucion
+         can :crud, PagoPendiente
+         can :crud, PagoProveedor
+         can :cru, Perfil
+         can :crud, PresentacionProducto
+         can :crud, Proveedor
+         can :crud, RetiroCajaVenta
+         can :ru, Sucursal
+         can :crud, TelefonoPersona
+         can :ru, User
+         can :crud, Venta
+         can :buscarUltimoFolio, Venta
+         can :consulta_ventas, Venta
+         can :consulta_avanzada, Venta
+         can :solo_sucursal, Venta
+         can :crud, VentaCancelada
+         can :consulta_por_fecha, VentaCancelada
+         can :consulta_por_producto, VentaCancelada
+         can :consulta_avanzada, VentaCancelada
+         can :devolcion, VentaCancelada
+         can :hacerDevolucion, VentaCancelada
+         can :consulta_por_fecha, DevolucionesController
+         can :consulta_por_producto, DevolucionesController
+         can :consulta_avanzada, DevolucionesController
+         can :devolcion, DevolucionesController
+         can :hacerDevolucion, DevolucionesController
+         can :crud, VentaFormaPago
+         can :crud, VentaFormaPagoCampo
+
+         
 
        elsif user.role == "subadministrador"
 
-         can :crud, CatCompraCancelada
-         can :crud, CatVentaCancelada
-         can :crud, VentaCancelada
+         can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
-         can :cru, Perfil
-         can :crud, Cliente
-         can :cru, DatosFiscalesCliente
-         can :crud, Articulo
-         can :crud, CatArticulo
-         can :crud, MarcaProducto
-         can :crud, PresentacionProducto
+         can :showByCriteriaForPos, Articulo
+         can :solo_sucursal, Articulo
+         can :baja_existencia, Articulo
+         can :consulta_avanzada, Articulo
          can :crud, Banco
+         can :crud, CajaChica
+         can :crud, CajaSucursal
+         can :ru, CampoFormaPago
+         can :ru, CampoFormaPagoItem
+         can :crud, CatArticulo
+         can :crud, CatCompraCancelada
+         can :crud, CatVentaCancelada
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
+         can :crud, Cliente
+         can :crud, Compra 
+         can :consulta_compra_factura, Compra
+         can :consulta_compras, Compra
+         can :consulta_avanzada, Compra
+         can :solo_sucursal, Compra
+         can :actualizar, Compra
+         can :crud, CompraArticulosDevuelto
+         can :crud, CompraCancelada
+         can :crud, DatosFiscalesCliente
+         can :ru, DatosFiscalesNegocio
          can :crud, DatosFiscalesSucursal
-         can :crud, DatosFiscalesNegocio
-         can :crud, Gasto
-         can :crud, ItemVenta
-         can :cru, Negocio
-         can :crud, Perdida
-         can :cru, Perfil
-         can :crud, Proveedor
-         can :crud, Sucursal
-         can :crud, TelefonoPersona
-         can :crud, User
-         can :crud, Venta
-         can :crud, VentaFormaPago
-         can :crud, VentaFormaPagoCampo
-         can :crud, Compra
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+         can :crud, EntradaInventario
+         can :ru, FormaPago
+         can :crud, Gasto
+         can :crud, GastoGeneral
+         can :crud, HistoriaEdicionesCompra
+         can :crud, ItemVenta
+         can :crud, MarcaProducto
+         can :crud, MovimientoCajaSucursal
+         can :cru, Negocio
+         can :updateDatosFiscales, Negocio
+         can :crud, PagoDevolucion
+         can :crud, PagoPendiente
+         can :crud, PagoProveedor
+         can :cru, Perfil
+         can :crud, PresentacionProducto
+         can :crud, Proveedor
+         can :crud, RetiroCajaVenta
+         can :ru, Sucursal
+         can :crud, TelefonoPersona
+         can :ru, User
+         can :crud, Venta
+         can :buscarUltimoFolio, Venta
+         can :consulta_ventas, Venta
+         can :consulta_avanzada, Venta
+         can :solo_sucursal, Venta
+         can :crud, VentaCancelada
+         can :consulta_por_fecha, VentaCancelada
+         can :consulta_por_producto, VentaCancelada
+         can :consulta_avanzada, VentaCancelada
+         can :devolcion, VentaCancelada
+         can :hacerDevolucion, VentaCancelada
+         can :consulta_por_fecha, DevolucionesController
+         can :consulta_por_producto, DevolucionesController
+         can :consulta_avanzada, DevolucionesController
+         can :devolcion, DevolucionesController
+         can :hacerDevolucion, DevolucionesController
+         can :crud, VentaFormaPago
+         can :crud, VentaFormaPagoCampo
+
 
 
        elsif user.role == "gerente"
 
-
-         can :crud, CatCompraCancelada
-         can :crud, CatVentaCancelada
-         can :crud, VentaCancelada
+         can :cru, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
-         can :cru, Perfil
-         can :cru, Cliente
-         can :cru, DatosFiscalesCliente
-         can :crud, Articulo
+         can :showByCriteriaForPos, Articulo
+         can :solo_sucursal, Articulo
+         can :baja_existencia, Articulo
+         can :consulta_avanzada, Articulo
+         can :cru, Banco
+         can :crud, CajaChica
+         can :crud, CajaSucursal
+         can :ru, CampoFormaPago
+         can :ru, CampoFormaPagoItem
          can :ru, CatArticulo
-         can :crud, MarcaProducto
-         can :crud, PresentacionProducto
-         can :crud, Banco
-         can :crud, CategoriaGasto
-         can :crud, CategoriaPerdida
-         can :crud, DatosFiscalesSucursal
-         can :crud, DatosFiscalesNegocio
-         can :crud, Gasto
-         can :crud, ItemVenta
-         can :ru, Negocio
-         can :crud, Perdida
-         can :cru, Perfil
-         can :crud, Proveedor
-         can :crud, Sucursal
-         can :crud, TelefonoPersona
-         can :crud, User
-         can :crud, Venta
-         can :crud, VentaFormaPago
-         can :crud, VentaFormaPagoCampo
+         can :ru, CatCompraCancelada
+         can :ru, CatVentaCancelada
+         can :ru, CategoriaGasto
+         can :ru, CategoriaPerdida
+         can :crud, Cliente
          can :crud, Compra
+         can :consulta_compra_factura, Compra
+         can :consulta_compras, Compra
+         can :consulta_avanzada, Compra
+         can :actualizar, Compra
+         can :crud, CompraArticulosDevuelto
+         can :crud, CompraCancelada
+         can :crud, DatosFiscalesCliente
+         can :read, DatosFiscalesNegocio
+         can :crud, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+         can :crud, EntradaInventario
+         can :ru, FormaPago
+         can :crud, Gasto
+         can :crud, GastoGeneral
+         can :cru, HistoriaEdicionesCompra
+         can :crud, ItemVenta
+         can :crud, MarcaProducto
+         can :crud, MovimientoCajaSucursal
+         can :read, Negocio
+         can :crud, PagoDevolucion
+         can :crud, PagoPendiente
+         can :crud, PagoProveedor
+         can :cru, Perfil
+         can :crud, PresentacionProducto
+         can :crud, Proveedor
+         can :crud, RetiroCajaVenta
+         can :ru, Sucursal
+         can :crud, TelefonoPersona
+         can :ru, user
+         can :crud, Venta
+         can :buscarUltimoFolio, Venta
+         can :consulta_ventas, Venta
+         can :consulta_avanzada, Venta
+         can :crud, VentaCancelada
+         can :consulta_por_fecha, VentaCancelada
+         can :consulta_por_producto, VentaCancelada
+         can :consulta_avanzada, VentaCancelada
+         can :devolucion, VentaCancelada
+         can :hacerDevolucion, VentaCancelada
+         can :consulta_por_fecha, DevolucionesController
+         can :consulta_por_producto, DevolucionesController
+         can :consulta_avanzada, DevolucionesController
+         can :devolucion, DevolucionesController
+         can :hacerDevolucion, DevolucionesController
+
+         can :crud, VentaFormaPago
+         can :crud, VentaFormaPagoCampo
+
+         
 
 
        elsif user.role == "auxiliar"
 
-
+         can :read, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
+         can :solo_sucursal, Articulo
+         can :baja_existencia, Articulo
+         can :consulta_avanzada, Articulo
+         can :read, Banco
+         can :read, CajaChica
+         can :read, CajaSucursal
+         can :read, CampoFormaPago
+         can :read, CampoFormaPagoItem
+         can :read, CatArticulo
+         can :read, CatCompraCancelada
+         can :read, CatVentaCancelada
+         can :read, CategoriaGasto
+         can :read, CategoriaPerdida
+         can :crud, Cliente
+         can :read, Compra
+         can :consulta_compra_factura, Compra
+         can :consulta_compras, Compra
+         can :consulta_avanzada, Compra
+         can :actualizar, Compra
+         can :read, CompraArticulosDevuelto
+         can :read, CompraCancelada
+         can :read, DatosFiscalesCliente
+         can :read, DatosFiscalesNegocio
+         can :read, DatosFiscalesSucursal
+         can :read, EntradaAlmacen
+         can :read, FormaPago
+         can :crud, Gasto
+         can :crud, GastoGeneral
+         can :read, ItemVenta
+         can :crud, MarcaProducto
+         can :crud, MovimientoCajaSucursal
+         can :read, Negocio
          can :cru, Perfil
-         can :cru, Cliente
-         can :ru, DatosFiscalesCliente
-         can :r, Articulo
-         can :r, CatArticulo
-         can :r, Banco
-         can :r, CategoriaGasto
-         can :r, CategoriaPerdida
-         can :r, DatosFiscalesSucursal
-         can :r, DatosFiscalesNegocio
-         can :cr, Gasto
-         can :r, CategoriaGasto
-         can :r, Negocio
-         can :crud, Perdida
-         can :cru, Perfil
-         can :cru, Proveedor
-         can :r, Sucursal
-         can :ru, TelefonoPersona
+         can :crud, PresentacionProducto
+         can :crud, Proveedor
+         can :crud, RetiroCajaVenta
+         can :read, Sucursal
+         can :crud, TelefonoPersona
          can :ru, User
-         can :cr, Compra
-         can :cr, DetalleCompra
-         can :cr, EntradaAlmacen
+         can :read, Venta
+         can :buscarUltimoFolio, Venta
+         can :consulta_ventas, Venta
+         can :consulta_avanzada, Venta
+         can :ru, VentaCancelada
+         can :consulta_por_fecha, VentaCancelada
+         can :consulta_por_producto, VentaCancelada
+         can :consulta_avanzada, VentaCancelada
+         can :devolucion, VentaCancelada
+         can :consulta_por_fecha, DevolucionesController
+         can :consulta_por_producto, DevolucionesController
+         can :consulta_avanzada, DevolucionesController
+         can :devolucion, DevolucionesController
+         can :read, VentaFormaPago
+         can :read, VentaFormaPagoCampo
 
 
        elsif user.role == "almacenista"
 
-
-         can :cru, Perfil
-         can :cru, Cliente
-         can :cru, DatosFiscalesCliente
-         can :cru, Articulo
-         can :cru, CatArticulo
-         can :crud, MarcaProducto
-         can :crud, PresentacionProducto
-         can :ru, Negocio
-         can :r, DatosFiscalesNegocio
-         can :cru, Proveedor
-         can :r, Sucursal
-         can :r, DatosFiscalesSucursal
-         can :crud, TelefonoPersona
-         can :ru, User
+         can :crud, Articulo
+         can :getById, Articulo
+         can :showByCriteria, Articulo
+         can :solo_sucursal, Articulo
+         can :baja_existencia, Articulo
+         can :consulta_avanzada, Articulo
+         can :read, CatArticulo
+         can :read, CatCompraCancelada
+         can :read, CatVentaCancelada
+         can :read, CategoriaGasto
+         can :read, CategoriaPerdida
+         can :read, Cliente
          can :crud, Compra
+         can :consulta_compra_factura, Compra
+         can :consulta_compras, Compra
+         can :consulta_avanzada, Compra
+         can :actualizar, Compra
+         can :crud, CompraArticulosDevuelto
+         can :crud, CompraCancelada
+         can :read, DatosFiscalesCliente
+         can :read, DatosFiscalesNegocio
+         can :read, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
+         can :crud, EntradaInventario
+         can :ru, FormaPago
+         can :crud, Gasto
+         can :crud, GastoGeneral
+         can :crud, HistoriaEdicionesCompra
+         can :crud, MarcaProducto
+         can :read, Negocio
+         can :cru, Perfil
+         can :crud, PresentacionProducto
+         can :crud, Proveedor
+         can :read, Sucursal
+         can :crud, TelefonoPersona
+         can :ru, User
+         can :buscarUltimoFolio, Venta
+
          
        end
     #
