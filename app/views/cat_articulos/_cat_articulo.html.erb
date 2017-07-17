@@ -1,16 +1,16 @@
 <tr id="cat_articulo_<%= cat_articulo.id%>" class="rowsearch">
-  <td><%= cat_articulo.nombreCatArticulo %></td>
-  <td><%= cat_articulo.descripcionCatArticulo %></td>
-  <td><%= cat_articulo.cat_articulo ? cat_articulo.cat_articulo.nombreCatArticulo : "No tiene asignada una categoria padre" %>
+  <td style="text-align: center;"><%= cat_articulo.nombreCatArticulo %></td>
+  <td style="text-align: center;"><%= cat_articulo.descripcionCatArticulo %></td>
+  <td style="text-align: center;"><%= cat_articulo.cat_articulo ? cat_articulo.cat_articulo.nombreCatArticulo : "No tiene asignada una categoria padre" %>
   </td>
   
-  <td>
+  <td style="text-align: center;">
     <% if can? :create, cat_articulo %>
       <%= link_to 'Editar', edit_cat_articulo_path(cat_articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
     <% end %>
   </td>
 
-  <td>
+  <td style="text-align: center;">
     <% if can? :destroy, cat_articulo %>
       <%= link_to 'Borrar', cat_articulo, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_articulo.nombreCatArticulo}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
     <% end %>
