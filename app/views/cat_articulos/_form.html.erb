@@ -30,11 +30,11 @@
     </div>
 
     <div class="item form-group<%= @cat_articulo.errors[:cat_articulo_id].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :cat_articulo_id, "Elegir categoría padre:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} do %>
+      <%= #f.label :cat_articulo_id, "Elegir categoría padre:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} do %>
       <% end %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-level-up"></i></span>
-        <%= f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo, {:placeholder=>"Escriba el nombre de la cuenta..."}, {class: "form-control col-md-7 col-xs-12 text_field"})%>      
+        <%= #f.collection_select(:cat_articulo_id, current_user.negocio.cat_articulos, :id, :nombreCatArticulo, {:placeholder=>"Escriba el nombre de la cuenta..."}, {class: "form-control col-md-7 col-xs-12 text_field"})%>      
       </div>
     </div>  
 
