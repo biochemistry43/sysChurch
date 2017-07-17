@@ -34,6 +34,7 @@ class CajaSucursalsController < ApplicationController
         #format.html { redirect_to @caja_sucursal, notice: 'Se creo una caja para esta sucursal.' }
         #format.json { render :show, status: :created, location: @caja_sucursal }
         current_user.sucursal.caja_sucursals << @caja_sucursal
+        current_user.negocio.caja_sucursals << @caja_sucursal
         format.json { head :no_content}
         format.js
       else

@@ -28,4 +28,5 @@ class Negocio < ActiveRecord::Base
 	has_many :caja_chicas
 	has_many :pago_pendientes
 	has_many :proveedores
+	has_many :caja_sucursals
 end

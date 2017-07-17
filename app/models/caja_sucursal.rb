@@ -1,6 +1,7 @@
 class CajaSucursal < ActiveRecord::Base
 	belongs_to :sucursal
 	belongs_to :user
+	belongs_to :negocio
 	has_many :gastos
 	has_many :movimiento_caja_sucursals
 	has_many :ventas
