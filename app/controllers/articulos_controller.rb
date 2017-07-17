@@ -38,9 +38,9 @@ class ArticulosController < ApplicationController
     @criteria = params[:criteria]
 
     if Rails.env.development?
-      articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
+      articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
     elsif Rails.env.production?
-      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
+      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
     end
 
     #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
@@ -51,9 +51,9 @@ class ArticulosController < ApplicationController
     @criteria = params[:criteria]
 
     if Rails.env.development?
-      articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?) AND (tipo = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable')
+      articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?) AND (tipo = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable', current_user.negocio.id)
     elsif Rails.env.production?
-      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (tipo = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable')
+      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (tipo = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable', current_user.negocio.id)
     end
 
     #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
