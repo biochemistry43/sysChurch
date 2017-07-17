@@ -96,7 +96,7 @@ class Ability
          can :crud, PresentacionProducto
          can :crud, Proveedor
          can :crud, RetiroCajaVenta
-         can :ru, Sucursal
+         can :cru, Sucursal
          can :crud, TelefonoPersona
          can :ru, User
          can :crud, Venta
@@ -169,7 +169,7 @@ class Ability
          can :crud, PresentacionProducto
          can :crud, Proveedor
          can :crud, RetiroCajaVenta
-         can :ru, Sucursal
+         can :cru, Sucursal
          can :crud, TelefonoPersona
          can :ru, User
          can :crud, Venta
