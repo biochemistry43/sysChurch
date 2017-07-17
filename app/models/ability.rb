@@ -80,11 +80,10 @@ class Ability
          can :crud, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
-         can :crud, EntradaInventario
          can :ru, FormaPago
          can :crud, Gasto
          can :crud, GastoGeneral
-         can :crud, HistoriaEdicionesCompra
+         can :crud, HistorialEdicionesCompra
          can :crud, ItemVenta
          can :crud, MarcaProducto
          can :crud, MovimientoCajaSucursal
@@ -154,11 +153,10 @@ class Ability
          can :crud, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
-         can :crud, EntradaInventario
          can :ru, FormaPago
          can :crud, Gasto
          can :crud, GastoGeneral
-         can :crud, HistoriaEdicionesCompra
+         can :crud, HistorialEdicionesCompra
          can :crud, ItemVenta
          can :crud, MarcaProducto
          can :crud, MovimientoCajaSucursal
@@ -227,11 +225,10 @@ class Ability
          can :crud, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
-         can :crud, EntradaInventario
          can :ru, FormaPago
          can :crud, Gasto
          can :crud, GastoGeneral
-         can :cru, HistoriaEdicionesCompra
+         can :cru, HistorialEdicionesCompra
          can :crud, ItemVenta
          can :crud, MarcaProducto
          can :crud, MovimientoCajaSucursal
@@ -355,11 +352,10 @@ class Ability
          can :read, DatosFiscalesSucursal
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
-         can :crud, EntradaInventario
          can :ru, FormaPago
          can :crud, Gasto
          can :crud, GastoGeneral
-         can :crud, HistoriaEdicionesCompra
+         can :crud, HistorialEdicionesCompra
          can :crud, MarcaProducto
          can :read, Negocio
          can :cru, Perfil

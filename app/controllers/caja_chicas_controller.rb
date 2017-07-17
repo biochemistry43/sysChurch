@@ -2,7 +2,7 @@ class CajaChicasController < ApplicationController
   before_action :set_caja_chica, only: [:edit, :update, :destroy, :show]
 
   def index
-    @movimientos_caja = current_user.sucursal.caja_chicas(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
+    @movimientos_caja = current_user.sucursal.caja_chicas#.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
     entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
     salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
     @saldo = entradas - salidas
