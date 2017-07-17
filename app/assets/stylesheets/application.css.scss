@@ -1,0 +1,325 @@
+/*
+ * This is a manifest file that'll be compiled into application, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+  ** * require fonts/css/font-awesome.min
+
+ *
+ *= require pickadate/lib/themes/classic
+ *= require pickadate/lib/themes/classic.date
+ *= require pickadate/lib/themes/classic.time
+ *= require dataTables/extras/dataTables.tableTools
+
+ */
+
+@import "bootstrap";
+@import "bootstrap-sprockets";
+@import "font-awesome";
+
+@import "css/animate.min";
+@import "css/custom";
+@import "css/icheck/flat/green";
+@import "css/floatexamples";
+@import "css/normalize";
+@import "css/ion.rangeSlider";
+@import "css/ion.rangeSlider.skinFlat";
+@import "pace";
+
+body{
+	position: relative; 
+	/*padding-top: 60px;
+	padding-left: 10px;*/
+}
+
+@import "bootstrap-sprockets";
+
+body {
+  /*padding-top: 50px;*/
+  background: #5B7ECC;
+  font-size: 16px;
+  font-weight: 600;
+  color: #5B7ECC;
+}
+
+h1{
+  color: black;
+}
+
+.modal-header{
+  margin-bottom: 20px;
+}
+
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.data-table{
+  margin-bottom: 25px;
+  padding-top: 25px;
+  font-size: 16px;
+}
+
+.center-td{
+  text-align: center;
+}
+
+.btn-add{
+  font-size: 22px;
+}
+
+.modal-header{
+  background: #92c33c;
+  color: white;
+}
+
+.modal-content{
+  background: #ebf0f9;
+  color: #1d3562;
+}
+
+.modal-body{
+  margin-top: 20px;
+}
+
+.div-add-button{
+  float: right;
+  margin-bottom: 20px;
+}
+
+.div-left-buttons{
+  float: left;
+  margin-bottom: 20px;
+}
+
+.btn-circle-lg {
+
+  border-radius: 50%;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+.nav_title{
+  background: #5B7ECC;
+}
+
+table{
+  font-size: 14px;
+}
+
+.data-table{
+  font-size:18px;
+}
+
+
+thead > tr {
+  background: #A3CC5B;
+  style: bold;
+}
+
+.nav_menu{
+  background: black;
+  color: white;
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+.nav.side-menu > li.active > a {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(100%, #4c5566)), #686e78;
+  background: -webkit-linear-gradient(#000000, #262626), #262626;
+  background: linear-gradient(#000000, #262626), #262626;
+}
+
+.nav-sm .nav.side-menu li a {
+  font-size: 10px;
+}
+
+.nav.child_menu > li > a {
+  font-size: 14px;
+}
+
+.nav-sm ul.nav.child_menu{
+  background: #6A9916;
+}
+
+.div-forma-pago{
+  border-style: solid;
+  border-color: #5B7ECC;
+  background: white;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+/*estas líneas son necesarias para utilizar los íconos de bootstrap*/
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../assets/glyphicons-halflings-regular.eot');
+  src: url('../assets/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+  url('../assets/glyphicons-halflings-regular.woff') format('woff'),
+  url('../assets/glyphicons-halflings-regular.ttf') format('truetype'),
+  url('../assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+.no-top-margin{
+  margin-top: -1px;
+}
+
+.store-tools-row{
+  //background-color: blue;
+  margin-top: 1.5em;
+}
+
+.circleglyphicon {
+  font-size: 22px;
+}
+
+/*.glyphicon:hover, .glyphicon:focus {
+    color: #F0C425;
+    background-color: #1F2E54;
+    padding: 12px;
+  }
+
+.glyphicon:selected {
+    color: #F0C425;
+    background-color: #000;
+    padding: 12px;}*/
+
+
+.glyph {
+    text-align: center;
+}
+
+.transparent-button{
+  background: transparent;
+  border: none;
+}
+
+
+
+.jumbotron{
+  text-align: center;
+  background: #a7cf63;
+  color: #2e4309;
+}
+
+.filtros .opciones_filtros{
+    padding: 5px;
+    text-align: center;
+    border: solid 1px #c3c3c3;
+}
+
+.filtros:hover{
+  cursor: pointer;
+}
+
+.opciones_filtros{
+  padding: 50px;
+  display: none;
+}
+
+
+
+
+
+/*a {
+  text-decoration: underline;}
+a:focus, a:hover {
+  text-decoration: none;}*/
+
+  .salida_caja{
+    background: red;
+  }
