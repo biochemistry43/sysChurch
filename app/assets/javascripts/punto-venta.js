@@ -294,8 +294,6 @@ $(document).ready(function(){
             // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
             // Espacios incluidos.
             formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();   
-            alert("campo-"+camNoSpc);
-            alert($("#campo-"+camNoSpc).val());
 
           }
 

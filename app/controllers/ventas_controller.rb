@@ -25,7 +25,7 @@ class VentasController < ApplicationController
     end
     
     @sucursal = @venta.sucursal.nombre
-    @cajero = @venta.user.perfil ? @venta.user.perfil.nombre : @venta.user.email
+    @cajero = @venta.user.perfil ? @venta.user.perfil.nombre_completo : @venta.user.email
     @items = @venta.item_ventas
     if @venta.venta_canceladas
       @devoluciones = @venta.venta_canceladas
@@ -64,8 +64,9 @@ class VentasController < ApplicationController
         if movimiento_caja.tipo_pago.eql?("efectivo")
           caja_sucursal = @venta.caja_sucursal
           saldo = caja_sucursal.saldo
-          saldoActualizado = saldo + @venta.montoVenta
+          saldoActualizado = saldo - @venta.montoVenta
           caja_sucursal.saldo = saldoActualizado 
+          caja_sucursal.save
         end
 
         #Se elimina el movimiento de caja relacionado con la venta
