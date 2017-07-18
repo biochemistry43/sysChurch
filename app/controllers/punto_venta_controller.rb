@@ -279,7 +279,7 @@ class PuntoVentaController < ApplicationController
             #en la caja de venta elegida por el usuario.
 
             if nombreFormaPago.eql?("efectivo")
-              movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta)
+              movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta, :tipo_pago=>"efectivo")
 
               #Se obtiene el registro de la caja de venta elegida o asignada.
               cajaBD = CajaSucursal.find(caja)
@@ -298,8 +298,22 @@ class PuntoVentaController < ApplicationController
               cajaBD.saldo = saldoActualizado
               cajaBD.save
               
+            #Si el tipo de pago no es efectivo, se registra el movimiento en la caja con el nombre de tipo de pago
+            #pero no se añade al saldo de la caja de venta
+            else 
 
+              movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta, :tipo_pago=>nombreFormaPago)
 
+              #Se obtiene el registro de la caja de venta elegida o asignada.
+              cajaBD = CajaSucursal.find(caja)
+
+              current_user.movimiento_caja_sucursals << movimiento_caja_suc
+              current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
+              current_user.negocio.movimiento_caja_sucursals << movimiento_caja_suc
+              cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
+              cajaBD.ventas << @venta
+
+              movimiento_caja_suc.save
             end
 
             #Si los campos fueron guardados correctamente, procede a guardar la venta
