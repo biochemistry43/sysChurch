@@ -57,8 +57,7 @@ class VentasController < ApplicationController
       #todo: terminar la cancelación puntual de ventas.
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
         @venta.item_ventas.each do |itemVenta|
-          VentaCancelada.create(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad)
-          itemVenta.cantidad = 0
+          VentaCancelada.create(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
           itemVenta.status = "Con devoluciones"
           itemVenta.save
         end
