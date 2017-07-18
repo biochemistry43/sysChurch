@@ -284,6 +284,7 @@ class PuntoVentaController < ApplicationController
               current_user.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.negocio.movimiento_caja_sucursals << movimiento_caja_suc
+              @venta.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.ventas << @venta
 
@@ -307,6 +308,7 @@ class PuntoVentaController < ApplicationController
               current_user.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.negocio.movimiento_caja_sucursals << movimiento_caja_suc
+              @venta.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.ventas << @venta
 
