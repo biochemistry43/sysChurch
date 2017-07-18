@@ -1,12 +1,12 @@
 <%= form_for @categoria_gasto, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
 
-  <div class="item form-group<%= @categoria_gasto.errors[:nombreCategoria].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :nombreCategoria, "Nombre de la categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+  <div class="item form-group<%= @categoria_gasto.errors[:nombre_categoria].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre_categoria, "Nombre de la categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12">
-      <%= f.text_field :nombreCategoria, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el nombre de la categoría..."} do%>
+      <%= f.text_field :nombre_categoria, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el nombre de la categoría..."} do%>
       <%end%>
-      <%if @categoria_gasto.errors[:nombreCategoria].any? %>
-        <p class="bg-danger"><%= @categoria_gasto.errors[:nombreCategoria].to_s[/\w([^"]*)/] %></p>
+      <%if @categoria_gasto.errors[:nombre_categoria].any? %>
+        <p class="bg-danger"><%= @categoria_gasto.errors[:nombre_categoria].to_s[/\w([^"]*)/] %></p>
       <% end %>
     </div>
   </div>

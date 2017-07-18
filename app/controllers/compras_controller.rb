@@ -349,7 +349,7 @@ class ComprasController < ApplicationController
       #origen del recurso.
       if tipo_pago.eql?("Contado")
 
-        @categoriaGasto = current_user.negocio.categoria_gastos.where("nombreCategoria = ?", "Compras").take
+        @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Compras").take
 
         origen_recurso = params[:select_origen_recurso]
 
