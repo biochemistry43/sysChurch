@@ -4,7 +4,7 @@
    <td style="text-align: center;"><%= gasto_general.monto %></td>
    <td style="text-align: center;"><%= gasto_general.concepto %></td>
    <td style="text-align: center;"><%= gasto_general.proveedor.nombre %></td>
-   <td style="text-align: center;"><%= gasto_general.gasto.categoria_gasto.nombreCategoria %></td>
+   <td style="text-align: center;"><%= gasto_general.gasto.categoria_gasto.nombre_categoria %></td>
    <% if gasto_general.gasto.caja_sucursal %>
      <td style="text-align: center;">Caja <%= gasto_general.gasto.caja_sucursal.nombre %></td>	
    <% elsif gasto_general.gasto.caja_chica %>

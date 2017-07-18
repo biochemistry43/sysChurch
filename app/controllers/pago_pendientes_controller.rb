@@ -43,7 +43,7 @@ class PagoPendientesController < ApplicationController
     
     respond_to do |format|
 
-      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombreCategoria = ?", "Pagos pendientes").take
+      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Pagos pendientes").take
 
       #Si se cumple esta condición, significa que el recurso para el pago de proveedor, provendrá de alguna de las cajas 
       #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.

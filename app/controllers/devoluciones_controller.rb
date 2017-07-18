@@ -567,7 +567,7 @@ class DevolucionesController < ApplicationController
       #################  creando los registros por concepto de gastos por devolucion de productos #####################
       #################################################################################################################
 
-      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombreCategoria = ?", "Devoluciones").take
+      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Devoluciones").take
 
       #Esta variable recoge el parámetro del origen del recurso con el que se va a pagar la devolución.
       #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
