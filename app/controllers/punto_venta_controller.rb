@@ -282,7 +282,7 @@ class PuntoVentaController < ApplicationController
               movimiento_caja_suc = MovimientoCajaSucursal.new(:entrada=>@venta.montoVenta)
 
               #Se obtiene el registro de la caja de venta elegida o asignada.
-              cajaBD = CajaSucursal.where(:sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :numero_caja=>caja)
+              cajaBD = CajaSucursal.find(caja)
 
               current_user.movimiento_caja_sucursals << movimiento_caja_suc
               current_user.sucursal.movimiento_caja_sucursals << movimiento_caja_suc
