@@ -40,7 +40,7 @@ class ArticulosController < ApplicationController
     if Rails.env.development?
       articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
     elsif Rails.env.production?
-      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
+      articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
     end
 
     #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
