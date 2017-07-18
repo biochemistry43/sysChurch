@@ -175,7 +175,7 @@ class PuntoVentaController < ApplicationController
           unless cliente.eql?("")
             Cliente.find(cliente).ventas << @venta
           else
-            Cliente.where(nombre: "General", negocio: current_user.negocio).ventas << @venta
+            Cliente.where(nombre: "General", negocio: current_user.negocio).take.ventas << @venta
           end
 
           current_user.ventas << @venta
