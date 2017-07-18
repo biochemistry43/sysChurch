@@ -226,8 +226,8 @@
                             <%= select_tag "campo-plazo-credito", "<option>Ninguno</option><option>3</option><option>6</option><option>9</option><option>12</option><option>15</option><option>18</option><option>24</option>".html_safe %> Meses
                             <!-- Todo: Desplegar las subopciones o items particulares
                             de cada dato de las formas de pago cuando estos items existan -->
-                          <%#elsif campo.campo_forma_pago_items%>
-                            <%#= #select_tag "opciones", options_from_collection_for_select(campo.campo_forma_pago_items, "id", "valor_item")%>
+                          <%elsif campo.campo_forma_pago_items.size > 0%>
+                            <%= select_tag "campo-" << nCampo, options_from_collection_for_select(campo.campo_forma_pago_items, "valor_item", "valor_item"), class: "form-control"%>
                           <%else%>
                             <input type="text" class="form-control campo-pago" id="<%= "campo-" << nCampo %>">
                           <% end %>

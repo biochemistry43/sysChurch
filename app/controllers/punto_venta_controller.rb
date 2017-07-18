@@ -50,13 +50,8 @@ class PuntoVentaController < ApplicationController
       @cliente = ""
       if @venta.cliente
      
-        nomClie = @venta.cliente.nombre
-        apePatClie = @venta.cliente.ape_pat
-        apeMatClie = @venta.cliente.ape_mat
-        @cliente = nomClie + " "
-        @cliente << apePatClie 
-	      @cliente << " "
-	      @cliente << apeMatClie
+        @cliente = @venta.cliente.nombre_completo
+
 	    else
 	      @cliente = "General"
 	    end

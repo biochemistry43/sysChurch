@@ -275,6 +275,8 @@ $(document).ready(function(){
 
             resultado = res[i]; //Se obtiene el campo.
 
+            
+
             nom = resultado.nombrecampo; //obtenemos el nombre del campo
 
             campo = nom.toString(); //Se transforma el dato en un String.
@@ -291,7 +293,9 @@ $(document).ready(function(){
             // en lugar de los espacios.
             // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
             // Espacios incluidos.
-            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();            
+            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();   
+            alert("campo-"+camNoSpc);
+            alert($("#campo-"+camNoSpc).val());
 
           }
 
@@ -609,4 +613,3 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
   $("#modalClie").modal("hide");
 }
-
