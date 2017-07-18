@@ -1,0 +1,103 @@
+@media (min-width: 1600px) {
+  /* line 5, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+  div.main-row-pos {
+    height: 910px;
+    min-height: 910px;
+  }
+
+  /* line 10, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+  #div-tabla-ventas {
+    height: 500px;
+    overflow: auto;
+  }
+}
+/* line 16, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.campo-pago {
+  background: #fffce6;
+  color: #5B7ECC;
+  font-size: 25px;
+  height: 50px;
+  border-color: green;
+  border-width: 1px;
+}
+
+/* line 25, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#logo_negocio {
+  display: none;
+}
+
+/* line 30, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.panel-pos, .col-pos {
+  height: 90%;
+}
+
+/* line 34, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.well.profile_view .bottom {
+  background: #A3CC5B;
+}
+
+/* line 39, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.well.profile_view {
+  color: #1b2d06;
+  background: #e6e6ff;
+}
+
+/* line 44, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#table_sales {
+  margin-top: 3%;
+  color: black;
+  text-transform: uppercase;
+  font-size: 16px;
+  background-color: #CBCDFF;
+  /*margin-bottom: 2%;*/
+}
+
+/* line 53, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#search-product {
+  font-size: 16px;
+  height: 50px;
+}
+
+/* line 58, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.modal-content {
+  background: #e6e6ff;
+}
+
+/* line 62, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#total-price {
+  margin-left: 1em;
+}
+
+/* line 66, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#importe, #importePagar {
+  font-size: 100px;
+  color: #6A9916;
+}
+
+/* line 71, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#botones-venta {
+  position: absolute;
+  right: 50%;
+  left: 0%;
+  bottom: 0px;
+}
+
+/* line 78, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#panel-pos-body {
+  height: 100%;
+  position: relative;
+  z-index: 3;
+  background-color: #fffce6;
+}
+
+/* line 85, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+#print-div {
+  position: absolute;
+  z-index: 1;
+}
+
+/* line 90, /home/javier/Documents/sysChurch/app/assets/stylesheets/compras.scss */
+.tabs-left > li > a {
+  background: #5B7ECC;
+  color: white;
+}
