@@ -23,22 +23,24 @@ class CajaChicasController < ApplicationController
     
     @fechaOperacion = @caja_chica.created_at.strftime("%d/%m/%Y") 
     @importeOperacion = 0
-    if @caja_chica.salida > 0
+    if @caja_chica.salida
       @importeOperacion = -1 * @caja_chica.salida
-    elsif @caja_chica.entrada > 0
+    elsif @caja_chica.entrada
       @importeOperacion = @caja_chica.entrada
     end
     @conceptoOperacion = @caja_chica.concepto
     @usuarioOperacion = @caja_chica.user.perfil ? @caja_chica.user.perfil.nombre_completo : @caja_chica.user.email
 
     @gasto = nil
-    @gastoCorriente = nil
+    @gastoGeneral = nil
     @pagoProveedor = nil
     @pagoDevolucion = nil
 
+    #Devuelve los detalles cuando el movimiento de caja chica fue un gasto de cualquier índole
     if @caja_chica.gasto
       @gasto = @caja_chica.gasto
-
+      
+      #Si el gasto que se intenta mostrar es el pago de una devolución...
       if @gasto.pago_devolucion
         @pagoDevolucion = @gasto.pago_devolucion
         @folioVenta = @pagoDevolucion.venta_cancelada.venta.folio
@@ -46,21 +48,24 @@ class CajaChicasController < ApplicationController
         @clienteVenta = @pagoDevolucion.venta_cancelada.venta.cliente ? @pagoDevolucion.venta_cancelada.venta.cliente.nombre_completo : "<ge></ge>neral"
       end
 
+      #Si el movimiento que se quiere mostrar el el pago a un proveedor (sea por compra o por gasto general)
       if @gasto.pago_proveedor
-        @pagoProveedor = @gasto.pago_proveedor
-        @facturaCompra = @pagoProveedor.compra.folio_compra ? @pagoProveedor.compra.folio_compra : "No aplica"
-        @ticketCompra = @pagoProveedor.compra.ticket_compra ? @pagoProveedor.compra.ticket_compra : "No aplica"
-        @fechaCompra = @pagoProveedor.compra.created_at.strftime("%d/%m/%Y") 
-        @proveedorCompra = @pagoProveedor.compra.proveedor.nombre
-        @statusPagoCompra = @pagoProveedor.statusPago
+        if @gasto.gasto_general
+          @gastoGeneral = @gasto.gasto_general
+          @facturaGasto = @gastoGeneral.folio_gasto ? @gastoGeneral.folio_gasto : "No aplica"
+          @ticketGasto = @gastoGeneral.ticket_gasto ? @gastoGeneral.ticket_gasto : "No aplica"
+          @proveedor = @gastoGeneral.proveedor.nombre
+        else
+          @pagoProveedor = @gasto.pago_proveedor
+          @facturaCompra = @pagoProveedor.compra.folio_compra ? @pagoProveedor.compra.folio_compra : "No aplica"
+          @ticketCompra = @pagoProveedor.compra.ticket_compra ? @pagoProveedor.compra.ticket_compra : "No aplica"
+          @fechaCompra = @pagoProveedor.compra.created_at.strftime("%d/%m/%Y") 
+          @proveedorCompra = @pagoProveedor.compra.proveedor.nombre
+          @statusPagoCompra = @pagoProveedor.statusPago
+        end
       end
 
-      if @gasto.gasto_corriente
-        @gastoCorriente = @gasto.gasto_corriente
-        @facturaGasto = @gastoCorriente.folio_gasto ? @gastoCorriente.folio_gasto : "No aplica"
-        @ticketGasto = @gastoCorriente.ticket_gasto ? @gastoCorriente.ticket_gasto : "No aplica"
-        @proveedor = @gastoCorriente.proveedor.nombre
-      end
+      
 
     end
 
@@ -87,8 +92,6 @@ class CajaChicasController < ApplicationController
     current_user.caja_chicas << @caja_chica
     current_user.negocio.caja_chicas << @caja_chica
     current_user.sucursal.caja_chicas << @caja_chica
-
-    
 
     respond_to do |format|
       if @caja_chica.save

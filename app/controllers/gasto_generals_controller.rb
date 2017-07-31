@@ -41,7 +41,7 @@ class GastoGeneralsController < ApplicationController
     #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
     origen = params[:select_origen_recurso]
 
-    categoria_gasto = params[:categoria_gasto]
+    categoria_gasto = params[:categoria_gasto_id]
 
     proveedor_id = params[:proveedor]
 
@@ -172,29 +172,32 @@ class GastoGeneralsController < ApplicationController
     end
 
     respond_to do |format|
-
-      if @cajaChica && @gasto && @pagoProveedor
-        if @gasto_general.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
-          format.js
-          format.json { head :no_content}
-          flash[:notice] = "Gasto registrado"
+      if @gasto_general.valid?
+        if @cajaChica && @gasto && @pagoProveedor
+          if @gasto_general.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
+            format.js
+            format.json { head :no_content}
+            flash[:notice] = "Gasto registrado"
+          else
+            format.js {render :new} 
+            format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
+          end
+        elsif @cajaVenta && @gasto && @movimientoCaja && @pagoProveedor
+          if @gasto_general.save && @cajaVenta.save && @gasto.save && @movimientoCaja.save && @pagoProveedor.save
+            format.js
+            format.json { head :no_content}
+            flash[:notice] = "Gasto registrado"
+          else
+            format.js {render :new} 
+            format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
+          end
         else
-          format.js {render :new} 
-          format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
-        end
-      elsif @cajaVenta && @gasto && @movimientoCaja && @pagoProveedor
-        if @gasto_general.save && @cajaVenta.save && @gasto.save && @movimientoCaja.save && @pagoProveedor.save
-          format.js
-          format.json { head :no_content}
-          flash[:notice] = "Gasto registrado"
-        else
-          format.js {render :new} 
-          format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
+          format.html { redirect_to gasto_generals_path}
         end
       else
-        format.html { redirect_to gasto_generals_path}
+        format.js {render :new} 
+        format.json{render json: @gasto_general.errors.full_messages, status: :unprocessable_entity}
       end
-      
     end
   end
 

@@ -4,7 +4,7 @@
     <%= f.label :folio_gasto, "Factura #*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-      <%= f.text_field :folio_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la factura del gasto a registrar..."} do%>
+      <%= f.text_field :folio_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la factura del gasto a registrar...", :required=>"required"} do%>
       <%end%>
       <%if @gasto_general.errors[:folio_gasto].any? %>
         <p class="bg-danger"><%= @gasto_general.errors[:folio_gasto].to_s[/\w([^"]*)/] %></p>
@@ -16,7 +16,7 @@
     <%= f.label :ticket_gasto, "Ticket #*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-      <%= f.text_field :ticket_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca clave o número de ticket (si no tiene, ponga 0)..."} do%>
+      <%= f.text_field :ticket_gasto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca clave o número de ticket (si no tiene, ponga 0)...", :required=>"required"} do%>
       <%end%>
       <%if @gasto_general.errors[:ticket_gasto].any? %>
         <p class="bg-danger"><%= @gasto_general.errors[:ticket_gasto].to_s[/\w([^"]*)/] %></p>
@@ -28,7 +28,7 @@
     <%= f.label :monto, "Monto del gasto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-money"></i></span>
-      <%= f.text_field :monto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el importe del gasto..."} do%>
+      <%= f.number_field :monto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el importe del gasto...", :required=>"required", :min=>"1.0"} do%>
       <%end%>
       <%if @gasto_general.errors[:monto].any? %>
         <p class="bg-danger"><%= @gasto_general.errors[:monto].to_s[/\w([^"]*)/] %></p>
@@ -39,7 +39,7 @@
   <div class="item form-group<%= @gasto_general.errors[:concepto].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :concepto, "Concepto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <%= f.text_area :concepto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el concepto del gasto..."} do%>
+      <%= f.text_area :concepto, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el concepto del gasto...", :required=>"required"} do%>
       <%end%>
       <%if @gasto_general.errors[:concepto].any? %>
         <p class="bg-danger"><%= @gasto_general.errors[:concepto].to_s[/\w([^"]*)/] %></p>

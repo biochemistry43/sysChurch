@@ -4,7 +4,9 @@ class GastoGeneral < ActiveRecord::Base
 	belongs_to :sucursal
 	belongs_to :negocio
 
-    #El proveedor al que pertenece este gasto corriente puede ser distinto de los proveedores normales de 
+    #El proveedor al que pertenece este gasto general puede ser distinto de los proveedores normales de 
     #productos. El proveedor puede ser por ejemplo CFE, el agua, etc.
 	belongs_to :proveedor
+
+
 end

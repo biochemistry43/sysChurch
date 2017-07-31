@@ -13,6 +13,18 @@
 	}
 }
 
+@media (min-width: 1300px){
+	div.main-row-pos{
+	    height: 768px; 
+	    min-height: 768px;
+    }
+
+    #div-tabla-ventas{
+	   height: 600px;
+	   overflow: auto;
+	}
+}
+
 .campo-pago{
   background: #fffce6;
   color: #5B7ECC;
