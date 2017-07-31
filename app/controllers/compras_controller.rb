@@ -14,9 +14,9 @@ class ComprasController < ApplicationController
     @porFactura = false
     
     if can? :create, Negocio
-      @compras = current_user.negocio.compras.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
+      @compras = current_user.negocio.compras.where(fecha: Date.today.beginning_of_month..Date.today.end_of_month)
     else
-      @compras = current_user.sucursal.compras.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
+      @compras = current_user.sucursal.compras.where(fecha: Date.today.beginning_of_month..Date.today.end_of_month)
     end
   end
 

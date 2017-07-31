@@ -261,7 +261,40 @@ $(document).ready(function(){
 
   });
 
+  $("#actualizar_compra_btn").on("click", function(evt){
+
+    if (parseFloat($("#importe").text()) > 0){
+      $("#table_sales tbody").empty();
+      $("#importe").text("0.0")
+      $("#search-product").focus();
+    }
+    else{
+      alert("El importe de compra debe ser mayor que cero")
+      return;
+    }
+    
+
+  });
+
+
+  $("#realizar_compra_btn").on("click", function(evt){
+
+    if (parseFloat($("#importe").text()) > 0){
+      $("#table_sales tbody").empty();
+      $("#importe").text("0.0")
+      $("#search-product").focus();
+    }
+    else{
+      alert("El importe de compra debe ser mayor que cero")
+      return;
+    }
+    
+
+  });
+
   $("#search-product").select();
+
+
   
 });//Fin de JQuery
 

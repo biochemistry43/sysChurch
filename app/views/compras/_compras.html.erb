@@ -331,7 +331,7 @@
           <tbody>
             <% @compras.each do |compra| %>
 	            <tr>
-      				  <td style="text-align: center;"><%= compra.fecha %></td>
+      				  <td style="text-align: center;"><%= compra.fecha.strftime("%d/%m/%Y") %></td>
       				  <td style="text-align: center;"><%= compra.folio_compra %> / <%= compra.ticket_compra %></td>
       				  <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
       				  <td style="text-align: center;"><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
