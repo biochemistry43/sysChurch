@@ -344,153 +344,57 @@ class ComprasController < ApplicationController
 
     respond_to do |format|
 
-      #Si la forma de pago seleccionada fue "Contado", entonces se procede a hacer los registros
-      #para registrar el gasto; haciendo también las operaciones necesarias con respecto al
-      #origen del recurso.
-      if tipo_pago.eql?("Contado")
+      if monto_compra > 0
 
-        @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Compras").take
+        #Si la forma de pago seleccionada fue "Contado", entonces se procede a hacer los registros
+        #para registrar el gasto; haciendo también las operaciones necesarias con respecto al
+        #origen del recurso.
+        if tipo_pago.eql?("Contado")
 
-        origen_recurso = params[:select_origen_recurso]
+          @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Compras").take
 
-        #Si se cumple esta condición, significa que el recurso para la compra, provendrá de alguna de las cajas 
-        #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
-        if origen_recurso.include? "caja_venta"
-          tamano_cadena_origen = origen_recurso.length
+          origen_recurso = params[:select_origen_recurso]
 
-          #aquí extraigo el id de la caja de venta contenido en la cadena de texto
-          #el número "11" corresponde a la cantidad de caracteres de la cadena "caja_venta_"
-          id_caja_sucursal = origen_recurso[11..tamano_cadena_origen]
+          #Si se cumple esta condición, significa que el recurso para la compra, provendrá de alguna de las cajas 
+          #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
+          if origen_recurso.include? "caja_venta"
+            tamano_cadena_origen = origen_recurso.length
 
-          #En base al id extraido de la cadena, busco la Caja de Venta en la base de datos
-          @cajaVenta = CajaSucursal.find(id_caja_sucursal)
+            #aquí extraigo el id de la caja de venta contenido en la cadena de texto
+            #el número "11" corresponde a la cantidad de caracteres de la cadena "caja_venta_"
+            id_caja_sucursal = origen_recurso[11..tamano_cadena_origen]
 
-          #Verifico que la caja tenga el saldo necesario para realizar la operación de compra.
-          if @cajaVenta.saldo >= monto_compra
-            @gasto = Gasto.new(:monto=>monto_compra, :concepto=>"Compra de mercancía", :tipo=>"compra")
-            
-            #creación y relación del registro de pago de la compra al proveedor indicado
-            @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
+            #En base al id extraido de la cadena, busco la Caja de Venta en la base de datos
+            @cajaVenta = CajaSucursal.find(id_caja_sucursal)
 
-            #relaciones del registro de gasto
-            @categoriaGasto.gastos << @gasto
-            @cajaVenta.gastos << @gasto
-            current_user.gastos << @gasto
-            current_user.sucursal.gastos << @gasto
-            current_user.negocio.gastos << @gasto
-
-            #Se actualiza el saldo de la caja de venta
-            saldo = @cajaVenta.saldo - monto_compra
-            @cajaVenta.saldo = saldo
-
-            #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
-            @movimientoCaja = MovimientoCajaSucursal.new(:salida=>monto_compra, :caja_sucursal=>@cajaVenta)
-            current_user.movimiento_caja_sucursals << @movimientoCaja
-            current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
-            current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
-
-            if @compra.valid?
-              if @compra.save && @cajaVenta.save && @gasto.save && @pagoProveedor.save && @movimientoCaja.save
-                articulos = compra_params[:articulos]
-                fecha = DateTime.parse(compra_params[:fecha]).to_date
-                hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
-
-                codigo = ""
-                cantidad = 0
-                precio = 0
-                importe = 0
-                existencia = 0
-                nuevaExistencia = 0
-
-                hashArticulos.collect { |articulo|
-
-                  codigo = articulo["codigo"]
-                  precio = articulo["precio"]
-                  cantidad = articulo["cantidad"]
-                  importe = articulo["importe"]
-                  
-                  detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-                  entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-                  bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-                  bd_articulo.detalle_compras << detalleCompra
-                  bd_articulo.entrada_almacens << entradaAlmacen
-
-                  existencia = bd_articulo.existencia
-
-                  nuevaExistencia = existencia + entradaAlmacen.cantidad
-
-                  bd_articulo.existencia = nuevaExistencia
-
-                  bd_articulo.save
-
-
-                }
-
-                current_user.compras << @compra
-                current_user.negocio.compras << @compra
-                current_user.sucursal.compras << @compra
-                format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
-                format.json { render :new, status: :created, location: @compra }
-                #format.json { head :no_content}
-                #format.js
-              else
-                format.html { render :new }
-                format.json { render json: @compra.errors, status: :unprocessable_entity }
-                flash[:notice] = "Hubo un error al momento de guardar la compra"
-              end
-            else
-              format.html { render :new }
-              format.json { render json: @compra.errors, status: :unprocessable_entity }
-            end  
-
-          else
-            format.html { render :new }
-            format.json { render json: @compra.errors, status: :unprocessable_entity }
-            flash[:notice] = "No hay saldo suficiente en la caja #{@cajaVenta.nombre} para hacer la compra. Compra no realizada"
-          end
-
-        end
-
-        #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
-        if origen_recurso.include? "caja_chica"
-          #Verifica si existen registros de caja chica para esta sucursal
-          if current_user.sucursal.caja_chicas
-            #Se obtiene el saldo actual de la caja chica haciendo una comparación de sumatorias entre las entradas
-            #y las salidas de caja chica.
-            entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
-            salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
-            @saldoCajaChica = entradas - salidas
-
-
-            if @saldoCajaChica >= monto_compra
-
-              saldo_en_caja_chica = @saldoCajaChica
-
+            #Verifico que la caja tenga el saldo necesario para realizar la operación de compra.
+            if @cajaVenta.saldo >= monto_compra
               @gasto = Gasto.new(:monto=>monto_compra, :concepto=>"Compra de mercancía", :tipo=>"compra")
-
+              
               #creación y relación del registro de pago de la compra al proveedor indicado
               @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
-              
+
               #relaciones del registro de gasto
               @categoriaGasto.gastos << @gasto
+              @cajaVenta.gastos << @gasto
               current_user.gastos << @gasto
               current_user.sucursal.gastos << @gasto
               current_user.negocio.gastos << @gasto
 
-              #Se hace un registro en caja chica y se relaciona con el gasto
-              @cajaChica = CajaChica.new(:concepto=>"Compra de mercancía", :salida=>monto_compra)
-              @cajaChica.gasto = @gasto
+              #Se actualiza el saldo de la caja de venta
+              saldo = @cajaVenta.saldo - monto_compra
+              @cajaVenta.saldo = saldo
 
-              #Se hacen las relaciones de pertenencia para la caja chica.
-              current_user.caja_chicas << @cajaChica
-              current_user.sucursal.caja_chicas << @cajaChica
-              current_user.negocio.caja_chicas << @cajaChica
+              #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
+              @movimientoCaja = MovimientoCajaSucursal.new(:salida=>monto_compra, :caja_sucursal=>@cajaVenta)
+              current_user.movimiento_caja_sucursals << @movimientoCaja
+              current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
+              current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
 
               if @compra.valid?
-                if @compra.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
+                if @compra.save && @cajaVenta.save && @gasto.save && @pagoProveedor.save && @movimientoCaja.save
                   articulos = compra_params[:articulos]
                   fecha = DateTime.parse(compra_params[:fecha]).to_date
-                  tipo_pago = compra_params[:tipo_pago]
                   hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
 
                   codigo = ""
@@ -541,74 +445,175 @@ class ComprasController < ApplicationController
                 format.json { render json: @compra.errors, status: :unprocessable_entity }
               end  
 
-
             else
               format.html { render :new }
               format.json { render json: @compra.errors, status: :unprocessable_entity }
-              flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la compra. Compra no realizada"
+              flash[:notice] = "No hay saldo suficiente en la caja #{@cajaVenta.nombre} para hacer la compra. Compra no realizada"
+            end
+
+          end
+
+          #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
+          if origen_recurso.include? "caja_chica"
+            #Verifica si existen registros de caja chica para esta sucursal
+            if current_user.sucursal.caja_chicas
+              #Se obtiene el saldo actual de la caja chica haciendo una comparación de sumatorias entre las entradas
+              #y las salidas de caja chica.
+              entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+              salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+              @saldoCajaChica = entradas - salidas
+
+
+              if @saldoCajaChica >= monto_compra
+
+                saldo_en_caja_chica = @saldoCajaChica
+
+                @gasto = Gasto.new(:monto=>monto_compra, :concepto=>"Compra de mercancía", :tipo=>"compra")
+
+                #creación y relación del registro de pago de la compra al proveedor indicado
+                @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
+                
+                #relaciones del registro de gasto
+                @categoriaGasto.gastos << @gasto
+                current_user.gastos << @gasto
+                current_user.sucursal.gastos << @gasto
+                current_user.negocio.gastos << @gasto
+
+                #Se hace un registro en caja chica y se relaciona con el gasto
+                @cajaChica = CajaChica.new(:concepto=>"Compra de mercancía", :salida=>monto_compra)
+                @cajaChica.gasto = @gasto
+
+                #Se hacen las relaciones de pertenencia para la caja chica.
+                current_user.caja_chicas << @cajaChica
+                current_user.sucursal.caja_chicas << @cajaChica
+                current_user.negocio.caja_chicas << @cajaChica
+
+                if @compra.valid?
+                  if @compra.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
+                    articulos = compra_params[:articulos]
+                    fecha = DateTime.parse(compra_params[:fecha]).to_date
+                    tipo_pago = compra_params[:tipo_pago]
+                    hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+
+                    codigo = ""
+                    cantidad = 0
+                    precio = 0
+                    importe = 0
+                    existencia = 0
+                    nuevaExistencia = 0
+
+                    hashArticulos.collect { |articulo|
+
+                      codigo = articulo["codigo"]
+                      precio = articulo["precio"]
+                      cantidad = articulo["cantidad"]
+                      importe = articulo["importe"]
+                      
+                      detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+                      entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+                      bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+                      bd_articulo.detalle_compras << detalleCompra
+                      bd_articulo.entrada_almacens << entradaAlmacen
+
+                      existencia = bd_articulo.existencia
+
+                      nuevaExistencia = existencia + entradaAlmacen.cantidad
+
+                      bd_articulo.existencia = nuevaExistencia
+
+                      bd_articulo.save
+
+
+                    }
+
+                    current_user.compras << @compra
+                    current_user.negocio.compras << @compra
+                    current_user.sucursal.compras << @compra
+                    format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
+                    format.json { render :new, status: :created, location: @compra }
+                    #format.json { head :no_content}
+                    #format.js
+                  else
+                    format.html { render :new }
+                    format.json { render json: @compra.errors, status: :unprocessable_entity }
+                    flash[:notice] = "Hubo un error al momento de guardar la compra"
+                  end
+                else
+                  format.html { render :new }
+                  format.json { render json: @compra.errors, status: :unprocessable_entity }
+                end  
+
+
+              else
+                format.html { render :new }
+                format.json { render json: @compra.errors, status: :unprocessable_entity }
+                flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la compra. Compra no realizada"
+              end
             end
           end
-        end
-        
-      elsif tipo_pago.eql?("Credito") #Si la compra es a crédito
-        
-        fecha_limite = DateTime.parse(compra_params[:fecha_limite_pago]).to_date
-        @pagoPendiente = PagoPendiente.new(:fecha_vencimiento=>fecha_limite, :saldo=>monto_compra, :compra=>@compra, :proveedor=>@compra.proveedor, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio)
-        if @compra.valid?
-          if @compra.save && @pagoPendiente.save
-            articulos = compra_params[:articulos]
-            fecha = DateTime.parse(compra_params[:fecha]).to_date
-            tipo_pago = compra_params[:tipo_pago]
-            hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+          
+        elsif tipo_pago.eql?("Credito") #Si la compra es a crédito
+          
+          fecha_limite = DateTime.parse(compra_params[:fecha_limite_pago]).to_date
+          @pagoPendiente = PagoPendiente.new(:fecha_vencimiento=>fecha_limite, :saldo=>monto_compra, :compra=>@compra, :proveedor=>@compra.proveedor, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio)
+          if @compra.valid?
+            if @compra.save && @pagoPendiente.save
+              articulos = compra_params[:articulos]
+              fecha = DateTime.parse(compra_params[:fecha]).to_date
+              tipo_pago = compra_params[:tipo_pago]
+              hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
 
-            codigo = ""
-            cantidad = 0
-            precio = 0
-            importe = 0
-            existencia = 0
-            nuevaExistencia = 0
+              codigo = ""
+              cantidad = 0
+              precio = 0
+              importe = 0
+              existencia = 0
+              nuevaExistencia = 0
 
-            hashArticulos.collect { |articulo|
+              hashArticulos.collect { |articulo|
 
-              codigo = articulo["codigo"]
-              precio = articulo["precio"]
-              cantidad = articulo["cantidad"]
-              importe = articulo["importe"]
-              
-              detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-              entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-              bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-              bd_articulo.detalle_compras << detalleCompra
-              bd_articulo.entrada_almacens << entradaAlmacen
+                codigo = articulo["codigo"]
+                precio = articulo["precio"]
+                cantidad = articulo["cantidad"]
+                importe = articulo["importe"]
+                
+                detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+                entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+                bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+                bd_articulo.detalle_compras << detalleCompra
+                bd_articulo.entrada_almacens << entradaAlmacen
 
-              existencia = bd_articulo.existencia
+                existencia = bd_articulo.existencia
 
-              nuevaExistencia = existencia + entradaAlmacen.cantidad
+                nuevaExistencia = existencia + entradaAlmacen.cantidad
 
-              bd_articulo.existencia = nuevaExistencia
+                bd_articulo.existencia = nuevaExistencia
 
-              bd_articulo.save
+                bd_articulo.save
 
 
-            }
+              }
 
-            current_user.compras << @compra
-            current_user.negocio.compras << @compra
-            current_user.sucursal.compras << @compra
-            format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
-            format.json { render :new, status: :created, location: @compra }
-            #format.json { head :no_content}
-            #format.js
+              current_user.compras << @compra
+              current_user.negocio.compras << @compra
+              current_user.sucursal.compras << @compra
+              format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
+              format.json { render :new, status: :created, location: @compra }
+              #format.json { head :no_content}
+              #format.js
+            else
+              format.html { render :new }
+              format.json { render json: @compra.errors, status: :unprocessable_entity }
+            end
           else
             format.html { render :new }
             format.json { render json: @compra.errors, status: :unprocessable_entity }
           end
-        else
-          format.html { render :new }
-          format.json { render json: @compra.errors, status: :unprocessable_entity }
-        end
-        
+          
 
+        end
+      else
+        flash[:notice] = "El monto de la compra debe ser mayor que cero"
       end
 
     end

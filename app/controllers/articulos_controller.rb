@@ -234,7 +234,7 @@ class ArticulosController < ApplicationController
             current_user.sucursal.articulos << @articulo
             @articulo.suc_elegida = current_user.sucursal.nombre
           else
-            sucElegida = Sucursal.find_by(nombre: suc)
+            sucElegida = Sucursal.find(suc)
             sucElegida.articulos << @articulo
           end
           
