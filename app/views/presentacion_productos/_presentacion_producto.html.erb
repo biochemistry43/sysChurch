@@ -1,14 +1,14 @@
 <tr id="presentacion_producto_<%= presentacion_producto.id%>" class="rowsearch">
 
-  <td><%= presentacion_producto.nombre %></td>
+  <td style="text-align: center;"><%= presentacion_producto.nombre %></td>
 
-  <td>
+  <td style="text-align: center;">
     <% if can? :update, presentacion_producto %>
       <%= link_to 'Editar', edit_presentacion_producto_path(presentacion_producto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
     <% end %>
   </td>
   
-  <td>
+  <td style="text-align: center;">
     <% if can? :destroy, presentacion_producto %>
       <%= link_to 'Borrar', presentacion_producto, remote: true, method: :delete, data: { confirm: "¿Borrar presentación: #{presentacion_producto.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
     <% end %>
