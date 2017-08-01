@@ -72,13 +72,13 @@
           de todas las sucursales, vea únicamente las ventas de su propia sucursal -->
       <% if can? :create, Negocio %> 
         <%= link_to url = {controller:"articulos", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo productos de mi sucursal", method: :post} do %>  
-          <span class="fa fa-tags" style=""> Sólo ventas de mi sucursal</span>
+          <span class="fa fa-tags" style=""> Sólo productos de mi sucursal</span>
         <% end %>
       <% end %>
       
       <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
         <li class="fa fa-file-excel-o">
-          Exportar a xlsx    
+          Exportar a xls
         </li>
       </a>
     

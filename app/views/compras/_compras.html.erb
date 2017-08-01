@@ -111,7 +111,7 @@
 
     <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
       <li class="fa fa-file-excel-o">
-        Exportar a xlsx    
+        Exportar a xls
       </li>
     </a>
   </div>
@@ -469,11 +469,11 @@
               var blob = new Blob([tab_text], {
                   type: "application/csv;charset=utf-8;"
               });
-             navigator.msSaveBlob(blob, 'Reporte de compras.xlsx');
+             navigator.msSaveBlob(blob, 'Reporte de compras.xls');
           }
       } else {
           $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
-          $('#test').attr('download', 'Reporte de compras.xlsx');
+          $('#test').attr('download', 'Reporte de compras.xls');
       }
 
     }
