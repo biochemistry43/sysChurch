@@ -52,6 +52,7 @@ class CatCompraCanceladasController < ApplicationController
     respond_to do |format|
       if @cat_compra_cancelada.update(cat_compra_cancelada_params)
         format.json { head :no_content}
+        format.js
       else
         format.json { render json: @cat_compra_cancelada.errors, status: :unprocessable_entity }
         format.js { render :edit }
