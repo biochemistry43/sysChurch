@@ -66,15 +66,13 @@
       </div>
     </div>
   </div>
-  
-  <% @cantidadVendida = @devolucion.cantidad_devuelta + @devolucion.item_venta.cantidad %>
 
   <div class="item form-group">
     <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Cantidad vendida originalmente:</label>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
-        <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@cantidadVendida%>" disabled>
+        <input type="text" class="form-control" aria-describedby="basic-addon1" value="<%=@devolucion.item_venta.cantidad%>" disabled>
       </div>
     </div>
   </div>
