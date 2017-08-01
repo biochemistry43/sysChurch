@@ -171,14 +171,22 @@
 
                 <% end %>  <!-- Fin if can read Gasto -->
                 
-                
-                <%if can? :read, Banco%>
-                  <li><%= link_to bancos_path do%>
-                        <i class="fa fa-bank"></i>
-                        Bancos
-                      <%end%>
+                <% if current_user.role == "root" %>
+                  <%if can? :read, Banco%>
+                    <li><%= link_to bancos_path do%>
+                          <i class="fa fa-bank"></i>
+                          Bancos
+                        <%end%>
+                    </li>
+                  <%end%> <!-- Fin if can read Banco -->
+                <% else %>
+                  <li><a href="javascript:void(0)"><i class="fa fa-bank"></i> Bancos <span class="label label-success pull-right">Próximamente</span></a>
                   </li>
-                <%end%> <!-- Fin if can read Banco -->
+                  
+                <% end %>
+                
+
+
                 <%if can? :read, Cliente%>
                   <li><%= link_to clientes_path do%>
                         <i class="fa fa-users"></i>
