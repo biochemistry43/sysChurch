@@ -195,7 +195,7 @@ class Ability
 
        elsif user.role == "gerente"
 
-         can :cru, Articulo
+         can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
          can :showByCriteriaForPos, Articulo

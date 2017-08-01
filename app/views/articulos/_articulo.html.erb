@@ -1,6 +1,6 @@
 <tr id="articulo_<%= articulo.id%>" class="rowsearch">
   <td width="10%"><%= articulo.clave %></td>
-  <td align="justify" width="30%"><%if articulo.nombre %>
+  <td align="justify" width="20%"><%if articulo.nombre %>
         <%= articulo.nombre %>
       <% end %>
       <% if articulo.marca_producto  %>
@@ -23,14 +23,14 @@
   <td class="center-td" width="15%"><%= articulo.cat_articulo ? articulo.cat_articulo.nombreCatArticulo : "No tiene categoria asignada"%></td>
   <td class="center-td" width="15%"><%= articulo.sucursal.nombre %></td>
 
-  <td>
+  <td class="center-td" width="15%">
     <% if can? :update, articulo %>
       <%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
     <% end %>
   </td>
 
 
-  <td>
+  <td class="center-td" width="15%">
     <% if can? :destroy, articulo %>
       <%= link_to 'Borrar', articulo, remote: true, method: :delete, data: { confirm: "¿Borrar Producto: #{articulo.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
     <% end %>
