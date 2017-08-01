@@ -12,7 +12,7 @@
   </td>
 
   <td style="text-align: center;">
-    <% if can? :detroy, cliente %>
+    <% if can? :destroy, cliente %>
       <%= link_to 'Borrar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar Cliente: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
     <% end %>
   </td>

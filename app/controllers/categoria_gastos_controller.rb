@@ -76,6 +76,6 @@ class CategoriaGastosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def categoria_gasto_params
-      params.require(:categoria_gasto).permit(:nombre_categoria, :descripcionCategoria, :idCategoriaPadre)
+      params.require(:categoria_gasto).permit(:nombre_categoria, :descripcionCategoria)
     end
 end
