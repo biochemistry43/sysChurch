@@ -1,9 +1,22 @@
-<% unless categoria_gasto.nombre_categoria.eql?("Compras") || categoria_gasto.nombre_categoria.eql?("Devoluciones") || categoria_gasto.nombre_categoria.eql?("Generales") || categoria_gasto.nombre_categoria.eql?("Pagos pendientes")%>
-	<tr id="categoria_gasto_<%= categoria_gasto.id%>" class="rowsearch">
-	   <td style="text-align: center;"><%= categoria_gasto.nombre_categoria %></td>
-	   <td style="text-align: center;"><%= categoria_gasto.descripcionCategoria %></td>
-	   <td style="text-align: center;"><%= link_to 'Editar', edit_categoria_gasto_path(categoria_gasto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
-	   <td><%= link_to 'Borrar', categoria_gasto, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{categoria_gasto.nombre_categoria}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o"></td>
-	</tr>
-<% end %>
+<tr id="categoria_gasto_<%= categoria_gasto.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= categoria_gasto.nombre_categoria %></td>
+  <td style="text-align: center;"><%= categoria_gasto.descripcionCategoria %></td>
+  <% unless categoria_gasto.nombre_categoria.eql?("Compras") || categoria_gasto.nombre_categoria.eql?("Devoluciones") || categoria_gasto.nombre_categoria.eql?("Generales") || categoria_gasto.nombre_categoria.eql?("Pagos pendientes")%>
+    <td style="text-align: center;"><%= link_to 'Editar', edit_categoria_gasto_path(categoria_gasto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i></td>
+	<td style="text-align: center;">
+
+	  <% if can? :destroy, categoria_gasto %>
+	   	<% if categoria_gasto.gastos.size > 0 %>
+	  	  <button class="btn btn-danger btn-xs" title="No es posible borrar esta categoría porque tiene gastos asociados" data-toggle="tooltip" data-placement="top" disabled>Eliminar</button><i class="fa fa-trash-o"></i>
+	    <% else %>
+	      <%= link_to 'Borrar', categoria_gasto, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{categoria_gasto.nombre_categoria}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+	    <% end %>
+	  <% end %>
+	</td>
+  <% else %>
+    <td style="text-align: center;"> No modificable </td>
+    <td style="text-align: center;"> </td>
+  <% end %>
+</tr>
+
 	
