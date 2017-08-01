@@ -46,22 +46,15 @@
 //= require pickadate/lib/compressed/picker.date
 //= require pickadate/lib/compressed/picker.time
 
-    $BODY = $('body'),
-    $MENU_TOGGLE = $('#menu_toggle'),
-    $SIDEBAR_MENU = $('#sidebar-menu'),
-    $SIDEBAR_FOOTER = $('.sidebar-footer'),
-    $LEFT_COL = $('.left_col'),
-    $RIGHT_COL = $('.right_col'),
-    $NAV_MENU = $('.nav_menu'),
-    $FOOTER = $('footer');
 
 $(document).ready(function() {
 
-	$(".data-table").contentChange(function(){
+
+	/*$(".data-table").contentChange(function(){
 	   $RIGHT_COL.css('min-height', $(window).height());
 
         
-	});
+	});*/
 
 
 

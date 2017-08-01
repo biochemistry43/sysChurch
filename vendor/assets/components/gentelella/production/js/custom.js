@@ -20,7 +20,13 @@ $(function () {
     // TODO: This is some kind of easy fix, maybe we can improve this
     var setContentHeight = function () {
         // reset height
-        $RIGHT_COL.css('min-height', $(window).height());
+        if ($(window).height() < $('body').height()) {
+          $RIGHT_COL.css('min-height', $('body').height());    
+        }
+        else{
+          $RIGHT_COL.css('min-height', $(window).height());       
+        }
+        
 
         var bodyHeight = $BODY.height(),
             leftColHeight = $LEFT_COL.eq(1).height() + $SIDEBAR_FOOTER.height(),
