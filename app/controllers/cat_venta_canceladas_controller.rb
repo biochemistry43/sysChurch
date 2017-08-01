@@ -51,6 +51,7 @@ class CatVentaCanceladasController < ApplicationController
   def update
     respond_to do |format|
       if @cat_venta_cancelada.update(cat_venta_cancelada_params)
+        format.js
         format.json { head :no_content}
       else
         format.json { render json: @cat_venta_cancelada.errors, status: :unprocessable_entity }
