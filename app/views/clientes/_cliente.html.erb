@@ -13,7 +13,12 @@
 
   <td style="text-align: center;">
     <% if can? :destroy, cliente %>
-      <%= link_to 'Borrar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar Cliente: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+      <% unless cliente.ventas.size > 0 %>
+        <%= link_to 'Eliminar', cliente, remote: true, method: :delete, data: { confirm: "¿Borrar Cliente: #{cliente.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+      <% else %>
+        <button class="btn btn-danger btn-xs" title="No es posible borrar este cliente porque tiene ventas asociadas" data-toggle="tooltip" data-placement="top" disabled>Eliminar</button><i class="fa fa-trash-o"></i>
+      <% end %>
+      
     <% end %>
   </td>
 </tr>

@@ -51,8 +51,8 @@
     <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
     en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
     <% if can? :read, Venta %> 
-      <%= link_to ventas_path, html_options = {class: "btn btn-success", method: :post} do %>
-      <i class="fa fa-shopping-cart"> Mostrar todas las ventas </i>
+      <%= link_to ventas_path, html_options = {class: "btn btn-success", method: :get} do %>
+      <i class="fa fa-shopping-cart"> Mostrar ventas del mes </i>
       <% end %>
     <% end %>
 

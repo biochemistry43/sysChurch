@@ -731,12 +731,7 @@ class DevolucionesController < ApplicationController
     end
 
     def set_categorias
-      if can? :create, Negocio
-        @categorias = current_user.negocio.cat_venta_canceladas
-      else
-        @categorias = current_user.sucursal.cat_venta_canceladas
-      end
-      
+      @categorias = current_user.negocio.cat_venta_canceladas
     end
 
 end
