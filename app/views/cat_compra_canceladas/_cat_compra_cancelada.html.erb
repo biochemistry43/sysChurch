@@ -9,7 +9,12 @@
 
   <td>
     <% if can? :destroy, cat_compra_cancelada %>
-      <%= link_to 'Eliminar', cat_compra_cancelada, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_compra_cancelada.clave}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+      <% if cat_compra_cancelada.compra_canceladas.size > 0 || cat_compra_cancelada.compra_articulos_devueltos.size > 0 %>
+        <button class="btn btn-danger btn-xs" title="No es posible borrar esta categoría porque tiene compras canceladas asociadas" data-toggle="tooltip" data-placement="top" disabled>Eliminar</button><i class="fa fa-trash-o"></i>
+      <% else %>
+        <%= link_to 'Eliminar', cat_compra_cancelada, remote: true, method: :delete, data: { confirm: "¿Borrar categoria: #{cat_compra_cancelada.clave}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+      <% end %>
+      
     <% end %>
   </td>
 </tr>
