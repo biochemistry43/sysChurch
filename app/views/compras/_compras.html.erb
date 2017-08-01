@@ -351,19 +351,22 @@
                     <i class="fa fa-info-circle"></i>
                     <% end %>
                   <% end %>
-
-                  <% if can? :update, compra %>
-                    <% @historial = compra.historial_ediciones_compras.size %>
-
-                    <% if @historial <= 3 && compra.status.eql?("Activa")%>
-                      <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: compra.status.eql?("Activa") ? 'Editar compra' : '', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
-                        <i class="fa fa-pencil"></i>
+                  
+                  <% unless  compra.status.eql?("Cancelada")%>
+                    
+                    <% if can? :update, compra %>
+                      <% @historial = compra.historial_ediciones_compras.size %>
+                   
+                      <% if @historial <= 3 && compra.status.eql?("Activa")%>
+                        <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: compra.status.eql?("Activa") ? 'Editar compra' : '', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
+                          <i class="fa fa-pencil"></i>
+                        <% end %>
+                      <% else %>
+                        <button class="btn btn-warning" title="Sólo se permiten tres ediciones" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>
+                        
                       <% end %>
-                    <% else %>
-                      <button class="btn btn-warning" title="Sólo se permiten tres ediciones" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>
                       
                     <% end %>
-                    
                   <% end %>
 
                   <% if can? :destroy, compra %>
