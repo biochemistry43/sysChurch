@@ -215,9 +215,9 @@ class GastoGeneralsController < ApplicationController
     #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
     origen = params[:select_origen_recurso]
 
-    categoria_gasto = params[:categoria_gasto]
+    categoria_gasto = params[:categoria_gasto_id]
 
-    proveedor_id = params[:proveedor]
+    proveedor_id = params[:proveedor_id]
 
     @categoriaGasto = CategoriaGasto.find(categoria_gasto)
 
@@ -378,7 +378,7 @@ class GastoGeneralsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def gasto_general_params
-      params.require(:gasto_general).permit(:folio_gasto, :ticket_gasto, :monto, :concepto, :gasto_id, :user_id, :sucursal_id, :negocio_id)
+      params.require(:gasto_general).permit(:folio_gasto, :ticket_gasto, :monto, :concepto, :gasto_id, :user_id, :sucursal_id, :negocio_id, :categoria_gasto_id)
     end
 
     def set_categorias_gasto
