@@ -194,6 +194,7 @@ class ArticulosController < ApplicationController
     @marcas = current_user.negocio.marca_productos
     @sucursales = current_user.negocio.sucursals
     @presentaciones = current_user.negocio.presentacion_productos
+    suc = ""
 
     # Un usuario administrador o un gerente de sucursal, puede asignar una existencia inicial
     # a un producto desde el momento que se crea. Esta opción estará disponible únicamente
@@ -213,16 +214,18 @@ class ArticulosController < ApplicationController
 
     @articulo = Articulo.new(articulo_params)
 
-    #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
-    #el nombre asignado de sucursal para este producto, será la misma sucursal a la que el usuario
-    #pertence.
-    if suc.empty?
-      @articulo.suc_elegida = current_user.sucursal.nombre
-    end
+    
     
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
+          #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
+          #el nombre asignado de sucursal para este producto, será la misma sucursal a la que el usuario
+          #pertence.
+          if suc.empty?
+            @articulo.suc_elegida = current_user.sucursal.nombre
+          end
+
           #añado el articulo a la lista de articulos pertenecientes al negocio
           current_user.negocio.articulos << @articulo
 
@@ -236,6 +239,7 @@ class ArticulosController < ApplicationController
           else
             sucElegida = Sucursal.find(suc)
             sucElegida.articulos << @articulo
+            @articulo.suc_elegida = sucElegida.nombre
           end
           
           unless existenciaInicial
