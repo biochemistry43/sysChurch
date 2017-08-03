@@ -214,33 +214,34 @@ class ArticulosController < ApplicationController
 
     @articulo = Articulo.new(articulo_params)
 
+    #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
+    #el nombre asignado de sucursal para este producto, será la misma sucursal a la que el usuario
+    #pertence.
+    if suc.empty?
+      @articulo.suc_elegida = current_user.sucursal.nombre
+    end
+
+    #añado el articulo a la lista de articulos pertenecientes al negocio
+    current_user.negocio.articulos << @articulo
+
+    #Si el usuario no eligió una sucursal para asignar el artículo, entonces añado el artículo
+    #a la sucursal a la que el usuario pertenece.
+    #De lo contrario, busco la sucursal en la tabla de sucursales, en base al nombre de la 
+    #sucursal elegida y ahí es donde se asigna el artículo.
+    if suc.empty?
+      current_user.sucursal.articulos << @articulo
+      @articulo.suc_elegida = current_user.sucursal.nombre
+    else
+      sucElegida = Sucursal.find(suc)
+      sucElegida.articulos << @articulo
+      @articulo.suc_elegida = sucElegida.nombre
+    end
     
     
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
-          #Si el usuario no asignó ninguna sucursal en especial para este artículo, entonces
-          #el nombre asignado de sucursal para este producto, será la misma sucursal a la que el usuario
-          #pertence.
-          if suc.empty?
-            @articulo.suc_elegida = current_user.sucursal.nombre
-          end
 
-          #añado el articulo a la lista de articulos pertenecientes al negocio
-          current_user.negocio.articulos << @articulo
-
-          #Si el usuario no eligió una sucursal para asignar el artículo, entonces añado el artículo
-          #a la sucursal a la que el usuario pertenece.
-          #De lo contrario, busco la sucursal en la tabla de sucursales, en base al nombre de la 
-          #sucursal elegida y ahí es donde se asigna el artículo.
-          if suc.empty?
-            current_user.sucursal.articulos << @articulo
-            @articulo.suc_elegida = current_user.sucursal.nombre
-          else
-            sucElegida = Sucursal.find(suc)
-            sucElegida.articulos << @articulo
-            @articulo.suc_elegida = sucElegida.nombre
-          end
           
           unless existenciaInicial
             existenciaInicial = 0
