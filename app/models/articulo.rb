@@ -17,5 +17,5 @@ class Articulo < ActiveRecord::Base
 	validates :negocio_id, :presence => true
 	#validates :precioCompra, :precioVenta, :stock, 
 	validates :existencia, numericality: true
-    validates :clave, :nombre, uniqueness: { scope: :sucursal_id, message: "Ya existe este registro en la base de datos" }
+    validates :clave, :nombre, uniqueness: { scope: :sucursal_id, message: "Ya existe este registro en la base de datos", :case_sensitive => false }
 end
