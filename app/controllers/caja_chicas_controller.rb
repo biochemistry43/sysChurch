@@ -3,8 +3,8 @@ class CajaChicasController < ApplicationController
 
   def index
     @movimientos_caja = current_user.sucursal.caja_chicas#.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month)
-    entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
-    salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+    entradas = CajaChica.where(sucursal: current_user.sucursal).sum(:entrada)
+    salidas = CajaChica.where(sucursal: current_user.sucursal).sum(:salida)
     @saldo = entradas - salidas
     #if current_user.sucursal.caja_chicas.count > 0
      # last = current_user.sucursal.caja_chicas.last
