@@ -30,13 +30,14 @@
     </div>
 
     <div class="col-md-7 col-md-offset-1 col-pos">
+      
       <div class="panel panel-primary panel-pos">
         <div class="panel-body" id="panel-pos-body">
           <div class="form-group top_search">
             <div class="autocomplete input-group">
               <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
               <span class="input-group-btn">
-                <button class="" type="button"></button>
+                <%=link_to "Nuevo producto", {controller: "articulos", action: "new"}, html_options = {class: "btn btn-info", remote: true} %>
               </span>
             </div>
           </div>
@@ -135,6 +136,7 @@
     </div>
 
     <%= render 'modalProveedores'%>
+    <%= render 'modalArticulos'%>
     <input type="hidden" id="nombre_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.nombreFiscal.capitalize : current_user.negocio.nombre.capitalize %>">
     <input type="hidden" id="direccion_negocio" value="<%= current_user.negocio.datos_fiscales_negocio ? current_user.negocio.datos_fiscales_negocio.calle : "Sin calle" %>">
     <input type="hidden" id="nombre_sucursal" value="<%=current_user.sucursal.nombre%>">
