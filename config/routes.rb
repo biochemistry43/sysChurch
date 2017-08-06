@@ -146,6 +146,9 @@ Rails.application.routes.draw do
   put 'compras/actualizar/:id' => 'compras#actualizar'
   patch 'compras/actualizar/:id' => 'compras#actualizar'
   get 'gastos_generales' => 'gasto_corrientes#index'
+  post 'gasto_generals/solo_sucursal'
+  post 'gasto_generals/consulta_avanzada'
+  post 'gasto_generals/consulta_por_fechas'
   
   
   root :to=> 'plainpage#index'

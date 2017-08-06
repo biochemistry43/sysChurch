@@ -1,0 +1,378 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Gastos generales</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row">
+    <div class="col-md-12" style="color: gray;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @gasto_generals.size %></span>  gastos con este criterio.
+    </div>
+    <div class="div-add-button">
+
+      <%= link_to new_gasto_general_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-categoria-btn"}  do %>
+        <span class="glyphicon glyphicon-plus-sign circleglyphicon" style=""></span>
+        Registrar gasto
+      <%end%>
+
+    </div>
+    
+  </div>
+  
+  <% if @consulta %>
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial.strftime("%d/%m/%Y") %> a <%= @fechaFinal.strftime("%d/%m/%Y") %></span>
+        </div>
+        
+        <% if @avanzada %>
+          <div class="col-md-12">
+            <% if @proveedor %>
+              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> <%= @proveedor.nombre %></span>
+            <% else %>
+              Proveedor: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+            <% end %>
+          </div>
+          <div class="col-md-12">
+            <% if @categoria %>
+              Categoría de gasto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @categoria.nombre_categoria %></span>
+            <% else %>
+              Categoría de gasto: <span style="color:#5B7ECC; font-size: 16px;"> Todas</span>
+            <% end %>
+          </div>
+          <% if can? :create, Negocio %>
+            <div class="col-md-12">
+              <% if @sucursal %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+              <% else %>
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+
+      </div>
+      
+    </div>
+  <% end %>
+
+  <hr>
+
+  <div class="row">
+    <div class="col-ms-12">
+      <div class="left-buttons">
+        <% if can? :read, GastoGeneral %>
+          <%= link_to gasto_generals_path, html_options = {class: "btn btn-success", method: :get} do %>
+            <i class="fa fa-money"> Mostrar gastos del mes </i>
+          <% end %>
+        <% end %>
+        <% if can? :create, Negocio %> 
+          <%= link_to url = {controller:"gasto_generals", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo gastos de mi sucursal", method: :post} do %>  
+            <span class="fa fa-shopping-cart" style=""> Sólo gastos de mi sucursal</span>
+          <% end %>
+        <% end %>
+        <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+          <li class="fa fa-file-excel-o">
+            Exportar a xls
+          </li>
+        </a>
+      </div>
+      
+    </div>
+    
+  </div>
+  <hr>
+  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros por fecha <i class="fa fa-sort-down"></i>
+  </button>
+  <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha"> 
+    <%= form_tag({ controller: "gasto_generals", action: "consulta_por_fechas" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Búsqueda por fechas:
+        </div>
+      </div>
+      
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Desde: 
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Hasta:
+        </div>
+      </div>
+        
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+            
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar gastos', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <!-- Termina buscador por rango de fechas -->
+
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
+
+  <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "gasto_generals", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Proveedor:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :proveedor_id, @proveedores, :id, :nombre, {:prompt => 'Elija un proveedor'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Categoria:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :categoria_gasto_id, @categorias, :id, :nombre_categoria, {:prompt => 'Elija una categoría de gasto'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+      
+      <% if can? :create, Negocio %>
+        
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+      
+    </div>
+    
+    <hr>
+
+    <div class="row">
+      <div>
+      
+        <table class="table table-striped responsive-utilities jambo_table responsive no-wrap data-table" id="tabla_gastos">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Ticket/Factura</th>
+              <th class="column-title" style="text-align: center;">Monto</th>
+              <th class="column-title" style="text-align: center;">Concepto</th>
+              <th class="column-title" style="text-align: center;">Proveedor</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;">Origen recurso</th>
+              <% if can? :create, Negocio %>
+                <th class="column-title" style="text-align: center;">Sucursal</th>
+              <% end %>
+              <th class="column-title" style="text-align: center;"></th>
+              <th class="column-title" style="text-align: center;"></th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_gastos">
+            <%= render @gasto_generals%>
+          </tbody>
+        </table>
+
+        <%= render 'modalGastos'%>
+      </div>
+    </div>
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_gastos_generales">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Ticket/Factura</th>
+              <th class="column-title" style="text-align: center;">Monto</th>
+              <th class="column-title" style="text-align: center;">Concepto</th>
+              <th class="column-title" style="text-align: center;">Proveedor</th>
+              <th class="column-title" style="text-align: center;">Categoria</th>
+              <th class="column-title" style="text-align: center;">Origen recurso</th>
+              <% if can? :create, Negocio %>
+                <th class="column-title" style="text-align: center;">Sucursal</th>
+              <% end %>
+            </tr>
+          </thead>
+
+          <tbody id="tb_gastos">
+            <% @gasto_generals.each do |gasto_general| %>
+              <tr>
+               <td style="text-align: center;"><%= gasto_general.created_at.strftime("%d/%m/%Y") %></td>
+               <td style="text-align: center;"><%= gasto_general.folio_gasto %>/<%= gasto_general.ticket_gasto %></td>
+               <td style="text-align: center;"><%= gasto_general.monto %></td>
+               <td style="text-align: center;"><%= gasto_general.concepto %></td>
+               <td style="text-align: center;"><%= gasto_general.proveedor.nombre %></td>
+               <td style="text-align: center;"><%= gasto_general.gasto.categoria_gasto.nombre_categoria %></td>
+               <% if gasto_general.gasto.caja_sucursal %>
+                 <td style="text-align: center;">Caja <%= gasto_general.gasto.caja_sucursal.nombre %></td>  
+               <% elsif gasto_general.gasto.caja_chica %>
+                 <td style="text-align: center;">Caja chica</td>  
+               <% end %>
+            </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+    <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+    });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de gastos generales</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla_gastos_generales').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de gastos generales.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de gastos generales.xls');
+      }
+
+    }
+
+    $("#filtros_avanzados").click(function(e){
+      if( $("#opciones_filtros_avanzados").is(":visible") ){
+        $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
+      }
+      else{
+        $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
+      }
+        
+      $("#opciones_filtros_avanzados").slideToggle("fast");
+
+    });
+
+    $("#filtro_por_fecha").click(function(e){
+      if( $("#opciones_filtros_por_fecha").is(":visible") ){
+        $(this).html('Filtros por fechas <i class="fa fa-sort-down"></i>');
+      }
+      else{
+        $(this).html('Filtros por fechas <i class="fa fa-sort-up"></i>');
+      }
+        
+      $("#opciones_filtros_por_fecha").slideToggle("fast");
+
+    });
+
+    
+  </script>
+  </div>

@@ -1,13 +1,20 @@
 class GastoGeneralsController < ApplicationController
   before_action :set_gasto_general, only: [:show, :edit, :update, :destroy]
-  before_action :set_categorias_gasto, only: [:new, :create, :edit, :update, :destroy]
-  before_action :set_proveedores, only: [:new, :create, :edit, :update, :destroy]
-  before_action :set_cajas, only: [:new, :create, :edit, :update, :destroy]
+  before_action :set_categorias_gasto, only: [:new, :create, :edit, :update, :destroy, :index, :solo_sucursal, :consulta_avanzada, :consulta_por_fechas]
+  before_action :set_proveedores, only: [:new, :create, :edit, :update, :destroy, :index, :solo_sucursal, :consulta_avanzada, :consulta_por_fechas]
+  before_action :set_sucursales, only: [:new, :create, :edit, :update, :destroy, :index, :solo_sucursal, :consulta_avanzada, :consulta_por_fechas]
+  before_action :set_cajas, only: [:new, :create, :edit, :update, :destroy, :index, :solo_sucursal, :consulta_avanzada, :consulta_por_fechas]
 
   # GET /gasto_generals
   # GET /gasto_generals.json
   def index
-    @gasto_generals = current_user.sucursal.gasto_generals
+    if can? :read, GastoGeneral
+      if can? :create, Negocio
+        @gasto_generals = current_user.negocio.gasto_generals.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else
+        @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      end
+    end
   end
 
   # GET /gasto_generals/1
@@ -201,6 +208,189 @@ class GastoGeneralsController < ApplicationController
     end
   end
 
+  def solo_sucursal
+    @consulta = false
+    @avanzada = false
+    if request.post?
+      @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+  def consulta_por_fechas
+    @consulta = true
+    @avanzada = false
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial..@fechaFinal)
+      else
+        @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial..@fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+  def consulta_avanzada
+    @consulta = true
+    @avanzada = true
+    if request.post?
+
+      #Recibe el rango de fechas, el perfil del usuario que autorizó
+      @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
+      perfil_id = params[:perfil_id]
+      @proveedor = nil
+      @categoria = nil
+      @sucursal = nil
+      
+      #Recibe el id de la sucursal elegida si es que el usuario eligió una sucursal.
+      @suc = params[:suc_elegida]
+
+      #Si el usuario eligió una sucursal, entonces busca el objeto Sucursal en base a su
+      #id recibido.
+      unless @suc.empty?
+        @sucursal = Sucursal.find(@suc)
+      end
+
+      categoria_gasto = params[:categoria_gasto_id]
+
+      unless categoria_gasto.empty?
+        @categoria = CategoriaGasto.find(categoria_gasto)
+      end
+
+      prov_elegido = params[:proveedor_id]
+
+      unless prov_elegido.empty?
+        @proveedor = Proveedor.find(prov_elegido)
+      end
+
+      
+      #Resultados para usuario administrador o subadministrador
+      if can? :create, Negocio
+
+        unless @proveedor && @categoria && @sucursal
+          @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day)
+        end
+
+        if @proveedor && @categoria && @sucursal
+          id_categoria = @categoria.id
+          @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor, sucursal: @sucursal).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+        end
+
+        if @sucursal
+          unless @categoria && @proveedor
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)            
+          end
+          
+        end
+
+        if @proveedor
+          unless @categoria && @sucursal
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)            
+          end
+          
+        end
+
+        if @categoria
+          id_categoria = @categoria.id
+          unless @proveedor && @sucursal
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+          
+        end
+
+        if @proveedor && @categoria
+          id_categoria = @categoria.id
+          unless @sucursal
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+        end
+
+        if @proveedor && @sucursal
+          unless @categoria
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor, sucursal: @sucursal)
+          end
+        end
+
+        if @categoria && @sucursal
+          id_categoria = @categoria.id
+          unless @proveedor
+            @gasto_generals = current_user.negocio.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+          
+        end
+
+      #Resultados para usuario sin privilegios de administrador o subadministrador  
+      else
+
+        unless @proveedor && @categoria && @sucursal
+          @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day)
+        end
+
+        if @proveedor && @categoria && @sucursal
+          id_categoria = @categoria.id
+          @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor, sucursal: @sucursal).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+        end
+
+        if @sucursal
+          unless @categoria && @proveedor
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)            
+          end
+          
+        end
+
+        if @proveedor
+          unless @categoria && @sucursal
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)            
+          end
+          
+        end
+
+        if @categoria
+          id_categoria = @categoria.id
+          unless @proveedor && @sucursal
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+          
+        end
+
+        if @proveedor && @categoria
+          id_categoria = @categoria.id
+          unless @sucursal
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+        end
+
+        if @proveedor && @sucursal
+          unless @categoria
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor, sucursal: @sucursal)
+          end
+        end
+
+        if @categoria && @sucursal
+          id_categoria = @categoria.id
+          unless @proveedor
+            @gasto_generals = current_user.sucursal.gasto_generals.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor).joins("INNER JOIN gastos ON gasto_generals.gasto_id = gastos.id AND gastos.categoria_gasto_id=#{id_categoria}")
+          end
+          
+        end
+
+      end
+ 
+    end
+  end
+
   # PATCH/PUT /gasto_generals/1
   # PATCH/PUT /gasto_generals/1.json
   def update
@@ -386,7 +576,11 @@ class GastoGeneralsController < ApplicationController
     end
 
     def set_proveedores
-      @proveedores = current_user.sucursal.proveedores
+      @proveedores = current_user.negocio.proveedores
+    end
+
+    def set_sucursales
+      @sucursales = current_user.negocio.sucursals
     end
 
     def set_cajas
