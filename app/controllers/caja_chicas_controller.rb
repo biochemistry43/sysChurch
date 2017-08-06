@@ -75,15 +75,16 @@ class CajaChicasController < ApplicationController
     @caja_chica = CajaChica.new(caja_chica_params)
     
     #actualizando el saldo de la caja chica
-    last = nil
-    if current_user.sucursal.caja_chicas.count > 0
-      last = current_user.sucursal.caja_chicas.last
-      saldoActual = last.saldo
-      saldoActualizado = caja_chica_params[:entrada].to_f + saldoActual
-      @caja_chica.saldo = saldoActualizado
-    else
-      @caja_chica.saldo = caja_chica_params[:entrada].to_f
-    end
+    #last = nil
+    #if current_user.sucursal.caja_chicas.count > 0
+    #  last = current_user.sucursal.caja_chicas.last
+    #  saldoActual = last.saldo
+    #  entrada = params[:caja_chica][:entrada].to_f
+    #  saldoActualizado = entrada + saldoActual
+    #  @caja_chica.saldo = saldoActualizado
+    #else
+    #  @caja_chica.saldo = caja_chica_params[:entrada].to_f
+    #end
 
     #aplicando un concepto genérico
     @caja_chica.concepto = "Reposicion de caja"
