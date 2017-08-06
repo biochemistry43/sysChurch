@@ -107,6 +107,7 @@
                     <th class="column-title" style="text-align: center;">Clave producto</th>
                     <th class="column-title" style="text-align: center;">Importe</th>
                     <th class="column-title" style="text-align: center;">Fecha/Hora</th>
+                    <th class="column-title" style="text-align: center;">Observaciones</th>
                     <th class="column-title" style="text-align: center;">Categoría </th>
                     <th class="column-title" style="text-align: center;">Autorizó </th>
                   </tr>
@@ -117,6 +118,7 @@
                       <td style="text-align: center;"> <%= devolucion.articulo.clave %> </td>
                       <td style="text-align: center;"> <%= devolucion.monto %> </td>
                       <td style="text-align: center;"> <%= devolucion.created_at.strftime("%d/%m/%Y - %H:%M") %> </td>
+                      <td style="text-align: center;"> <%= devolucion.observaciones %> </td>
                       <td style="text-align: center;"> <%= devolucion.cat_venta_cancelada.clave %> </td>
                       <td style="text-align: center;"> <%= devolucion.user.perfil.nombre_completo %> </td>
                     </tr>
