@@ -30,6 +30,7 @@ class ProveedoresController < ApplicationController
       if @proveedor.valid?
         if @proveedor.save
           current_user.sucursal.proveedores << @proveedor
+          current_user.negocio.proveedores<< @proveedor
           #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
           #format.json { render :show, status: :created, location: @proveedor }
           format.json { head :no_content}
