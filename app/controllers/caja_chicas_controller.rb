@@ -15,8 +15,21 @@ class CajaChicasController < ApplicationController
     @caja_chicas = current_user.sucursal.caja_chicas
   end
 
+  def movimientos_sucursal
+    if request.post?
+      id_sucursal = params[:id]
+      @sucursal = Sucursal.find(id_sucursal)
+      @movimientos_caja = @sucursal.caja_chicas
+      entradas = CajaChica.where(sucursal: @sucursal).sum(:entrada)
+      salidas = CajaChica.where(sucursal: @sucursal).sum(:salida)
+      @saldo = entradas - salidas
+      @caja_chicas = @sucursal.caja_chicas
+    end
+  end
+
   def new
     @caja_chica = CajaChica.new
+    @sucursal = Sucursal.find(params[:id])
   end 
 
   def show
@@ -73,6 +86,15 @@ class CajaChicasController < ApplicationController
 
   def create
     @caja_chica = CajaChica.new(caja_chica_params)
+
+    sucursal_id = caja_chica_params[:sucursal_id].to_s
+    sucursal = nil
+    
+    if sucursal_id.empty?
+      sucursal = current_user.sucursal
+    else
+      sucursal = Sucursal.find(sucursal_id)
+    end
     
     #actualizando el saldo de la caja chica
     #last = nil
@@ -92,7 +114,7 @@ class CajaChicasController < ApplicationController
     #Relacionando el registro de caja chica con el usuario, negocio y sucursal
     current_user.caja_chicas << @caja_chica
     current_user.negocio.caja_chicas << @caja_chica
-    current_user.sucursal.caja_chicas << @caja_chica
+    sucursal.caja_chicas << @caja_chica
 
     respond_to do |format|
       if @caja_chica.save
@@ -139,7 +161,7 @@ class CajaChicasController < ApplicationController
     end
 
     def caja_chica_params
-      params.require(:caja_chica).permit(:entrada)
+      params.require(:caja_chica).permit(:entrada, :sucursal_id)
     end
 
 end

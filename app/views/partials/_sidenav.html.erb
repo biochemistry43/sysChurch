@@ -166,6 +166,19 @@
                             Gastos generales
                           <%end%>
                       </li>
+                      <% if can? :create, Negocio %>
+                        <li>
+                          <a>
+                            <i class="fa fa-calculator"></i>Cajas chica sucursales <span class="fa fa-chevron-down"></span>
+                          </a>
+                          <ul class="nav child_menu" style="display:none;">
+                            <% current_user.negocio.sucursals.each do |sucursal| %>
+                              <li><%= link_to sucursal.nombre.to_s, {controller: "caja_chicas", action: "movimientos_sucursal", id: sucursal}, {:method=>"post"}  %></li>
+                              
+                            <% end %>
+                          </ul>
+                        </li>
+                      <% end %>
                     </ul>
                   </li>
 

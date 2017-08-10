@@ -1,0 +1,168 @@
+<div class="right_col" role="main">
+  <% flash.each do |key, value| %>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+  <%end%>
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Movimientos caja chica sucursal <%= @sucursal.nombre %></h1>
+      <h3>Saldo en caja chica: $<%= @saldo %></h3>
+    </div>
+  </div>
+  <div class="clearfix"></div> 
+  <div class="col-md-12 col-sm-12 col-xs-12 ">
+    <div class="row">
+      <div class="col-ms-12">
+        <div class="div-left-buttons">
+          <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
+            <li class="fa fa-file-excel-o">
+              Exportar a xls
+            </li>
+          </a>
+        </div>
+
+        <div class="div-add-button">
+          <%= link_to url = {controller:"caja_chicas", action:"new", id: @sucursal.id}, html_options =  {remote: true, class: "btn btn-primary btn-lg btn-add", title: "Reposición de caja chica"} do %>  
+            <span class="fa fa-plus" style=""></span>
+            Reposición
+          <% end %>
+        </div>
+      </div>
+    </div>
+    
+
+    <hr >
+
+    <div class="row">
+      <div>
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Fecha</th>
+              <th class="column-title" style="text-align: center;">Entrada</th>
+              <th class="column-title" style="text-align: center;">Salida</th>
+              <th class="column-title" style="text-align: center;">concepto</th>
+              <th class="column-title" style="text-align: center;">Detalles</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+            <%= render @caja_chicas %>
+          </tbody>
+        </table>
+        <%= render "modalCajaChica" %>
+      </div>
+    </div>
+
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Fecha</th>
+              <th class="column-title" style="text-align: center;">Entrada</th>
+              <th class="column-title" style="text-align: center;">Salida</th>
+              <th class="column-title" style="text-align: center;">concepto</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+            <%= render @caja_chicas %>
+          </tbody>
+        </table>
+    </div>
+
+    <div class="row" style="display: none;">
+      <table class="table table-striped responsive-utilities jambo_table" id="tabla_caja_chica">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Fecha</th>
+              <th class="column-title" style="text-align: center;">Entrada</th>
+              <th class="column-title" style="text-align: center;">Salida</th>
+              <th class="column-title" style="text-align: center;">concepto</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+            <% @caja_chicas.each do |caja_chica| %>
+              <tr>
+                <td class="center-td"><%= caja_chica.created_at.strftime("%d/%m/%Y") %></td>
+                <td class="center-td"><%= caja_chica.entrada ? caja_chica.entrada : 0 %></td>
+                <td class="center-td"><%= caja_chica.salida ? caja_chica.salida : 0 %></td>
+                <td class="center-td"><%= caja_chica.concepto %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+    
+  </div>
+  <script>
+    $(document).ready(function(){
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+    });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Reporte de caja chica</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla_caja_chica').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Reporte de caja chica.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Reporte de caja chica.xls');
+      }
+
+    }
+  </script>
+
+  
+</div>

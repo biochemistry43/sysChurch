@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   get 'caja_chicas/update'
   get 'caja_chicas/destroy'
   get 'caja_chicas/new'
+  post 'caja_chicas/movimientos_sucursal'
 
   resources :caja_sucursals
   resources :cat_compra_canceladas
@@ -146,6 +147,8 @@ Rails.application.routes.draw do
   put 'compras/actualizar/:id' => 'compras#actualizar'
   patch 'compras/actualizar/:id' => 'compras#actualizar'
   get 'gastos_generales' => 'gasto_corrientes#index'
+
+  
   post 'gasto_generals/solo_sucursal'
   post 'gasto_generals/consulta_avanzada'
   post 'gasto_generals/consulta_por_fechas'
