@@ -1,7 +1,13 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Compras realizadas</h1>
+      <h1>Compras realizadas 
+          <% if can? :create, Negocio%>
+          <%= current_user.negocio.nombre.capitalize %>
+          <% else %>
+          sucursal <%= current_user.sucursal.nombre.capitalize %>
+          <% end %>
+      </h1>
     </div>
   </div>
   <div class="clearfix"></div>

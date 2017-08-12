@@ -26,6 +26,9 @@ gem "font-awesome-rails"
 #gema para date picker
 gem 'date_picker'
 
+#Esta gema permite exportar un div a pdf
+gem 'jspdf-rails'
+
 #La gema devise se utiliza para la autenticación de usuarios
 gem "devise"
 

@@ -1,0 +1,188 @@
+<div class="right_col" role="main">
+  <div id="corte_de_caja">
+  	<div class="page-title">
+	    <div class="title_left" style="text-align: center; width:100%">
+	      <h1><%= current_user.negocio.datos_fiscales_negocio.nombreFiscal %></h1>
+	      <h1>Sucursal: <%= current_user.sucursal.nombre %></h1>
+	      <h2>Caja: <%= current_user.caja_sucursal.nombre %>
+	      <h2>Fecha: <%= Date.today.strftime("%d/%m/%Y") %></h2>
+	      <h2>Cajero: <%= current_user.perfil.nombre_completo %></h2>
+	      </h1>
+	    </div>
+	  </div>
+	  <div class="clearfix"></div>
+	  <hr>
+	  
+	  <div class="col-md-12 col-sm-12 col-xs-12">
+
+	    <div class="row">
+	      <h3>Desglose de ingresos</h3>
+	      <div id="desglose_ventas">
+	        <% @desglose_ventas.each do |forma_pago, arreglo_ventas| %>
+	          <h2>Ventas <%= forma_pago %></h2>
+	          <table class="table table-striped responsive-utilities jambo_table data-table">
+		        <thead>
+		          <tr>
+		            <th class="column-title" style="text-align: center;">Folio</th>
+		            <th class="column-title" style="text-align: center;">Fecha y hora</th>
+		            <th class="column-title" style="text-align: center;">Importe</th>
+		          </tr>
+		        </thead>
+
+		        <tbody>
+		          <!-- Realiza un calculo para determinar la sumatoria de ventas -->
+		          <% @sumatoria = 0  %>
+		          <% arreglo_ventas.each do |venta| %>
+		            <% if venta.venta_forma_pago.forma_pago.nombre == forma_pago %>
+		              <% @sumatoria += venta.montoVenta %>
+		            <% end %>
+		          <% end %>
+		          <% arreglo_ventas.each do |venta| %>
+		            <% if venta.venta_forma_pago.forma_pago.nombre == forma_pago %>
+		          	  <tr>
+			      		<td style="text-align: center;"><%= venta.folio %></td>
+			      		<td style="text-align: center;"><%= venta.created_at.strftime("%d/%m/%Y - %H:%M") %></td>
+			      		<td style="text-align: center;"><%= venta.montoVenta %></td>
+			          </tr>
+		            <% end %>
+		          <% end %>
+		        </tbody>
+		      </table>
+		      <h2>Total de ventas en <%= forma_pago %>: <%= @sumatoria %></h2>
+		      <hr>
+	        <% end %>
+	        <h3>Sumatoria total de ventas: $<%= @sumatoria_ventas %></h3>
+	        
+	      </div>
+	    </div> 
+	    <hr>
+	    <div class="row">
+	      <h3>Desglose de egresos</h3>
+	      <div id="desglose_egresos">
+	       	<h2>Pagos por compras</h2>
+	       	<table class="table table-striped responsive-utilities jambo_table data-table">
+		        <thead>
+		          <tr>
+		            <th class="column-title" style="text-align: center;">Fecha y hora</th>
+		            <th class="column-title" style="text-align: center;">Concepto</th>
+		            <th class="column-title" style="text-align: center;">Importe</th>
+		          </tr>
+		        </thead>
+
+		        <tbody>
+		          <!-- Realiza un calculo para determinar la sumatoria de ventas -->
+		          <% @sumatoria_compras = 0  %>
+		          <% @pagos_proveedores.each do |pago_proveedor| %>
+		            <% @sumatoria_compras += pago_proveedor.monto %>
+		          <% end %>
+		          <% @pagos_proveedores.each do |pago_proveedor| %>
+		          <tr>
+			      	<td style="text-align: center;"><%= pago_proveedor.created_at.strftime("%d/%m/%Y - %H:%M") %></td>
+			      	<td style="text-align: center;"><%= pago_proveedor.concepto %></td>
+			        <td style="text-align: center;"><%= pago_proveedor.monto %></td>
+			      </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+	        <h2>Total de pagos por compras: <%= @sumatoria_compras %></h2>
+		    <hr>
+
+		    <h2>Pagos por gastos generales</h2>
+	       	<table class="table table-striped responsive-utilities jambo_table data-table">
+		        <thead>
+		          <tr>
+		            <th class="column-title" style="text-align: center;">Fecha y hora</th>
+		            <th class="column-title" style="text-align: center;">Concepto</th>
+		            <th class="column-title" style="text-align: center;">Importe</th>
+		          </tr>
+		        </thead>
+
+		        <tbody>
+		          <!-- Realiza un calculo para determinar la sumatoria de ventas -->
+		          <% @sumatoria_gastos_generales = 0  %>
+		          <% @pagos_gastos.each do |pago_gasto| %>
+		            <% @sumatoria_gastos_generales += pago_gasto.monto %>
+		          <% end %>
+		          <% @pagos_gastos.each do |pago_gasto| %>
+		          <tr>
+			      	<td style="text-align: center;"><%= pago_gasto.created_at.strftime("%d/%m/%Y - %H:%M") %></td>
+			      	<td style="text-align: center;"><%= pago_gasto.concepto %></td>
+			        <td style="text-align: center;"><%= pago_gasto.monto %></td>
+			      </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+	        <h2>Total de pagos por gastos generales: <%= @sumatoria_gastos_generales %></h2>
+		    <hr>
+
+		    <h2>Pagos por devoluciones</h2>
+	       	<table class="table table-striped responsive-utilities jambo_table data-table">
+		        <thead>
+		          <tr>
+		            <th class="column-title" style="text-align: center;">Fecha y hora</th>
+		            <th class="column-title" style="text-align: center;">Concepto</th>
+		            <th class="column-title" style="text-align: center;">Importe</th>
+		          </tr>
+		        </thead>
+
+		        <tbody>
+		          <!-- Realiza un calculo para determinar la sumatoria de ventas -->
+		          <% @sumatoria_devoluciones = 0  %>
+		          <% @pagos_devoluciones.each do |pago_devolucion| %>
+		            <% @sumatoria_devoluciones += pago_devolucion.monto %>
+		          <% end %>
+		          <% @pagos_devoluciones.each do |pago_devolucion| %>
+		          <tr>
+			      	<td style="text-align: center;"><%= pago_devolucion.created_at.strftime("%d/%m/%Y - %H:%M") %></td>
+			      	<td style="text-align: center;"><%= pago_devolucion.concepto %></td>
+			        <td style="text-align: center;"><%= pago_devolucion.monto %></td>
+			      </tr>
+		        <% end %>
+		      </tbody>
+		    </table>
+		    <h2>Total de pagos por devoluciones: <%= @sumatoria_devoluciones %></h2>
+		    <hr>
+		    <% @sumatoria_total_gastos = @sumatoria_devoluciones + @sumatoria_compras + @sumatoria_gastos_generales %>
+	        <h2>Sumatoria total de pagos en esta caja: $<%= @sumatoria_total_gastos %></h2>
+	      </div>
+	    </div> 
+	    <hr>
+	    <div class="row">
+	      <h3>Balance final (Total de ventas - Total de gastos): $<%= @sumatoria_ventas - @sumatoria_total_gastos %></h3>
+	      
+	    </div>  
+	  </div>
+    
+  </div>
+  <div class="row">
+		<button id="cmd">Imprimir</button>
+	</div>
+  
+</div> 
+
+
+
+
+<script>
+
+$('#cmd').click(function () {
+        
+        $("#corte_de_caja").print({
+
+          globalStyles: true,
+          mediaPrint: true,
+          stylesheet: null,
+          noPrintSelector: ".no-print",
+          iframe: true,
+          append: null,
+          prepend: null,
+          manuallyCopyFormValues: true,
+          deferred: null,
+          timeout: 750,
+          title: null,
+          doctype: '<!doctype html>'
+
+        });
+});
+</script>
+<%= javascript_include_tag "jQuery.print" %>

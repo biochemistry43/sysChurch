@@ -1,0 +1,2 @@
+module CorteCajasHelper
+end

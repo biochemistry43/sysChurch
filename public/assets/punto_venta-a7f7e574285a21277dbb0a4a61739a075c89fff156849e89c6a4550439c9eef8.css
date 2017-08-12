@@ -1,0 +1,122 @@
+@media (min-width: 1600px) {
+  /* line 5, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+  div.main-row-pos {
+    height: 910px;
+    min-height: 910px;
+  }
+
+  /* line 10, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+  #div-tabla-ventas {
+    height: 700px;
+    overflow: auto;
+  }
+}
+@media (min-width: 1300px) {
+  /* line 17, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+  div.main-row-pos {
+    height: 768px;
+    min-height: 768px;
+  }
+
+  /* line 22, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+  #div-tabla-ventas {
+    height: 600px;
+    overflow: auto;
+  }
+}
+/* line 28, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.campo-pago {
+  background: #fffce6;
+  color: #5B7ECC;
+  font-size: 25px;
+  height: 50px;
+  border-color: green;
+  border-width: 1px;
+}
+
+/* line 37, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#logo_negocio {
+  display: none;
+}
+
+/* line 42, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.panel-pos, .col-pos {
+  height: 97%;
+}
+
+/* line 46, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.well.profile_view .bottom {
+  background: #A3CC5B;
+}
+
+/* line 51, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.well.profile_view {
+  color: #1b2d06;
+  background: #fffce6;
+}
+
+/* line 56, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#table_sales {
+  margin-top: 3%;
+  color: black;
+  text-transform: uppercase;
+  font-size: 16px;
+  background-color: #CBCDFF;
+  /*margin-bottom: 2%;*/
+}
+
+/* line 65, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#search-product {
+  font-size: 16px;
+  height: 50px;
+}
+
+/* line 70, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.modal-content {
+  background: #e6e6ff;
+}
+
+/* line 74, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#total-price {
+  margin-left: 1em;
+}
+
+/* line 78, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#importe, #importePagar {
+  font-size: 100px;
+  color: #6A9916;
+}
+
+/* line 83, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#botones-venta {
+  position: absolute;
+  right: 50%;
+  left: 0%;
+  bottom: 0px;
+}
+
+/* line 90, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#panel-pos-body {
+  height: 100%;
+  position: relative;
+  z-index: 3;
+  background-color: #e6e6ff;
+}
+
+/* line 97, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#cambio_cliente {
+  color: #333399;
+  font-size: 80px;
+}
+
+/* line 102, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+#print-div {
+  position: absolute;
+  z-index: 1;
+}
+
+/* line 107, /home/javier/Documents/sysChurch/app/assets/stylesheets/punto_venta.scss */
+.tabs-left > li > a {
+  background: #5B7ECC;
+  color: white;
+}

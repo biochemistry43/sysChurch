@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require jquery
+//= require 'jspdf'
 //= require bootstrap-sprockets
 //= require jquery_ujs
 //= require jQuery.print
