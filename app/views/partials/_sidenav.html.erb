@@ -78,6 +78,8 @@
                            Punto de venta
                         <%end%>
                     </li>
+                    <li><%= link_to "Corte de caja", {controller: "corte_cajas", action: "show"} %>
+                    </li>
                     
                     <%if can? :read, Venta%>
                       <li><%= link_to "Registro de ventas", ventas_path %>
