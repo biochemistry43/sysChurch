@@ -148,7 +148,11 @@
 	    </div> 
 	    <hr>
 	    <div class="row">
-	      <h3>Balance final (Total de ventas - Total de gastos): $<%= @sumatoria_ventas - @sumatoria_total_gastos %></h3>
+	      <% @balance_final = 0.0 %>
+	      <% if @sumatoria_ventas.to_i != 0 %>
+	      	<% @balance_final = @sumatoria_ventas - @sumatoria_total_gastos %>
+	      <% end %>
+	      <h3>Balance final (Total de ventas - Total de gastos): $<%= @balance_final %></h3>
 	      
 	    </div>  
 	  </div>
