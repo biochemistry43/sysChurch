@@ -200,8 +200,6 @@
                   
                 <% end %>
                 
-
-
                 <%if can? :read, Cliente%>
                   <li><%= link_to clientes_path do%>
                         <i class="fa fa-users"></i>
@@ -209,6 +207,37 @@
                       <%end%>
                   </li>
                 <%end%> <!-- Fin if can read cliente -->
+
+
+                <% if can? :create, Articulo %>
+                  <li>
+                    <a>
+                      <i class="fa fa-tags"></i>Facturas electrónicas<span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu" style="display: none">
+                      <%if can? :create, CatArticulo%>
+                        <li><%= link_to "CFDIs", cat_articulos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :create, Articulo%>
+                        <li><%= link_to "CFDIs recurrentes", articulos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :create, MarcaProducto%>
+                        <li><%= link_to "Notas de débito", marca_productos_path %>
+                        </li>
+                      <%end%>
+                      <%if can? :create, PresentacionProducto%>
+                        <li><%= link_to "Nota de crédito", presentacion_productos_path %>
+                        </li>
+                      <%end%>
+                    </ul>
+                  </li>
+                <% end %> <!-- Fin if can create Articulo -->
+
+
+
+
               </ul>
               <%if can? :create, CajaChica%>
                 <li>
