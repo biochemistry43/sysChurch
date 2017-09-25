@@ -6,7 +6,10 @@
         <span class="input-group-addon"><i class="fa fa-money"></i></span>
         <%= f.number_field :entrada, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la cantidad de dinero a reponer..."} do%>
         <%end%>
-        <%= f.hidden_field :sucursal_id, :value=>@sucursal.id %>
+        <% if current_user.role=="Administrador" || current_user.role=="Subadministrador"  || current_user.role=="root" %>
+          <%= f.hidden_field :sucursal_id, :value=>@sucursal.id %>
+        <% end %>
+        
         <%if @caja_chica.errors[:entrada].any? %>
           <p class="bg-danger"><%= @caja_chica.errors[:entrada].to_s[/\w([^"]*)/] %></p>
         <% end %>

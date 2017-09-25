@@ -12,7 +12,7 @@ class CajaChicasController < ApplicationController
     #else
     #  @saldo = 0.0
     #end
-    @caja_chicas = current_user.sucursal.caja_chicas
+    @caja_chicas = current_user.sucursal.caja_chicas.order('created_at DESC')
   end
 
   def movimientos_sucursal
@@ -29,7 +29,12 @@ class CajaChicasController < ApplicationController
 
   def new
     @caja_chica = CajaChica.new
-    @sucursal = Sucursal.find(params[:id])
+    if params[:id]
+      @sucursal = Sucursal.find(params[:id])
+    else
+      @sucursal = current_user.sucursal
+    end
+    
   end 
 
   def show

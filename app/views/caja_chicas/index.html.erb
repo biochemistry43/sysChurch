@@ -13,7 +13,7 @@
 
   <div class="page-title">
     <div class="title_left">
-      <h1>Movimientos caja chica</h1>
+      <h1>Movimientos caja chica <%= current_user.sucursal.nombre %></h1>
       <h3>Saldo en caja chica: $<%= @saldo %></h3>
     </div>
   </div>
@@ -30,7 +30,7 @@
         </div>
 
         <div class="div-add-button">
-          <%= link_to url = {controller:"caja_chicas", action:"new"}, html_options =  {remote: true, class: "btn btn-primary btn-lg btn-add", title: "Reposición de caja chica"} do %>  
+          <%= link_to url = {controller:"caja_chicas", action:"new", id:current_user.sucursal.id}, html_options =  {remote: true, class: "btn btn-primary btn-lg btn-add", title: "Reposición de caja chica"} do %>  
             <span class="fa fa-plus" style=""></span>
             Reposición
           <% end %>
@@ -113,6 +113,7 @@
   
       $('.data-table').DataTable({
         responsive: true,
+        "order": [],
         "language":{
           "info": "Mostrar pag _PAGE_ de _PAGES_",
           "lengthMenu": "Mostrar _MENU_ registros",
