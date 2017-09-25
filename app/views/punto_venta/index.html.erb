@@ -30,7 +30,7 @@
                 <div class="col-md-4">
                   <form class="form">
                     <div  class="form-group">
-                      <% if current_user.role == "cajero" %>
+                      
                         Caja asignada: <%= @cajaAsignada.numero_caja %> <%= @cajaAsignada.nombre.capitalize %>
                         <%= hidden_field_tag :caja,  @cajaAsignada.numero_caja %>
                       
