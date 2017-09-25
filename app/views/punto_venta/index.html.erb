@@ -33,10 +33,10 @@
                       <% if current_user.role == "cajero" %>
                         Caja asignada: <%= @cajaAsignada.numero_caja %> <%= @cajaAsignada.nombre.capitalize %>
                         <%= hidden_field_tag :caja,  @cajaAsignada.numero_caja %>
-                      <% else %>
-                        Elija una caja:
-                         <%= collection_select(nil, :caja, @cajas, :id, :nombre, {:prompt => 'Seleccione una caja', :selected=>@cajaAsignada}, { class: "form-control col-md-7 col-xs-12" })%>
-                      <% end %>
+                      
+                        <!--Elija una caja: Esta opción ya no estará disponible por causar problmemas de gestión
+                          collection_select(nil, :caja, @cajas, :id, :nombre, {:prompt => 'Seleccione una caja', :selected=>@cajaAsignada}, { class: "form-control col-md-7 col-xs-12" })-->
+                      
                       
                     </div>
                   </form>
