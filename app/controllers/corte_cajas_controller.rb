@@ -9,22 +9,22 @@ class CorteCajasController < ApplicationController
 	      formas_de_pago = FormaPago.all
 
 	      #este arreglo permitirá el almacenamiento de todas las ventas del día de la caja del usuario actual
-	      ventas_del_dia = []
+	      @ventas_del_dia = []
 
 	      @desglose_ventas = {}
 
-	      #Primero obtengo todas las ventas que se hayan hecho el día de día y hasta el momento actual
-	      ventas = Venta.where(created_at: Date.today.beginning_of_day..DateTime.now)
+	      #Primero obtengo todas las ventas que se hayan hecho el día de hoy y hasta el momento actual
+	      ventas = current_user.ventas.where(created_at: Date.today.beginning_of_day..DateTime.now)
 
 	      #Obtengo la caja de sucursal a la que está asignado el usuario
 	      caja = current_user.caja_sucursal
 
-	      #Se recorre cada venta con el fin de llenar el arreglo ventas_del_dia. Si la venta encontrada en la consulta, pertenece
+	      #Se recorre cada venta con el fin de llenar el arreglo ventas_del_dia. Si la venta encontrada en la consulta pertenece
 	      #a la caja asignada al usuario actual, entonces añade dicha venta al arreglo ventas_del_dia
 	      ventas.each do |venta|
-	        if venta.caja_sucursal == caja
-	          ventas_del_dia << venta
-	        end
+	        #if venta.caja_sucursal == caja
+	          @ventas_del_dia << venta
+	        #end
 	      end
 
 	      #Se obtienen los registros de formas de pago por cada venta del día de hoy
@@ -43,7 +43,7 @@ class CorteCajasController < ApplicationController
 		  @desglose_ventas.each do |forma_pago, valor|
 		  	#Ventas del dia contiene los objetos Venta que fueron creados en este día.
 		  	#ventas_del_dia se recorre y analiza para verificar si su forma de pago coincide con la forma de pago analizada.
-	        ventas_del_dia.each do |venta_del_dia|
+	        @ventas_del_dia.each do |venta_del_dia|
 	          if venta_del_dia.venta_forma_pago.forma_pago.nombre == forma_pago
 	          	#Si la forma de pago coincide con la analizada, entonces se añade la venta al arreglo ventas_encontradas
 	          	ventas_encontradas << venta_del_dia

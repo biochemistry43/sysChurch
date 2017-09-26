@@ -32,7 +32,7 @@
                     <div  class="form-group">
                       
                         Caja asignada: <%= @cajaAsignada.numero_caja %> <%= @cajaAsignada.nombre.capitalize %>
-                        <%= hidden_field_tag :caja,  @cajaAsignada.numero_caja %>
+                        <%= hidden_field_tag :caja,  @cajaAsignada.id %>
                       
                         <!--Elija una caja: Esta opción ya no estará disponible por causar problmemas de gestión
                           collection_select(nil, :caja, @cajas, :id, :nombre, {:prompt => 'Seleccione una caja', :selected=>@cajaAsignada}, { class: "form-control col-md-7 col-xs-12" })-->
