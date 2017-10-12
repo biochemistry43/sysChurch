@@ -68,7 +68,7 @@ class CorteCajasController < ApplicationController
 	      #Ahora se procede al análisis de los gastos salidos de la caja analizada. Los gastos pueden ser devoluciones
 	      #o pagos.
 	      #Primero obtenemos todos los gastos que se realizaron el día de hoy (o más bien hasta ahora)
-	      gastos_hoy = current_user.negocios.where(created_at: Date.today.beginning_of_day..DateTime.now)
+	      gastos_hoy = current_user.negocio.where(created_at: Date.today.beginning_of_day..DateTime.now)
 		  
 		  #Este arreglo contendrá los objetos Gasto que cumplan con el criterio de pertenecer a la caja de sucursal analizada
 	      gastos_caja = []
