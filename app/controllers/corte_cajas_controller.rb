@@ -81,7 +81,7 @@ class CorteCajasController < ApplicationController
 	          #coincide con la caja analizada
 	          if gasto_hoy.caja_sucursal == current_user.caja_sucursal
 	            gastos_caja << gasto_hoy
-	          end
+	          endgit 
 
 	        end
 
