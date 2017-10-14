@@ -108,7 +108,7 @@ class CorteCajasController < ApplicationController
 	        end
 
 	      end #Fin de gastos_caja.each...
-	  else #else if current_user.caja_sucursal
+	  else
 	  	flash[:notice] = "El usuario no tiene asignada ninguna caja"
         redirect_to action: "index", controller: "ventas"
         
