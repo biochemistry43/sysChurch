@@ -1,4 +1,5 @@
 class ArticulosController < ApplicationController
+
   #before_filter :authenticate_user!
   load_and_authorize_resource
   before_action :set_articulo, only: [:edit, :update, :destroy]
@@ -10,6 +11,7 @@ class ArticulosController < ApplicationController
   # GET /articulos
   # GET /articulos.json
   def index
+
     if current_user.perfil
       if can? :create, Negocio
         @articulos = current_user.negocio.articulos

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+
+  resources :facturas
+  
   
   get 'corte_cajas/show'
 

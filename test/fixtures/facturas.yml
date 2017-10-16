@@ -2,9 +2,8 @@
 
 one:
   folio: MyString
-  fecha_expedicion: 2017-09-23
+  fecha_expedicion: 2017-09-23 17:58:49
   estado_factura: MyString
-  fecha_certificacion: 2017-09-23
   ventas_id: 1
   user_id: 1
   negocio_id: 1
@@ -15,9 +14,8 @@ one:
 
 two:
   folio: MyString
-  fecha_expedicion: 2017-09-23
+  fecha_expedicion: 2017-09-23 17:58:49
   estado_factura: MyString
-  fecha_certificacion: 2017-09-23
   ventas_id: 1
   user_id: 1
   negocio_id: 1

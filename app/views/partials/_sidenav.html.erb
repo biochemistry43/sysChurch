@@ -209,16 +209,17 @@
                 <%end%> <!-- Fin if can read cliente -->
 
 
-                <% if can? :create, Articulo %>
+                <% if can? :create, Factura %>
                   <li>
                     <a>
-                      <i class="fa fa-tags"></i>Facturas electrónicas<span class="fa fa-chevron-down"></span>
+                      <i class="fa fa-file-text-o"></i>Facturas electrónicas<span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu" style="display: none">
-                      <%if can? :create, CatArticulo%>
-                        <li><%= link_to "CFDIs", cat_articulos_path %>
+                      <%if can? :create, Factura%>
+                        <li><%= link_to "CFDIs", facturas_path %>
                         </li>
                       <%end%>
+                      
                       <%if can? :create, Articulo%>
                         <li><%= link_to "CFDIs recurrentes", articulos_path %>
                         </li>

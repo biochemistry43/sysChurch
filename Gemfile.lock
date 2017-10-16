@@ -353,6 +353,7 @@ DEPENDENCIES
   jquery-rails
   jspdf-rails
   mini_magick
+  nokogiri (~> 1.6, >= 1.6.7.1)
   pg
   rails (= 4.2.2)
   rails_12factor

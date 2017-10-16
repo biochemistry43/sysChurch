@@ -1,0 +1,88 @@
+<div class="right_col" role="main">
+  
+ <!--NOTIFICACIONES DE INICIO -->
+  <% flash.each do |key, value| %>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+  <%end%>
+
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Factura de ventas </h1>
+      
+      <%=@hola %>
+    </div>
+  </div>
+
+  <div class="clearfix"></div> 
+  <div class="col-md-12 col-sm-12 col-xs-12 ">
+  <div class="row">
+      <div class="col-ms-12">
+
+        <div class="div-add-button">
+          <% if can? :create, Factura %>
+            <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
+              <span class="fa fa-plus-square" style=""></span>
+              Nueva  factura
+            <%end%>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <hr >
+
+      <!-- Div con una leyenda que indica la cantidad de productos encontrados en base a los criterios
+      de búsqueda -->
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+            Se <% if @fact.size == 1 %>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @fact.size %></span>  <% if @fact.size == 1 %>factura<% else %>facturas<% end %> <% if @solo_sucursal %>en la sucursal <% if can? :create, Negocio %> <strong><%= current_user.sucursal.nombre %></strong>  <% end %><% end %>.
+        </div>
+      </div>
+     
+
+<!--ENCABEZADO DE TABLA-->
+
+    <div class="row">
+      <div>
+
+        <table class="table table-striped responsive-utilities jambo_table data-table">
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Folio</th>
+              <th class="column-title" style="text-align: center;">Cliente</th>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+              <th class="column-title" style="text-align: center;">Estado</th>
+              <th class="column-title" style="text-align: center;">Acciones</th>
+              
+            </tr>
+          </thead>
+
+          <tbody id="tb_caja_chica">
+          <%@fact.each do |fact| %>
+               <tr>
+                <td width="10%"><%= fact.folio %></td>
+                <td align="justify" width="30%"><%=fact.cliente_id %></td>
+                <td class="center-td" width="10%"><%= fact.fecha_expedicion %></td>
+                <td class="center-td" width="10%"><%=fact.estado_factura %></td>
+
+                <td class="center-td" width="15%"></td>
+              </tr>
+             <% end %> 
+          </tbody>
+        </table>
+       
+      </div>
+    </div>
+
+  </div>
+
