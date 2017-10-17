@@ -1,11 +1,28 @@
 <div class="right_col" role="main">
+  Elija una fecha diferente:
+  <%= form_tag({ controller: "corte_cajas", action: "show" }, {:class=> "form-horizontal", :method => :post}) do %>
+        
+	<div class="col-md-3 col-sm-6 col-xs-12">
+	    <div class="text-center">
+	        <%= date_picker_tag("fecha_reporte", nil, {class: "form-control", selectMonths: :true}, {})%>
+	    </div>
+	</div>
+
+	<div class="col-md-1 col-sm-5 col-xs-12">
+	    <div class="text-center">
+	        <%= submit_tag 'Cambiar Fecha', {:class=>"btn btn-info"} %>
+	    </div>
+	</div>
+  <% end %>
   <div id="corte_de_caja">
   	<div class="page-title">
 	    <div class="title_left" style="text-align: center; width:100%">
 	      <h1><%= current_user.negocio.datos_fiscales_negocio.nombreFiscal %></h1>
 	      <h1>Sucursal: <%= current_user.sucursal.nombre %></h1>
 	      <h2>Caja: <%= current_user.caja_sucursal.nombre %>
-	      <h2>Fecha: <%= Date.today.strftime("%d/%m/%Y") %></h2>
+	      
+	      <h2>Fecha: <%= @fecha_reporte.strftime("%d/%m/%Y") %></h2>
+
 	      <h2>Cajero: <%= current_user.perfil.nombre_completo %></h2>
 	      </h1>
 	    </div>

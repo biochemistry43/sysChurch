@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   
   get 'corte_cajas/show'
 
+  post 'corte_cajas/show'
+
   get 'reporte_gastos/reporte_gastos'
 
   get 'reporte_ventas/reporte_ventas'

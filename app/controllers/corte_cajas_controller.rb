@@ -1,7 +1,7 @@
 class CorteCajasController < ApplicationController
   
   def show
-    if request.get?
+    
 
       if current_user.caja_sucursal
       
@@ -13,8 +13,17 @@ class CorteCajasController < ApplicationController
 
 	      @desglose_ventas = {}
 
+	      @fecha_reporte = nil
+          
+          if request.get?
+          	@fecha_reporte = Date.today
+          elsif request.post?
+            @fecha_reporte = DateTime.parse(params[:fecha_reporte])
+          end
+          
+
 	      #Primero obtengo todas las ventas que se hayan hecho el día de hoy y hasta el momento actual
-	      ventas = current_user.ventas.where(created_at: Date.today.beginning_of_day..DateTime.now)
+	      ventas = current_user.ventas.where(created_at: @fecha_reporte.beginning_of_day..@fecha_reporte.end_of_day)
 
 	      #Obtengo la caja de sucursal a la que está asignado el usuario
 	      caja = current_user.caja_sucursal
@@ -28,7 +37,7 @@ class CorteCajasController < ApplicationController
 	      end
 
 	      #Se obtienen los registros de formas de pago por cada venta del día de hoy
-	      formas_pago = VentaFormaPago.where(created_at: Date.today.beginning_of_day..DateTime.now)
+	      formas_pago = VentaFormaPago.where(created_at: @fecha_reporte.beginning_of_day..@fecha_reporte.end_of_day)
 
 	      ventas_encontradas = []
 
@@ -57,7 +66,7 @@ class CorteCajasController < ApplicationController
 	        end
 
 	        #esta variable almacena la suma de la sumatoria total de ventas en el rango de tiempo determinado
-	        @sumatoria_ventas = Venta.where(created_at: Date.today.beginning_of_day..DateTime.now).sum(:montoVenta)
+	        @sumatoria_ventas = Venta.where(created_at: @fecha_reporte.beginning_of_day..@fecha_reporte.end_of_day).sum(:montoVenta)
 
 	        if @sumatoria_ventas == nil
 	          @sumatoria_ventas = 0
@@ -68,7 +77,7 @@ class CorteCajasController < ApplicationController
 	      #Ahora se procede al análisis de los gastos salidos de la caja analizada. Los gastos pueden ser devoluciones
 	      #o pagos.
 	      #Primero obtenemos todos los gastos que se realizaron el día de hoy (o más bien hasta ahora)
-	      gastos_hoy = current_user.negocio.gastos.where(created_at: Date.today.beginning_of_day..DateTime.now)
+	      gastos_hoy = current_user.negocio.gastos.where(created_at: @fecha_reporte.beginning_of_day..@fecha_reporte.end_of_day)
 		  
 		  #Este arreglo contendrá los objetos Gasto que cumplan con el criterio de pertenecer a la caja de sucursal analizada
 	      gastos_caja = []
@@ -114,7 +123,7 @@ class CorteCajasController < ApplicationController
         
 	  end
 
-    end #fin de request.get?
+    
 
   end #fin del método show
 
