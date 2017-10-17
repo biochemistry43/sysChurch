@@ -2,20 +2,21 @@
    <div id="print-div" style="font-size: 11px; width: 200px;">
       <div class="col-md-3">
         <div class="row">
-          <div class="col-md-12" style="width: 100%; align-content: center;">
+          <div class="col-md-3"></div>
+          <div class="col-md-9" style="width: 100%; align-content: center;">
             <%= image_tag(current_user.negocio.logo_url,:width => 140, :height => 80, class: "img") if current_user.negocio.logo.present? %>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12" style="text-align:center;">
-            <h6 id="nombre_fiscal_negocio_ticket"> <%= @nombreFiscalNegocio %> </h6>
-            <p id="dir_negocio_ticket" style="font-size: 8px;"> <%= @direccionFiscalNegocio %> </p>
-            <h6 id="nombre_sucursal_ticket"> Sucursal: <%= @sucursal %> </h6>
+            <h4 id="nombre_fiscal_negocio_ticket"> <%= @nombreFiscalNegocio %> </h4>
+            <p id="dir_negocio_ticket" style="font-size: 12px;"> <%= @direccionFiscalNegocio %> </p>
+            <h4 id="nombre_sucursal_ticket"> Sucursal: <%= @sucursal %> </h4>
           </div>
         </div>
         <% unless @direccionSucursal.empty? %>
           <div class="row" style="text-align: center;">
-            <p id="direccion_sucursal_ticket" class="col-md-12" style="font-size: 9px;">
+            <p id="direccion_sucursal_ticket" class="col-md-12" style="font-size: 12px;">
               <%=  @direccionSucursal %>
             </p>
           </div> 
@@ -24,28 +25,28 @@
         <hr>
 
         <div class="row" style="text-align:center">
-          <div id="folio_ticket" class="col-md-12" style="font-size: 9px;">
+          <div id="folio_ticket" class="col-md-12" style="font-size: 12px;">
             Folio: <%= @folio %>
           </div>
         </div>
         <div class="row" style="text-align:center">
-          <div id="fecha_ticket" class="col-md-12" style="font-size: 9px;">
+          <div id="fecha_ticket" class="col-md-12" style="font-size: 12px;">
             
           </div>
         </div>
         <div class="row">
-          <div id="datos_cliente_ticket" class="col-md-12" style="font-size: 9px;">
+          <div id="datos_cliente_ticket" class="col-md-12" style="font-size: 12px;">
             Cliente: <%= @cliente %>
           </div>
         </div>
         <div class="row">
-          <div id="datos_cajero" class="col-md-12" style="font-size:9px;">
+          <div id="datos_cajero" class="col-md-12" style="font-size:12px;">
             Le atendió: <%= @cajero %>        
           </div>
         </div>
         <div class="row">
           <div id="productos_ticket" class="col-md-12" style="width: 100%;">
-            <table id="tabla_productos_ticket" class="col-md-12" style="font-size: 9px; width: 95%;">
+            <table id="tabla_productos_ticket" class="col-md-12" style="font-size: 12px; width: 95%;">
               <thead>
                 <tr style='background-color: gray;'>
                   <th style='text-align:center; border-bottom: 1px solid #ddd;'>Cant</th>
@@ -79,7 +80,7 @@
 
         <div class="row">
           <div class="col-md-12">
-            <p id="forma_pago" style="font-size: 9px;">
+            <p id="forma_pago" style="font-size: 12px;">
               Forma de Pago: <strong><%= @formaPago %> </strong>  
               <br> 
               <% unless @formaPago.eql?("efectivo") %>
