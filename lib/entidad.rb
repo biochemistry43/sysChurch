@@ -9,7 +9,9 @@ module CFDI
   # @attr expedidoEn [CFDI::Domicilio, Hash] El domicilio de la sucursal de emisión
   class Entidad < ElementoComprobante
     # @private
-    @cadenaOriginal = [:rfc, :nombre, :domicilioFiscal, :expedidoEn, :regimenFiscal]
+    @cadenaOriginal = [:rfc, :nombre, 
+      #:domicilioFiscal, :expedidoEn, 
+      :regimenFiscal]
     # @private
     @data = @cadenaOriginal
     # @private
@@ -17,12 +19,12 @@ module CFDI
     
     # @private
     def cadena_original
-      expedido = @expedidoEn ? @expedidoEn.cadena_original : nil
+      #expedido = @expedidoEn ? @expedidoEn.cadena_original : nil
       return [
         @rfc,
         @nombre,
-        *@domicilioFiscal.cadena_original,
-        expedido,
+        #*@domicilioFiscal.cadena_original,
+        #expedido,
         @regimenFiscal
       ].flatten
     end
@@ -32,22 +34,24 @@ module CFDI
     # @param  domicilio [CFDI::Domicilio, Hash] El domicilio de esta entidad
     # 
     # @return [CFDI::Domicilio] idem
-    def domicilioFiscal= domicilio
-      domicilio = Domicilio.new domicilio unless domicilio.is_a? Domicilio
-      @domicilioFiscal = domicilio
-      @domicilioFiscal
-    end
+
+    #def domicilioFiscal= domicilio
+     # domicilio = Domicilio.new domicilio unless domicilio.is_a? Domicilio
+      #@domicilioFiscal = domicilio
+      #@domicilioFiscal
+    #end
     
     # Designa dónde se expidió el comprobante, sólo para Entidades de tipo "Emisor"
     # @param  domicilio [CFDI::Domicilio, Hash] El domicilio de expedición de este emisor
     # 
     # @return [CFDI::Domicilio] idem
-    def expedidoEn= domicilio
-      return if !domicilio
-      domicilio = Domicilio.new domicilio unless domicilio.is_a? Domicilio
-      @expedidoEn = domicilio
-    end
-    
+   
+    #def expedidoEn= domicilio
+     # return if !domicilio
+      #domicilio = Domicilio.new domicilio unless domicilio.is_a? Domicilio
+      #@expedidoEn = domicilio
+    #end
+
     # @private
     def ns
       return ({
@@ -57,7 +61,6 @@ module CFDI
     end
     
   end
-
 
   # Un domicilio
   # 
@@ -71,11 +74,13 @@ module CFDI
   # @attr [String] estado El estado
   # @attr [String] pais El país
   # @attr [String] codigoPostal El código postal
-  class Domicilio < ElementoComprobante
+  
 
-    @cadenaOriginal = [:calle, :noExterior, :noInterior, :colonia, :localidad, :referencia, :municipio, :estado, :pais, :codigoPostal]
-    attr_accessor *@cadenaOriginal
+  #class Domicilio < ElementoComprobante
+
+   # @cadenaOriginal = [:calle, :noExterior, :noInterior, :colonia, :localidad, :referencia, :municipio, :estado, :pais, :codigoPostal]
+   #attr_accessor *@cadenaOriginal
     
-  end
+  #end
   
 end

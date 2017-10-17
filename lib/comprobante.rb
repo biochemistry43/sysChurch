@@ -133,20 +133,22 @@ module CFDI
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
     #
     # @return [CFDI::Entidad] Una entidad
-    def emisor= emisor
-      emisor = Entidad.new emisor unless emisor.is_a? Entidad
-      @emisor = emisor;
-    end
+    
+
+    #def emisor= emisor
+      #emisor = Entidad.new emisor unless emisor.is_a? Entidad
+      #@emisor = emisor;
+    #end
 
     # Asigna un receptor
     # @param  receptor [Hash, CFDI::Entidad] Los datos de un receptor
     #
     # @return [CFDI::Entidad] Una entidad
-    def receptor= receptor
-      receptor = Entidad.new receptor unless receptor.is_a? Entidad
-      @receptor = receptor;
-      receptor
-    end
+    #def receptor= receptor
+      #receptor = Entidad.new receptor unless receptor.is_a? Entidad
+      #@receptor = receptor;
+      #receptor
+    #end
 
     # Agrega uno o varios conceptos
     # @param  conceptos [Array, Hash, CFDI::Concepto] Uno o varios conceptos
@@ -189,6 +191,7 @@ module CFDI
       fecha = fecha.strftime('%FT%R:%S') unless fecha.is_a? String
       @fecha = fecha
     end
+
 
 
     # El comprobante como XML
@@ -235,12 +238,12 @@ module CFDI
           xml.doc.root.namespace = ins
 
           xml.Emisor(@emisor.ns)  {
-            xml.DomicilioFiscal(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil})
-            xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
+            #xml.DomicilioFiscal(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil})
+            #xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
             xml.RegimenFiscal({Regimen: @emisor.regimenFiscal})
           }
           xml.Receptor(@receptor.ns) {
-            xml.Domicilio(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
+            #xml.Domicilio(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
           }
           xml.Conceptos {
             @conceptos.each do |concepto|
