@@ -18,10 +18,10 @@ class FacturasController < ApplicationController
 		    folio: 1,
 			serie: 'FA',
 			fecha: Time.now,
-			formaDePago: '01',
+			formaDePago: '01',#CATALOGO
 			condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-			metodoDePago: 'PUE',
-			lugarExpedicion: '93600'
+			metodoDePago: 'PUE', #CATALOGO
+			lugarExpedicion: '93600' #CATALOGO
 		})
 
 		# Esto es un domicilio casi completo
@@ -45,7 +45,7 @@ class FacturasController < ApplicationController
 		  nombre: 'Empresa X',
 		  #domicilioFiscal: domicilioEmisor,
 		  #expedidoEn: domicilioEmisor,
-		  regimenFiscal: '601'
+		  regimenFiscal: '601' #CATALOGO
 		})
 
 		#domicilioReceptor = CFDI::Domicilio.new({
@@ -53,7 +53,10 @@ class FacturasController < ApplicationController
 		 # estado: 'Martinez de la Torre',
 		 # pais: 'Mexico'
 		#})
-		factura.receptor = CFDI::Receptor.new({rfc: 'XAXX010101000', nombre: 'Juan Perez Miranda.',UsoCFDI:'G01'
+		factura.receptor = CFDI::Receptor.new({
+			rfc: 'XAXX010101000',
+			 nombre: 'Juan Perez Miranda.',
+			 UsoCFDI:'G01' #CATALOGO
 			#, domicilioFiscal: domicilioReceptor
 			})
 
@@ -61,8 +64,10 @@ class FacturasController < ApplicationController
 		factura.conceptos << CFDI::Concepto.new({
 		  cantidad: 2,
 		  unidad: 'Kilos',
-		  noIdentificacion: 'KFRI',
+		  noIdentificacion: 'SKUFRI25',
 		  descripcion: 'Frijol',
+		  ClaveUnidad: '53',#CATALOGO
+		  ClaveProdSer: '50431800', #CATALOGO
 		  valorUnitario: 25.00 #el importe se calcula solo
 		})
 

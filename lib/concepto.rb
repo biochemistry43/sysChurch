@@ -4,19 +4,24 @@ module CFDI
   class Concepto < ElementoComprobante
     
     # @private
-    @cadenaOriginal = [:cantidad, :unidad, :noIdentificacion, :descripcion, :valorUnitario, :importe]
+    @cadenaOriginal = [:cantidad, :unidad, :noIdentificacion, :descripcion, :ClaveUnidad, :ClaveProdSer, :valorUnitario, :importe
+      #, :ClaveProdSer
+      
+    ]
     # @private
     attr_accessor *@cadenaOriginal
     
     # @private
     def cadena_original
       return [
-        @cantidad.to_i,
+        @cantidad.to_d,
         @unidad,
         @noIdentificacion,
         @descripcion,
+        @ClaveUnidad,
+        @ClaveProdSer,
         self.valorUnitario,
-        self.importe
+        self.importe      
       ]
     end
     
@@ -52,7 +57,7 @@ module CFDI
     # 
     # @return [Integer] La cantidad
     def cantidad= qty
-      @cantidad = qty.to_i
+      @cantidad = qty.to_d
       @cantidad
     end
     
