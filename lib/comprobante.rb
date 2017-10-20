@@ -81,6 +81,8 @@ module CFDI
     # archivos de excel estén centrados. Pensamientos positivos, Roberto, respira profundo.
     #
     # @return [String] El metodo de pago textual, por ejemplo "Dinero electrónico"
+
+=begin
     def metodoDePago_value
       if @version.to_f >= 3.3
         CFDI.metodos_de_pago @metodoDePago
@@ -88,7 +90,7 @@ module CFDI
         @metodoDePago
       end
     end
-
+=end
     def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto 
       ret = 0
       @conceptos.each do |c|
@@ -135,20 +137,20 @@ module CFDI
     # @return [CFDI::Entidad] Una entidad
     
 
-    #def emisor= emisor
-      #emisor = Entidad.new emisor unless emisor.is_a? Entidad
-      #@emisor = emisor;
-    #end
+    def emisor= emisor
+      emisor = Emisor.new emisor unless emisor.is_a? Emisor
+      @emisor = emisor;
+    end
 
     # Asigna un receptor
     # @param  receptor [Hash, CFDI::Entidad] Los datos de un receptor
     #
     # @return [CFDI::Entidad] Una entidad
-    #def receptor= receptor
-      #receptor = Entidad.new receptor unless receptor.is_a? Entidad
-      #@receptor = receptor;
+    def receptor= receptor
+      receptor = Rceptor.new receptor unless receptor.is_a? Receptor
+      @receptor = receptor;
       #receptor
-    #end
+    end
 
     # Agrega uno o varios conceptos
     # @param  conceptos [Array, Hash, CFDI::Concepto] Uno o varios conceptos
@@ -243,6 +245,8 @@ module CFDI
             xml.RegimenFiscal({Regimen: @emisor.regimenFiscal})
           }
           xml.Receptor(@receptor.ns) {
+            xml.UsoCFDI({UsoCFDI: @receptor.UsoCFDI})
+
             #xml.Domicilio(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
           }
           xml.Conceptos {
@@ -344,6 +348,7 @@ module CFDI
       params += @emisor.cadena_original
       params << @regimen
       params += @receptor.cadena_original
+
 
       @conceptos.each do |concepto|
         params += concepto.cadena_original

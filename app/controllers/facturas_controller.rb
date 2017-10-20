@@ -12,18 +12,16 @@ class FacturasController < ApplicationController
 		# Esta se convierte de un archivo .key con:
 		# openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
 		llave = CFDI::Key.new './Cert_Sellos/aaa010101aaa_FIEL/Claveprivada_FIEL_AAA010101AAA_20170515_120909.pem', '12345678a'
-				
-
 		#DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
 		#Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
 		factura = CFDI::Comprobante.new({
 		    folio: 1,
 			serie: 'FA',
 			fecha: Time.now,
-			formaDePago: 'Dinero en efectivo',
+			formaDePago: '01',
 			condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-			metodoDePago: 'pago en una sola exibicin',
-			lugarExpedicion: 'Martinez de la Torre'
+			metodoDePago: 'PUE',
+			lugarExpedicion: '93600'
 		})
 
 		# Esto es un domicilio casi completo
@@ -42,12 +40,12 @@ class FacturasController < ApplicationController
 		#})
 
 		# y esto es una persona fiscal
-		factura.emisor = CFDI::Entidad.new({
+		factura.emisor = CFDI::Emisor.new({
 		  rfc: 'XAXX010101000',
 		  nombre: 'Empresa X',
 		  #domicilioFiscal: domicilioEmisor,
 		  #expedidoEn: domicilioEmisor,
-		  regimenFiscal: 'Regimen fiscal X'
+		  regimenFiscal: '601'
 		})
 
 		#domicilioReceptor = CFDI::Domicilio.new({
@@ -55,7 +53,7 @@ class FacturasController < ApplicationController
 		 # estado: 'Martinez de la Torre',
 		 # pais: 'Mexico'
 		#})
-		factura.receptor = CFDI::Entidad.new({rfc: 'XAXX010101000', nombre: 'Juan Perez Miranda.'
+		factura.receptor = CFDI::Receptor.new({rfc: 'XAXX010101000', nombre: 'Juan Perez Miranda.',UsoCFDI:'G01'
 			#, domicilioFiscal: domicilioReceptor
 			})
 
@@ -65,7 +63,7 @@ class FacturasController < ApplicationController
 		  unidad: 'Kilos',
 		  noIdentificacion: 'KFRI',
 		  descripcion: 'Frijol',
-		  valorUnitario: 5500.00 #el importe se calcula solo
+		  valorUnitario: 25.00 #el importe se calcula solo
 		})
 
 		#Como salen los impuestos, pull request?

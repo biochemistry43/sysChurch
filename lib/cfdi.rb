@@ -6,7 +6,7 @@ require_relative 'comun.rb'
 require_relative 'addenda.rb'
 require_relative 'impuestos.rb'
 require_relative 'comprobante.rb'
-require_relative 'entidad.rb'
+require_relative 'emisor_receptor.rb'
 require_relative 'concepto.rb'
 require_relative 'complemento.rb'
 require_relative 'xml.rb'
@@ -25,7 +25,8 @@ module CFDI
   # Porque SAT, los métodos de pago con su clave
   #
   # @return [Hash] La clave y su valor como texto
-  METODOS_DE_PAGO = {
+=begin
+ METODOS_DE_PAGO = {
     '01' => 'Efectivo',
     '02' => 'Cheque nominativo',
     '03' => 'Transferencia electrónica de fondos',
@@ -41,6 +42,8 @@ module CFDI
   # alias
   def self.metodos_de_pago
     METODOS_DE_PAGO
-  end
+  end   
+=end
+ 
 
 end
