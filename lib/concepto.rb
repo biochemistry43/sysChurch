@@ -4,10 +4,7 @@ module CFDI
   class Concepto < ElementoComprobante
     
     # @private
-    @cadenaOriginal = [:cantidad, :unidad, :noIdentificacion, :descripcion, :ClaveUnidad, :ClaveProdSer, :valorUnitario, :importe
-      #, :ClaveProdSer
-      
-    ]
+    @cadenaOriginal = [:ClaveProdSer, :noIdentificacion, :cantidad, :ClaveUnidad, :unidad, :descripcion,  :valorUnitario, :importe]
     # @private
     attr_accessor *@cadenaOriginal
     

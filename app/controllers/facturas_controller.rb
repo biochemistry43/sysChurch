@@ -15,14 +15,15 @@ class FacturasController < ApplicationController
 		#DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
 		#Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
 		factura = CFDI::Comprobante.new({
+			serie: 'FA_V',
 		    folio: 1,
-			serie: 'FA',
 			fecha: Time.now,
 			formaDePago: '01',#CATALOGO
 			condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
 			metodoDePago: 'PUE', #CATALOGO
 			lugarExpedicion: '93600' #CATALOGO
 		})
+
 
 		# Esto es un domicilio casi completo
 
@@ -60,15 +61,15 @@ class FacturasController < ApplicationController
 			#, domicilioFiscal: domicilioReceptor
 			})
 
-
+		#<< para que puedan ser agragados los conceptos que se deseen.
 		factura.conceptos << CFDI::Concepto.new({
-		  cantidad: 2,
-		  unidad: 'Kilos',
-		  noIdentificacion: 'SKUFRI25',
-		  descripcion: 'Frijol',
-		  ClaveUnidad: '53',#CATALOGO
 		  ClaveProdSer: '50431800', #CATALOGO
-		  valorUnitario: 25.00 #el importe se calcula solo
+		  noIdentificacion: 'SKUFRI25',
+		  cantidad: 2,
+		  ClaveUnidad: '53',#CATALOGO
+		  unidad: 'Kilos',
+		  descripcion: 'Frijol',
+		  valorUnitario: 25.00 #el importe se calcula solo 
 		})
 
 		#Como salen los impuestos, pull request?

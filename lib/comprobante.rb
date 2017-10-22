@@ -1,10 +1,13 @@
 module CFDI 
   class Comprobante # La clase principal para crear Comprobantes
-    #un hash de indices en el orden correcto.
-    @@datosCadena =[:version, :fecha, :tipoDeComprobante, :formaDePago, :condicionesDePago, :subTotal, :TipoCambio, :moneda, :total, :metodoDePago, :lugarExpedicion, :NumCtaPago]
-    # Todos los datos del comprobante
-    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :serie, :folio, :sello, :noCertificado, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
+
+    @@datosCadena =[:version,:serie,:folio, :fecha, :formaDePago, :noCertificado,:condicionesDePago, :subTotal,:moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
+
+    #Nodo conceptos del que se deriva concepto.
+    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
     
+
+
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
 
     @addenda = nil
@@ -12,13 +15,13 @@ module CFDI
     @@options = {
       tasa: 0.16,
       defaults: {
-        moneda: 'pesos',
         version: '3.3',
+        moneda: 'MXN',
         subTotal: 0.0,
-        TipoCambio: 1,
+        #TipoCambio: 1,
         conceptos: [],
         impuestos: Impuestos.new,
-        tipoDeComprobante: 'ingreso'
+        tipoDeComprobante: 'I' #CATALOGO
       }
     }
 
@@ -204,6 +207,7 @@ module CFDI
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
         'xsi:schemaLocation' => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv#{@version.gsub(/\D/, '')}.xsd",
         version: @version,
+        serie: @serie,
         folio: @folio,
         fecha: @fecha,
         formaDePago: @formaDePago,
@@ -215,9 +219,9 @@ module CFDI
         tipoDeComprobante: @tipoDeComprobante,
         LugarExpedicion: @lugarExpedicion,
       }
-      ns[:serie] = @serie if @serie
-      ns[:TipoCambio] = @TipoCambio if @TipoCambio
-      ns[:NumCtaPago] = @NumCtaPago if @NumCtaPago && @NumCtaPago!=''
+      #ns[:serie] = @serie if @serie
+      #ns[:TipoCambio] = @TipoCambio if @TipoCambio
+      #ns[:NumCtaPago] = @NumCtaPago if @NumCtaPago && @NumCtaPago!=''
 
       if (@addenda)
         # Si tenemos addenda, entonces creamos el campo "xmlns:ElNombre" y agregamos sus definiciones al SchemaLocation
