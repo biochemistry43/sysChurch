@@ -1,12 +1,21 @@
 module CFDI
-  
-  class Receptor < ElementoComprobante
-
-     @cadenaOriginal = [:rfc, :nombre, :UsoCFDI]
-     @data = @cadenaOriginal
-    attr_accessor *@cadenaOriginal
-    
-
+  class DatosComunes < ElementoComprobante
+    @@cadenaComun=[:rfc, :nombre]
+    attr_accessor(*@cadenaComun)
+    def rfc=(rfc)
+      @rfc=rfc.squish
+    end
+    def nombre=(nombre)
+      @nombre=nombre.squish
+    end
+  end
+  class Receptor < DatosComunes
+     #UsoCFDI=[:UsoCFDI]
+     @cadenaOriginal = @@cadenaComun+[:UsoCFDI]#  + [:UsoCFDI]
+     attr_accessor(@cadenaOriginal[2])
+     def UsoCFDI=(usoCFDI)
+       @UsoCFDI=usoCFDI.squish
+     end
     def cadena_original
       return [
         @rfc,
@@ -14,24 +23,20 @@ module CFDI
         @UsoCFDI
       ].flatten
     end
-
     def ns
       return ({
         nombre: @nombre,
         rfc: @rfc
       })
     end
-    
   end
-
-  class Emisor < ElementoComprobante
-   @cadenaOriginal = [:rfc, :nombre,  
-      :regimenFiscal]
-    @data = @cadenaOriginal
-
-    attr_accessor *@cadenaOriginal
+  class Emisor < DatosComunes
+    @cadenaOriginal =@@cadenaComun +[:regimenFiscal]#  + [:UsoCFDI]
+    attr_reader(@cadenaOriginal[2])
+    def regimenFiscal= (regimenFiscal)
+      @regimenFiscal=regimenFiscal.squish
+    end
     def cadena_original
-     
       return [
         @rfc,
         @nombre,
@@ -45,6 +50,6 @@ module CFDI
         rfc: @rfc
       })
     end
-    
-  end  
+
+  end
 end

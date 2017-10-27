@@ -1,17 +1,10 @@
-module CFDI 
+module CFDI
   class Comprobante # La clase principal para crear Comprobantes
-
-    @@datosCadena =[:version,:serie,:folio, :fecha, :formaDePago, :noCertificado,:condicionesDePago, :subTotal,:moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
-
-    #Nodo conceptos del que se deriva concepto.
+    @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal,:moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
-    
-
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
-
     @addenda = nil
-
     @@options = {
       tasa: 0.16,
       defaults: {
@@ -39,22 +32,6 @@ module CFDI
     end
 
     # Crear un comprobante nuevo
-    #
-    # @param  data [Hash] Los datos de un comprobante
-    # @option data [String] :version ('3.2') La version del CFDI
-    # @option data [String] :fecha ('') La fecha del CFDI
-    # @option data [String] :tipoDeComprobante ('ingreso') El tipo de Comprobante
-    # @option data [String] :formaDePago ('') La forma de pago (pago en una sóla exhibición?)
-    # @option data [String] :condicionesDePago ('') Las condiciones de pago (Efectos fiscales al pago?)
-    # @option data [String] :TipoCambio (1) El tipo de cambio para la moneda de este CFDI'
-    # @option data [String] :moneda ('pesos') La moneda de pago
-    # @option data [String] :metodoDePago ('') El método de pago (depósito bancario? efectivo?)
-    # @option data [String] :lugarExpedicion ('') El lugar dónde se expide la factura (Nutopía, México?)
-    # @option data [String] :NumCtaPago (nil) El número de cuenta para el pago
-    #
-    # @param  options [Hash] Las opciones para este comprobante
-    # @see [Comprobante@@options] Opciones
-    #
     # @return {CFDI::Comprobante}
     def initialize data={}, options={}
       #hack porque dup se caga con instance variables
@@ -75,26 +52,14 @@ module CFDI
       @addenda = addenda
     end
 
-
-    # Regresa el método de pago como valor textual
-    #
-    # En la versión 3.3 del CFDI el SAT decidió salir con sus pendejadas y cambiar la manera de
-    # almacenar el método de pago como una clave porque les salió lo contador old school. Claro
-    # se guarda como una cadena de texto porque 0.1 + 0.2 ~= 0.30000000000000004 y para que sus
-    # archivos de excel estén centrados. Pensamientos positivos, Roberto, respira profundo.
-    #
-    # @return [String] El metodo de pago textual, por ejemplo "Dinero electrónico"
-
-=begin
-    def metodoDePago_value
-      if @version.to_f >= 3.3
-        CFDI.metodos_de_pago @metodoDePago
-      else
-        @metodoDePago
-      end
+    def serie=(serie)
+      @serie=serie.squish
     end
-=end
-    def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto 
+    def folio=(folio)
+      @folio=folio
+    end
+
+    def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto
       ret = 0
       @conceptos.each do |c|
         ret += c.importe
@@ -102,8 +67,6 @@ module CFDI
       ret # @return [Float] El subtotal del comprobante
     end
 
-    # Regresa el total
-    #
     # @return [Float] El subtotal multiplicado por la tasa
     def total
       iva = 0.0
@@ -138,7 +101,6 @@ module CFDI
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
     #
     # @return [CFDI::Entidad] Una entidad
-    
 
     def emisor= emisor
       emisor = Emisor.new emisor unless emisor.is_a? Emisor
@@ -157,9 +119,7 @@ module CFDI
 
     # Agrega uno o varios conceptos
     # @param  conceptos [Array, Hash, CFDI::Concepto] Uno o varios conceptos
-    #
     # En caso de darle un Hash o un {CFDI::Concepto}, agrega este a los conceptos, de otro modo, sobreescribe los conceptos pre-existentes
-    #
     # @return [Array] Los conceptos de este comprobante
     def conceptos= conceptos
       if conceptos.is_a? Array
@@ -179,7 +139,6 @@ module CFDI
 
     # Asigna un complemento al comprobante
     # @param  complemento [Hash, CFDI::Complemento] El complemento a agregar
-    #
     # @return [CFDI::Complemento]
     def complemento= complemento
       complemento = Complemento.new complemento unless complemento.is_a? Complemento
@@ -190,14 +149,11 @@ module CFDI
 
     # Asigna una fecha al comprobante
     # @param  fecha [Time, String] La fecha y hora (YYYY-MM-DDTHH:mm:SS) de la emisión
-    #
     # @return [String] la fecha en formato '%FT%R:%S'
     def fecha= fecha
       fecha = fecha.strftime('%FT%R:%S') unless fecha.is_a? String
       @fecha = fecha
     end
-
-
 
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.2 (porque soy un huevón)
@@ -210,7 +166,7 @@ module CFDI
         serie: @serie,
         folio: @folio,
         fecha: @fecha,
-        formaDePago: @formaDePago,
+        FormaPago: @FormaPago,
         condicionesDePago: @condicionesDePago,
         subTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
@@ -314,7 +270,7 @@ module CFDI
                 if v.is_a? Hash
                   xml[@addenda.nombre].send(k, v)
                 elsif v.is_a? Array
-                  xml[@addenda.nombre].send(k, v)
+                  xml[@addenda.nombre].send(Regimenk, v)
                 else
                   xml[@addenda.nombre].send(k, v)
                 end
@@ -350,7 +306,7 @@ module CFDI
 
       @@datosCadena.each {|key| params.push send(key) }
       params += @emisor.cadena_original
-      params << @regimen
+      #params << @regimen
       params += @receptor.cadena_original
 
 

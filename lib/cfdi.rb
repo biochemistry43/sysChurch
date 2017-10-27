@@ -1,6 +1,9 @@
 # encoding: utf-8
 #gem 'nokogiri', '1.5.11'
 
+require 'bigdecimal'
+require 'bigdecimal/util'
+
 require_relative 'version.rb'
 require_relative 'comun.rb'
 require_relative 'addenda.rb'
@@ -13,6 +16,7 @@ require_relative 'xml.rb'
 require_relative 'certificado.rb'
 require_relative 'key.rb'
 
+
 # Comprobantes fiscales digitales por los internets
 #
 # El sistema de generación y sellado de facturas es una patada en los genitales. Este gem pretende ser una bolsa de hielos. Igual va a doler, pero espero que al menos no quede moretón.
@@ -24,7 +28,7 @@ module CFDI
 
   # Porque SAT, los métodos de pago con su clave
   #
-  # @return [Hash] La clave y su valor como texto
+  # @ return [Hash] La clave y su valor como texto
 =begin
  METODOS_DE_PAGO = {
     '01' => 'Efectivo',
@@ -42,8 +46,8 @@ module CFDI
   # alias
   def self.metodos_de_pago
     METODOS_DE_PAGO
-  end   
+  end
 =end
- 
+
 
 end

@@ -3,10 +3,10 @@ class FacturasController < ApplicationController
 	#include Saluda
 	require 'cfdi'
 	#include FacturasHelper
-	def index 
+	def index
 		@fact=Factura.all
 		#@hola=Salud::Salu.new.sal()
-		
+
 		certificado = CFDI::Certificado.new './Cert_Sellos/aaa010101aaa_FIEL/aaa010101aaa_FIEL.cer'
 		# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
 		# Esta se convierte de un archivo .key con:
@@ -69,11 +69,11 @@ class FacturasController < ApplicationController
 		  ClaveUnidad: '53',#CATALOGO
 		  unidad: 'Kilos',
 		  descripcion: 'Frijol',
-		  valorUnitario: 25.00 #el importe se calcula solo 
+		  valorUnitario: 25.00 #el importe se calcula solo
 		})
 
 		#Como salen los impuestos, pull request?
-		#factura.impuestos << {impuestos: 'IVA'}
+		#factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
 
 
 		factura.addenda= {
@@ -92,8 +92,7 @@ class FacturasController < ApplicationController
 
 		# Esto genera la factura como xml
 		@hola= factura.to_xml
-	end	
+	end
 	def show
 	end
 end
-

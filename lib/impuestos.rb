@@ -61,9 +61,8 @@ module CFDI
     def total
       suma(:traslados) - suma(:retenciones)
     end
-
-
-    class ImpuestoGenerico < ElementoComprobante
+  end
+  class ImpuestoGenerico < ElementoComprobante
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
       # @private
@@ -82,46 +81,21 @@ module CFDI
       end
 
     end
-
-
-    class Traslado < ImpuestoGenerico
+    class Traslado < ImpuestoGenerico 
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
+
       # @private
       attr_accessor(*@cadenaOriginal)
 
-      # # Asigna la tasa del impuesto
-      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
-      # def tasa= valor
-      #   @tasa = valor.to_f
-      # end
-
-      # # Asigna el importe del impuesto
-      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
-      # def importe= valor
-      #   @importe = valor.to_f
-      # end
     end
-
-
     class Retencion < ImpuestoGenerico
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
+      #@cadenaOriginal= [:Base, :Impuesto, :TipoFactor, :TasasOCuota, :Importe]
       # @private
       attr_accessor(*@cadenaOriginal)
 
-      # # Asigna la tasa del impuesto
-      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
-      # def tasa= valor
-      #   @tasa = valor.to_f
-      # end
-
-      # # Asigna el importe del impuesto
-      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
-      # def importe= valor
-      #   @importe = valor.to_f
-      # end
     end
-  end
 
 end
