@@ -2,9 +2,10 @@ module CFDI
   class Impuestos < ElementoComprobante
 
     # @private
+    #Datos de la cadena original(traslados y retenciones son nodos)
     @cadenaOriginal = [:totalImpuestosTrasladados, :totalImpuestosRetenidos, :traslados, :retenciones]
     # @private
-    attr_accessor(*@cadenaOriginal)
+    attr_accessor(*@cadenaOriginal)#Se crean metodos de acceso
 
     def initialize data={}
       self.traslados = data[:traslados] || []
@@ -13,7 +14,9 @@ module CFDI
       self.totalImpuestosRetenidos = data[:totalImpuestosRetenidos] if data[:totalImpuestosRetenidos]
     end
 
+
     def traslados= value
+
       @traslados = value.map { |t|
         t.is_a?(ImpuestoGenerico) ? t : Impuestos::Traslado.new({
           tasa: t[:tasa],
@@ -61,8 +64,9 @@ module CFDI
     def total
       suma(:traslados) - suma(:retenciones)
     end
-  end
-  class ImpuestoGenerico < ElementoComprobante
+
+
+    class ImpuestoGenerico < ElementoComprobante
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
       # @private
@@ -81,21 +85,46 @@ module CFDI
       end
 
     end
-    class Traslado < ImpuestoGenerico 
+
+
+    class Traslado < ImpuestoGenerico
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
-
       # @private
       attr_accessor(*@cadenaOriginal)
 
+      # # Asigna la tasa del impuesto
+      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
+      # def tasa= valor
+      #   @tasa = valor.to_f
+      # end
+
+      # # Asigna el importe del impuesto
+      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
+      # def importe= valor
+      #   @importe = valor.to_f
+      # end
     end
+
+
     class Retencion < ImpuestoGenerico
       # @private
       @cadenaOriginal = [:impuesto, :tasa, :importe]
-      #@cadenaOriginal= [:Base, :Impuesto, :TipoFactor, :TasasOCuota, :Importe]
       # @private
       attr_accessor(*@cadenaOriginal)
 
+      # # Asigna la tasa del impuesto
+      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
+      # def tasa= valor
+      #   @tasa = valor.to_f
+      # end
+
+      # # Asigna el importe del impuesto
+      # # @param  valor [String, Float, #to_f] Cualquier objeto que responda a #to_f
+      # def importe= valor
+      #   @importe = valor.to_f
+      # end
     end
+  end
 
 end

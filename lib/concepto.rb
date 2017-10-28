@@ -4,10 +4,14 @@ module CFDI
   class Concepto < ElementoComprobante
 
     # @private
-    @cadenaOriginal = [:ClaveProdSer, :noIdentificacion, :cantidad, :ClaveUnidad, :unidad, :descripcion,  :valorUnitario, :importe]
+    @cadenaOriginal = [:totalDescuento,:ClaveProdSer, :noIdentificacion, :cantidad, :ClaveUnidad, :unidad, :descripcion,  :valorUnitario, :importe, :Descuento]
     # @private
     attr_accessor *@cadenaOriginal
-
+=begin
+    def initialize (d=0.00)
+      self.Descuento= d
+    end
+=end
     # @private
     def cadena_original #aquí se establece el orden de la cadena original! que engañado eh vivido jaja
       return [
@@ -18,10 +22,15 @@ module CFDI
         @unidad,
         @descripcion,
         self.valorUnitario,
-        self.importe
+        self.importe,
+        @Descuento
       ]
     end
 
+    def Descuento= (porcentaje)# 50 %
+      @Descuento=((@valorUnitario*@cantidad)/100)*porcentaje
+      @Descuento
+    end
     # Asigna la descripción de un concepto
     # @param descricion [String] La descripción del concepto
     #
@@ -39,8 +48,6 @@ module CFDI
       @valorUnitario = dineros.to_f
       @valorUnitario
     end
-
-
     # El importe de este concepto
     #
     # @return [Float] El valor unitario multiplicado por la cantidad

@@ -1,6 +1,6 @@
 module CFDI
   class Comprobante # La clase principal para crear Comprobantes
-    @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal,:moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
+    @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal, :Descuento, :moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
@@ -14,7 +14,8 @@ module CFDI
         #TipoCambio: 1,
         conceptos: [],
         impuestos: Impuestos.new,
-        tipoDeComprobante: 'I' #CATALOGO
+        tipoDeComprobante: 'I', #CATALOGO
+        #Descuento: 0.00
       }
     }
 
@@ -46,7 +47,6 @@ module CFDI
       @impuestos ||= Impuestos.new
     end
 
-
     def addenda= addenda
       addenda = Addenda.new addenda unless addenda.is_a? Addenda
       @addenda = addenda
@@ -59,6 +59,20 @@ module CFDI
       @folio=folio
     end
 
+    #DESCUENTO COMERCIAL por cada concepto
+    def Descuento
+      desc=0.00
+      @conceptos.each do |d|
+        desc += d.Descuento
+      end
+      @Descuento=desc
+    end
+    #DESCUENTO RAPPEL
+    #def Descuento= (des)
+    #  @Descuento=des.to_f
+    #end
+    #DESCUENTO POR PAGO PUNTUAL
+    #...
     def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto
       ret = 0
       @conceptos.each do |c|
@@ -71,12 +85,12 @@ module CFDI
     def total
       iva = 0.0
       iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
-      self.subTotal + @impuestos.total
+      self.subTotal + @impuestos.total- @Descuento
     end
 
     def impuestos= value
       @impuestos = case @version
-        when '3.2'
+      when '3.2'
           return value if value.is_a? Impuestos
           raise 'v3.2 CFDI impuestos must be an array of hashes' unless value.is_a? Array
 
@@ -157,6 +171,7 @@ module CFDI
 
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.2 (porque soy un huevón)
+
     def to_xml
       ns = {
         'xmlns:cfdi' => "http://www.sat.gob.mx/cfd/3",
@@ -226,7 +241,7 @@ module CFDI
             end
           }
 
-          impuestos_options = {}
+          impuestos_options = {} #un hash
           impuestos_options = {totalImpuestosTrasladados: sprintf('%.2f', self.subTotal*@opciones[:tasa])} if @impuestos.count > 0
           xml.Impuestos(impuestos_options) {
             if @impuestos.traslados.count > 0
@@ -312,6 +327,18 @@ module CFDI
 
       @conceptos.each do |concepto|
         params += concepto.cadena_original
+=begin
+        AQUÍ SE DEBE DE PONER:
+          Traslado
+            *sus atributos
+          Retención
+            *sus atributos
+          Aduanera
+            ...
+          CuentaPredial
+            ...
+=end
+
       end
 
       if @impuestos.count > 0
