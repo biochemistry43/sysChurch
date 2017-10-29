@@ -125,6 +125,7 @@
                                //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
                                
                             },
+                            //comentario .
                             success: function(data){
                                 
                                 // si encontro algo 
