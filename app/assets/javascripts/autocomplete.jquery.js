@@ -127,7 +127,7 @@
                             },
                             //comentario .
                             success: function(data){
-                                
+                                //
                                 // si encontro algo 
                                 // creo un cuadro debajo del input con los resultados
                                 input.parent().find('.autocomplete-jquery-results').remove();
