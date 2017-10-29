@@ -507,7 +507,7 @@ function addProduct(elem){
         //var resLength = res.length;
         //for(i=0; i < resLength; i++){
 
-          var element = res;
+          var element = res;   
           if(element.existencia == 0){
             alert("Este producto no tiene existencias");
           }
