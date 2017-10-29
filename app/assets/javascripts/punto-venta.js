@@ -497,7 +497,7 @@ function addProduct(elem){
     //$("#respuesta").html("Cargando...");
     },
     error: function(){
-      alert("error");
+      alert("error" + elem);
       //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
              
     },
