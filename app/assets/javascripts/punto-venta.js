@@ -502,15 +502,16 @@ function addProduct(elem){
              
     },
     success: function(res){
+      //alert(res.nombre);
       if(res){
-        var resLength = res.length;
-        for(i=0; i < resLength; i++){
-          var element = res[i];
+        //var resLength = res.length;
+        //for(i=0; i < resLength; i++){
+
+          var element = res;
           if(element.existencia == 0){
             alert("Este producto no tiene existencias");
           }
           else{
-
             $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
@@ -521,7 +522,7 @@ function addProduct(elem){
                                     "</tr>");
           }
 
-        }
+        //}
 
 
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;

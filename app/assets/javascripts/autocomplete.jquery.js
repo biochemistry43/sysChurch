@@ -149,7 +149,7 @@
                                             a.addClass('autocomplete-jquery-item');
                                             var widthFixed=width - 3;
                                             a.css({'width':widthFixed});
-                                            a.attr("id",  data[index].clave);
+                                            a.attr("id",  data[index].id);
                                             if(data[index].existencia == 0){
                                                 a.addClass('autocomplete-jquery-item-inexistence');
                                             }

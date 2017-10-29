@@ -30,7 +30,7 @@ class ArticulosController < ApplicationController
   #obtiene un articulo en base a su Id
   def getById
     @criteria = params[:criteria]
-    articulo = Articulo.where('clave = ? AND sucursal_id = ?', @criteria, current_user.sucursal.id)
+    articulo = Articulo.find(@criteria)#where('clave = ? AND sucursal_id = ?', @criteria, current_user.sucursal.id)
     render :json => articulo
   end
     

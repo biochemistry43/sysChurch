@@ -11,8 +11,7 @@ class VentasController < ApplicationController
     if request.get?
       if can? :create, Negocio
         @ventas = current_user.negocio.ventas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-      else
-        @ventas = current_user.sucursal.ventas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else = current_user.sucursal.ventas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       end
     end
   end
