@@ -354,12 +354,12 @@ function addProduct(elem){
     },
     success: function(res){
       if(res){
-        var resLength = res.length;
+        //var resLength = res.length;
 
         // En este for, se añaden los datos a cada una de las celdas 
         //de la fila de un producto.
-        for(i=0; i < resLength; i++){
-           var element = res[i];
+      //  for(i=0; i < resLength; i++){
+           var element = res;
            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td id='precioProducto' >0</td><td id='cantidadProducto'>1</td>"+
@@ -367,7 +367,7 @@ function addProduct(elem){
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td></tr>");
 
-        } //Terminan de añadirse los datos a la fila
+      //  } //Terminan de añadirse los datos a la fila
 
         
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
