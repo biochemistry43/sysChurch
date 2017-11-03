@@ -1,3 +1,4 @@
+
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
@@ -5,13 +6,14 @@
     </div>
   </div>
   <div class="clearfix"></div>
-
-
 <div class="col-md-12 col-sm-12 col-xs-12">
   <div class="row">
     <div class="div-add-button">
-
-        <%= link_to 'Nueva factura de venta', facturas_facturaDeVentas_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
+      <!--   <%= link_to new_factura_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-factura-btn"}  do %>
+           <span class="fa fa-plus-square" style=""></span>
+           Nueva factura
+        <%end%>-->
+        <%= link_to 'Nueva factura de venta', new_factura_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
     </div>
   </div> <!--Fin de botón -->
   <hr style="border-style: solid; border-width: 2px;">
@@ -73,4 +75,5 @@
     });
   </script>
 
+<!--  <%= link_to 'New Factura', new_factura_path %>-->
 </div>

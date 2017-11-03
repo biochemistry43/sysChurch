@@ -1,0 +1,159 @@
+<!--
+<% if @venta %>
+  <% if @consulta && @itemsVenta%>
+
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+  <% else %>
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        No hay ventas registradas con este folio
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" style="color: gray;">
+        <div class="col-md-12">
+          Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+  <% end %>
+<% end %>
+-->
+
+<div class="row" style="margin-bottom: 30px;">
+
+  <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
+  <%= form_tag({ controller: "devoluciones", action: "devolucion" }, {:class=> "form-horizontal", :method => :post}) do %>
+    <!--
+    <div class="item form-group">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div style="text-align: left; color: black;">
+          Proporcione el folio de la venta.
+        </div>
+      </div>
+    </div>
+  -->
+
+  <!--  <div class="item form-group">-->
+
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right;">
+          Folio:
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <!--<span class="input-group-addon"><i class="fa fa-file-text"></i></span>-->
+          <%= text_field_tag :folio, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"folio de la venta..."} do%>
+          <span class="input-group-addon"><i class="fa fa-user"></i></span>
+          <%end%>
+        </div>
+      </div>
+  <!--  </div>-->
+
+    <div class="item form-group">
+      <div class="col-md-1 col-sm-1 col-xs-1">
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-left">
+          <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>
+
+
+<!--
+
+<%= form_for(@factura) do |f| %>
+  <% if @factura.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@factura.errors.count, "error") %> prohibited this factura from being saved:</h2>
+
+      <ul>
+      <% @factura.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+
+
+
+
+
+  <div class="item form-group<%= @factura.errors[:folio].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :folio, "Nombre de cuenta: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <%= f.text_field :folio, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba el nombre de la cuenta..."} do%>
+      <%end%>
+      <%if @factura.errors[:folio].any? %>
+        <p class="bg-danger"><%= @factura.errors[:folio].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= f.label :fecha_expedicion %><br>
+    <%= f.datetime_select :fecha_expedicion %>
+  </div>
+  <div class="field">
+    <%= f.label :estado_factura %><br>
+    <%= f.text_field :estado_factura %>
+
+
+
+  <div class="field">
+    <%= f.label :venta_id %><br>
+    <%= f.text_field :venta_id %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br>
+    <%= f.text_field :user_id %>
+  </div>
+  <div class="field">
+    <%= f.label :negocio_id %><br>
+    <%= f.text_field :negocio_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sucursal_id %><br>
+    <%= f.text_field :sucursal_id %>
+  </div>
+  <div class="field">
+    <%= f.label :cliente_id %><br>
+    <%= f.text_field :cliente_id %>
+  </div>
+  <div class="field">
+    <%= f.label :forma_pago_id %><br>
+    <%= f.text_field :forma_pago_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+-->

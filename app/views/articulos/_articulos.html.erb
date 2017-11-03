@@ -17,25 +17,25 @@
       <h1>Productos</h1>
     </div>
   </div>
-  <div class="clearfix"></div> 
+  <div class="clearfix"></div>
   <div class="col-md-12 col-sm-12 col-xs-12 ">
   <div class="row">
       <div class="col-ms-12">
         <div class="div-left-buttons">
           <% if can? :create, CatArticulo %>
-            <%= link_to url = {controller:"cat_articulos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear categoría"} do %>  
+            <%= link_to url = {controller:"cat_articulos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear categoría"} do %>
               <span class="fa fa-tag" style=""></span>
             <% end %>
           <% end %>
 
           <% if can? :create, MarcaProducto %>
-            <%= link_to url = {controller:"marca_productos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear marca"} do %>  
+            <%= link_to url = {controller:"marca_productos", action:"new"}, html_options =  {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", title: "crear marca"} do %>
               <span class="fa fa-apple" style=""></span>
             <% end %>
           <% end %>
-          
+
           <% if can? :create, PresentacionProducto %>
-            <%= link_to url = {controller: "presentacion_productos", action: "new"}, html_options = {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", id: "presentacion-btn", title: "crear presentación"} do %>  
+            <%= link_to url = {controller: "presentacion_productos", action: "new"}, html_options = {remote: true, class: "btn btn-warning btn-lg btn-add btn-circle-lg", id: "presentacion-btn", title: "crear presentación"} do %>
               <span class="fa fa-cube" style=""></span>
             <%end%>
           <% end %>
@@ -43,23 +43,23 @@
 
         <div class="div-add-button">
           <% if can? :create, Articulo %>
-            <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>  
+            <%= link_to new_articulo_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-articulo-btn"} do %>
               <span class="fa fa-plus-square" style=""></span>
               Añadir Artículo
             <%end%>
           <% end %>
-          
+
 
         </div>
       </div>
     </div>
     </div>
-    
+
 
     <!-- Este div tiene botones de consulta rápida -->
     <div class="row">
-          
-      <% if can? :read, Venta %> 
+
+      <% if can? :read, Venta %>
         <%= link_to articulos_path, html_options = {class: "btn btn-default", method: :get} do %>
           <i class="fa fa-tags"> Mostrar todos los productos </i>
         <% end %>
@@ -68,22 +68,22 @@
       <%= link_to url = {controller:"articulos", action:"baja_existencia"}, html_options = {class: "btn btn-warning", method: :post} do %>
         <i class="fa fa-tags"> Productos baja existencia </i>
       <% end %>
-          
+
 
       <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las ventas
           de todas las sucursales, vea únicamente las ventas de su propia sucursal -->
-      <% if can? :create, Negocio %> 
-        <%= link_to url = {controller:"articulos", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo productos de mi sucursal", method: :post} do %>  
+      <% if can? :create, Negocio %>
+        <%= link_to url = {controller:"articulos", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo productos de mi sucursal", method: :post} do %>
           <span class="fa fa-tags" style=""> Sólo productos de mi sucursal</span>
         <% end %>
       <% end %>
-      
+
       <a href="#" id="test" onClick="javascript:fnExcelReport();" class="btn btn-success">
         <li class="fa fa-file-excel-o">
           Exportar a xls
         </li>
       </a>
-    
+
 
     </div>
 
@@ -96,15 +96,15 @@
     </div>
 
     <div class="row">
-      
+
       <!-- Esta sección despliega los criterios de búsqueda -->
       <% if @consulta %>
-        
+
 
           <div class="col-md-12" style="color: gray;">
-            
+
             <% if @avanzada %>
-              
+
               <div class="col-md-12">
                 Criterios de búsqueda de filtro avanzado:
               </div>
@@ -113,7 +113,7 @@
                   Categoria producto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @categoria.nombreCatArticulo %></span>
                 <% else %>
                   Categoria producto: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
-                <% end %>            
+                <% end %>
               </div>
               <div class="col-md-12">
                 <% if @producto %>
@@ -121,7 +121,7 @@
                 <% else %>
                   Marca: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
                 <% end %>
-                
+
               </div>
 
               <div class="col-md-12">
@@ -133,11 +133,11 @@
                   <% end %>
                 <% end %>
               </div>
-              
+
             <% end %>
 
           </div>
-          
+
         </div>
       <% end %>
     </div>
@@ -145,7 +145,7 @@
     <hr style="border-style: solid; border-width: 2px;">
 
     <div class="row">
-      <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;" onclick="desplegarFiltros()"> 
+      <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;" onclick="desplegarFiltros()">
         Filtros Avanzados <i class="fa fa-sort-down"></i>
       </button>
 
@@ -185,9 +185,9 @@
               </div>
             </div>
           </div>
-          
+
           <% if can? :create, Negocio %>
-            
+
             <div class="item form-group">
               <div class="col-md-3 col-sm-6 col-xs-12">
                 <div style="text-align: right;">
@@ -205,7 +205,7 @@
 
           <div class="item form-group">
             <div class="col-md-3 col-sm-6 col-xs-12">
-              
+
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <div class="text-left">
@@ -228,7 +228,7 @@
               <th class="column-title" style="text-align: center;">Sucursal</th>
               <th class="column-title" style="text-align: center;"></th>
               <th class="column-title" style="text-align: center;"></th>
-              
+
             </tr>
           </thead>
 
@@ -253,7 +253,7 @@
               <th class="column-title" style="text-align: center;">Existencia</th>
               <th class="column-title" style="text-align: center;">Categoria</th>
               <th class="column-title" style="text-align: center;">Sucursal</th>
-              
+
             </tr>
           </thead>
 
@@ -290,7 +290,7 @@
     </div>
     <div class="table-buttons"></div>
 
-    
+
   </div>
   <script>
 
@@ -303,11 +303,11 @@
         else{
           $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
         }
-        
+
         $("#opciones_filtros_avanzados").slideToggle("fast");
 
       });
-  
+
       $('.data-table').DataTable({
         responsive: true,
         "language":{
@@ -334,7 +334,7 @@
     });
 
     function fnExcelReport() {
-        
+
       var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
       tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
 
@@ -348,10 +348,10 @@
       tab_text = tab_text + '</table></body></html>';
 
       var data_type = 'data:application/vnd.ms-excel';
-        
+
       var ua = window.navigator.userAgent;
       var msie = ua.indexOf("MSIE ");
-        
+
       if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
           if (window.navigator.msSaveBlob) {
               var blob = new Blob([tab_text], {
@@ -371,7 +371,7 @@
       window.location.reload(true);
     });*/
 
-    
+
   </script>
   <%= javascript_include_tag "articulos" %>
 </div>

@@ -14,6 +14,11 @@ require_relative 'cfdi.rb'
 
 	#@fact=Factura.all
 	#@hola=Salud::Salu.new.sal()
+	#certificado = CFDI::Certificado.new './Cert_Sellos/aaa010101aaa_FIEL/aaa010101aaa_FIEL.cer'
+	# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
+	# Esta se convierte de un archivo .key con:
+	# openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
+	#llave = CFDI::Key.new './Cert_Sellos/aaa010101aaa_FIEL/Claveprivada_FIEL_AAA010101AAA_20170515_120909.pem', '12345678a'
 
 	#certificado = CFDI::Certificado.new './Cert_Sellos/CSDAAA010101AAA/CSD01_AAA010101AAA.cer'
 	# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8

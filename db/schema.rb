@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170923225849) do
+ActiveRecord::Schema.define(version: 20171030201427) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -275,16 +275,22 @@ ActiveRecord::Schema.define(version: 20170923225849) do
     t.string   "folio"
     t.datetime "fecha_expedicion"
     t.string   "estado_factura"
-    t.integer  "ventas_id"
+    t.integer  "venta_id"
     t.integer  "user_id"
     t.integer  "negocio_id"
     t.integer  "sucursal_id"
     t.integer  "cliente_id"
     t.integer  "forma_pago_id"
-    t.integer  "metodo_pago_id"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
+  add_index "facturas", ["forma_pago_id"], name: "index_facturas_on_forma_pago_id"
+  add_index "facturas", ["negocio_id"], name: "index_facturas_on_negocio_id"
+  add_index "facturas", ["sucursal_id"], name: "index_facturas_on_sucursal_id"
+  add_index "facturas", ["user_id"], name: "index_facturas_on_user_id"
+  add_index "facturas", ["venta_id"], name: "index_facturas_on_venta_id"
 
   create_table "forma_pagos", force: :cascade do |t|
     t.string   "nombre"

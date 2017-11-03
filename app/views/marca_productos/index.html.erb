@@ -16,13 +16,13 @@
       <h1>Marcas de Articulos</h1>
     </div>
   </div>
-  <div class="clearfix"></div> 
+  <div class="clearfix"></div>
   <div class="col-md-12 col-sm-12 col-xs-12 ">
   <div class="row">
       <div class="col-ms-12">
         <div class="div-add-button">
 
-          <%= link_to new_marca_producto_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-marca_producto-btn"} do %>  
+          <%= link_to new_marca_producto_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-marca_producto-btn"} do %>
           <span class="fa fa-plus-square" style=""></span>
           Crear Marca
         <%end%>
@@ -42,7 +42,7 @@
               <th class="column-title" style="text-align: center;">Nombre</th>
               <th class="column-title"></th>
               <th class="column-title"></th>
-              
+
             </tr>
           </thead>
 
@@ -54,11 +54,11 @@
       </div>
     </div>
 
-    
+
   </div>
   <script>
     $(document).ready(function(){
-  
+
       $('.data-table').DataTable({
         responsive: true,
         "language":{
@@ -76,6 +76,6 @@
         }
       });
     });
-    
+
   </script>
 </div>

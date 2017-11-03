@@ -1,8 +1,13 @@
 Rails.application.routes.draw do
 
-  resources :facturas
-  
-  
+  #resources :facturas
+  get 'facturas/index'
+  get 'facturas/show'
+  post 'facturas/facturaDeVentas'
+  get 'facturas/facturaDeVentas'
+  #resources :facturas
+
+
   get 'corte_cajas/show'
 
   get 'reporte_gastos/reporte_gastos'
@@ -63,7 +68,7 @@ Rails.application.routes.draw do
 
   resources :presentacion_productos
   resources :marca_productos
-  
+
   resources :empleados
   get 'empleados/index'
   get 'empleados/show'
@@ -80,7 +85,7 @@ Rails.application.routes.draw do
   get 'datos_fiscales_negocios/update'
   get 'datos_fiscales_negocios/destroy'
 
-  resources :clientes  
+  resources :clientes
   get 'clientes/index'
   get 'clientes/show'
   get 'clientes/new'
@@ -92,7 +97,7 @@ Rails.application.routes.draw do
   resources :negocios
   resources :datos_fiscales_negocios
 
-  
+
 
   resources :sucursals
   resources :ventas
@@ -107,7 +112,7 @@ Rails.application.routes.draw do
   resources :bancos
   resources :proveedores
   get 'inventarios/index'
-  
+
   resources :articulos
   get 'articulos/showByCriteria'
   get 'articulos/showByCriteriaForPos'
@@ -132,10 +137,10 @@ Rails.application.routes.draw do
   #resources :punto_venta
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-   
+
   # You can have the root of your site routed with "root"
   #root 'devise/registrations#new'
-  
+
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'articulos/showByCriteriaForPos/:criteria' => 'articulos#showByCriteriaForPos'
@@ -153,14 +158,14 @@ Rails.application.routes.draw do
   patch 'compras/actualizar/:id' => 'compras#actualizar'
   get 'gastos_generales' => 'gasto_corrientes#index'
 
-  
+
   post 'gasto_generals/solo_sucursal'
   post 'gasto_generals/consulta_avanzada'
   post 'gasto_generals/consulta_por_fechas'
-  
-  
+
+
   root :to=> 'plainpage#index'
-  devise_scope :user do 
+  devise_scope :user do
     #devise_for :users
     get "/login" => "devise/sessions#new"
     delete "/logout" => "devise/sessions#destroy"
@@ -184,7 +189,7 @@ Rails.application.routes.draw do
 
   # Example resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
-   
+
   # Example resource route with options:
   #   resources :products do
   #     member do

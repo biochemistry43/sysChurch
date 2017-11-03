@@ -2,24 +2,22 @@
 
 one:
   folio: MyString
-  fecha_expedicion: 2017-09-23 17:58:49
+  fecha_expedicion: 2017-10-30 14:14:27
   estado_factura: MyString
-  ventas_id: 1
-  user_id: 1
-  negocio_id: 1
-  sucursal_id: 1
-  cliente_id: 1
-  forma_pago_id: 1
-  metodo_pago_id: 1
+  venta_id: 
+  user_id: 
+  negocio_id: 
+  sucursal_id: 
+  cliente_id: 
+  forma_pago_id: 
 
 two:
   folio: MyString
-  fecha_expedicion: 2017-09-23 17:58:49
+  fecha_expedicion: 2017-10-30 14:14:27
   estado_factura: MyString
-  ventas_id: 1
-  user_id: 1
-  negocio_id: 1
-  sucursal_id: 1
-  cliente_id: 1
-  forma_pago_id: 1
-  metodo_pago_id: 1
+  venta_id: 
+  user_id: 
+  negocio_id: 
+  sucursal_id: 
+  cliente_id: 
+  forma_pago_id: 

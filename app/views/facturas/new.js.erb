@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-facturas-title').html("<i class='glyphicon glyphicon-plus'></i> Crear factura de venta");
+
+// Render the new form
+$('.modal-body-facturas').html('<%= j render("form") %>');
+
+// Show the dynamic dialog
+$('#modalFacturas').modal("show");
+
+// Set focus to the first element
+$('#modalFacturas').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

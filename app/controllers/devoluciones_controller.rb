@@ -76,7 +76,7 @@ class DevolucionesController < ApplicationController
         perfil = Perfil.find(perfil_id)
         @usuario = perfil.user
       end
-      
+
       #Recibe el id de la sucursal elegida si es que el usuario eligió una sucursal.
       @suc = params[:suc_elegida]
 
@@ -105,7 +105,7 @@ class DevolucionesController < ApplicationController
       end
 
 
-      
+
       #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
 
@@ -119,28 +119,28 @@ class DevolucionesController < ApplicationController
 
         if @sucursal
           unless @usuario && @venta && @producto && @cat_cancelacion
-            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)            
+            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)
           end
-          
+
         end
 
         if @usuario
           unless @sucursal && @venta && @producto && @cat_cancelacion
-            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @usuario)            
+            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @usuario)
           end
-          
+
         end
 
         if @venta
           unless @sucursal && @usuario && @producto && @cat_cancelacion
-            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, venta: @venta)            
+            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, venta: @venta)
           end
-          
+
         end
 
         if @producto
           unless @sucursal && @usuario && @venta && @cat_cancelacion
-            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto)            
+            @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto)
           end
         end
 
@@ -148,7 +148,7 @@ class DevolucionesController < ApplicationController
           unless @sucursal && @usuario && @venta && @producto
             @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, cat_venta_cancelada: @cat_cancelacion)
           end
-          
+
         end
 
         if @sucursal && @usuario
@@ -167,7 +167,7 @@ class DevolucionesController < ApplicationController
           unless @usuario && @venta && @cat_cancelacion
             @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto, sucursal: @sucursal)
           end
-          
+
         end
 
         if @sucursal && @cat_cancelacion
@@ -198,8 +198,8 @@ class DevolucionesController < ApplicationController
           unless @sucursal && @usuario && @cat_cancelacion
             @devoluciones = current_user.negocio.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto, venta: @venta)
           end
-           
-        end 
+
+        end
 
         if @venta && @cat_cancelacion
           unless @sucursal && @usuario && @producto
@@ -304,7 +304,7 @@ class DevolucionesController < ApplicationController
         end
 
 
-      #Resultados para usuario sin privilegios de administrador o subadministrador  
+      #Resultados para usuario sin privilegios de administrador o subadministrador
       else
 
         unless @sucursal && @usuario && @venta && @producto && @cat_cancelacion
@@ -317,28 +317,28 @@ class DevolucionesController < ApplicationController
 
         if @sucursal
           unless @usuario && @venta && @producto && @cat_cancelacion
-            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)            
+            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal)
           end
-          
+
         end
 
         if @usuario
           unless @sucursal && @venta && @producto && @cat_cancelacion
-            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @usuario)            
+            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @usuario)
           end
-          
+
         end
 
         if @venta
           unless @sucursal && @usuario && @producto && @cat_cancelacion
-            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, venta: @venta)            
+            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, venta: @venta)
           end
-          
+
         end
 
         if @producto
           unless @sucursal && @usuario && @venta && @cat_cancelacion
-            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto)            
+            @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto)
           end
         end
 
@@ -346,7 +346,7 @@ class DevolucionesController < ApplicationController
           unless @sucursal && @usuario && @venta && @producto
             @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, cat_venta_cancelada: @cat_cancelacion)
           end
-          
+
         end
 
         if @sucursal && @usuario
@@ -365,7 +365,7 @@ class DevolucionesController < ApplicationController
           unless @usuario && @venta && @cat_cancelacion
             @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto, sucursal: @sucursal)
           end
-          
+
         end
 
         if @sucursal && @cat_cancelacion
@@ -396,8 +396,8 @@ class DevolucionesController < ApplicationController
           unless @sucursal && @usuario && @cat_cancelacion
             @devoluciones = current_user.sucursal.venta_canceladas.where(created_at: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, articulo: @producto, venta: @venta)
           end
-           
-        end 
+
+        end
 
         if @venta && @cat_cancelacion
           unless @sucursal && @usuario && @producto
@@ -501,7 +501,7 @@ class DevolucionesController < ApplicationController
           end
         end
       end
- 
+
     end
 
   end
@@ -536,7 +536,7 @@ class DevolucionesController < ApplicationController
       @movimientoCaja = nil
       @cantidad_devuelta = params[:cantidad_devuelta]
 
-      
+
       @itemVenta = ItemVenta.find(params[:item_venta])
 
       #Se obtiene la venta de donde se hará la devolución
@@ -576,7 +576,7 @@ class DevolucionesController < ApplicationController
       #almacena el importe monetario que será devuelto al cliente.
       importe_devolucion = params[:importe_devolucion]
 
-      #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas 
+      #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas
       #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
       if origen.include? "caja_venta"
         tamano_cadena_origen = origen.length
@@ -591,7 +591,7 @@ class DevolucionesController < ApplicationController
         #Verifico que la caja tenga el saldo necesario para realizar la operación de devolución.
         if @cajaVenta.saldo >= importe_devolucion.to_f
           @gasto = Gasto.new(:monto=>importe_devolucion, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
-          
+
           #creación y relación del registro de pago de devolución
           @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
           @gasto.pago_devolucion = @pagoDevolucion
@@ -638,9 +638,9 @@ class DevolucionesController < ApplicationController
           if @saldoCajaChica >= importe_devolucion.to_f
 
             saldo_en_caja_chica = @saldoCajaChica
-          
+
             @gasto = Gasto.new(:monto=>importe_devolucion.to_f, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
-          
+
             #creación y relación del registro de pago de devolución
             @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
             @gasto.pago_devolucion = @pagoDevolucion
@@ -677,7 +677,7 @@ class DevolucionesController < ApplicationController
 
       respond_to do |format|
 	    if @devolucion.valid?
-	      if @devolucion.save && @itemVenta.save && @venta.save 
+	      if @devolucion.save && @itemVenta.save && @venta.save
 
           if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
 	          flash[:notice] = "La devolución se realizó con éxito"
@@ -716,7 +716,7 @@ class DevolucionesController < ApplicationController
         end
       else
         current_user.sucursal.users.each do |usuario|
-          #Llena un array con todos los cajeros de la sucursal 
+          #Llena un array con todos los cajeros de la sucursal
           #(usuarios de la sucursal que pueden hacer una venta, no solo el rol de usuario)
           #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
           unless usuario.role == "auxiliar" || usuario.role == "almacenista" || usuario.role == "cajero"

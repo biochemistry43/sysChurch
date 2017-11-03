@@ -36,7 +36,7 @@
       <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 
         <div class="menu_section">
-          <h3>General</h3>  
+          <h3>General</h3>
           <ul class="nav side-menu">
             <li>
               <a>
@@ -80,7 +80,7 @@
                     </li>
                     <li><%= link_to "Corte de caja", {controller: "corte_cajas", action: "show"} %>
                     </li>
-                    
+
                     <%if can? :read, Venta%>
                       <li><%= link_to "Registro de ventas", ventas_path %>
                       </li>
@@ -95,7 +95,7 @@
                       <li><%= link_to "Hacer devolución", devoluciones_devolucion_path %>
                       </li>
                     <% end %>
-                   
+
                     <!-- La creación de categorías o tags de devolución es un privilegio exclusivo
                     para los administradores de la empresa -->
                     <%if can? :create, Negocio%>
@@ -104,7 +104,7 @@
                     <%end%>
 
                   </ul>
-                </li> 
+                </li>
 
                 <% if can? :create, Proveedor %>
                   <li>
@@ -123,7 +123,7 @@
                   </li>
                 <% end %>
 
-                
+
                 <% if can? :read, Compra %>
                   <li>
                     <a>
@@ -150,7 +150,7 @@
                 <% end %> <!-- Fin if can read Compra -->
 
                 <% if can? :read, Gasto %>
-                
+
                   <li>
                     <a>
                       <i class="fa fa-calculator"></i> Gastos<span class="fa fa-chevron-down"></span>
@@ -176,7 +176,7 @@
                           <ul class="nav child_menu" style="display:none;">
                             <% current_user.negocio.sucursals.each do |sucursal| %>
                               <li><%= link_to sucursal.nombre.to_s, {controller: "caja_chicas", action: "movimientos_sucursal", id: sucursal}, {:method=>"post"}  %></li>
-                              
+
                             <% end %>
                           </ul>
                         </li>
@@ -185,7 +185,7 @@
                   </li>
 
                 <% end %>  <!-- Fin if can read Gasto -->
-                
+
                 <% if current_user.role == "root" %>
                   <%if can? :read, Banco%>
                     <li><%= link_to bancos_path do%>
@@ -197,9 +197,9 @@
                 <% else %>
                   <li><a href="javascript:void(0)"><i class="fa fa-bank"></i> Bancos <span class="label label-success pull-right">Próximamente</span></a>
                   </li>
-                  
+
                 <% end %>
-                
+
                 <%if can? :read, Cliente%>
                   <li><%= link_to clientes_path do%>
                         <i class="fa fa-users"></i>
@@ -216,7 +216,7 @@
                     </a>
                     <ul class="nav child_menu" style="display: none">
                       <%if can? :create, Factura%>
-                        <li><%= link_to "CFDIs", facturas_path %>
+                        <li><%= link_to "CFDIs", facturas_index_path %>
                         </li>
                       <%end%>
                       
@@ -255,9 +255,9 @@
               <%end%>
 
             </li>
-            
+
             <% if can? :update, Sucursal %>
-              
+
               <li>
                 <a>
                   <i class="fa fa-gears"></i> Configuración <span class="fa fa-chevron-down"></span>
@@ -282,7 +282,7 @@
                           Sucursales
                         <% end %>
                     </li>
-                    
+
                     <li><%= link_to empleados_path do%>
                           <i class="fa fa-child"></i>
                           Empleados
@@ -290,20 +290,20 @@
                     </li>
                   <% end %>
                 </ul>
-                
+
               </li>
-            
+
             <%end%>
 
           </ul>
 
         </div>
-       
+
 
       </div>
       <!-- /sidebar menu -->
 
-      <!-- /menu footer buttons 
+      <!-- /menu footer buttons
       <div class="sidebar-footer hidden-small">
         <a data-toggle="tooltip" data-placement="top" title="Settings">
           <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -341,6 +341,6 @@
         evt.stopPropagation();
 
       });
-      
+
     </script>
   </div>
