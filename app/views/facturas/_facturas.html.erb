@@ -1,22 +1,71 @@
-
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
       <h1>Facturas de ventas</h1>
     </div>
   </div>
+
+
   <div class="clearfix"></div>
-<div class="col-md-12 col-sm-12 col-xs-12">
+  <hr>
   <div class="row">
     <div class="div-add-button">
-      <!--   <%= link_to new_factura_path, {remote: true, class: "btn btn-info btn-lg btn-add", id: "anadir-factura-btn"}  do %>
-           <span class="fa fa-plus-square" style=""></span>
-           Nueva factura
-        <%end%>-->
-        <%= link_to 'Nueva factura de venta', new_factura_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
+
+        <%= link_to 'Nueva factura de venta', facturas_facturaDeVentas_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
     </div>
   </div> <!--Fin de botón -->
   <hr style="border-style: solid; border-width: 2px;">
+
+
+    <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por fecha <i class="fa fa-sort-down"></i>
+    </button>
+    <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
+      <%= form_tag({ controller: "facturas", action: "consulta_facturas" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            Búsqueda por fechas:
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Desde:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Hasta:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Consultar Ventas', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+
+
   <div class="row">
     <div>
       <table class="table table-striped responsive-utilities jambo_table data-table">
@@ -74,6 +123,6 @@
       });
     });
   </script>
+  <%= javascript_include_tag "ventas" %>
 
-<!--  <%= link_to 'New Factura', new_factura_path %>-->
 </div>

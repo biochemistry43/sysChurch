@@ -23,7 +23,7 @@ class VentasController < ApplicationController
     else
       @cliente = ""
     end
-    
+
     @sucursal = @venta.sucursal.nombre
     @cajero = @venta.user.perfil ? @venta.user.perfil.nombre_completo : @venta.user.email
     @items = @venta.item_ventas
@@ -53,10 +53,10 @@ class VentasController < ApplicationController
       venta = params[:venta]
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
-      
-      
+
+
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
-        
+
         #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
         movimiento_caja = @venta.movimiento_caja_sucursal
 
@@ -65,7 +65,7 @@ class VentasController < ApplicationController
           caja_sucursal = @venta.caja_sucursal
           saldo = caja_sucursal.saldo
           saldoActualizado = saldo - @venta.montoVenta
-          caja_sucursal.saldo = saldoActualizado 
+          caja_sucursal.saldo = saldoActualizado
           caja_sucursal.save
         end
 
@@ -139,7 +139,7 @@ class VentasController < ApplicationController
       unless @suc.empty?
         @sucursal = Sucursal.find(@suc)
       end
-      
+
       #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
         unless @suc.empty?
@@ -149,7 +149,7 @@ class VentasController < ApplicationController
             unless @status.eql?("Todas")
               @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
             else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)  
+              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
@@ -158,7 +158,7 @@ class VentasController < ApplicationController
             unless @status.eql?("Todas")
               @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status, sucursal: @sucursal)
             else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)  
+              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)
             end
           end
 
@@ -170,7 +170,7 @@ class VentasController < ApplicationController
             unless @status.eql?("Todas")
               @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
             else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
+              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
@@ -179,22 +179,22 @@ class VentasController < ApplicationController
             unless @status.eql?("Todas")
               @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
             else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
+              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
             end
           end
         end
-        
+
       #Si el usuario no es un administrador o subadministrador
       else
-        
+
         #valida si se eligió un cajero específico para esta consulta
         if @cajero
-          
+
           #Si el status elegido es todas, entonces no filtra las ventas por el status
           unless @status.eql?("Todas")
             @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
           else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
+            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
           end #Termina unless @status.eql?("Todas")
 
         # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
@@ -204,7 +204,7 @@ class VentasController < ApplicationController
           unless @status.eql?("Todas")
             @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
           else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
+            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
           end #Termina unless @status.eql?("Todas")
 
         end #Termina if @cajero
@@ -236,7 +236,7 @@ class VentasController < ApplicationController
 
     if request.get?
       @fechaCorrecta = Date.today
-      
+
       @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: Date.today)
 
       @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: Date.today.beginning_of_month..Date.today)
@@ -244,7 +244,7 @@ class VentasController < ApplicationController
       @ventaDiaNegocio = 0
 
       @ventaMesNegocio = 0
-      
+
       @ventasNegocioHoy.each do |venta|
         @ventaDiaNegocio += venta.montoVenta.to_f
       end
@@ -256,12 +256,12 @@ class VentasController < ApplicationController
       @sucursales = current_user.negocio.sucursals
 
       @usuarios = current_user.negocio.users
-    
+
     elsif request.post?
-      
+
       fecha = params[:Fecha]
       @fechaCorrecta = DateTime.parse(fecha).to_date
-       
+
       @ventasNegocioHoy = current_user.negocio.ventas.where(fechaVenta: @fechaCorrecta)
 
       @ventasNegocioMes = current_user.negocio.ventas.where(fechaVenta: @fechaCorrecta.beginning_of_month..@fechaCorrecta.end_of_month)
@@ -269,7 +269,7 @@ class VentasController < ApplicationController
       @ventaDiaNegocio = 0
 
       @ventaMesNegocio = 0
-      
+
       @ventasNegocioHoy.each do |venta|
         @ventaDiaNegocio += venta.montoVenta.to_f
       end
@@ -306,7 +306,7 @@ class VentasController < ApplicationController
         end
       else
         current_user.sucursal.users.each do |cajero|
-          #Llena un array con todos los cajeros de la sucursal 
+          #Llena un array con todos los cajeros de la sucursal
           #(usuarios de la sucursal que pueden hacer una venta, no solo el rol de cajero)
           #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
           if cajero.role != "auxiliar" || cajero.role != "almacenista"

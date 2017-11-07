@@ -2,6 +2,7 @@ class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy]
   before_action :set_facturaDeVentas, only: [:show]
 
+
   def facturaDeVentas
     @consulta = false
     if request.post?
@@ -14,10 +15,38 @@ class FacturasController < ApplicationController
       end
     end
   end
+
+  def consulta_facturas
+    @consulta = true
+    @avanzada = false
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      else
+        @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
   # GET /facturas
   # GET /facturas.json
   def index
-    @facturas = Factura.all
+    @consulta = false
+    @avanzada = false
+    if request.get?
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else
+        @facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      end
+    end
   end
 
   # GET /facturas/1

@@ -6,7 +6,7 @@ $(document).ready(function(){
       else{
       	$(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
       }
-      
+
       $("#opciones_filtros_avanzados").slideToggle("fast");
 
     });
@@ -18,7 +18,7 @@ $(document).ready(function(){
       else{
       	$(this).html('Filtros por clave <i class="fa fa-sort-up"></i>');
       }
-      
+
       $("#opciones_filtros_por_clave").slideToggle("fast");
 
     });
@@ -30,7 +30,7 @@ $(document).ready(function(){
       else{
       	$(this).html('Filtros por fecha <i class="fa fa-sort-up"></i>');
       }
-      
+
       $("#opciones_filtros_por_fecha").slideToggle("fast");
 
     });

@@ -2,7 +2,7 @@ class CreateFacturas < ActiveRecord::Migration
   def change
     create_table :facturas do |t|
       t.string :folio
-      t.datetime :fecha_expedicion
+      t.date :fecha_expedicion
       t.string :estado_factura
       t.references :venta, index: true, foreign_key: true
       t.references :user, index: true, foreign_key: true

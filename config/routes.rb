@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'facturas/show'
   post 'facturas/facturaDeVentas'
   get 'facturas/facturaDeVentas'
+  post 'facturas/consulta_facturas'
   #resources :facturas
 
 

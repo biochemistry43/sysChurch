@@ -10,16 +10,16 @@
     <div class="col-md-12" style="color: gray;">
         Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @ventas.size %></span>  ventas con este criterio.
     </div>
-    
+
   </div>
-  
+
   <% if @consulta %>
     <div class="row">
       <div class="col-md-12" style="color: gray;">
         <div class="col-md-12">
           Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> a <%= @fechaFinal %></span>
         </div>
-        
+
         <% if @avanzada %>
           <div class="col-md-12">
             <% if @cajero %>
@@ -34,7 +34,7 @@
           <% if can? :create, Negocio %>
             <div class="col-md-12">
               <% if @sucursal %>
-                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>
               <% else %>
                 Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
               <% end %>
@@ -43,14 +43,14 @@
         <% end %>
 
       </div>
-      
+
     </div>
   <% end %>
   <hr>
   <div class="row">
     <!-- Si el usuario puede ver las ventas, Este botón le permitirá ver todas las ventas de su sucursal o todas las ventas
     en total. Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
-    <% if can? :read, Venta %> 
+    <% if can? :read, Venta %>
       <%= link_to ventas_path, html_options = {class: "btn btn-success", method: :get} do %>
       <i class="fa fa-shopping-cart"> Mostrar ventas del mes </i>
       <% end %>
@@ -58,8 +58,8 @@
 
     <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las ventas
     de todas las sucursales, vea únicamente las ventas de su propia sucursal -->
-    <% if can? :create, Negocio %> 
-      <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal", method: :post} do %>  
+    <% if can? :create, Negocio %>
+      <%= link_to url = {controller:"ventas", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo ventas de mi sucursal", method: :post} do %>
         <span class="fa fa-shopping-cart" style=""> Sólo ventas de mi sucursal</span>
       <% end %>
     <% end %>
@@ -69,24 +69,24 @@
       </li>
     </a>
   </div>
-  
+
   <hr>
 
-  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtros por fecha <i class="fa fa-sort-down"></i>
   </button>
   <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
-  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha"> 
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
     <%= form_tag({ controller: "ventas", action: "consulta_ventas" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
           Búsqueda por fechas:
         </div>
       </div>
-      
+
       <div class="col-md-1 col-sm-1 col-xs-1">
         <div style="text-align: right; color: black;">
-          Desde: 
+          Desde:
         </div>
       </div>
 
@@ -101,11 +101,11 @@
           Hasta:
         </div>
       </div>
-        
+
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
           <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
-            
+
         </div>
       </div>
 
@@ -119,7 +119,7 @@
   <!-- Termina buscador por rango de fechas -->
 
   <!-- Este botón despliega el div con las opciones para filtros avanzados -->
-  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtros Avanzados <i class="fa fa-sort-down"></i>
   </button>
 
@@ -175,13 +175,13 @@
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>  
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
           </div>
         </div>
       </div>
-      
+
       <% if can? :create, Negocio %>
-        
+
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
@@ -199,7 +199,7 @@
 
       <div class="item form-group">
         <div class="col-md-3 col-sm-6 col-xs-12">
-          
+
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-left">
@@ -212,7 +212,7 @@
 
 
   <div class="col-md-12 col-sm-12 col-xs-12">
-    
+
 
     <div class="row">
       <div>
@@ -237,7 +237,7 @@
         <tbody>
           <% @ventas.each do |venta| %>
           <% if venta.venta_canceladas.size > 0 %>
-            <% @devoluciones = true 
+            <% @devoluciones = true
                @monto_devolucion = 0
                venta.venta_canceladas.each do |devolucion|
                  @monto_devolucion += devolucion.monto
@@ -251,7 +251,7 @@
               <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;">$ <%= venta.montoVenta %></td>
-              <td style="text-align: center;">$ <%= @monto_devolucion %></td>     
+              <td style="text-align: center;">$ <%= @monto_devolucion %></td>
               <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
 
               <% if can? :create, Negocio %>
@@ -266,16 +266,16 @@
                   <span class="btn btn-warning"> Con devoluciones </span>
                 <% elsif venta.status.eql?("Cancelada") %>
                   <span class="btn btn-danger"> Cancelada </span>
-                <% end %>    
+                <% end %>
               </td>
-              <td style="text-align: center;"> 
-                <% if can? :read, venta %> 
+              <td style="text-align: center;">
+                <% if can? :read, venta %>
                   <%= link_to venta_path(venta), html_options = {class: "btn btn-info", remote: true, title: "Mostrar detalles"} do %>
                   <i class="fa fa-info-circle"></i>
                   <% end %>
                 <% end %>
 
-                <% if can? :create, VentaCancelada %> 
+                <% if can? :create, VentaCancelada %>
                   <% if venta.status.eql?("Activa") %>
                     <%= link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
                      <i class="fa fa-close"></i>
@@ -307,7 +307,7 @@
         <tbody>
           <% @ventas.each do |venta| %>
           <% if venta.venta_canceladas.size > 0 %>
-            <% @devoluciones = true 
+            <% @devoluciones = true
                @monto_devolucion = 0
                venta.venta_canceladas.each do |devolucion|
                  @monto_devolucion += devolucion.monto
@@ -321,7 +321,7 @@
               <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;">$ <%= venta.montoVenta %></td>
-              <td style="text-align: center;">$ <%= @monto_devolucion %></td>     
+              <td style="text-align: center;">$ <%= @monto_devolucion %></td>
               <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
 
               <% if can? :create, Negocio %>
@@ -336,7 +336,7 @@
                   <span class="btn btn-warning"> Con devoluciones </span>
                 <% elsif venta.status.eql?("Cancelada") %>
                   <span class="btn btn-danger"> Cancelada </span>
-                <% end %>    
+                <% end %>
               </td>
             </tr>
           <% end %>
@@ -347,11 +347,11 @@
       </div>
     </div>
     <%= render 'modalVentas' %>
-    
+
   </div>
   <script>
     $(document).ready(function(){
-  
+
       $('.data-table').DataTable({
         responsive: true,
         "order": [],
@@ -373,7 +373,7 @@
     });
 
     function fnExcelReport() {
-        
+
       var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
       tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
 
@@ -387,10 +387,10 @@
       tab_text = tab_text + '</table></body></html>';
 
       var data_type = 'data:application/vnd.ms-excel';
-        
+
       var ua = window.navigator.userAgent;
       var msie = ua.indexOf("MSIE ");
-        
+
       if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
           if (window.navigator.msSaveBlob) {
               var blob = new Blob([tab_text], {

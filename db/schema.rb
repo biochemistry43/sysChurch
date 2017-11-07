@@ -273,7 +273,7 @@ ActiveRecord::Schema.define(version: 20171030201427) do
 
   create_table "facturas", force: :cascade do |t|
     t.string   "folio"
-    t.datetime "fecha_expedicion"
+    t.date     "fecha_expedicion"
     t.string   "estado_factura"
     t.integer  "venta_id"
     t.integer  "user_id"
