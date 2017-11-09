@@ -1,4 +1,6 @@
 class Negocio < ActiveRecord::Base
+
+	has_many :facturas
 	mount_uploader :logo, FotoProductoUploader
 	has_many :users
 	has_many :sucursals
@@ -29,5 +31,5 @@ class Negocio < ActiveRecord::Base
 	has_many :pago_pendientes
 	has_many :proveedores
 	has_many :caja_sucursals
-	has_many :facturas
+
 end

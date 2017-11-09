@@ -1,4 +1,5 @@
 class Venta < ActiveRecord::Base
+	has_one :factura
 	has_many :item_ventas
 	has_one :venta_forma_pago
 	has_many :venta_canceladas
@@ -14,7 +15,7 @@ class Venta < ActiveRecord::Base
 	def monto_devolucion
       if self.venta_canceladas
         self.venta_canceladas.each do |devolucion|
-          
+
         end
       end
 	end

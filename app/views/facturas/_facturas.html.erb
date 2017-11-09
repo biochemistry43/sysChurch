@@ -5,7 +5,6 @@
     </div>
   </div>
 
-
   <div class="clearfix"></div>
   <hr>
   <div class="row">
@@ -14,7 +13,7 @@
         <%= link_to 'Nueva factura de venta', facturas_facturaDeVentas_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
     </div>
   </div> <!--Fin de botón -->
-  <hr style="border-style: solid; border-width: 2px;">
+
 
 
     <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
@@ -60,12 +59,108 @@
           </div>
         </div>
       <% end %>
+    </div> <!--Fin de busqueda por fecha-->
+
+
+    <!-- Termina buscador por rango de fechas -->
+
+    <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+    <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros Avanzados <i class="fa fa-sort-down"></i>
+    </button>
+
+    <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+    <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+      <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="item form-group">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div style="text-align: left; color: black;">
+              Elija un conjunto de criterios para hacer un filtro más detallado.
+            </div>
+          </div>
+        </div>
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Seleccione un rango de fechas:
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Cajero:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= collection_select(nil, :perfil_id, @cajeros, :id, :nombre, {:prompt => 'Elija un cajero'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Status de la venta:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
+            </div>
+          </div>
+        </div>
+
+        <% if can? :create, Negocio %>
+
+          <div class="item form-group">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div style="text-align: right;">
+                Sucursal:
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="text-center">
+                <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-left">
+              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
 
 
+
+
+
 <div class="col-md-12 col-sm-12 col-xs-12">
-
-
   <div class="row">
     <div>
       <table class="table table-striped responsive-utilities jambo_table data-table">
@@ -86,14 +181,15 @@
           <% @facturas.each do |factura| %>
             <tr>
               <td><%= factura.folio %></td>
-              <td><%= %></td><!--cliente-->
-              <td><%= %></td><!--fecha-->
-              <td><%= %></td><!--total-->
-              <td><%= %></td><!--pagado-->
+              <td><%= factura.cliente.nombre %></td><!--cliente-->
+              <td><%=factura.fecha_expedicion %></td><!--fecha-->
+              <td><%=factura.venta.montoVenta %></td><!--total-->
+              <% if factura.cliente.nombre.eql?("General")%>
+              <td><%=factura.venta.montoVenta%></td><!--pagado-->
+              <%end%>
               <td><%= %></td><!--por pagar-->
               <td><%= %></td><!--estado-->
-              <!--<td><%= link_to 'Edit', edit_factura_path(factura) %></td>
-              <td><%= link_to 'Destroy', factura, method: :delete, data: { confirm: 'Are you sure?' } %></td>-->
+              <td><%= %></td><!--estado-->
             </tr>
           <% end %>
         </tbody>
@@ -123,6 +219,5 @@
       });
     });
   </script>
-  <%= javascript_include_tag "ventas" %>
-
+  <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>

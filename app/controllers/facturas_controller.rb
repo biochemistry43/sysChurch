@@ -1,6 +1,8 @@
 class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy]
   before_action :set_facturaDeVentas, only: [:show]
+  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada]
+  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada]
 
 
   def facturaDeVentas
@@ -35,6 +37,107 @@ class FacturasController < ApplicationController
       end
     end
   end
+
+  def consulta_avanzada
+    @consulta = true
+    @avanzada = true
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
+      perfil_id = params[:perfil_id]
+      @cajero = nil
+      unless perfil_id.empty?
+        @cajero = Perfil.find(perfil_id).user
+      end
+
+      @status = params[:status]
+
+      @suc = params[:suc_elegida]
+
+      unless @suc.empty?
+        @sucursal = Sucursal.find(@suc)
+      end
+
+      #Resultados para usuario administrador o subadministrador
+      if can? :create, Negocio
+        unless @suc.empty?
+          #valida si se eligió un cajero específico para esta consulta
+          if @cajero
+            #Si el status elegido es todas, entonces no filtra las ventas por el status
+            unless @status.eql?("Todas")
+              @facturas = current_user.negocio.ventas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
+            else
+              @facturas = current_user.negocio.ventas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
+            end
+
+          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+          else
+            #Si el status elegido es todas, entonces no filtra las ventas por el status
+            unless @status.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status, sucursal: @sucursal)
+            else
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+            end
+          end
+
+        #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
+        else
+          #valida si se eligió un cajero específico para esta consulta
+          if @cajero
+            #Si el status elegido es todas, entonces no filtra las ventas por el status
+            unless @status.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+            else
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero)
+            end
+
+          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+          else
+            #Si el status elegido es todas, entonces no filtra las ventas por el status
+            unless @status.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status)
+            else
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+            end
+          end
+        end
+
+      #Si el usuario no es un administrador o subadministrador
+      else
+
+        #valida si se eligió un cajero específico para esta consulta
+        if @cajero
+
+          #Si el status elegido es todas, entonces no filtra las ventas por el status
+          unless @status.eql?("Todas")
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+          else
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
+          end #Termina unless @status.eql?("Todas")
+
+        # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+        else
+
+          #Si el status elegido es todas, entonces no filtra las ventas por el status
+          unless @status.eql?("Todas")
+            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status)
+          else
+            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+          end #Termina unless @status.eql?("Todas")
+
+        end #Termina if @cajero
+
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+
   # GET /facturas
   # GET /facturas.json
   def index
@@ -121,6 +224,32 @@ class FacturasController < ApplicationController
     def set_factura
       @factura = Factura.find(params[:id])
     end
+    def set_cajeros
+      @cajeros = []
+      if can? :create, Negocio
+        current_user.negocio.users.each do |cajero|
+          #Llena un array con todos los cajeros del negocio
+          #(usuarios del negocio que pueden hacer una venta, no solo el rol de cajero)
+          #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
+          if cajero.role != "auxiliar" || cajero.role != "almacenista"
+            @cajeros.push(cajero.perfil)
+          end
+        end
+      else
+        current_user.sucursal.users.each do |cajero|
+          #Llena un array con todos los cajeros de la sucursal
+          #(usuarios de la sucursal que pueden hacer una venta, no solo el rol de cajero)
+          #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
+          if cajero.role != "auxiliar" || cajero.role != "almacenista"
+            @cajeros.push(cajero.perfil)
+          end
+        end
+      end
+    end
+    def set_sucursales
+      @sucursales = current_user.negocio.sucursals
+    end
+
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def factura_params
