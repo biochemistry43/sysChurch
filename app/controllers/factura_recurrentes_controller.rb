@@ -1,6 +1,25 @@
 class FacturaRecurrentesController < ApplicationController
   before_action :set_factura_recurrente, only: [:show, :edit, :update, :destroy]
 
+  def consulta_facturas
+    @consulta = true
+    @avanzada = false
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @factura_recurrentes = current_user.negocio.factura_recurrentes.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      else
+        @factura_recurrentes = current_user.sucursal.factura_recurrentes.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
   # GET /factura_recurrentes
   # GET /factura_recurrentes.json
   def index

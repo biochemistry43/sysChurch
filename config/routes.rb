@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
 
-  resources :factura_recurrentes
+  #resources :factura_recurrentes
+  get 'factura_recurrentes/index'
+  get 'factura_recurrentes/show'
+  post 'factura_recurrentes/consulta_facturas'
+
   #resources :facturas
   get 'facturas/index'
   get 'facturas/show'
@@ -8,7 +12,7 @@ Rails.application.routes.draw do
   get 'facturas/facturaDeVentas'
   post 'facturas/consulta_facturas'
   post 'facturas/consulta_avanzada'
-  
+
 
   #resources :facturas
 
