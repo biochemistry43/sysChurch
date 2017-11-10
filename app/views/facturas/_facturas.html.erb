@@ -116,7 +116,7 @@
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
-              Status de la venta:
+              Status de factura:
             </div>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
@@ -184,12 +184,13 @@
               <td><%= factura.cliente.nombre %></td><!--cliente-->
               <td><%=factura.fecha_expedicion %></td><!--fecha-->
               <td><%=factura.venta.montoVenta %></td><!--total-->
-              <% if factura.cliente.nombre.eql?("General")%>
+
+              <%if factura.forma_pago.nombre.eql?("efectivo")%>
               <td><%=factura.venta.montoVenta%></td><!--pagado-->
               <%end%>
               <td><%= %></td><!--por pagar-->
-              <td><%= %></td><!--estado-->
-              <td><%= %></td><!--estado-->
+              <td><%=factura.estado_factura%></td><!--estado-->
+              <td><%=%></td><!--estado-->
             </tr>
           <% end %>
         </tbody>

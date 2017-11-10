@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171030201427) do
+ActiveRecord::Schema.define(version: 20171110061951) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -270,6 +270,26 @@ ActiveRecord::Schema.define(version: 20171030201427) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  create_table "factura_recurrentes", force: :cascade do |t|
+    t.string   "folio"
+    t.date     "fecha_expedicion"
+    t.string   "estado_factura"
+    t.integer  "tiempo_recurrente"
+    t.integer  "user_id"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "cliente_id"
+    t.integer  "forma_pago_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "factura_recurrentes", ["cliente_id"], name: "index_factura_recurrentes_on_cliente_id"
+  add_index "factura_recurrentes", ["forma_pago_id"], name: "index_factura_recurrentes_on_forma_pago_id"
+  add_index "factura_recurrentes", ["negocio_id"], name: "index_factura_recurrentes_on_negocio_id"
+  add_index "factura_recurrentes", ["sucursal_id"], name: "index_factura_recurrentes_on_sucursal_id"
+  add_index "factura_recurrentes", ["user_id"], name: "index_factura_recurrentes_on_user_id"
 
   create_table "facturas", force: :cascade do |t|
     t.string   "folio"

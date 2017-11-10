@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Factura Recurrentes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Folio</th>
+      <th>Fecha expedicion</th>
+      <th>Estado factura</th>
+      <th>Tiempo recurrente</th>
+      <th>User</th>
+      <th>Negocio</th>
+      <th>Sucursal</th>
+      <th>Cliente</th>
+      <th>Forma pago</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @factura_recurrentes.each do |factura_recurrente| %>
+      <tr>
+        <td><%= factura_recurrente.folio %></td>
+        <td><%= factura_recurrente.fecha_expedicion %></td>
+        <td><%= factura_recurrente.estado_factura %></td>
+        <td><%= factura_recurrente.tiempo_recurrente %></td>
+        <td><%= factura_recurrente.user %></td>
+        <td><%= factura_recurrente.negocio %></td>
+        <td><%= factura_recurrente.sucursal %></td>
+        <td><%= factura_recurrente.cliente %></td>
+        <td><%= factura_recurrente.forma_pago %></td>
+        <td><%= link_to 'Show', factura_recurrente %></td>
+        <td><%= link_to 'Edit', edit_factura_recurrente_path(factura_recurrente) %></td>
+        <td><%= link_to 'Destroy', factura_recurrente, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Factura recurrente', new_factura_recurrente_path %>

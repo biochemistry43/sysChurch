@@ -1,0 +1,53 @@
+<%= form_for(@factura_recurrente) do |f| %>
+  <% if @factura_recurrente.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@factura_recurrente.errors.count, "error") %> prohibited this factura_recurrente from being saved:</h2>
+
+      <ul>
+      <% @factura_recurrente.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :folio %><br>
+    <%= f.text_field :folio %>
+  </div>
+  <div class="field">
+    <%= f.label :fecha_expedicion %><br>
+    <%= f.date_select :fecha_expedicion %>
+  </div>
+  <div class="field">
+    <%= f.label :estado_factura %><br>
+    <%= f.text_field :estado_factura %>
+  </div>
+  <div class="field">
+    <%= f.label :tiempo_recurrente %><br>
+    <%= f.number_field :tiempo_recurrente %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br>
+    <%= f.text_field :user_id %>
+  </div>
+  <div class="field">
+    <%= f.label :negocio_id %><br>
+    <%= f.text_field :negocio_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sucursal_id %><br>
+    <%= f.text_field :sucursal_id %>
+  </div>
+  <div class="field">
+    <%= f.label :cliente_id %><br>
+    <%= f.text_field :cliente_id %>
+  </div>
+  <div class="field">
+    <%= f.label :forma_pago_id %><br>
+    <%= f.text_field :forma_pago_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

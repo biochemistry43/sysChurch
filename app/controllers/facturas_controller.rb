@@ -65,9 +65,9 @@ class FacturasController < ApplicationController
           if @cajero
             #Si el status elegido es todas, entonces no filtra las ventas por el status
             unless @status.eql?("Todas")
-              @facturas = current_user.negocio.ventas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
             else
-              @facturas = current_user.negocio.ventas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
@@ -143,6 +143,7 @@ class FacturasController < ApplicationController
   def index
     @consulta = false
     @avanzada = false
+
     if request.get?
       if can? :create, Negocio
         @facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)

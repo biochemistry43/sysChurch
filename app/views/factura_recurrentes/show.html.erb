@@ -1,0 +1,49 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Folio:</strong>
+  <%= @factura_recurrente.folio %>
+</p>
+
+<p>
+  <strong>Fecha expedicion:</strong>
+  <%= @factura_recurrente.fecha_expedicion %>
+</p>
+
+<p>
+  <strong>Estado factura:</strong>
+  <%= @factura_recurrente.estado_factura %>
+</p>
+
+<p>
+  <strong>Tiempo recurrente:</strong>
+  <%= @factura_recurrente.tiempo_recurrente %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @factura_recurrente.user %>
+</p>
+
+<p>
+  <strong>Negocio:</strong>
+  <%= @factura_recurrente.negocio %>
+</p>
+
+<p>
+  <strong>Sucursal:</strong>
+  <%= @factura_recurrente.sucursal %>
+</p>
+
+<p>
+  <strong>Cliente:</strong>
+  <%= @factura_recurrente.cliente %>
+</p>
+
+<p>
+  <strong>Forma pago:</strong>
+  <%= @factura_recurrente.forma_pago %>
+</p>
+
+<%= link_to 'Edit', edit_factura_recurrente_path(@factura_recurrente) %> |
+<%= link_to 'Back', factura_recurrentes_path %>
