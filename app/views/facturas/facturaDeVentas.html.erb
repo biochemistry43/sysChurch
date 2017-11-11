@@ -7,7 +7,7 @@
   </div> <!-- Fin de titulo-->
   <div class="clearfix"></div>
   <hr>
-  
+
 
   <!-- Esta sección solamente se muestra si se encontró una venta y si se determina que se está
   haciendo una consulta -->
@@ -30,6 +30,10 @@
       </div>
 
       <hr>
+      <!-- Esta sección contiene las productos o servicios vendidos en esta venta
+      en particular -->
+
+
     <% else %>
       <div class="row">
         <div class="col-md-12" style="color: gray;">
@@ -91,8 +95,34 @@
 
     </div>
 
+    <% if @venta && @consulta && @itemsVenta %>
 
-
+    <div class="tab-pane" id="detalles">
+      <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
+        <thead>
+          <tr class="headings">
+            <th class="column-title">Clave </th>
+            <th class="column-title">Nombre </th>
+            <th class="column-title">Precio</th>
+            <th class="column-title">Cantidad </th>
+            <th class="column-title">Importe </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @itemsVenta.each do |item| %>
+            <tr>
+              <td> <%= item.articulo.clave %> </td>
+              <td> <%= item.articulo.nombre %> </td>
+              <td> <%= item.precio_venta %> </td>
+              <td> <%= item.cantidad %> </td>
+              <td> <%= item.precio_venta * item.cantidad %> </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%end%>
+    
   <script>
     $(document).ready(function(){
 

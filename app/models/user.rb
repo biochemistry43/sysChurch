@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  has_many :facturas
+  has_many :factura_recurrentes
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -37,7 +39,7 @@ class User < ActiveRecord::Base
   #reposición o gasto.
   has_many :caja_chicas
 
-  
+
   belongs_to :negocio
 
   belongs_to :sucursal

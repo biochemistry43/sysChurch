@@ -8,8 +8,9 @@ class FacturasController < ApplicationController
   def facturaDeVentas
     @consulta = false
     if request.post?
-      @consulta = true
-      @venta = Venta.find_by :folio=>params[:folio]
+      @consulta = true #determina si se realizó una consulta
+      @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
+
       if @venta
         @itemsVenta  = @venta.item_ventas
       else
@@ -156,6 +157,7 @@ class FacturasController < ApplicationController
   # GET /facturas/1
   # GET /facturas/1.json
   def show
+
   end
 
   # GET /facturas/new
