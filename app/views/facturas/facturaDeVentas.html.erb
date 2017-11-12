@@ -14,12 +14,6 @@
   <% if @venta %>
     <% if @consulta && @itemsVenta%>
       <!-- Despliega los resultados encontrados en la búsqueda -->
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
-        </div>
-
-      </div>
 
       <div class="row">
         <div class="col-md-12" style="color: gray;">
@@ -28,12 +22,9 @@
           </div>
         </div>
       </div>
-
       <hr>
       <!-- Esta sección contiene las productos o servicios vendidos en esta venta
       en particular -->
-
-
     <% else %>
       <div class="row">
         <div class="col-md-12" style="color: gray;">
@@ -97,15 +88,16 @@
 
     <% if @venta && @consulta && @itemsVenta %>
 
-    <div class="tab-pane" id="detalles">
-      <table id ="table_sales" class="table table-striped responsive-utilities jambo_table">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="row">
+      <table  class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
-          <tr class="headings">
-            <th class="column-title">Clave </th>
-            <th class="column-title">Nombre </th>
-            <th class="column-title">Precio</th>
-            <th class="column-title">Cantidad </th>
-            <th class="column-title">Importe </th>
+          <tr >
+            <th >Clave </th>
+            <th >Descripción </th>
+            <th >Precio</th>
+            <th >Cantidad </th>
+            <th >Importe </th>
           </tr>
         </thead>
         <tbody>
@@ -121,29 +113,9 @@
         </tbody>
       </table>
     </div>
+    </div>
     <%end%>
-    
-  <script>
-    $(document).ready(function(){
 
-      $('.data-table').DataTable({
-        responsive: true,
-        "language":{
-          "info": "Mostrar pag _PAGE_ de _PAGES_",
-          "lengthMenu": "Mostrar _MENU_ registros",
-          "zeroRecords": "No hay coincidencias",
-          "search": "Buscar: _INPUT_",
-          "infoFiltered": " - encontrados en _MAX_ registros",
-          "paginate": {
-            "previous": "Anterior",
-            "next" : "siguiente",
-            "last" : "último",
-            "first" : "primero"
-          }
-        }
-      });
 
-    });
-  </script>
   <!-- javascript_include_tag "cancelaciones" -->
 </div>

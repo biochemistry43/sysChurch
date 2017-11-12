@@ -9,10 +9,10 @@
   <hr>
   <div class="row">
     <div class="div-add-button">
-
-
+        <%= link_to 'Nueva factura recurrente', factura_recurrentes_facturaRecurrentes_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
     </div>
   </div> <!--Fin de botón -->
+
 
   <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtros por fecha <i class="fa fa-sort-down"></i>
@@ -59,6 +59,99 @@
     <% end %>
   </div> <!--Fin de busqueda por fecha-->
 
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
+
+  <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "factura_recurrentes", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Cajero:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :perfil_id, @cajeros, :id, :nombre, {:prompt => 'Elija un cajero'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Status de factura:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
+          </div>
+        </div>
+      </div>
+
+      <% if can? :create, Negocio %>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+
 
 
 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -68,10 +161,12 @@
         <thead>
           <tr>
             <th>Folio</th>
-            <th>Cliente </th>
+            <th>Cliente</th>
             <th>Fecha</th>
+            <th>Próxima factura</th>
             <th>Frecuencia</th>
             <th>Estado</th>
+            <th>Importe</th>
             <th >Acciones</th>
           </tr>
         </thead>
@@ -79,7 +174,9 @@
         <tbody>
           <% @factura_recurrentes.each do |factura_R| %>
             <tr>
-              <td><%= factura_R.folio %></td>
+              <td><%=%></td>
+              <td><%=%></td>
+              <td><%=%></td>
               <td><%=%></td>
               <td><%= %></td>
               <td><%=%></td>
