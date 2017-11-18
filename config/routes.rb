@@ -12,6 +12,11 @@ Rails.application.routes.draw do
   #resources :facturas
   get 'facturas/index'
   get 'facturas/show'
+  get 'facturas/create'
+  get 'facturas/edit'
+  get 'facturas/update'
+  get 'facturas/destroy'
+
   post 'facturas/facturaDeVentas'
   get 'facturas/facturaDeVentas'
   post 'facturas/consulta_facturas'

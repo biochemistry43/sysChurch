@@ -3,15 +3,14 @@
     <div class="title_left">
       <h1>Facturas de ventas</h1>
     </div>
-    
+
   </div>
 
   <div class="clearfix"></div>
   <hr>
   <div class="row">
     <div class="div-add-button">
-
-        <%= link_to 'Nueva factura de venta', facturas_facturaDeVentas_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
+        <!-- link_to 'Nueva factura de venta', facturas_facturaDeVentas_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" -->
     </div>
   </div> <!--Fin de botón -->
 
@@ -167,39 +166,58 @@
       <table class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
-            <th>Folio</th>
-            <th>Cliente </th>
-            <th>Fecha</th>
-            <th>Total</th>
-            <th>Pagado</th>
-            <th>Por pagar</th>
-            <th>Estado</th>
-            <th >Acciones</th>
+            <th style="text-align: center;">Folio</th>
+            <th style="text-align: center;">Cliente </th>
+            <th style="text-align: center;">Fecha</th>
+            <th style="text-align: center;">Total</th>
+            <th style="text-align: center;">Pagado</th>
+            <th style="text-align: center;">Por pagar</th>
+            <th style="text-align: center;">Estado</th>
+            <th style="text-align: center;">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
           <% @facturas.each do |factura| %>
             <tr>
-              <td><%= factura.folio %></td>
-              <td><%= factura.cliente.nombre %></td><!--cliente-->
-              <td><%=factura.fecha_expedicion %></td><!--fecha-->
-              <td><%=factura.venta.montoVenta %></td><!--total-->
+              <td style="text-align: center;"><%= factura.folio %></td>
+              <td style="text-align: center;"><%= factura.cliente.nombre %></td>
+              <td style="text-align: center;"><%=factura.fecha_expedicion %></td>
+              <td style="text-align: center;"><%=factura.venta.montoVenta %></td>
 
               <%if factura.forma_pago.nombre.eql?("efectivo")%>
-              <td><%=factura.venta.montoVenta%></td><!--pagado-->
+              <td style="text-align: center;"><%=factura.venta.montoVenta%></td>
               <%end%>
-              <td><%= %></td><!--por pagar-->
-              <td><%=factura.estado_factura%></td><!--estado-->
-              <td><%=%></td><!--estado-->
+              <td style="text-align: center;"><%= %></td>
+
+              <td style="text-align: center;">
+                <% if factura.estado_factura.eql?("Cerrada") %>
+                  <span class="btn btn-success"> Cerrada </span>
+                <%elsif factura.estado_factura.eql?("Borrador")%>
+                  <span class="btn btn-info"> Borrador </span>
+                <%elsif factura.estado_factura.eql?("Abierta")%>
+                  <span class="btn btn-warning"> Abierta </span>
+                <%elsif factura.estado_factura.eql?("Anulada")%>
+                  <span class="btn btn-danger"> Anulada </span>
+                <%end%>
+              </td>
+              <td style="text-align: center;" >
+                <% if can? :read, factura %>
+                  <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles factura', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <i class="fa fa-info-circle"></i>
+                  <% end %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <%= render 'modalFacturas'%>
+
       </div>
     </div>
+    <%= render 'modalFacturas'%>
   </div>
+
   <script>
     $(document).ready(function(){
 

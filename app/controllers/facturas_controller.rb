@@ -1,10 +1,10 @@
 class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy]
-  before_action :set_facturaDeVentas, only: [:show]
+  #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada]
 
-
+=begin
   def facturaDeVentas
     @consulta = false
     if request.post?
@@ -18,7 +18,7 @@ class FacturasController < ApplicationController
       end
     end
   end
-
+=end
   def consulta_facturas
     @consulta = true
     @avanzada = false
@@ -157,7 +157,7 @@ class FacturasController < ApplicationController
   # GET /facturas/1
   # GET /facturas/1.json
   def show
-
+    @items  = @factura.venta.item_ventas
   end
 
   # GET /facturas/new
