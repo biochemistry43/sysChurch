@@ -41,9 +41,24 @@
               </div>
             </div>
         </div> <!-- fin de generales-->
-
-
-
+        <% if can? :read, DatosFiscalesCliente%>
+        <div class="tab-pane" id="receptor">
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Nombre Fiscal</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= @factura.cliente.datos_fiscales_cliente.nombreFiscal %>">
+            </div>
+          </div>
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">RFC:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%=@factura.cliente.datos_fiscales_cliente.rfc %>">
+            </div>
+          </div>
+        </div>
+        <%end%>
 
         <div class="tab-pane" id="conceptos">
           <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
@@ -83,8 +98,9 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs tabs-right">
         <li class="active"><a href="#generales" data-toggle="tab">Datos Comprobante</a></li>
-        <li><a href="#emisor" data-toggle="tab">Datos Emisor</a></li>
+        <% if can? :read, DatosFiscalesCliente%>
         <li><a href="#receptor" data-toggle="tab">Datos Receptor</a></li>
+        <%end%>
         <li><a href="#conceptos" data-toggle="tab">Conceptos</a></li>
       </ul>
     </div>
