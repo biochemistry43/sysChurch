@@ -60,9 +60,45 @@
         </div>
       <% end %>
     </div> <!--Fin de busqueda por fecha-->
-
-
     <!-- Termina buscador por rango de fechas -->
+
+
+    <button id="filtro_por_folio" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por folio <i class="fa fa-sort-down"></i>
+    </button>
+    <!-- Este form permite buscar las facturas de acuerdo al folio ingresado-->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_folio">
+      <%= form_tag({ controller: "facturas", action: "consulta_por_folio" }, {:class=> "form-horizontal", :method => :post}) do %>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            Filtro por folio de factura:
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Folio:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= text_field_tag :folio_fact, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de factura..."} do%>
+              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%end%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Filtrar por folio', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+    <!-- Termina buscador por clave de producto -->
 
     <!-- Este botón despliega el div con las opciones para filtros avanzados -->
     <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
@@ -239,5 +275,6 @@
       });
     });
   </script>
-  <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
+    <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
+    <%= javascript_include_tag "ventas" %>
 </div>

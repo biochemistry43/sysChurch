@@ -1,8 +1,8 @@
 class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy]
   #before_action :set_facturaDeVentas, only: [:show]
-  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada]
-  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada]
+  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio]
+  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio]
 
 =begin
   def facturaDeVentas
@@ -35,6 +35,25 @@ class FacturasController < ApplicationController
         format.html
         format.json
         format.js
+      end
+    end
+  end
+
+
+  def consulta_por_folio
+    @consulta = true
+    @fechas = false
+    @por_folio = true
+    @avanzada = false
+
+
+    if request.post?
+      @folio_fact = params[:folio_fact]
+      @facturas = Factura.find_by folio: @folio_fact
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.where(folio: @folio_fact)
+      else
+        @facturas = current_user.sucursal.facturas.where(folio: @folio_fact)
       end
     end
   end
