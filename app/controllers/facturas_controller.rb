@@ -4,7 +4,6 @@ class FacturasController < ApplicationController
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
-=begin
   def facturaDeVentas
     @consulta = false
     if request.post?
@@ -18,7 +17,7 @@ class FacturasController < ApplicationController
       end
     end
   end
-=end
+
   def consulta_facturas
     @consulta = true
     @fechas=true
