@@ -1,8 +1,8 @@
 class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy]
   #before_action :set_facturaDeVentas, only: [:show]
-  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio]
-  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio]
+  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
+  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
 =begin
   def facturaDeVentas
@@ -21,6 +21,8 @@ class FacturasController < ApplicationController
 =end
   def consulta_facturas
     @consulta = true
+    @fechas=true
+    @por_folio=false
     @avanzada = false
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
@@ -58,9 +60,31 @@ class FacturasController < ApplicationController
     end
   end
 
+  def consulta_por_cliente
+    @consulta = true
+    @fechas = false
+    @por_folio = false
+    @avanzada = false
+    @por_cliente= true
+
+    if request.post?
+      @rfc = params[:rfc]
+      cliente=Cliente.find_by rfc: @rfc
+      @facturas = Factura.find_by cliente_id:cliente
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.where(cliente_id: cliente)
+      else
+        @facturas = current_user.sucursal.facturas.where(cliente_id: cliente)
+      end
+    end
+  end
+
   def consulta_avanzada
     @consulta = true
     @avanzada = true
+
+    @fechas=false
+    @por_folio=false
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
@@ -70,7 +94,7 @@ class FacturasController < ApplicationController
         @cajero = Perfil.find(perfil_id).user
       end
 
-      @status = params[:status]
+      @estado_factura = params[:estado_factura]
 
       @suc = params[:suc_elegida]
 
@@ -83,18 +107,18 @@ class FacturasController < ApplicationController
         unless @suc.empty?
           #valida si se eligió un cajero específico para esta consulta
           if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
+            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+            unless @estado_factura.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura, sucursal: @sucursal)
             else
               @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
           else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status, sucursal: @sucursal)
+            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+            unless @estado_factura.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura, sucursal: @sucursal)
             else
               @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
             end
@@ -104,18 +128,18 @@ class FacturasController < ApplicationController
         else
           #valida si se eligió un cajero específico para esta consulta
           if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+            unless @estado_factura.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura)
             else
               @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
           else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status)
+            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+            unless @estado_factura.eql?("Todas")
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
             else
               @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
             end
@@ -128,22 +152,22 @@ class FacturasController < ApplicationController
         #valida si se eligió un cajero específico para esta consulta
         if @cajero
 
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
-          unless @status.eql?("Todas")
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+          #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+          unless @estado_factura.eql?("Todas")
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura)
           else
             @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
-          end #Termina unless @status.eql?("Todas")
+          end #Termina unless @estado_factura.eql?("Todas")
 
         # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
         else
 
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
-          unless @status.eql?("Todas")
-            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, status: @status)
+          #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+          unless @estado_factura.eql?("Todas")
+            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
           else
             @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
-          end #Termina unless @status.eql?("Todas")
+          end #Termina unless @estado_factura.eql?("Todas")
 
         end #Termina if @cajero
 
@@ -196,10 +220,10 @@ class FacturasController < ApplicationController
     respond_to do |format|
       if @factura.save
         format.html { redirect_to @factura, notice: 'Factura was successfully created.' }
-        format.json { render :show, status: :created, location: @factura }
+        format.json { render :show, estado_factura: :created, location: @factura }
       else
         format.html { render :new }
-        format.json { render json: @factura.errors, status: :unprocessable_entity }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
       end
     end
   end
@@ -210,10 +234,10 @@ class FacturasController < ApplicationController
     respond_to do |format|
       if @factura.update(factura_params)
         format.html { redirect_to @factura, notice: 'Factura was successfully updated.' }
-        format.json { render :show, status: :ok, location: @factura }
+        format.json { render :show, estado_factura: :ok, location: @factura }
       else
         format.html { render :edit }
-        format.json { render json: @factura.errors, status: :unprocessable_entity }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
       end
     end
   end

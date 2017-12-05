@@ -100,6 +100,47 @@
     </div>
     <!-- Termina buscador por clave de producto -->
 
+    <button id="filtro_por_cliente" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por cliente<i class="fa fa-sort-down"></i>
+    </button>
+    <!-- Permite realizar una busqueda de la facturas de un cliente en específico -->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cliente">
+      <%= form_tag({ controller: "facturas", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post}) do %>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            Filtro por cliente:
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            RFC:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"RFC del cliente..."} do%>
+              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%end%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+    <!-- Termina buscador por atributos del cliente-->
+
+
+
+
+
     <!-- Este botón despliega el div con las opciones para filtros avanzados -->
     <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
       Filtros Avanzados <i class="fa fa-sort-down"></i>
@@ -157,7 +198,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center">
-              <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
+              <%= select_tag "estado_factura", "<option>Todas</option><option>Cerrada</option><option>Borrador</option><option>Abierta</option><option>Anulada</option>".html_safe,  class: 'form-control' %>
             </div>
           </div>
         </div>
