@@ -184,6 +184,8 @@ class FacturasController < ApplicationController
   # GET /facturas
   # GET /facturas.json
   def index
+    
+
     @consulta = false
     @avanzada = false
 
@@ -298,6 +300,9 @@ class FacturasController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def factura_params
-      params.require(:factura).permit(:folio, :fecha_expedicion, :estado_factura, :venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id, :forma_pago_id)
+      params.require(:factura).permit(
+        #:folio, :fecha_expedicion, :estado_factura
+        #, :venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id, :forma_pago_id
+      )
     end
 end

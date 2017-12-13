@@ -87,7 +87,7 @@
         </div>
       </div>
     <% end %>
-    
+
 
     <div class="item form-group<%= @articulo.errors[:stock].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :stock, "Stock: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
@@ -149,21 +149,21 @@
         <% [['Comercializable', 'comercializable'], ['Otros usos', 'otros usos']].each do |c| -%>
           <% if @articulo.tipo.eql?("comercializable") %>
             <% if c.last.eql?("comercializable") %>
-              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>
             <% end %>
           <% elsif @articulo.tipo.eql?("otros usos") %>
             <% if c.last.eql?("otros usos") %>
-              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>
             <% end %>
           <% else %>
-            <%= content_tag(:option, c.first, value: c.last) %>    
+            <%= content_tag(:option, c.first, value: c.last) %>
           <% end %>
         <% end %>
         <%if @articulo.errors[:tipo].any? %>
           <p class="bg-danger"><%= @articulo.errors[:tipo].to_s[/\w([^"]*)/] %></p>
         <% end %>
 
-        
+
       <% end %>
       </div>
     </div>
@@ -172,10 +172,8 @@
        f.label :foto
        f.file_field :fotoProducto, class: "form-control has-feedback-left"
     </div>-->
-    
+
      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
           <%= f.submit @articulo.new_record? ? "Crear articulo" : "Actualizar articulo", :class => "btn btn-success"%>
         </div>
   <% end %>
-
-

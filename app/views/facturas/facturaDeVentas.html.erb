@@ -7,14 +7,11 @@
   </div> <!-- Fin de titulo-->
   <div class="clearfix"></div>
   <hr>
-
-
-  <!-- Esta sección solamente se muestra si se encontró una venta y si se determina que se está
+  <!-- Esta sección solamente se muestra si se encontró una factura y si se determina que se está
   haciendo una consulta -->
   <% if @venta %>
     <% if @consulta && @itemsVenta%>
       <!-- Despliega los resultados encontrados en la búsqueda -->
-
       <div class="row">
         <div class="col-md-12" style="color: gray;">
           <div class="col-md-12">
@@ -52,7 +49,7 @@
         <div class="item form-group">
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div style="text-align: left; color: black;">
-              Proporcione el folio de la venta.
+              Proporcione el folio de la venta que desea facturar.
             </div>
           </div>
         </div>
@@ -70,15 +67,12 @@
   		        <%end%>
             </div>
           </div>
-        </div>
 
-        <div class="item form-group">
-          <div class="col-md-1 col-sm-1 col-xs-1">
-
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="text-left">
-              <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
+          <div class="item form-group">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="text-left" >
+                <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
+              </div>
             </div>
           </div>
         </div>
@@ -86,8 +80,15 @@
 
     </div>
 
-    <% if @venta && @consulta && @itemsVenta %>
 
+    <div class="row" style="margin-bottom: 30px;">
+        <!--form_tag({controller: "facturas", action: "new"}, {:class=> "form-horizontal",method:=> :get}) do -->
+        <!--end-->
+    </div>
+
+
+
+    <% if @venta && @consulta && @itemsVenta %>
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="row">
       <table  class="table table-striped responsive-utilities jambo_table data-table">
@@ -115,7 +116,5 @@
     </div>
     </div>
     <%end%>
-
-
   <!-- javascript_include_tag "cancelaciones" -->
 </div>

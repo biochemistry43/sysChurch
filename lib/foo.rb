@@ -34,7 +34,7 @@ require_relative 'cfdi.rb'
 			folio: 1,
 		fecha: Time.now,
 		formaDePago: '01',#CATALOGO
-		condicionesDePago: '  Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+		condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
 		metodoDePago: 'PUE', #CATALOGO
 		lugarExpedicion: '93600'#, #CATALOGO
 		#Descuento:30 #DESCUENTO RAPPEL
@@ -118,4 +118,7 @@ require_relative 'cfdi.rb'
 	puts a+b
 
 
-  puts factura.cadena_original
+  	puts factura.cadena_original
+	puts factura.to_xml
+	
+	

@@ -2,6 +2,8 @@
   <div class="page-title">
     <div class="title_left">
       <h1>Facturas de ventas</h1>
+      <%= @xml %>
+      
     </div>
 
   </div>
@@ -14,13 +16,14 @@
     </div>
   </div> <!--Fin de botón -->
 
+
+
+  <% if @consulta %>
   <div class="row">
     <div class="col-md-12" style="color: gray;">
         Se <% if @facturas.size == 1 %>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %>.
     </div>
   </div>
-
-  <% if @consulta %>
     <div class="row">
       <div class="col-md-12" style="color: gray;">
         <%if @fechas%>
@@ -168,6 +171,9 @@
     <!-- Permite realizar una busqueda de la facturas de un cliente en específico -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cliente">
       <%= form_tag({ controller: "facturas", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post}) do %>
+
+
+
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
