@@ -76,7 +76,7 @@ module CFDI
     def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto
       ret = 0
       @conceptos.each do |c|
-        ret += c.importe
+        ret += c.Importe
       end
       ret # @return [Float] El subtotal del comprobante
     end
@@ -177,17 +177,18 @@ module CFDI
         'xmlns:cfdi' => "http://www.sat.gob.mx/cfd/3",
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
         'xsi:schemaLocation' => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv#{@version.gsub(/\D/, '')}.xsd",
-        version: @version,
-        serie: @serie,
-        folio: @folio,
-        fecha: @fecha,
+        Version: @version,
+        Serie: @serie,
+        Folio: @folio,
+        Fecha: @fecha,
         FormaPago: @FormaPago,
-        condicionesDePago: @condicionesDePago,
-        subTotal: sprintf('%.2f', self.subTotal),
+        CondicionesDePago: @condicionesDePago,
+        SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
-        total: sprintf('%.2f', self.total),
-        metodoDePago: @metodoDePago,
-        tipoDeComprobante: @tipoDeComprobante,
+        Total: sprintf('%.2f', self.total),
+        TipoDeComprobante: @tipoDeComprobante,
+        MetodoPago: @metodoDePago,
+
         LugarExpedicion: @lugarExpedicion,
       }
       #ns[:serie] = @serie if @serie
@@ -209,7 +210,7 @@ module CFDI
         ns[:sello] = @sello
       end
 
-      @builder = Nokogiri::XML::Builder.new do |xml|
+      @builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
         xml.Comprobante(ns) do
           ins = xml.doc.root.add_namespace_definition('cfdi', 'http://www.sat.gob.mx/cfd/3')
           xml.doc.root.namespace = ins
@@ -217,10 +218,10 @@ module CFDI
           xml.Emisor(@emisor.ns)  {
             #xml.DomicilioFiscal(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil})
             #xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
-            xml.RegimenFiscal({Regimen: @emisor.regimenFiscal})
+            #xml.RegimenFiscal({Regimen: @emisor.regimenFiscal})
           }
           xml.Receptor(@receptor.ns) {
-            xml.UsoCFDI({UsoCFDI: @receptor.UsoCFDI})
+            #xml.UsoCFDI({UsoCFDI: @receptor.UsoCFDI})
 
             #xml.Domicilio(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
           }

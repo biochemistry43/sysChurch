@@ -4,7 +4,7 @@ module CFDI
   class Concepto < ElementoComprobante
 
     # @private
-    @cadenaOriginal = [:totalDescuento,:ClaveProdSer, :noIdentificacion, :cantidad, :ClaveUnidad, :unidad, :descripcion,  :valorUnitario, :importe, :Descuento]
+    @cadenaOriginal = [:totalDescuento,:ClaveProdSer, :NoIdentificacion, :Cantidad, :ClaveUnidad, :Unidad, :Descripcion,  :ValorUnitario, :Importe, :Descuento]
     # @private
     attr_accessor *@cadenaOriginal
 =begin
@@ -16,53 +16,53 @@ module CFDI
     def cadena_original #aquí se establece el orden de la cadena original! que engañado eh vivido jaja
       return [
         @ClaveProdSer,
-        @noIdentificacion,
-        @cantidad.to_f,
+        @NoIdentificacion,
+        @Cantidad.to_f,
         @ClaveUnidad,
-        @unidad,
-        @descripcion,
-        self.valorUnitario,
-        self.importe,
+        @Unidad,
+        @Descripcion,
+        self.ValorUnitario,
+        self.Importe,
         @Descuento
       ]
     end
 
     def Descuento= (porcentaje)# 50 %
-      @Descuento=((@valorUnitario*@cantidad)/100)*porcentaje
+      @Descuento=((@ValorUnitario*@Cantidad)/100)*porcentaje
       @Descuento
     end
     # Asigna la descripción de un concepto
     # @param descricion [String] La descripción del concepto
     #
     # @return [String] La descripción como string sin espacios extraños
-    def descripcion= descripcion
-      @descripcion = descripcion.squish
-      @descripcion
+    def Descripcion= descripcion
+      @Descripcion = descripcion.squish
+      @Descripcion
     end
 
     # Asigna el valor unitario de este concepto
     # @param  dineros [String, Float, #to_f] Cualquier cosa que responda a #to_f
     #
     # @return [Float] El valor unitario como Float
-    def valorUnitario= dineros
-      @valorUnitario = dineros.to_f
-      @valorUnitario
+    def ValorUnitario= dineros
+      @ValorUnitario = dineros.to_f
+      @ValorUnitario
     end
     # El importe de este concepto
     #
-    # @return [Float] El valor unitario multiplicado por la cantidad
-    def importe
-      return @valorUnitario*@cantidad
+    # @return [Float] El valor unitario multiplicado por la Cantidad
+    def Importe
+      return @ValorUnitario*@Cantidad
     end
 
 
-    # Asigna la cantidad de (tipo) de este concepto
-    # @param  qty [Integer, String, #to_i] La cantidad, que ahuevo queremos en int, porque no, no podemos vender 1.5 Kilos de verga...
+    # Asigna la Cantidad de (tipo) de este concepto
+    # @param  qty [Integer, String, #to_i] La Cantidad, que ahuevo queremos en int, porque no, no podemos vender 1.5 Kilos de verga...
     #
-    # @return [Integer] La cantidad
-    def cantidad= qty
-      @cantidad = qty.to_f
-      @cantidad
+    # @return [Integer] La Cantidad
+    def Cantidad= qty
+      @Cantidad = qty.to_f
+      @Cantidad
     end
 
   end

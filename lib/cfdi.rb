@@ -12,7 +12,7 @@ require_relative 'comprobante.rb'
 require_relative 'emisor_receptor.rb'
 require_relative 'concepto.rb'
 require_relative 'complemento.rb'
-require_relative 'xml.rb'
+#require_relative 'xml.rb'
 require_relative 'certificado.rb'
 require_relative 'key.rb'
 

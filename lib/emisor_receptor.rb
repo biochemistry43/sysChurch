@@ -25,8 +25,9 @@ module CFDI
     end
     def ns
       return ({
-        nombre: @nombre,
-        rfc: @rfc
+        Nombre: @nombre,
+        Rfc: @rfc,
+        UsoCFDI: @UsoCFDI
       })
     end
   end
@@ -46,8 +47,10 @@ module CFDI
     end
     def ns
       return ({
-        nombre: @nombre,
-        rfc: @rfc
+        Nombre: @nombre,
+        Rfc: @rfc,
+        RegimenFiscal:@regimenFiscal
+
       })
     end
 
