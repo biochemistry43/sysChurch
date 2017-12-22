@@ -5,7 +5,7 @@ module Timbradocfdi
     ##
     # Registro emisor
     def registroEmisor(rfcEmisor, base64Cer, base64Key, contrasena)
-      
+
       options = {
         :usuarioIntegrador =>   @user,
         :rfcEmisor         =>   rfcEmisor,

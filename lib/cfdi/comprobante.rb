@@ -1,5 +1,6 @@
 module CFDI
   class Comprobante # La clase principal para crear Comprobantes
+    #Los datos del comprobante en el orden correcto.
     @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal, :Descuento, :moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
 
@@ -13,7 +14,7 @@ module CFDI
         subTotal: 0.0,
         #TipoCambio: 1,
         conceptos: [],
-        impuestos: Impuestos.new,
+        impuestos: Impuesto.new,
         tipoDeComprobante: 'I', #CATALOGO
         #Descuento: 0.00
       }
@@ -44,7 +45,7 @@ module CFDI
         next if !self.respond_to?(method)
         self.send method, v
       end
-      @impuestos ||= Impuestos.new
+      #@impuestos ||= Impuestos.new
     end
 
     def addenda= addenda
@@ -82,13 +83,14 @@ module CFDI
     end
 
     # @return [Float] El subtotal multiplicado por la tasa
+    #Sería mejor calcular estos datos antes y no aquí para no tener diferencias en la base de datos o hacer el mismo calculo dos veces.
     def total
       iva = 0.0
-      iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
-      self.subTotal + @impuestos.total- @Descuento
+      #iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
+      self.subTotal #+ @.total- @Descuento
     end
-
-    def impuestos= value
+=begin
+    def = value
       @impuestos = case @version
       when '3.2'
           return value if value.is_a? Impuestos
@@ -110,7 +112,7 @@ module CFDI
         when '3.3' then value.is_a?(Impuestos) ? value : Impuestos.new(value)
       end
     end
-
+=end
     # Asigna un emisor de tipo {CFDI::Entidad}
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
     #
@@ -214,34 +216,60 @@ module CFDI
         xml.Comprobante(ns) do
           ins = xml.doc.root.add_namespace_definition('cfdi', 'http://www.sat.gob.mx/cfd/3')
           xml.doc.root.namespace = ins
-
           xml.Emisor(@emisor.ns)  {
-            #xml.DomicilioFiscal(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil})
-            #xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
-            #xml.RegimenFiscal({Regimen: @emisor.regimenFiscal})
           }
           xml.Receptor(@receptor.ns) {
-            #xml.UsoCFDI({UsoCFDI: @receptor.UsoCFDI})
-
-            #xml.Domicilio(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
           }
+
+
           xml.Conceptos {
             @conceptos.each do |concepto|
-              # select porque luego se caga el xml si incluyo noIdentificacion y es empty
-
+              # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
-
               cc = cc.map {|k,v|
                 v = sprintf('%.2f', v) if v.is_a? Float
                 [k,v]
               }.to_h
-
               xml.Concepto(cc) {
+                #Ahora los impuestos por cada concepto
+                if @impuestos.count_impuestos > 0
+                  tax_options = {}
+                  total_trans = format('%.2f', @impuestos.total_traslados)
+                  #total_detained = format('%.2f', @impuestos.total_detained)
+                  tax_options[:totalImpuestosTrasladados] = total_trans if
+                    total_trans.to_i > 0
+                  #tax_options[:totalImpuestosRetenidos] = total_detained if
+                    #total_detained.to_i > 0
+                  xml.Impuestos do #itera todos los impuestos
+                    if @impuestos.traslados.count > 0
+
+                      xml.Traslados do
+                        @impuestos.traslados.each do |t|
+                          xml.Traslado(Impuesto: t.tax, Tasa: format('%.2f', t.rate),
+                                       Importe: format('%.2f', t.import))
+                        end
+                      end
+                    end
+                    #if @impuestos.detained.count > 0
+                    #  xml.Retenciones do
+                    #    @impuestos.detained.each do |det|
+                    #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+                    #                    importe: format('%.2f', det.import))
+                    #    end
+                    #  end
+                    #end
+                  end
+                end
+
+
+
+
                 xml.ComplementoConcepto
               }
             end
           }
 
+=begin
           impuestos_options = {} #un hash
           impuestos_options = {totalImpuestosTrasladados: sprintf('%.2f', self.subTotal*@opciones[:tasa])} if @impuestos.count > 0
           xml.Impuestos(impuestos_options) {
@@ -266,7 +294,7 @@ module CFDI
               }
             end
           }
-
+=end
           xml.Complemento {
             if @complemento
               nsTFD = {
@@ -319,15 +347,12 @@ module CFDI
     # @return [String] Separada por pipes, because fuck you that's why
     def cadena_original
       params = []
-
       @@datosCadena.each {|key| params.push send(key) }
       params += @emisor.cadena_original
       #params << @regimen
       params += @receptor.cadena_original
-
-
       @conceptos.each do |concepto|
-        params += concepto.cadena_original
+      params += concepto.cadena_original
 =begin
         AQUÍ SE DEBE DE PONER:
           Traslado
@@ -339,9 +364,12 @@ module CFDI
           CuentaPredial
             ...
 =end
-
       end
-
+      if @impuestos.traslados.any?
+        params += @impuestos.traslados_cadena_original
+        params += [@impuestos.total_traslados]
+      end
+=begin
       if @impuestos.count > 0
         @impuestos.traslados.each do |traslado|
           # tasa = traslado.tasa ? traslado.tasa.to_i : (@opciones[:tasa]*100).to_i
@@ -350,7 +378,7 @@ module CFDI
           params += [traslado.impuesto, tasa, total, total]
         end
       end
-
+=end
       params.select! { |i| i != nil && i != '' }
       params.map! do |elem|
         if elem.is_a? Float

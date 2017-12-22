@@ -9,7 +9,6 @@ require "timbradocfdi/cancel"
 module Timbradocfdi
   class Generator
 =begin
-
 LIGA DEL SERVICIO PARA V_3.2 de prueba
 http://201.175.12.89/serviciointegracionpruebas/Timbrado.asmx?wsdl
 
@@ -20,6 +19,7 @@ producción:
     https://timbracfdi33.mx:1443/Timbrado.asmx?wsdl
 =end
     BASE_URI = "https://cfdi33-pruebas.buzoncfdi.mx:1443/Timbrado.asmx?wsdl"
+
 
     ##
     # Attributo accesible (lectura y escritura)

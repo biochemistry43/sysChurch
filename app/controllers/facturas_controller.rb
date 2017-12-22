@@ -181,11 +181,11 @@ class FacturasController < ApplicationController
   end
 
 	require 'cfdi'
-  require '/home/daniel/Documentos/sysChurch/lib/timbradocfdi'
+  require 'timbradocfdi'
+  #require 'fm_timbrado_cfdi'
   # GET /facturas
   # GET /facturas.json
   def index
-
     #require 'foo.rb'
   	#include Saluda
   	#include FacturasHelper
@@ -193,11 +193,13 @@ class FacturasController < ApplicationController
 
     #LLENADO DEL
 
-  	certificado = CFDI::Certificado.new './Cert_Sellos/aaa010101aaa_FIEL/aaa010101aaa_FIEL.cer'
+  	certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
   	# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
   	# Esta se convierte de un archivo .key con:
   	# openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-  	llave = CFDI::Key.new './Cert_Sellos/aaa010101aaa_FIEL/Claveprivada_FIEL_AAA010101AAA_20170515_120909.pem', '12345678a'
+
+    #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
+  	llave = CFDI::Key.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.pem', '12345678a'
   	#DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
   	#Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
     factura = CFDI::Comprobante.new({
@@ -248,12 +250,14 @@ class FacturasController < ApplicationController
 		ValorUnitario: 25.00, #el importe se calcula solo
 		Descuento: 50
 	})
-
 	puts factura.Descuento
 	#factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
 
 	#ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
-	factura.impuestos = {impuestos: 'IVA'}
+
+  #factura.impuestos = {impuestos: 'IVA'}
+
+  factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(tax: 'IVA', rate: 16, import: 78)
 
   #puts CFDI::ElementoComprobante.data
 
@@ -262,15 +266,21 @@ class FacturasController < ApplicationController
 	puts a+b
 
   puts factura.cadena_original
+  # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+  certificado.certifica factura
+  # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
+  # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
+  llave.sella factura
   # Esto genera la factura como xml
   @xml= factura.to_xml
-
-  #se guarda el xml en la ruta señalada
+  #se guarda el xml en la ruta señalada sin timbrar
   archivo = File.open("/home/daniel/Documentos/prueba/xml_3_3.xml", "w")
   archivo.write (@xml)
   archivo.close
 
+
   #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO QUE OFRECE EL PAC
+
 
   @user_key = "mvpNUXmQfK8="
   @timbrado = Timbradocfdi::Generator.new(@user_key)
@@ -280,19 +290,34 @@ class FacturasController < ApplicationController
     contrasena = "12345678a"
     base64Cer = "/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer"
     base64Key = "/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.key"
-    @regEmisor= @timbrado.registroEmisor(@rfcEmisor, base64Cer, base64Key, contrasena)
+    @regEmisor=@timbrado.registroEmisor(@rfcEmisor, base64Cer, base64Key, contrasena)
   end
 
   def self.timbraCFDI
-    comprobante = "/home/daniel/Documentos/prueba/xml_33.xml"
-    @tim= @timbrado.timbraCFDI(comprobante, 1)
+    comprobante = "/home/daniel/Documentos/prueba/xml_3_3.xml"
+    @tim=@timbrado.timbraCFDI(comprobante, 1)
   end
 
   self.registroEmisor
   self.timbraCFDI
 
-#-------------------------------------------------------------------------------
+=begin
+  #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
+  document = Nokogiri::XML(File.read('/home/daniel/Documentos/prueba/xml.xml'))
+  template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/prueba/xsl.xsl'))
+  html_document = template.transform(document)
+  #File.open('/home/daniel/Documentos/prueba/CFDImpreso.html', 'w').write(html_document)
+  pdf = WickedPdf.new.pdf_from_string(html_document)
+  #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+  # Guardan los CFDI como representacion impresa en...
+  save_path = Rails.root.join('/home/daniel/Documentos/prueba/','CFDImpreso.pdf')
+  File.open(save_path, 'wb') do |file|
+     file << pdf
+  end
 
+=end
+
+#-------------------------------------------------------------------------------
 
     @consulta = false
     @avanzada = false

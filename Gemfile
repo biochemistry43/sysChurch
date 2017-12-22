@@ -2,7 +2,13 @@ source 'https://rubygems.org'
 ruby "2.2.2"
 gem 'nokogiri', '~> 1.6', '>= 1.6.7.1'
 gem 'savon'
+#Mejor se colocó dentro del lib para cambiar editarla
 #gem 'timbradocfdi'
+
+#Para convertir un archivo html a pdf
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.2'
@@ -85,7 +91,6 @@ group :production do
    gem 'pg'
 end
 
-gem 'rails_12factor', group: :production  
+gem 'rails_12factor', group: :production
 
-gem 'unicorn'  
-
+gem 'unicorn'
