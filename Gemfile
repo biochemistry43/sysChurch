@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 ruby "2.2.2"
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '4.2.2'
+
 gem 'nokogiri', '~> 1.6', '>= 1.6.7.1'
 gem 'savon'
 #Mejor se colocó dentro del lib para cambiar editarla
@@ -9,9 +12,8 @@ gem 'savon'
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
-
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.2'
+#Gema que sirve para describir un número en palabras
+gem "number_to_words"
 
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'

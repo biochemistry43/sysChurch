@@ -251,6 +251,7 @@ class FacturasController < ApplicationController
 		Descuento: 50
 	})
 	puts factura.Descuento
+  @total_to_w= factura.total_to_words
 	#factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
 
 	#ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})

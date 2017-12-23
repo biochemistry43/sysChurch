@@ -11,12 +11,13 @@ module CFDI
       defaults: {
         version: '3.3',
         moneda: 'MXN',
-        subTotal: 0.0,
+        subTotal: 0.00,
         #TipoCambio: 1,
         conceptos: [],
         impuestos: Impuesto.new,
         tipoDeComprobante: 'I', #CATALOGO
         #Descuento: 0.00
+        total:0.00
       }
     }
 
@@ -83,12 +84,21 @@ module CFDI
     end
 
     # @return [Float] El subtotal multiplicado por la tasa
+
+
     #Sería mejor calcular estos datos antes y no aquí para no tener diferencias en la base de datos o hacer el mismo calculo dos veces.
-    def total
-      iva = 0.0
+    #def total
+      #iva = 0.0
       #iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
-      self.subTotal #+ @.total- @Descuento
+      #self.subTotal #+ @.total- @Descuento
+    #end
+
+    #Expresa el total en letras de forma estatica se usa la moneda nacional.
+    def total_to_words
+      decimal = format('%.2f', @total).split('.')
+      "( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
     end
+
 =begin
     def = value
       @impuestos = case @version
@@ -172,7 +182,7 @@ module CFDI
     end
 
     # El comprobante como XML
-    # @return [String] El comprobante namespaceado en versión 3.2 (porque soy un huevón)
+    # @return [String] El comprobante namespaceado en versión 3.3
 
     def to_xml
       ns = {
@@ -187,7 +197,8 @@ module CFDI
         CondicionesDePago: @condicionesDePago,
         SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
-        Total: sprintf('%.2f', self.total),
+        Total:('%.2f',@total),
+        #Total: sprintf('%.2f', self.total),
         TipoDeComprobante: @tipoDeComprobante,
         MetodoPago: @metodoDePago,
 
@@ -233,16 +244,8 @@ module CFDI
               xml.Concepto(cc) {
                 #Ahora los impuestos por cada concepto
                 if @impuestos.count_impuestos > 0
-                  tax_options = {}
-                  total_trans = format('%.2f', @impuestos.total_traslados)
-                  #total_detained = format('%.2f', @impuestos.total_detained)
-                  tax_options[:totalImpuestosTrasladados] = total_trans if
-                    total_trans.to_i > 0
-                  #tax_options[:totalImpuestosRetenidos] = total_detained if
-                    #total_detained.to_i > 0
                   xml.Impuestos do #itera todos los impuestos
                     if @impuestos.traslados.count > 0
-
                       xml.Traslados do
                         @impuestos.traslados.each do |t|
                           xml.Traslado(Impuesto: t.tax, Tasa: format('%.2f', t.rate),
@@ -261,13 +264,39 @@ module CFDI
                   end
                 end
 
-
-
-
                 xml.ComplementoConcepto
               }
             end
           }
+
+          if @impuestos.count_impuestos > 0
+            tax_options = {}
+            total_trans = format('%.2f', @impuestos.total_traslados)
+            #total_detained = format('%.2f', @impuestos.total_detained)
+            tax_options[:totalImpuestosTrasladados] = total_trans if
+              total_trans.to_i > 0
+            #tax_options[:totalImpuestosRetenidos] = total_detained if
+              #total_detained.to_i > 0
+            xml.Impuestos(tax_options) do #itera todos los impuestos
+              if @impuestos.traslados.count > 0
+                xml.Traslados do
+                  @impuestos.traslados.each do |t|
+                    xml.Traslado(Impuesto: t.tax, Tasa: format('%.2f', t.rate),
+                                 Importe: format('%.2f', t.import))
+                  end
+                end
+              end
+              #if @impuestos.detained.count > 0
+              #  xml.Retenciones do
+              #    @impuestos.detained.each do |det|
+              #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+              #                    importe: format('%.2f', det.import))
+              #    end
+              #  end
+              #end
+            end
+          end
+
 
 =begin
           impuestos_options = {} #un hash
