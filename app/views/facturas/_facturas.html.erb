@@ -177,9 +177,6 @@
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cliente">
       <%= form_tag({ controller: "facturas", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post}) do %>
 
-
-
-
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
             Filtro por cliente:
@@ -374,7 +371,7 @@
       $('.data-table').DataTable({
         responsive: true,
         "language":{
-          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "info": "Mostrar pag _PAGE_ de _PAGES_",PUEV15
           "lengthMenu": "Mostrar _MENU_ registros",
           "zeroRecords": "No hay coincidencias",
           "search": "Buscar: _INPUT_",

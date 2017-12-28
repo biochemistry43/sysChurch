@@ -197,7 +197,7 @@ module CFDI
         CondicionesDePago: @condicionesDePago,
         SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
-        Total:('%.2f',@total),
+        Total: sprintf('%.2f', @total),
         #Total: sprintf('%.2f', self.total),
         TipoDeComprobante: @tipoDeComprobante,
         MetodoPago: @metodoDePago,
@@ -215,8 +215,8 @@ module CFDI
       end
 
       if @noCertificado
-        ns[:noCertificado] = @noCertificado
-        ns[:certificado] = @certificado
+        ns[:NoCertificado] = @noCertificado
+        ns[:Certificado] = @certificado
       end
 
       if @sello
@@ -231,8 +231,6 @@ module CFDI
           }
           xml.Receptor(@receptor.ns) {
           }
-
-
           xml.Conceptos {
             @conceptos.each do |concepto|
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty

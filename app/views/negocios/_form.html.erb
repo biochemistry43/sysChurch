@@ -15,19 +15,19 @@
       var apiFile = (window.File && window.FileReader);
       if(apiFile == false){
         alert("Tu navegador no soporta la carga de imágenes o archivos. Actualiza tu navegador");
-        return; 
+        return;
       }
       document.getElementById("negocio_logo").addEventListener('change', seleccionarArchivo, false);
-          
+
       function seleccionarArchivo(evt){
         var archivo = evt.target.files[0];
         if(archivo.type.match("image.*")==false){
           var msg = "Este archivo no es un archivo de imagen";
           document.getElementById('msgFoto').innerHTML = msg;
           return;
-        }  
-          
-            
+        }
+
+
         //Creamos un objeto FileReader
         var datos = new FileReader();
         //Leemos al archivo
@@ -39,7 +39,7 @@
           $("#logo_negocio").attr('src', resultado);
         }
       }
-      
+
     }
   </script>
 
@@ -144,7 +144,7 @@
         <%= f.email_field :email, class: "form-control"%>
       </div>
     </div>
-        
+
     <div class="form-group">
       <label class="col-md-3 control-label"></label>
       <div class="col-md-8">
@@ -168,8 +168,8 @@
       </ul>
     </div>
   <% end %>
-            
-            
+
+
   <div class="col-md-8 col-md-offset-4 col-sm-6 col-xs-12 personal-info">
     <h3>Información Fiscal</h3>
     <div class="form-group">
@@ -260,7 +260,7 @@
         <%= d.email_field :email, class: "form-control"%>
       </div>
     </div>
-      
+
     <div class="form-group">
       <label class="col-md-3 control-label"></label>
       <div class="col-md-8">
@@ -272,5 +272,3 @@
     </div>
   </div>
 <%end%>
-
-

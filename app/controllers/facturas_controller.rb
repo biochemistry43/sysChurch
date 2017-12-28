@@ -4,17 +4,43 @@ class FacturasController < ApplicationController
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
+  #sirve para buscar la venta y mostrar los resultados antes de facturar.
   def facturaDeVentas
     @consulta = false
     if request.post?
       @consulta = true #determina si se realizó una consulta
       @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
+      @rfc_emisor= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
+      @rfc_receptor=@venta.cliente.rfc
+      @nombre_receptor=@venta.cliente.nombre
 
+      #@folio_f= concatenar numero y serie
+      @total=@venta.montoVenta
+      #@rfc_receptor=
+
+      decimal = format('%.2f', @total).split('.')
+      @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
+
+      @fechaVenta=  @venta.fechaVenta
       if @venta
         @itemsVenta  = @venta.item_ventas
       else
         @folio = params[:folio]
       end
+    end
+  end
+
+  def facturando
+    #@rfc_e=params[:]
+    if request.post?
+
+
+
+      #@f=params[:]
+      #Cuando se cumpla
+      redirect_to :action => "index"
+      #@devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones, :monto=>@itemVenta.precio_venta)
+
     end
   end
 
@@ -238,6 +264,7 @@ class FacturasController < ApplicationController
 		Descripcion: 'Frijol',
 		ValorUnitario: 25.00, #el importe se calcula solo
 		Descuento: 50 #Expresado en porcentaje
+
 	})
 
 	factura.conceptos << CFDI::Concepto.new({
@@ -253,7 +280,6 @@ class FacturasController < ApplicationController
 	puts factura.Descuento
   @total_to_w= factura.total_to_words
 	#factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
-
 	#ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
 
   #factura.impuestos = {impuestos: 'IVA'}
@@ -282,7 +308,7 @@ class FacturasController < ApplicationController
 
   #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO QUE OFRECE EL PAC
 
-
+=begin
   @user_key = "mvpNUXmQfK8="
   @timbrado = Timbradocfdi::Generator.new(@user_key)
   @rfcEmisor = "AAA010101AAA"
@@ -301,6 +327,7 @@ class FacturasController < ApplicationController
 
   self.registroEmisor
   self.timbraCFDI
+=end
 
 =begin
   #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT

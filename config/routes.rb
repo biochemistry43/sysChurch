@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   post 'facturas/consulta_por_folio'
   post 'facturas/consulta_por_cliente'
   post 'facturas/consulta_avanzada'
+  post 'facturas/facturando'
 
 
   #resources :facturas
