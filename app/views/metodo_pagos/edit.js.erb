@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-metodos-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar método de pago");
+
+// Render the new form
+$('.modal-body-metodo-pagos').html('<%= j render("form") %>');
+
+// Show the dynamic dialog
+$('#modalMetodos').modal("show");
+
+// Set focus to the first element
+$('#modalMetodos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

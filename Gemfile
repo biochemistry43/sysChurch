@@ -15,6 +15,8 @@ gem 'wkhtmltopdf-binary'
 #Gema que sirve para describir un número en palabras
 gem "number_to_words"
 
+
+
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'
 

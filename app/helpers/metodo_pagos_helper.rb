@@ -1,0 +1,2 @@
+module MetodoPagosHelper
+end

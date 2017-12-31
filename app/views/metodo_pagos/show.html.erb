@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Clave:</strong>
+  <%= @metodo_pago.clave %>
+</p>
+
+<p>
+  <strong>Descripcion:</strong>
+  <%= @metodo_pago.descripcion %>
+</p>
+
+<%= link_to 'Edit', edit_metodo_pago_path(@metodo_pago) %> |
+<%= link_to 'Back', metodo_pagos_path %>

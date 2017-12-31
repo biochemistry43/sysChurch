@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :metodo_pagos
   #resources :factura_recurrentes
   get 'factura_recurrentes/index'
   get 'factura_recurrentes/show'
