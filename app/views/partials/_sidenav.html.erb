@@ -289,6 +289,84 @@
                         <% end %>
                     </li>
                   <% end %>
+
+                  <!-- Aquí lo de la configuración de las facturas-->
+                  <li>
+                    <a>
+                      <i class="fa fa-file-text-o"></i> Facturas<span class="fa fa-chevron-down"></span>
+                    </a>
+                      <ul class="nav child_menu" style="display: none">
+                        <li>
+                          <%= link_to caja_sucursals_path do%>
+                          <i class="fa fa-dollar"><b>%</b></i>
+                            Impuestos
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to caja_sucursals_path do%>
+                          <i class="fa fa-keyboard-o"></i>
+                            Registro emisor
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to caja_sucursals_path do%>
+                          <i class="fa fa-sort-alpha-asc"></i>
+                            Series y folios
+                          <% end %>
+                        </li>
+                        <li>
+                          <a>
+                            <i class="fa fa-list-alt"></i> Catálogos<span class="fa fa-chevron-down"></span>
+                          </a>
+                          <ul class="nav child_menu" style="display:none">
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Forma de pago
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Moneda
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Tipo de comprobante
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Método de pago
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Regimen fiscal
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Uso CFDI
+                              <% end %>
+                            </li>
+                            <li>
+                              <%= link_to caja_sucursals_path do%>
+                                Clave producto
+                              <% end %>
+                            </li>
+                            <!--
+                            La clave de Unidad => en el módulo de productos con el nombre de presentaciónes.
+                            El código postal => se encuentra en el módulo de negocios como un atributo.
+                           -->
+                          </ul>
+
+                        </li>
+
+                      </ul>
+                  </li>
+
+
+
                 </ul>
 
               </li>
