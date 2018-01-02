@@ -34,14 +34,14 @@ class MetodoPagosController < ApplicationController
           #format.json { render :show, status: :created, location: @metodo_pago }
           format.json { head :no_content}
           format.js
-      else
+        else
           format.json{render json: @metodo_pago.errors.full_messages, status: :unprocessable_entity}
-        #format.html { render :new }
-        #format.json { render json: @metodo_pago.errors, status: :unprocessable_entity }
-      end
-    else
-      format.js { render :new }
-      format.json { render json: @metodo_pago.errors.full_messages, status: :unprocessable_entity }
+          #format.html { render :new }
+          #format.json { render json: @metodo_pago.errors, status: :unprocessable_entity }
+        end
+      else
+        format.js { render :new }
+        format.json { render json: @metodo_pago.errors.full_messages, status: :unprocessable_entity }
     end
     end
   end
