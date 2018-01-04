@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :unidad_medidas
   resources :uso_cfdis
   resources :clave_prod_servs
   resources :metodo_pagos

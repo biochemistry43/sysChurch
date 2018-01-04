@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Clave:</strong>
+  <%= @unidad_medida.clave %>
+</p>
+
+<p>
+  <strong>Nombre:</strong>
+  <%= @unidad_medida.nombre %>
+</p>
+
+<p>
+  <strong>Descripcion:</strong>
+  <%= @unidad_medida.descripcion %>
+</p>
+
+<p>
+  <strong>Simbolo:</strong>
+  <%= @unidad_medida.simbolo %>
+</p>
+
+<%= link_to 'Edit', edit_unidad_medida_path(@unidad_medida) %> |
+<%= link_to 'Back', unidad_medidas_path %>

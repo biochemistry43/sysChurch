@@ -1,0 +1,20 @@
+<tr id="unidad_medida_<%= unidad_medida.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= unidad_medida.clave %></td>
+  <td style="text-align: center;"><%= unidad_medida.nombre %></td>
+  <td style="text-align: center;"><%= unidad_medida.descripcion %></td>
+  <td style="text-align: center;"><%= unidad_medida.simbolo %></td>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :create, unidad_medida %>
+      <%= link_to 'Editar', edit_unidad_medida_path(unidad_medida), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :destroy, unidad_medida %>
+      <%= link_to 'Borrar', unidad_medida, remote: true, method: :delete, data: { confirm: "¿Borrar uso: #{unidad_medida.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
+</tr>

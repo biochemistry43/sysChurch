@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-unidades-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nueva unidad de medida");
+
+// Render the new form
+$('.modal-body-unidad-medidas').html('<%= j render("form") %>');
+
+// Show the dynamic dialog
+$('#modalUnidadMedidas').modal("show");
+
+// Set focus to the first element
+$('#modalUnidadMedidas').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})
