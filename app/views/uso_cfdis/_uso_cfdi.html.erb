@@ -1,0 +1,18 @@
+<tr id="uso_cfdi_<%= uso_cfdi.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= uso_cfdi.clave %></td>
+  <td style="text-align: center;"><%= uso_cfdi.descripcion %></td>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :create, uso_cfdi %>
+      <%= link_to 'Editar', edit_uso_cfdi_path(uso_cfdi), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :destroy, uso_cfdi %>
+      <%= link_to 'Borrar', uso_cfdi, remote: true, method: :delete, data: { confirm: "¿Borrar uso: #{uso_cfdi.descripcion}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
+</tr>

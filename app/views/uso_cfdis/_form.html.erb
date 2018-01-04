@@ -1,0 +1,33 @@
+<%= form_for @uso_cfdi, remote: true, :html=>{ :class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
+
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de los usos del CFDI:</h2>
+  </div>
+
+  <div class="item form-group<%= @uso_cfdi.errors[:clave].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :clave, "Clave: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%= f.text_field :clave, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del catálogo..."} do%>
+      <%end%>
+      <%if @uso_cfdi.errors[:clave].any? %>
+        <p class="bg-danger"><%= @uso_cfdi.errors[:clave].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @uso_cfdi.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :descripcion, "Descripción: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+      <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Introduzca la descripción..."} do%>
+      <%end%>
+      <%if @uso_cfdi.errors[:descripcion].any? %>
+        <p class="bg-danger"><%= @uso_cfdi.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+    <%= f.submit @uso_cfdi.new_record? ? "Crear" : "Actualizar", :class => "btn btn-success"%>
+  </div>
+<% end %>
