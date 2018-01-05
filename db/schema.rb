@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180104054633) do
+ActiveRecord::Schema.define(version: 20180104091720) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -216,8 +216,8 @@ ActiveRecord::Schema.define(version: 20180104054633) do
     t.string   "nombreFiscal"
     t.string   "rfc"
     t.integer  "negocio_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.string   "calle"
     t.string   "numExterior"
     t.string   "numInterior"
@@ -227,6 +227,7 @@ ActiveRecord::Schema.define(version: 20180104054633) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
+    t.string   "regimen_fiscal"
   end
 
   create_table "datos_fiscales_sucursals", force: :cascade do |t|

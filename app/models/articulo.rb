@@ -1,5 +1,7 @@
 class Articulo < ActiveRecord::Base
 	mount_uploader :fotoProducto, FotoProductoUploader
+	belongs_to :unidad_medida
+
 	belongs_to :cat_articulo
 	belongs_to :negocio
 	belongs_to :sucursal
@@ -11,11 +13,11 @@ class Articulo < ActiveRecord::Base
 	has_many :compra_articulos_devueltos
 
 
-	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }
+	validates :clave, :nombre, :precioCompra, :precioVenta, :unidad_medida_id, :presence => { message: "No puede dejarse vacío este campo" }
 	validates :precioCompra, :precioVenta, :stock, numericality: { message: "campo numérico debe ser mayor que cero " }
 	validates :sucursal_id, :presence => true
 	validates :negocio_id, :presence => true
-	#validates :precioCompra, :precioVenta, :stock, 
+	#validates :precioCompra, :precioVenta, :stock,
 	validates :existencia, numericality: true
     validates :clave, :nombre, uniqueness: { scope: :sucursal_id, message: "Ya existe este registro en la base de datos", :case_sensitive => false }
 end

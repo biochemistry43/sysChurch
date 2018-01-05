@@ -4,7 +4,9 @@ class UnidadMedidasController < ApplicationController
   # GET /unidad_medidas
   # GET /unidad_medidas.json
   def index
-    @unidad_medidas = UnidadMedida.all
+
+    #@unidad_medidas = UnidadMedida.all
+    @unidad_medidas=current_user.negocio.unidad_medidas 
   end
 
   # GET /unidad_medidas/1
@@ -29,6 +31,8 @@ class UnidadMedidasController < ApplicationController
     respond_to do |format|
       if @unidad_medida.valid?
         if @unidad_medida.save
+
+          current_user.negocio.unidad_medidas << @unidad_medida
           format.json { head :no_content}
           format.js
           #format.html { redirect_to @unidad_medida, notice: 'Unidad medida was successfully created.' }

@@ -1,4 +1,5 @@
 class Negocio < ActiveRecord::Base
+	has_many :unidad_medidas
 	has_many :factura_recurrentes
 	has_many :facturas
 	mount_uploader :logo, FotoProductoUploader

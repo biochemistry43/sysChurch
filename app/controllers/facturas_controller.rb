@@ -10,11 +10,13 @@ class FacturasController < ApplicationController
     if request.post?
       @consulta = true #determina si se realizó una consulta
       @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
+      #EMISOR
       @rfc_emisor= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
+      #RECEPTOR
       @rfc_receptor=@venta.cliente.rfc
       @nombre_receptor=@venta.cliente.nombre
-
-      #@folio_f= concatenar numero y serie
+      #DOCUMENTO
+      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
       @total=@venta.montoVenta
       #@rfc_receptor=
 
