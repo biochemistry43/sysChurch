@@ -188,7 +188,43 @@
         <%= d.text_field :rfc, class: "form-control"%>
       </div>
     </div>
-  
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= d.label :regimen_fiscal, "Regimen Fiscal:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <!--En caso de personas MORALES -->
+         <!-- d.select(:regimen_fiscal,
+           [['General de Ley Personas Morale', '601'],
+           ['Personas Morales con Fines no Lucrativos', '603'],
+           ['Consolidación', '609'],
+           ['Residentes en el Extranjero sin Establecimiento Permanente en México', '610'],
+           ['Sociedades Cooperativas de Producción que optan por diferir sus ingresos', '620'],
+           ['Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras', '622'],
+           ['Opcional para Grupos de Sociedades', '623'],
+           ['Coordinados', '624'],
+           ['Hidrocarburos', '628'],
+           ['Régimen de Enajenación o Adquisición de Bienes', '607'],],
+           {}, { :class => 'form-control' }) -->
+
+           <!--Para personas FÍSICAS -->
+           <%= d.select(:regimen_fiscal,
+             [['Sueldos y Salarios e Ingresos Asimilados a Salarios', '605'],
+             ['Arrendamiento', '606'],
+             ['Demás ingresos', '608'],
+             ['Residentes en el Extranjero sin Establecimiento Permanente en México', '610'],
+             ['Ingresos por Dividendos (socios y accionistas)', '611'],
+             ['Personas Físicas con Actividades Empresariales y Profesionales', '612'],
+             ['Ingresos por intereses', '614'],
+             ['Sin obligaciones fiscales', '616'],
+             ['Incorporación Fiscal', '621'],
+             ['Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras', '622'],
+             ['De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales', '629'],
+             ['Enajenación de acciones en bolsa de valores', '630'],
+             ['Régimen de los ingresos por obtención de premios', '615'],],
+             {}, { :class => 'form-control'}) %>
+      </div>
+    </div>
     <div class="form-group">
       <%= d.label :calle, "Calle:", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
