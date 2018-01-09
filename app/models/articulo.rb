@@ -1,6 +1,7 @@
 class Articulo < ActiveRecord::Base
 	mount_uploader :fotoProducto, FotoProductoUploader
 	belongs_to :unidad_medida
+	belongs_to :clave_prod_serv
 
 	belongs_to :cat_articulo
 	belongs_to :negocio

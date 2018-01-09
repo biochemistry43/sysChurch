@@ -4,7 +4,7 @@ class ClaveProdServsController < ApplicationController
   # GET /clave_prod_servs
   # GET /clave_prod_servs.json
   def index
-    @clave_prod_servs = ClaveProdServ.all
+    @clave_prod_servs = current_user.negocio.clave_prod_servs
   end
 
   # GET /clave_prod_servs/1
@@ -29,6 +29,7 @@ class ClaveProdServsController < ApplicationController
     respond_to do |format|
       if @clave_prod_serv.valid?
         if @clave_prod_serv.save
+          current_user.negocio.clave_prod_servs << @clave_prod_serv
           #format.html { redirect_to @clave_prod_serv, notice: 'Clave prod serv was successfully created.' }
           #format.json { render :show, status: :created, location: @clave_prod_serv }
           format.json { head :no_content}

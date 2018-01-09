@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180105041953) do
+ActiveRecord::Schema.define(version: 20180107004036) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -32,8 +32,10 @@ ActiveRecord::Schema.define(version: 20180105041953) do
     t.string   "suc_elegida"
     t.string   "tipo"
     t.integer  "unidad_medida_id"
+    t.integer  "clave_prod_serv_id"
   end
 
+  add_index "articulos", ["clave_prod_serv_id"], name: "index_articulos_on_clave_prod_serv_id"
   add_index "articulos", ["unidad_medida_id"], name: "index_articulos_on_unidad_medida_id"
 
   create_table "bancos", force: :cascade do |t|
@@ -134,7 +136,10 @@ ActiveRecord::Schema.define(version: 20180105041953) do
     t.string   "nombre"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "negocio_id"
   end
+
+  add_index "clave_prod_servs", ["negocio_id"], name: "index_clave_prod_servs_on_negocio_id"
 
   create_table "clientes", force: :cascade do |t|
     t.string   "nombre"

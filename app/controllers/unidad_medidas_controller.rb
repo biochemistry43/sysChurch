@@ -6,7 +6,7 @@ class UnidadMedidasController < ApplicationController
   def index
 
     #@unidad_medidas = UnidadMedida.all
-    @unidad_medidas=current_user.negocio.unidad_medidas 
+    @unidad_medidas=current_user.negocio.unidad_medidas
   end
 
   # GET /unidad_medidas/1
