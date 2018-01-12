@@ -18,7 +18,12 @@ ruebas:
 producción:
     https://timbracfdi33.mx:1443/Timbrado.asmx?wsdl
 =end
-    BASE_URI = "https://cfdi33-pruebas.buzoncfdi.mx:1443/Timbrado.asmx?wsdl"
+
+#"Ligas RECIENTISIMAS SUPER ULTRA MEGA REQUETE BUENISIMAS Y FUNSIONALES"
+#Para pruebas =>  https://timbracfdi33.mx:1443/Timbrado.asmx?wsdl
+#Para producción => http://timbracfdi33.mx/Timbrado.asmx?wsdl
+
+    BASE_URI = "https://timbracfdi33.mx:1443/Timbrado.asmx?wsdl"
 
 
     ##

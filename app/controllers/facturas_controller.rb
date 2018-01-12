@@ -209,7 +209,8 @@ class FacturasController < ApplicationController
   end
 
 	require 'cfdi'
-  require 'timbradocfdi'
+  #require 'timbradocfdi'
+  require 'timbrado'
   #require 'fm_timbrado_cfdi'
   # GET /facturas
   # GET /facturas.json
@@ -219,7 +220,7 @@ class FacturasController < ApplicationController
   	#include FacturasHelper
   		#@hola=Salud::Salu.new.sal()
 
-    #LLENADO DEL
+    #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
 
   	certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
   	# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
@@ -308,8 +309,53 @@ class FacturasController < ApplicationController
   archivo.close
 
 
-  #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO QUE OFRECE EL PAC
+  #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
+  # Parametros para conexion al Webservice (URL de Pruebas)
+  wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+  usuario = "AAA010101000"
+  contrasena = "h6584D56fVdBbSmmnB"
+  nombreArchivo ="/home/daniel/Documentos/timbox-ruby/ejemplo_cfdi_33.xml"
+  llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+  pass_llave = "12345678a"
 
+  archivo_xml = File.read(nombreArchivo)
+  archivo_xml = generar_sello(archivo_xml, llave, pass_llave)
+
+  #Guardar cambios al archivo
+  File.write(nombreArchivo, archivo_xml.to_s)
+
+  # Convertir la cadena del xml en base64
+  xml_base64 = Base64.strict_encode64(archivo_xml)
+
+  # Generar el Envelope
+  envelope = %Q^
+    <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
+      <soapenv:Header/>
+      <soapenv:Body>
+        <urn:timbrar_cfdi soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+          <username xsi:type=\"xsd:string\">#{usuario}</username>
+          <password xsi:type=\"xsd:string\">#{contrasena}</password>
+          <sxml xsi:type=\"xsd:string\">#{xml_base64}</sxml>
+      </urn:timbrar_cfdi>
+      </soapenv:Body>
+    </soapenv:Envelope>^
+
+  # Crear un cliente de savon para hacer la petición al WS, en produccion quitar el "log: true"
+  client = Savon.client(wsdl: wsdl_url, log: true)
+
+  # Llamar el metodo timbrar
+  response = client.call(:timbrar_cfdi, { "xml" => envelope })
+
+  # Extraer el xml timbrado desde la respuesta del WS
+  response = response.to_hash
+  xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
+
+  @tim= xml_timbrado
+
+
+
+
+  #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO QUE OFRECE EL PAC
 =begin
   @user_key = "mvpNUXmQfK8="
   @timbrado = Timbradocfdi::Generator.new(@user_key)
