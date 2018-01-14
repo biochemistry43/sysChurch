@@ -10,22 +10,31 @@ class FacturasController < ApplicationController
     if request.post?
       @consulta = true #determina si se realizó una consulta
       @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
+      @@venta=@venta
       #EMISOR
-      @rfc_emisor= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
-      #RECEPTOR
-      @rfc_receptor=@venta.cliente.rfc
-      @nombre_receptor=@venta.cliente.nombre
-      #DOCUMENTO
-      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
-      @total=@venta.montoVenta
-      #@rfc_receptor=
+      @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
+      @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
+      @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
 
-      decimal = format('%.2f', @total).split('.')
-      @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
-
-      @fechaVenta=  @venta.fechaVenta
       if @venta
+        #RECEPTOR
+        @rfc_receptor_f=@venta.cliente.rfc
+        @nombre_receptor_f=@venta.cliente.nombre
+        #@uso_cfdi_receptor_f=@venta.cliente.uso_cfdi
+
+        #COMPROBANTE
+        #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
+        @total=@venta.montoVenta
+        #@rfc_receptor=
+        decimal = format('%.2f', @total).split('.')
+        @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
+        @fechaVenta=  @venta.fechaVenta
+
         @itemsVenta  = @venta.item_ventas
+
+        @@itemsVenta=@itemsVenta
+
+
       else
         @folio = params[:folio]
       end
@@ -35,6 +44,91 @@ class FacturasController < ApplicationController
   def facturando
     #@rfc_e=params[:]
     if request.post?
+      #ATRIBUTOS DEL EMISOR
+      @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
+      @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
+      @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
+
+      #ATRIBUTOS EL RECEPTOR
+      @rfc_receptor_f=@@venta.cliente.rfc
+      @nombre_receptor_f=@@venta.cliente.nombre
+
+      #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+      certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
+      # la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
+      # Esta se convierte de un archivo .key con:
+      # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
+
+      #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
+      llave = CFDI::Key.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.pem', '12345678a'
+      #DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
+      #Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
+      factura = CFDI::Comprobante.new({
+      serie: '   FA_V',
+      folio: 1,
+      fecha: Time.now,
+      formaDePago: '01',#CATALOGO
+      condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+      metodoDePago: 'PUE', #CATALOGO
+      lugarExpedicion: '93600'#, #CATALOGO
+      #Descuento:30 #DESCUENTO RAPPEL
+    })
+
+    factura.emisor = CFDI::Emisor.new({
+      rfc: @rfc_emisor_f,
+      nombre: @nombre_fiscal_emisor_f,
+      #domicilioFiscal: domicilioEmisor,
+      #expedidoEn: domicilioEmisor,
+      regimenFiscal: @regimen_fiscal_emisor_f #CATALOGO
+    })
+
+    factura.receptor = CFDI::Receptor.new({
+      rfc: @rfc_receptor_f,
+       nombre: @nombre_receptor_f,
+       UsoCFDI:'G01' #CATALOGO
+      #, domicilioFiscal: domicilioReceptor
+      })
+
+    #<< para que puedan ser agragados los conceptos que se deseen.
+    @@itemsVenta.each do |c|
+      factura.conceptos << CFDI::Concepto.new({
+      ClaveProdSer: c.articulo.clave_prod_serv.clave, #CATALOGO
+      NoIdentificacion: c.articulo.clave,
+      Cantidad: c.cantidad,
+      ClaveUnidad:c.articulo.unidad_medida.clave,#CATALOGO
+      Unidad: c.articulo.unidad_medida.nombre,
+      Descripcion: c.articulo.nombre,
+      ValorUnitario: c.precio_venta, #el importe se calcula solo
+      Descuento: 50 #Expresado en porcentaje
+    })
+    factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta,
+      tax: '002', type_factor: 'Tasa', rate: 0.160000, import: c.precio_venta)
+    end
+
+
+
+
+    puts factura.Descuento
+    @total_to_w= factura.total_to_words
+    #factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
+    #ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
+
+    #factura.impuestos = {impuestos: 'IVA'}
+
+    puts factura.cadena_original
+    # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+    certificado.certifica factura
+    # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
+    # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
+    llave.sella factura
+    # Esto genera la factura como xml
+    @xml= factura.to_xml
+    #se guarda el xml en la ruta señalada sin timbrar
+    archivo = File.open("/home/daniel/Documentos/prueba/xml_3_3.xml", "w")
+    archivo.write (@xml)
+    archivo.close
+
+
 
 
 
@@ -220,97 +314,9 @@ class FacturasController < ApplicationController
   	#include FacturasHelper
   		#@hola=Salud::Salu.new.sal()
 
-    #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
-
-  	certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
-  	# la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
-  	# Esta se convierte de un archivo .key con:
-  	# openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-
-    #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-  	llave = CFDI::Key.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.pem', '12345678a'
-  	#DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
-  	#Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
-    factura = CFDI::Comprobante.new({
-		serie: '   FA_V',
-		folio: 1,
-		fecha: Time.now,
-		formaDePago: '01',#CATALOGO
-		condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-		metodoDePago: 'PUE', #CATALOGO
-		lugarExpedicion: '93600'#, #CATALOGO
-		#Descuento:30 #DESCUENTO RAPPEL
-	})
-
-	factura.emisor = CFDI::Emisor.new({
-		rfc: "AAA010101AAA",
-		nombre: 'Empresa X   ',
-		#domicilioFiscal: domicilioEmisor,
-		#expedidoEn: domicilioEmisor,
-		regimenFiscal: '601  ' #CATALOGO
-	})
-
-	factura.receptor = CFDI::Receptor.new({
-		rfc: '    XAXX010101000',
-		 nombre: 'Juan Perez Miranda.',
-		 UsoCFDI:'G01' #CATALOGO
-		#, domicilioFiscal: domicilioReceptor
-		})
-
-	#<< para que puedan ser agragados los conceptos que se deseen.
-	factura.conceptos << CFDI::Concepto.new({
-		ClaveProdSer: '50431800', #CATALOGO
-		NoIdentificacion: 'SKUFRI25',
-		Cantidad: 2,
-		ClaveUnidad: '53',#CATALOGO
-		Unidad: 'Kilos',
-		Descripcion: 'Frijol',
-		ValorUnitario: 25.00, #el importe se calcula solo
-		Descuento: 50 #Expresado en porcentaje
-
-	})
-
-	factura.conceptos << CFDI::Concepto.new({
-		ClaveProdSer: '50431800', #CATALOGO
-		NoIdentificacion: 'SKUFRI25',
-		Cantidad: 1,
-		ClaveUnidad: '53',#CATALOGO
-		Unidad: 'Kilos',
-		Descripcion: 'Lentejas',
-		ValorUnitario: 25.00, #el importe se calcula solo
-		Descuento: 50
-	})
-	puts factura.Descuento
-  @total_to_w= factura.total_to_words
-	#factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
-	#ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
-
-  #factura.impuestos = {impuestos: 'IVA'}
-
-  factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(tax: 'IVA', rate: 16, import: 78)
-
-  #puts CFDI::ElementoComprobante.data
-
-	puts a= 1.00091.to_d
-	puts b= 9999994.1233
-	puts a+b
-
-  puts factura.cadena_original
-  # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
-  certificado.certifica factura
-  # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-  # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
-  llave.sella factura
-  # Esto genera la factura como xml
-  @xml= factura.to_xml
-  #se guarda el xml en la ruta señalada sin timbrar
-  archivo = File.open("/home/daniel/Documentos/prueba/xml_3_3.xml", "w")
-  archivo.write (@xml)
-  archivo.close
-
-
   #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
   # Parametros para conexion al Webservice (URL de Pruebas)
+=begin
   wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
   usuario = "AAA010101000"
   contrasena = "h6584D56fVdBbSmmnB"
@@ -351,6 +357,9 @@ class FacturasController < ApplicationController
   xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
 
   @tim= xml_timbrado
+=end
+
+
 
 
 

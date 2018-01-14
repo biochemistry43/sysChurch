@@ -133,7 +133,21 @@
                     <%= label_tag :rfc_emisor,'RFC emisor', class:"control-label"%>
                   </div>
                   <div class="col-md-6 col-sm-6 col-xs-12">
-                    <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor, disabled:true }%>
+                    <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor_f, disabled:true }%>
+                  </div>
+
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :nombre_fiscal_emisor_f,'Nombre fiscal', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <%= text_field_tag :@nombre_fiscal_emisor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_emisor_f, disabled:true }%>
+                  </div>
+
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :regimen_fiscal_emisor_f,'Regimen fiscal', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <%= text_field_tag :regimen_fiscal_emisor_f, nil,{class:'form-control text_field',value: @regimen_fiscal_emisor_f, disabled:true }%>
                   </div>
               </div>
             </div>
@@ -145,13 +159,13 @@
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
                   <div class="col-md-6 col-sm-6 col-xs-12">
-                    <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor, disabled:true }%>
+                    <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
                   </div>
                   <div class="col-md-6 col-sm-6 col-xs-12">
-                    <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor, disabled:true }%>
+                    <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor_f, disabled:true }%>
                   </div>
               </div>
             </div>
@@ -170,14 +184,15 @@
               <tbody>
                 <% @itemsVenta.each do |item| %>
                   <tr>
-                    <td> <%= item.articulo.clave %> </td>
+                    <td> <%= item.articulo.clave_prod_serv.clave %> </td>
                     <td> <%= item.cantidad %> </td>
                     <td> <%= item.articulo.unidad_medida.nombre%> </td>
                     <td> <%= item.articulo.nombre %> </td>
-                    <td> <%= item.precio_venta %> </td>
-                    <td> <%= item.precio_venta * item.cantidad %> </td>
+                    <td>$  <%= item.precio_venta %> </td>
+                    <td>$  <%= item.precio_venta * item.cantidad %> </td>
                   </tr>
                 <% end %>
+
               </tbody>
             </table>
             <!--Panel para el total representao en letras-->

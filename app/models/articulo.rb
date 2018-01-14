@@ -14,7 +14,7 @@ class Articulo < ActiveRecord::Base
 	has_many :compra_articulos_devueltos
 
 
-	validates :clave, :nombre, :precioCompra, :precioVenta, :unidad_medida_id, :presence => { message: "No puede dejarse vacío este campo" }
+	validates :clave, :nombre, :precioCompra, :precioVenta, :unidad_medida_id,:clave_prod_serv_id, :presence => { message: "No puede dejarse vacío este campo" }
 	validates :precioCompra, :precioVenta, :stock, numericality: { message: "campo numérico debe ser mayor que cero " }
 	validates :sucursal_id, :presence => true
 	validates :negocio_id, :presence => true

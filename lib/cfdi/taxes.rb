@@ -40,7 +40,7 @@ module CFDI
      end
 
      class Traslado
-       attr_accessor  :tax, :rate, :import #solo eran {impuesto, tasa, importe} pero como al SAT se le ocurrieron otros dos jaja
+       attr_accessor  :base, :tax, :type_factor, :rate, :import #solo eran {impuesto, tasa, importe} pero como al SAT se le ocurrieron otros dos jaja
        #:Base, :Impuesto, :TipoFactor, :TasaOCuota, :Importe
        def initialize(args = {})
          args.each { |key, value| send("#{key}=", value) }
@@ -55,7 +55,7 @@ module CFDI
        end
 
        def cadena_original
-         [ @tax, @rate, @import]
+         [ @base, @tax, @type_factor, @rate, @import]
        end
      end
 

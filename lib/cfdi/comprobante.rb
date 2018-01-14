@@ -220,7 +220,7 @@ module CFDI
       end
 
       if @sello
-        ns[:sello] = @sello
+        ns[:Sello] = @sello
       end
 
       @builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
@@ -246,8 +246,12 @@ module CFDI
                     if @impuestos.traslados.count > 0
                       xml.Traslados do
                         @impuestos.traslados.each do |t|
-                          xml.Traslado(Impuesto: t.tax, Tasa: format('%.2f', t.rate),
-                                       Importe: format('%.2f', t.import))
+                          xml.Traslado(
+                             Base: t.base,
+                             Impuesto: t.tax,
+                             TipoFactor: t.type_factor,
+                             TasaOCuota: format('%.2f', t.rate),
+                             Importe: format('%.2f', t.import))
                         end
                       end
                     end
@@ -271,7 +275,7 @@ module CFDI
             tax_options = {}
             total_trans = format('%.2f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
-            tax_options[:totalImpuestosTrasladados] = total_trans if
+            tax_options[:TotalImpuestosTrasladados] = total_trans if
               total_trans.to_i > 0
             #tax_options[:totalImpuestosRetenidos] = total_detained if
               #total_detained.to_i > 0
@@ -279,8 +283,11 @@ module CFDI
               if @impuestos.traslados.count > 0
                 xml.Traslados do
                   @impuestos.traslados.each do |t|
-                    xml.Traslado(Impuesto: t.tax, Tasa: format('%.2f', t.rate),
-                                 Importe: format('%.2f', t.import))
+                    xml.Traslado(
+                      Impuesto: 002,
+                      TipoFactor:"Tasa" ,
+                      TasaOCuota: 0.160000, #format('%.2f', t.rate),
+                      Importe: format('%.2f', t.import))
                   end
                 end
               end
