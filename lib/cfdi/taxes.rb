@@ -5,6 +5,7 @@ module CFDI
 
      def initialize
        @traslados = []
+      
        #@detained = []
      end
      # retorna el total de impuestos trasladados
@@ -45,13 +46,18 @@ module CFDI
        def initialize(args = {})
          args.each { |key, value| send("#{key}=", value) }
        end
-
-       def rate=(rate)
-         @rate = format('%.2f', rate).to_f
+       def base=(base)
+         @base=format('%.2f', base).to_f
        end
 
-       def import=(import)
-         @import = format('%.2f', import).to_f
+       def rate=(rate)
+         @rate = rate
+       end
+
+       def import
+         porcentaje=@rate*@base
+         #conIVA=@base+porcentaje
+         @import = format('%.2f', porcentaje).to_f
        end
 
        def cadena_original

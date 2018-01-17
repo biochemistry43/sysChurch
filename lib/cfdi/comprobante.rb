@@ -2,7 +2,7 @@ module CFDI
   class Comprobante # La clase principal para crear Comprobantes
     #Los datos del comprobante en el orden correcto.
     @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal, :Descuento, :moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
-    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado, :conceptos, :complemento, :cancelada, :impuestos]
+    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :cancelada, :impuestos]
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
     @addenda = nil
@@ -219,8 +219,13 @@ module CFDI
         ns[:Certificado] = @certificado
       end
 
+      #if @sello
+      #  ns[:Sello] = @sello
+      #end
+
+      #VAMO A HACER TRAMPITA
       if @sello
-        ns[:Sello] = @sello
+        ns[:Sello] = ""
       end
 
       @builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
@@ -232,6 +237,7 @@ module CFDI
           xml.Receptor(@receptor.ns) {
           }
           xml.Conceptos {
+            c_it=0
             @conceptos.each do |concepto|
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
@@ -242,18 +248,20 @@ module CFDI
               xml.Concepto(cc) {
                 #Ahora los impuestos por cada concepto
                 if @impuestos.count_impuestos > 0
-                  xml.Impuestos do #itera todos los impuestos
-                    if @impuestos.traslados.count > 0
-                      xml.Traslados do
-                        @impuestos.traslados.each do |t|
+                  xml.Impuestos {
+                    if @impuestos.traslados.count > 0 #en caso que haya algun impuesto
+                      xml.Traslados {
+                        #@impuestos.traslados.each do |t|
+                        #EL PROBLEMA ES CUANDO UN CONCEPTO NO TENGA IMPUESTOS EN MEDIO DE VARIOS CONCEPTOS
                           xml.Traslado(
-                             Base: t.base,
-                             Impuesto: t.tax,
-                             TipoFactor: t.type_factor,
-                             TasaOCuota: format('%.2f', t.rate),
-                             Importe: format('%.2f', t.import))
-                        end
-                      end
+                             Base: @impuestos.traslados[c_it].base,
+                             Impuesto: @impuestos.traslados[c_it].tax,
+                             TipoFactor: @impuestos.traslados[c_it].type_factor,
+                             TasaOCuota:  @impuestos.traslados[c_it].rate,
+                             Importe: @impuestos.traslados[c_it].import)
+
+                      #end
+                      }
                     end
                     #if @impuestos.detained.count > 0
                     #  xml.Retenciones do
@@ -263,11 +271,12 @@ module CFDI
                     #    end
                     #  end
                     #end
-                  end
+                  }
                 end
 
                 xml.ComplementoConcepto
               }
+              c_it=c_it+1
             end
           }
 
@@ -281,15 +290,15 @@ module CFDI
               #total_detained.to_i > 0
             xml.Impuestos(tax_options) do #itera todos los impuestos
               if @impuestos.traslados.count > 0
-                xml.Traslados do
-                  @impuestos.traslados.each do |t|
+                xml.Traslados{
+                  #@impuestos.traslados.each do |t|
                     xml.Traslado(
                       Impuesto: 002,
                       TipoFactor:"Tasa" ,
                       TasaOCuota: 0.160000, #format('%.2f', t.rate),
-                      Importe: format('%.2f', t.import))
-                  end
-                end
+                      Importe: format('%.2f',@impuestos.total_traslados)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
+                  #end
+                }
               end
               #if @impuestos.detained.count > 0
               #  xml.Retenciones do
@@ -381,17 +390,19 @@ module CFDI
     # @return [String] Separada por pipes, because fuck you that's why
     def cadena_original
       params = []
-      @@datosCadena.each {|key| params.push send(key) }
-      params += @emisor.cadena_original
-      #params << @regimen
-      params += @receptor.cadena_original
-      @conceptos.each do |concepto|
+      @@datosCadena.each {|key| params.push send(key) } #Los atributos a nivel factura
+      params += @emisor.cadena_original  #los datos del emisor
+      params += @receptor.cadena_original # seguido de los del receptor
+
+      @conceptos.each do |concepto| # Cada concepto con su respectivo impuesto
       params += concepto.cadena_original
+      if @impuestos.traslados.any?
+        params += @impuestos.traslados_cadena_original
+      end
+
 =begin
         AQUÍ SE DEBE DE PONER:
-          Traslado
-            *sus atributos
-          Retención
+          Retenciónnombre
             *sus atributos
           Aduanera
             ...
@@ -400,7 +411,6 @@ module CFDI
 =end
       end
       if @impuestos.traslados.any?
-        params += @impuestos.traslados_cadena_original
         params += [@impuestos.total_traslados]
       end
 =begin

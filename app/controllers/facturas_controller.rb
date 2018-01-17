@@ -14,6 +14,8 @@ class FacturasController < ApplicationController
       #EMISOR
       @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
       @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
+
+      #AQUÍ CONDICIONES PARA QUE MUESTRE EL NOMBRE Y NO LA CLAVE DEL REGIMEN.
       @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
 
       if @venta
@@ -34,7 +36,6 @@ class FacturasController < ApplicationController
 
         @@itemsVenta=@itemsVenta
 
-
       else
         @folio = params[:folio]
       end
@@ -42,17 +43,10 @@ class FacturasController < ApplicationController
   end
 
   def facturando
-    #@rfc_e=params[:]
+    require 'cfdi'
+    require 'timbrado'
+
     if request.post?
-      #ATRIBUTOS DEL EMISOR
-      @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
-      @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
-      @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
-
-      #ATRIBUTOS EL RECEPTOR
-      @rfc_receptor_f=@@venta.cliente.rfc
-      @nombre_receptor_f=@@venta.cliente.nombre
-
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
       # la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
@@ -61,35 +55,37 @@ class FacturasController < ApplicationController
 
       #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
       llave = CFDI::Key.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.pem', '12345678a'
-      #DATOS DE PRUEBA. AQUI SE REALIZARAN LAS CONSULTAS PARA OBTENER LOS DATOS DEL CLIENTE Y EMISOR .
-      #Y SE PASARAN LOS DATOS DE LAS VENTAS A FACTURAS A TRAVES DE LOS FORMULARIOS.
-      factura = CFDI::Comprobante.new({
-      serie: '   FA_V',
+
+
+    factura = CFDI::Comprobante.new({
+      serie: 'FA_V',
       folio: 1,
       fecha: Time.now,
+      #formaDePago: @@venta.venta_forma_pago.forma_pago.clave
       formaDePago: '01',#CATALOGO
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
-      lugarExpedicion: '93600'#, #CATALOGO
+      lugarExpedicion: current_user.negocio.datos_fiscales_negocio.codigo_postal#, #CATALOGO
       #Descuento:30 #DESCUENTO RAPPEL
     })
 
+    #ATRIBUTOS DEL EMISOR
     factura.emisor = CFDI::Emisor.new({
-      rfc: @rfc_emisor_f,
-      nombre: @nombre_fiscal_emisor_f,
-      #domicilioFiscal: domicilioEmisor,
-      #expedidoEn: domicilioEmisor,
-      regimenFiscal: @regimen_fiscal_emisor_f #CATALOGO
+      rfc: current_user.negocio.datos_fiscales_negocio.rfc,
+      nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
+      regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal #CATALOGO
     })
 
+    #ATRIBUTOS EL RECEPTOR
     factura.receptor = CFDI::Receptor.new({
-      rfc: @rfc_receptor_f,
-       nombre: @nombre_receptor_f,
+      rfc: @@venta.cliente.rfc,
+       nombre: @@venta.cliente.nombre,
        UsoCFDI:'G01' #CATALOGO
       #, domicilioFiscal: domicilioReceptor
       })
 
     #<< para que puedan ser agragados los conceptos que se deseen.
+    #@cont=0
     @@itemsVenta.each do |c|
       factura.conceptos << CFDI::Concepto.new({
       ClaveProdSer: c.articulo.clave_prod_serv.clave, #CATALOGO
@@ -101,14 +97,12 @@ class FacturasController < ApplicationController
       ValorUnitario: c.precio_venta, #el importe se calcula solo
       Descuento: 50 #Expresado en porcentaje
     })
-    factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta,
-      tax: '002', type_factor: 'Tasa', rate: 0.160000, import: c.precio_venta)
+
+    factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+      tax: '002', type_factor: 'Tasa', rate: 0.160000)
+      #puts @cont=@cont+1
     end
 
-
-
-
-    puts factura.Descuento
     @total_to_w= factura.total_to_words
     #factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
     #ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
@@ -119,18 +113,79 @@ class FacturasController < ApplicationController
     # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
     certificado.certifica factura
     # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-    # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
     llave.sella factura
     # Esto genera la factura como xml
-    @xml= factura.to_xml
+    xml= factura.to_xml
     #se guarda el xml en la ruta señalada sin timbrar
     archivo = File.open("/home/daniel/Documentos/prueba/xml_3_3.xml", "w")
-    archivo.write (@xml)
+    archivo.write (xml)
     archivo.close
 
 
+    #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
+    # Parametros para conexion al Webservice (URL de Pruebas)
+
+    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+    usuario = "AAA010101000"
+    contrasena = "h6584D56fVdBbSmmnB"
+    nombreArchivo ="/home/daniel/Documentos/timbox-ruby/ejemplo_cfdi_33.xml"
+    #ELIMINAR UNA LLAVE Y SU CONTRASEÑA
+    llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+    pass_llave = "12345678a"
+
+    archivo_xml = File.read(nombreArchivo)
+    archivo_xml = generar_sello(archivo_xml, llave, pass_llave)
+
+    #Guardar cambios al archivo
+    File.write(nombreArchivo, archivo_xml.to_s)
+
+    # Convertir la cadena del xml en base64
+    xml_base64 = Base64.strict_encode64(archivo_xml)
+
+    # Generar el Envelope
+    envelope = %Q^
+      <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
+        <soapenv:Header/>
+        <soapenv:Body>
+          <urn:timbrar_cfdi soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+            <username xsi:type=\"xsd:string\">#{usuario}</username>
+            <password xsi:type=\"xsd:string\">#{contrasena}</password>
+            <sxml xsi:type=\"xsd:string\">#{xml_base64}</sxml>
+        </urn:timbrar_cfdi>
+        </soapenv:Body>
+      </soapenv:Envelope>^
+
+    # Crear un cliente de savon para hacer la petición al WS, en produccion quitar el "log: true"
+    client = Savon.client(wsdl: wsdl_url, log: true)
+
+    # Llamar el metodo timbrar
+    response = client.call(:timbrar_cfdi, { "xml" => envelope })
+
+    # Extraer el xml timbrado desde la respuesta del WS
+    response = response.to_hash
+    xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
+    File.open('/home/daniel/Documentos/timbox-ruby/ejemplo_cfdiTimbrado_33.xml', 'w').write(xml_timbrado)
+
+    #@tim= xml_timbrado
 
 
+#UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
+
+=begin
+  #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
+  document = Nokogiri::XML(File.read('/home/daniel/Documentos/prueba/xml.xml'))
+  template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/prueba/xsl.xsl'))
+  html_document = template.transform(document)
+  #File.open('/home/daniel/Documentos/prueba/CFDImpreso.html', 'w').write(html_document)
+  pdf = WickedPdf.new.pdf_from_string(html_document)
+  #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+  # Guardan los CFDI como representacion impresa en...
+  save_path = Rails.root.join('/home/daniel/Documentos/prueba/','CFDImpreso.pdf')
+  File.open(save_path, 'wb') do |file|
+     file << pdf
+  end
+
+=end
 
       #@f=params[:]
       #Cuando se cumpla
@@ -302,10 +357,7 @@ class FacturasController < ApplicationController
     end
   end
 
-	require 'cfdi'
-  #require 'timbradocfdi'
-  require 'timbrado'
-  #require 'fm_timbrado_cfdi'
+
   # GET /facturas
   # GET /facturas.json
   def index
@@ -314,57 +366,7 @@ class FacturasController < ApplicationController
   	#include FacturasHelper
   		#@hola=Salud::Salu.new.sal()
 
-  #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
-  # Parametros para conexion al Webservice (URL de Pruebas)
-=begin
-  wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-  usuario = "AAA010101000"
-  contrasena = "h6584D56fVdBbSmmnB"
-  nombreArchivo ="/home/daniel/Documentos/timbox-ruby/ejemplo_cfdi_33.xml"
-  llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-  pass_llave = "12345678a"
-
-  archivo_xml = File.read(nombreArchivo)
-  archivo_xml = generar_sello(archivo_xml, llave, pass_llave)
-
-  #Guardar cambios al archivo
-  File.write(nombreArchivo, archivo_xml.to_s)
-
-  # Convertir la cadena del xml en base64
-  xml_base64 = Base64.strict_encode64(archivo_xml)
-
-  # Generar el Envelope
-  envelope = %Q^
-    <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
-      <soapenv:Header/>
-      <soapenv:Body>
-        <urn:timbrar_cfdi soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
-          <username xsi:type=\"xsd:string\">#{usuario}</username>
-          <password xsi:type=\"xsd:string\">#{contrasena}</password>
-          <sxml xsi:type=\"xsd:string\">#{xml_base64}</sxml>
-      </urn:timbrar_cfdi>
-      </soapenv:Body>
-    </soapenv:Envelope>^
-
-  # Crear un cliente de savon para hacer la petición al WS, en produccion quitar el "log: true"
-  client = Savon.client(wsdl: wsdl_url, log: true)
-
-  # Llamar el metodo timbrar
-  response = client.call(:timbrar_cfdi, { "xml" => envelope })
-
-  # Extraer el xml timbrado desde la respuesta del WS
-  response = response.to_hash
-  xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
-
-  @tim= xml_timbrado
-=end
-
-
-
-
-
-
-  #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO QUE OFRECE EL PAC
+  #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON PROFACT
 =begin
   @user_key = "mvpNUXmQfK8="
   @timbrado = Timbradocfdi::Generator.new(@user_key)
@@ -385,23 +387,6 @@ class FacturasController < ApplicationController
   self.registroEmisor
   self.timbraCFDI
 =end
-
-=begin
-  #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
-  document = Nokogiri::XML(File.read('/home/daniel/Documentos/prueba/xml.xml'))
-  template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/prueba/xsl.xsl'))
-  html_document = template.transform(document)
-  #File.open('/home/daniel/Documentos/prueba/CFDImpreso.html', 'w').write(html_document)
-  pdf = WickedPdf.new.pdf_from_string(html_document)
-  #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
-  # Guardan los CFDI como representacion impresa en...
-  save_path = Rails.root.join('/home/daniel/Documentos/prueba/','CFDImpreso.pdf')
-  File.open(save_path, 'wb') do |file|
-     file << pdf
-  end
-
-=end
-
 #-------------------------------------------------------------------------------
 
     @consulta = false
