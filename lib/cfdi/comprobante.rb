@@ -219,13 +219,13 @@ module CFDI
         ns[:Certificado] = @certificado
       end
 
-      if @sello
-        ns[:Sello] = @sello
-      end
+      #if @sello
+      #  ns[:Sello] = @sello
+      #end
 
       #VAMO A HACER TRAMPITA
       #if @sello
-      #  ns[:Sello] = ""
+        ns[:Sello] = ""
       #end
 
       @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|

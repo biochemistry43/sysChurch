@@ -106,20 +106,18 @@ class FacturasController < ApplicationController
     end
     @total_to_w= factura.total_to_words
 
-
-
     certificado.certifica factura
     # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
     factura.cadena_original
     # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
     # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
-    llave2.sella factura
+    #llave2.sella factura
     # Esto genera la factura como xml
     xml= factura.to_xml
     #se guarda el xml en la ruta señalada sin timbrar
-    archivo = File.open("/home/daniel/Documentos/prueba/xml_3_3.xml", "w")
-    archivo.write (xml)
-    archivo.close
+    #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml33.xml", "w")
+    #archivo.write (xml)
+    #archivo.close
 
 
     #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
@@ -128,15 +126,15 @@ class FacturasController < ApplicationController
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
-    nombreArchivo ="/home/daniel/Documentos/prueba/xml_3_3.xml"
+    nombreArchivo ="/home/daniel/Documentos/prueba/xml33.xml"
     #llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
     #pass_llave = "12345678a"
 
-    archivo_xml = File.read(nombreArchivo)
-    archivo_xml = generar_sello(archivo_xml, llave, pass_llave)
+    #archivo_xml = File.read(nombreArchivo)
+    archivo_xml = generar_sello(xml, llave, pass_llave)
 
     #Guardar cambios al archivo
-    File.write(nombreArchivo, archivo_xml.to_s)
+    #File.write(nombreArchivo, archivo_xml.to_s)
 
     # Convertir la cadena del xml en base64
     xml_base64 = Base64.strict_encode64(archivo_xml)
@@ -163,7 +161,7 @@ class FacturasController < ApplicationController
     # Extraer el xml timbrado desde la respuesta del WS
     response = response.to_hash
     xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
-    File.open('/home/daniel/Documentos/timbox-ruby/cfdiTimbrado_33.xml', 'w').write(xml_timbrado)
+    File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
     #@tim= xml_timbrado
 
