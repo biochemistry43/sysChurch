@@ -2,10 +2,12 @@ module CFDI
    class Impuesto #< Base #REVISAR LOS METODOS DE LA CLASE PADRE
      @cadenaOriginal =[:traslados]#, :detained
      attr_accessor(*@cadenaOriginal)
+     attr_accessor :traslados_cadena_original#,:resummen_traslados_cadena_original
 
      def initialize
        @traslados = []
-      
+       @traslados_cadena_original=[]
+       #@resummen_traslados_cadena_original=[]
        #@detained = []
      end
      # retorna el total de impuestos trasladados
@@ -24,7 +26,7 @@ module CFDI
            c = Traslado.new(c) unless c.is_a? Traslado
            @traslados << c
          end
-       elsif data.is_a? Hash #O en el caso de que sea un hash
+       elsif data.is_a? Hash #O en el caso de quehtml_document sea un hash
          @traslados << Traslado.new(data)
        elsif data.is_a? Traslado
          @traslados << data
@@ -33,12 +35,19 @@ module CFDI
      end
 
      def traslados_cadena_original
-       os = []
+       #os = []
        @traslados.each do |trans|
-         os += trans.cadena_original
+         @traslados_cadena_original << trans.cadena_original #Mejor como un arreglo para relacionar cada concepto con su impuesto a la hora de iterar
        end
-       os
+       @traslados_cadena_original
      end
+
+  #   def resummen_traslados_cadena_original
+  #     @traslados.each do |resumen_t|
+
+  #       resummen_traslados_cadena_original<<  resumen_t[:tax]
+#     end
+#     end
 
      class Traslado
        attr_accessor  :base, :tax, :type_factor, :rate, :import #solo eran {impuesto, tasa, importe} pero como al SAT se le ocurrieron otros dos jaja
@@ -55,13 +64,11 @@ module CFDI
        end
 
        def import
-         porcentaje=@rate*@base
-         #conIVA=@base+porcentaje
-         @import = format('%.2f', porcentaje).to_f
+         @import = format('%.2f', @rate*@base).to_f
        end
 
        def cadena_original
-         [ @base, @tax, @type_factor, @rate, @import]
+         [ @base, @tax, @type_factor, @rate, import] #Se le pasa la función y no el atributo para que sea parte de la cadena_original.
        end
      end
 

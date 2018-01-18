@@ -4,7 +4,7 @@ module CFDI
   class Concepto < ElementoComprobante
 
     # @private
-    @cadenaOriginal = [:totalDescuento,:ClaveProdSer, :NoIdentificacion, :Cantidad, :ClaveUnidad, :Unidad, :Descripcion,  :ValorUnitario, :Importe, :Descuento]
+    @cadenaOriginal = [:totalDescuento,:ClaveProdServ, :NoIdentificacion, :Cantidad, :ClaveUnidad, :Unidad, :Descripcion,  :ValorUnitario, :Importe, :Descuento]
     # @private
     attr_accessor *@cadenaOriginal
 =begin
@@ -15,7 +15,7 @@ module CFDI
     # @private
     def cadena_original #aquí se establece el orden de la cadena original! que engañado eh vivido jaja
       return [
-        @ClaveProdSer,
+        @ClaveProdServ,
         @NoIdentificacion,
         @Cantidad.to_f,
         @ClaveUnidad,

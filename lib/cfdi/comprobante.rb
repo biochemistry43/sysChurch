@@ -17,7 +17,7 @@ module CFDI
         impuestos: Impuesto.new,
         tipoDeComprobante: 'I', #CATALOGO
         #Descuento: 0.00
-        total:0.00
+        #total:0.00
       }
     }
 
@@ -62,13 +62,13 @@ module CFDI
     end
 
     #DESCUENTO COMERCIAL por cada concepto
-    def Descuento
-      desc=0.00
-      @conceptos.each do |d|
-        desc += d.Descuento
-      end
-      @Descuento=desc
-    end
+    #def Descuento
+    #  desc=0.00
+    #  @conceptos.each do |d|
+    #    desc += d.Descuento
+    #  end
+    #  @Descuento=desc
+    #end
     #DESCUENTO RAPPEL
     #def Descuento= (des)
     #  @Descuento=des.to_f
@@ -219,16 +219,16 @@ module CFDI
         ns[:Certificado] = @certificado
       end
 
-      #if @sello
-      #  ns[:Sello] = @sello
-      #end
-
-      #VAMO A HACER TRAMPITA
       if @sello
-        ns[:Sello] = ""
+        ns[:Sello] = @sello
       end
 
-      @builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+      #VAMO A HACER TRAMPITA
+      #if @sello
+      #  ns[:Sello] = ""
+      #end
+
+      @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.Comprobante(ns) do
           ins = xml.doc.root.add_namespace_definition('cfdi', 'http://www.sat.gob.mx/cfd/3')
           xml.doc.root.namespace = ins
@@ -274,7 +274,7 @@ module CFDI
                   }
                 end
 
-                xml.ComplementoConcepto
+                #xml.ComplementoConcepto
               }
               c_it=c_it+1
             end
@@ -293,7 +293,7 @@ module CFDI
                 xml.Traslados{
                   #@impuestos.traslados.each do |t|
                     xml.Traslado(
-                      Impuesto: 002,
+                      Impuesto: '002',
                       TipoFactor:"Tasa" ,
                       TasaOCuota: 0.160000, #format('%.2f', t.rate),
                       Importe: format('%.2f',@impuestos.total_traslados)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
@@ -394,12 +394,13 @@ module CFDI
       params += @emisor.cadena_original  #los datos del emisor
       params += @receptor.cadena_original # seguido de los del receptor
 
+      cont=0
       @conceptos.each do |concepto| # Cada concepto con su respectivo impuesto
       params += concepto.cadena_original
       if @impuestos.traslados.any?
-        params += @impuestos.traslados_cadena_original
+        params += @impuestos.traslados_cadena_original[cont]
       end
-
+      cont =cont+1
 =begin
         AQUÍ SE DEBE DE PONER:
           Retenciónnombre
@@ -411,7 +412,13 @@ module CFDI
 =end
       end
       if @impuestos.traslados.any?
-        params += [@impuestos.total_traslados]
+        #Se supone que el único impuesto en las facturas electronicas el el IVA trasladado
+        #Si estoy en lo correcto, entonces los valores pueden ser estaticos.
+        tax='002'
+        type_factor='Tasa'
+        rate=0.160000
+        import=@impuestos.total_traslados
+        params += [tax,type_factor,rate,import,@impuestos.total_traslados]
       end
 =begin
       if @impuestos.count > 0

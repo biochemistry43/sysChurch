@@ -52,25 +52,27 @@ class FacturasController < ApplicationController
       # la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
       # Esta se convierte de un archivo .key con:
       # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-
+      llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+      pass_llave = "12345678a"
       #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-      llave = CFDI::Key.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.pem', '12345678a'
-
+      llave2 = CFDI::Key.new llave, pass_llave
 
     factura = CFDI::Comprobante.new({
       serie: 'FA_V',
       folio: 1,
       fecha: Time.now,
       #formaDePago: @@venta.venta_forma_pago.forma_pago.clave
-      formaDePago: '01',#CATALOGO
+      FormaPago:'01',#CATALOGO Es de tipo string
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
-      lugarExpedicion: current_user.negocio.datos_fiscales_negocio.codigo_postal#, #CATALOGO
-      #Descuento:30 #DESCUENTO RAPPEL
+      lugarExpedicion: current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+      total: @@venta.montoVenta
+      #Descuento:0 #DESCUENTO RAPPEL
     })
 
     #ATRIBUTOS DEL EMISOR
     factura.emisor = CFDI::Emisor.new({
+      #rfc: 'AAA010101AAA',
       rfc: current_user.negocio.datos_fiscales_negocio.rfc,
       nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
       regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal #CATALOGO
@@ -88,32 +90,30 @@ class FacturasController < ApplicationController
     #@cont=0
     @@itemsVenta.each do |c|
       factura.conceptos << CFDI::Concepto.new({
-      ClaveProdSer: c.articulo.clave_prod_serv.clave, #CATALOGO
-      NoIdentificacion: c.articulo.clave,
-      Cantidad: c.cantidad,
-      ClaveUnidad:c.articulo.unidad_medida.clave,#CATALOGO
-      Unidad: c.articulo.unidad_medida.nombre,
-      Descripcion: c.articulo.nombre,
-      ValorUnitario: c.precio_venta, #el importe se calcula solo
-      Descuento: 50 #Expresado en porcentaje
-    })
-
-    factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-      tax: '002', type_factor: 'Tasa', rate: 0.160000)
-      #puts @cont=@cont+1
+        ClaveProdServ: c.articulo.clave_prod_serv.clave, #CATALOGO
+        NoIdentificacion: c.articulo.clave,
+        Cantidad: c.cantidad,
+        ClaveUnidad:c.articulo.unidad_medida.clave,#CATALOGO
+        Unidad: c.articulo.unidad_medida.nombre,
+        Descripcion: c.articulo.nombre,
+        ValorUnitario: c.precio_venta, #el importe se calcula solo
+        #Descuento: 0 #Expresado en porcentaje
+      })
+      #TEMPORALMENTE COMENTADA.
+      #factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+      #  tax: '002', type_factor: 'Tasa', rate: 0.160000)
+        #puts @cont=@cont+1
     end
-
     @total_to_w= factura.total_to_words
-    #factura.impuestos << CFDI::Impuestos.new{impuestos: 'IVA'}
-    #ob=CFDI::Impuestos::Traslado.new({impuesto: 'IVA', tasa: 0.17})
 
-    #factura.impuestos = {impuestos: 'IVA'}
 
-    puts factura.cadena_original
-    # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+
     certificado.certifica factura
+    # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+    factura.cadena_original
     # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-    llave.sella factura
+    # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
+    llave2.sella factura
     # Esto genera la factura como xml
     xml= factura.to_xml
     #se guarda el xml en la ruta señalada sin timbrar
@@ -128,10 +128,9 @@ class FacturasController < ApplicationController
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
-    nombreArchivo ="/home/daniel/Documentos/timbox-ruby/ejemplo_cfdi_33.xml"
-    #ELIMINAR UNA LLAVE Y SU CONTRASEÑA
-    llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-    pass_llave = "12345678a"
+    nombreArchivo ="/home/daniel/Documentos/prueba/xml_3_3.xml"
+    #llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+    #pass_llave = "12345678a"
 
     archivo_xml = File.read(nombreArchivo)
     archivo_xml = generar_sello(archivo_xml, llave, pass_llave)
@@ -164,7 +163,7 @@ class FacturasController < ApplicationController
     # Extraer el xml timbrado desde la respuesta del WS
     response = response.to_hash
     xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
-    File.open('/home/daniel/Documentos/timbox-ruby/ejemplo_cfdiTimbrado_33.xml', 'w').write(xml_timbrado)
+    File.open('/home/daniel/Documentos/timbox-ruby/cfdiTimbrado_33.xml', 'w').write(xml_timbrado)
 
     #@tim= xml_timbrado
 

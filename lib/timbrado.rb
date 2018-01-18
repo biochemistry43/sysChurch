@@ -6,7 +6,7 @@ require 'byebug'
 def generar_sello(comprobante, path_llave, password_llave)
   comprobante = Nokogiri::XML(comprobante)
   comprobante = actualizar_fecha(comprobante)
-  cadena = get_cadena_original(comprobante)
+  puts cadena = get_cadena_original(comprobante)
 
   #Generar digestion y sello
   private_key = OpenSSL::PKey::RSA.new(File.read(path_llave), password_llave)

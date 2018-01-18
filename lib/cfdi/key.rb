@@ -28,6 +28,7 @@ module CFDI
     # @ return [CFDI::comprobante] El comprobante con el `sello`
     def sella factura
       cadena_original = factura.cadena_original
+      cadena_original
       factura.sello = Base64::encode64(self.sign(OpenSSL::Digest::SHA1.new, cadena_original)).gsub(/\n/, '')
     end
 
