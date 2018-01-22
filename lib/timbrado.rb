@@ -18,7 +18,7 @@ end
 
 #Obtener cadena original
 def get_cadena_original(xml)
-  xslt = Nokogiri::XSLT(File.read("/home/daniel/Documentos/timbox-ruby/cadenaoriginal_3_3.xslt"))
+  xslt = Nokogiri::XSLT(File.read("/home/daniel/Documentos/sysChurch/lib/cadenaoriginal_3_3.xslt"))
   cadena = xslt.transform(xml)
   cadena.text.gsub("\n","")
 end

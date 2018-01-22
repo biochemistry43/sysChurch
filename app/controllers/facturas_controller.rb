@@ -21,7 +21,7 @@ class FacturasController < ApplicationController
       if @venta
         #RECEPTOR
         @rfc_receptor_f=@venta.cliente.rfc
-        @nombre_receptor_f=@venta.cliente.nombre
+        @nombre_receptor_f=@venta.cliente.nombre_completo
         #@uso_cfdi_receptor_f=@venta.cliente.uso_cfdi
 
         #COMPROBANTE
@@ -29,7 +29,7 @@ class FacturasController < ApplicationController
         @total=@venta.montoVenta
         #@rfc_receptor=
         decimal = format('%.2f', @total).split('.')
-        @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
+        @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
         @fechaVenta=  @venta.fechaVenta
 
         @itemsVenta  = @venta.item_ventas
@@ -47,6 +47,7 @@ class FacturasController < ApplicationController
     require 'timbrado'
 
     if request.post?
+
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
       # la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
@@ -81,7 +82,7 @@ class FacturasController < ApplicationController
     #ATRIBUTOS EL RECEPTOR
     factura.receptor = CFDI::Receptor.new({
       rfc: @@venta.cliente.rfc,
-       nombre: @@venta.cliente.nombre,
+       nombre: @@venta.cliente.nombre_completo,
        UsoCFDI:'G01' #CATALOGO
       #, domicilioFiscal: domicilioReceptor
       })
@@ -101,7 +102,7 @@ class FacturasController < ApplicationController
       })
       #TEMPORALMENTE COMENTADA.
       #factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-      #  tax: '002', type_factor: 'Tasa', rate: 0.160000)
+        #tax: '002', type_factor: 'Tasa', rate: 0.160000)
         #puts @cont=@cont+1
     end
     @total_to_w= factura.total_to_words
@@ -161,12 +162,26 @@ class FacturasController < ApplicationController
     # Extraer el xml timbrado desde la respuesta del WS
     response = response.to_hash
     xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
-    File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
-    #@tim= xml_timbrado
-
+    archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
+    archivo.write (xml_timbrado)
+    archivo.close
+    #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
 #UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
+
+    #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
+    document = Nokogiri::XML(File.read('/home/daniel/Documentos/timbox-ruby/xml__33.xml'))
+    template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
+    html_document = template.transform(document)
+    #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
+    pdf = WickedPdf.new.pdf_from_string(html_document)
+    #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+    # Guardan los CFDI como representacion impresa en...
+    save_path = Rails.root.join('/home/daniel/Documentos/timbox-ruby/','RepresentaciónImpresaCFDI_33.pdf')
+    File.open(save_path, 'wb') do |file|
+       file << pdf
+    end
 
 =begin
   #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
