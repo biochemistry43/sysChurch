@@ -121,7 +121,7 @@ class FacturasController < ApplicationController
     #archivo.close
 
 
-    #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO EN TIMBOX
+    #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
     # Parametros para conexion al Webservice (URL de Pruebas)
 
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
@@ -161,17 +161,34 @@ class FacturasController < ApplicationController
 
     # Extraer el xml timbrado desde la respuesta del WS
     response = response.to_hash
-    xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]
+    xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]#xml sin alteraciones listo para entregar al cliente.
+    xml_copia=xml_timbrado #Se crea una copia del xml para la representación impresa
 
     archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
     archivo.write (xml_timbrado)
     archivo.close
     #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
-#UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
+    #UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
 
     #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
-    document = Nokogiri::XML(File.read('/home/daniel/Documentos/timbox-ruby/xml__33.xml'))
+    #document = Nokogiri::XML(File.read('/home/daniel/Documentos/timbox-ruby/xml__33.xml'))
+    document = Nokogiri::XML(xml_copia) #  se evita guardar y volver a leer.
+    puts "CADENA ORIGINAL DEL COMPLEMENTO"
+    #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
+    factura.complemento=CFDI::Complemento.new(
+      {
+        Version: document.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+        UUID:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+        FechaTimbrado:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+        RfcProvCertif:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+        SelloCFD:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+        NoCertificadoSAT:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+      }
+    )
+    puts factura.complemento.cadena_TimbreFiscalDigital
+
+
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
     html_document = template.transform(document)
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)

@@ -6,7 +6,7 @@ require 'byebug'
 def generar_sello(comprobante, path_llave, password_llave)
   comprobante = Nokogiri::XML(comprobante)
   comprobante = actualizar_fecha(comprobante)
-  puts cadena = get_cadena_original(comprobante)
+  cadena = get_cadena_original(comprobante)
 
   #Generar digestion y sello
   private_key = OpenSSL::PKey::RSA.new(File.read(path_llave), password_llave)
@@ -38,3 +38,12 @@ def actualizar_sello(comprobante, sello)
   node.content = sello
   comprobante.to_xml
 end
+
+#Obtener la cadena original del complemento
+=begin
+def cad_orig_complemento(xml)
+  xslt = Nokogiri::XSLT(File.read("/home/daniel/Documentos/sysChurch/lib/cadenaoriginalcomplemento_3_3.xslt"))
+  cadena = xslt.transform(xml)
+  cadena.text.gsub("\n","")
+end
+=end

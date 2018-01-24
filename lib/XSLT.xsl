@@ -59,10 +59,11 @@
                    <th>Cve Unidad</th>
                    <th>Descripción</th>
                    <th>Precio</th>
-                   <th>Descuento</th>
+                   <th>Desc</th>
                    <th>Importe</th>
                </tr>
              </thead>
+
              <xsl:apply-templates select="//cfdi:Concepto"/>
 
              <tr>
@@ -72,7 +73,7 @@
              </tr>
              <tr>
                  <td colspan="6"></td>
-                 <th align="right">Desc.:</th>
+                 <th align="right">Descuento:</th>
                  <td align="right">$ <xsl:value-of select="@Descuento"/></td>
              </tr>
              <xsl:for-each select="./cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado">
@@ -111,20 +112,16 @@
             </table>
           </td>
 
-
-
-
-
           <tr><th>Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
           <tr><td id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
-<td>
+          <td>
           <tr><th>Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
           <tr><td id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
-</td>
+        </td>
         </table>
         </table>
-        <div>
 
+        <div>
           <center>
             ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.
           </center>
@@ -136,14 +133,14 @@
 <xsl:template match="//cfdi:Concepto">
   <tbody>
     <tr>
-        <td align="center"><xsl:value-of select="@Cantidad"/></td>
-        <td align="center"><xsl:value-of select="@ClaveProdServ"/></td>
-        <td align="center"><xsl:value-of select="@Unidad"/></td>
-        <td align="center"><xsl:value-of select="@ClaveUnidad"/></td>
-        <td align="center"><xsl:value-of select="@Descripcion"/></td>
-        <td align="right">$ <xsl:value-of select="@ValorUnitario"/></td>
-        <td align="right">$ <xsl:value-of select="@Descuento"/></td>
-        <td align="right">$ <xsl:value-of select="@Importe"/></td>
+        <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
+        <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
+        <td align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
+        <td align="center" class="conceptos"><xsl:value-of select="@ClaveUnidad"/></td>
+        <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
+        <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
+        <td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
+        <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
     </tr>
   </tbody>
     <xsl:for-each select="./cfdi:Traslados/cfdi:Traslado">

@@ -18,6 +18,7 @@ table thead{
 	color:white;
 	text-align: center;
 }
+
 td {
   border:none;
 }
@@ -34,7 +35,10 @@ div{
 	font-size: 12px;
 	background-color: #204D74;
 }
+.conceptos{
 
+   border-bottom: solid 1px #204D74 ;
+}
 .serieFolio{
 	margin-top: 0px;
 	background-color: #204D74;
@@ -63,7 +67,6 @@ div{
 }
 #sellosDig{
 	word-break: break-all;
-	
 }
 #text-transform{
 	text-transform: none !important;
@@ -72,4 +75,7 @@ div{
 	border:none;
 	width: 100%;
 	align:left;
+	margin: 10px !important;
+
+
 }

@@ -478,6 +478,27 @@ module CFDI
       end
       result
     end
+    
+=begin
+    # return string with total in words.
+    # Example: ( UN MIL CIENTO SESENTA PESOS 29/100 M.N. )
+    def total_to_words
+      decimal = format('%.2f', @total).split('.')
+      "( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
+    end
+
+# return data of qr code image
+
+def qr_code
+  t = "?re=#{@transmitter.rfc}"
+  t += "&rr=#{@receptor.rfc}"
+  t += "&tt=#{format('%6f', @total).rjust(17, '0')}"
+  t += "&id=#{@complement.uuid}"
+  img = RQRCode::QRCode.new(t).to_img
+  img.resize(120, 120).to_data_url
+end
+=end
+
 
   private
 
