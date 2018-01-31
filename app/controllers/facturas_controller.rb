@@ -111,7 +111,6 @@ class FacturasController < ApplicationController
     # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
     factura.cadena_original
     # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-    # Aunque con Profact(PAC) no es necesario porque lo hace automáticamente cuando se registra un emisor
     #llave2.sella factura
     # Esto genera la factura como xml
     xml= factura.to_xml
@@ -179,7 +178,7 @@ class FacturasController < ApplicationController
     factura.complemento=CFDI::Complemento.new(
       {
         Version: document.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-        UUID:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+        uuid:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
         FechaTimbrado:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
         RfcProvCertif:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
         SelloCFD:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
@@ -187,6 +186,7 @@ class FacturasController < ApplicationController
       }
     )
     puts factura.complemento.cadena_TimbreFiscalDigital
+    factura.qr_code document
 
 
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
@@ -199,6 +199,7 @@ class FacturasController < ApplicationController
     File.open(save_path, 'wb') do |file|
        file << pdf
     end
+
 
 =begin
   #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT

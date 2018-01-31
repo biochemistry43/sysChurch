@@ -23,6 +23,9 @@ module CFDI
         @UsoCFDI
       ].flatten
     end
+    def rr_QR
+      rfc=  @rfc
+    end
     def ns
       return ({
         Nombre: @nombre,
@@ -44,6 +47,9 @@ module CFDI
 
         @regimenFiscal
       ].flatten
+    end
+    def re_QR
+      rfc=  @rfc
     end
     def ns
       return ({

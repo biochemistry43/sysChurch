@@ -478,7 +478,7 @@ module CFDI
       end
       result
     end
-    
+
 =begin
     # return string with total in words.
     # Example: ( UN MIL CIENTO SESENTA PESOS 29/100 M.N. )
@@ -487,18 +487,46 @@ module CFDI
       "( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
     end
 
-# return data of qr code image
-
-def qr_code
-  t = "?re=#{@transmitter.rfc}"
-  t += "&rr=#{@receptor.rfc}"
-  t += "&tt=#{format('%6f', @total).rjust(17, '0')}"
-  t += "&id=#{@complement.uuid}"
-  img = RQRCode::QRCode.new(t).to_img
-  img.resize(120, 120).to_data_url
-end
 =end
 
+  # Forma el Código de Barra Bidimencional
+  def qr_code document
+    #La URL del acceso al servicio que pueda mostrar los datos del
+    #comprobante
+    #https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx
+    cbb = "https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx"
+    #UUID del comprobante, precedido por el texto “&id=”
+    cbb += "&id=#{@complemento.uuid}"   #Investigar si es ? o &
+    #RFC del Emisor, a 12/13 posiciones, precedido por el texto ”&re=”
+    cbb += "&re==#{@emisor.re_QR}"
+    #RFC del Receptor, a 12/13 posiciones, precedido por el texto
+    #“&rr=”, para el comprobante de retenciones se usa el dato que
+    #esté registrado en el RFC del receptor o el NumRegIdTrib (son
+    #excluyentes).
+    cbb += "&rr=#{@receptor.rr_QR}"
+    #Total del comprobante máximo a 25 posiciones (18 para los
+    #enteros, 1 para carácter “.”, 6 para los decimales), se deben
+    #omitir los ceros no significativos, precedido por el texto “&tt=”
+    cbb += "&tt=#{format('%6f', @total).rjust(25).squish}" #Ya no quieren los mugrosos ceros no significativos
+    #t += "&tt=#{format('%6f', @total).rjust(25, '0')}"
+
+    #Ocho últimos caracteres del sello digital del emisor del
+    #comprobante, precedido por el texto “&fe=”
+    #puts "ESTE MERO ES EL SELLO DEL QUE QUIERO LOS ULTIMOS 8"
+    #node = comprobante.xpath('//@Sello')[0]
+    #puts sello=document.xpath('//@Sello')
+    #puts sello.to_s
+    #puts sello.split('')
+
+
+
+    #puts "TODOOOOOOOOOOOOOOOOOOOO"
+    #puts cbb += "&fe=#{sello.last(8)}"
+
+
+    img = RQRCode::QRCode.new(cbb).to_img
+    img.resize(120, 120).save("/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png")
+  end
 
   private
 

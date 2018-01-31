@@ -14,6 +14,8 @@ gem 'wkhtmltopdf-binary'
 
 #Gema que sirve para describir un número en palabras
 gem "number_to_words"
+#Para formar el CBB(Código de Barras Bidimenciona)
+gem 'rqrcode_png'
 
 
 
@@ -92,7 +94,7 @@ end
 
 group :production do
    # Use postgresql as the database for Active Record in production
-   gem 'pg'
+   gem 'pg' #se debe de instalar la dependencia faltante con: sudo apt-get install libpq-dev
 end
 
 gem 'rails_12factor', group: :production
