@@ -535,23 +535,12 @@ module CFDI
       NombRegimenFiscal:"E",
       NombFormaPago:"F",
       NombMetodoPago:"G"
-
-
-      #DATOS DEL EMISOR
-=begin
-      Calle:current_user.negocio.datos_fiscales_negocio.calle,
-      NumExterior:current_user.negocio.datos_fiscales_negocio.numExterior,
-      NumInterior:current_user.negocio.datos_fiscales_negocio.numInterior,
-      Colonia:current_user.negocio.datos_fiscales_negocio.colonia,
-      Codigo_postal:current_user.negocio.datos_fiscales_negocio.codigo_postal,
-      Municipio:current_user.negocio.datos_fiscales_negocio.municipio,
-      Delegacion:current_user.negocio.datos_fiscales_negocio.delegacion,
-      Estado:current_user.negocio.datos_fiscales_negocio.estado,
-      Email:current_user.negocio.datos_fiscales_negocio.email,
-=end
       }
     builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
       xml.RepresentacionImpresa(ns){
+        xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
+        xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
+        xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
       }
     end
     xml_info_extra=builder.to_xml

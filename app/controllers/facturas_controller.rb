@@ -70,21 +70,65 @@ class FacturasController < ApplicationController
       total: @@venta.montoVenta
       #Descuento:0 #DESCUENTO RAPPEL
     })
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    #DATOS DEL EMISOR
+    domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
+      calle: current_user.negocio.datos_fiscales_negocio.calle,
+      noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
+      noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
+      colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+      #localidad: current_user.negocio.datos_fiscales_negocio.,
+      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      municipio: current_user.negocio.datos_fiscales_negocio.municipio,
+      estado: current_user.negocio.datos_fiscales_negocio.estado,
+      #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
+    })
+    #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
+    #establecimiento en el que se expidan las Facturas Electrónicas.
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    expedidoEn= CFDI::DatosComunes::Domicilio.new({
+      #Estos datos los uso como datos fiscales, sin embargo si se hara distinción entre direccion comun y dirección fiscal,
+      #se debera corregir.
+      calle: current_user.sucursal.calle,
+      noExterior: current_user.sucursal.numExterior,
+      noInterior: current_user.sucursal.numInterior,
+      colonia: current_user.sucursal.colonia,
+      #localidad: current_user.negocio.datos_fiscales_negocio.,
+      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      municipio: current_user.sucursal.municipio,
+      estado: current_user.sucursal.estado,
+      #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: current_user.sucursal.codigo_postal
+    })
 
     #ATRIBUTOS DEL EMISOR
     factura.emisor = CFDI::Emisor.new({
       #rfc: 'AAA010101AAA',
       rfc: current_user.negocio.datos_fiscales_negocio.rfc,
       nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
-      regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal #CATALOGO
+      regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal, #CATALOGO
+      domicilioFiscal: domicilioEmisor,
+      expedidoEn: expedidoEn
+    })
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
+      calle: @@venta.cliente.direccionCalle,
+      noExterior: @@venta.cliente.direccionNumeroExt,
+      noInterior: @@venta.cliente.direccionNumeroInt,
+      colonia: @@venta.cliente.direccionColonia,
+      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      municipio: @@venta.cliente.direccionMunicipio,
+      estado: @@venta.cliente.direccionEstado,    #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: @@venta.cliente.direccionCp
     })
 
     #ATRIBUTOS EL RECEPTOR
     factura.receptor = CFDI::Receptor.new({
       rfc: @@venta.cliente.rfc,
        nombre: @@venta.cliente.nombre_completo,
-       UsoCFDI:'G01' #CATALOGO
-      #, domicilioFiscal: domicilioReceptor
+       UsoCFDI:'G01', #CATALOGO
+       domicilioFiscal: domicilioReceptor
       })
 
     #<< para que puedan ser agragados los conceptos que se deseen.
