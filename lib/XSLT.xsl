@@ -8,12 +8,26 @@
    <html>
    <head>
    <link rel="stylesheet"  type="text/css" href="/home/daniel/Documentos/sysChurch/lib/factura.css"/>
+
    <title>Factura Electrónica <xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
 
    </head>
    <body>
    <table width="100%" id="tablaRaiz">
       <tr>
+        <td >
+          <xsl:element name="img">
+            <xsl:attribute name="src">
+              <xsl:value-of select="cfdi:RepresentacionImpresa/@Logo"/>
+            </xsl:attribute>
+            <xsl:attribute name="height">
+              120
+            </xsl:attribute>
+            <xsl:attribute name="width">
+              200
+            </xsl:attribute>
+          </xsl:element>
+        </td>
         <td colspan="2" align="right">
           <table class="serieFolio">
                <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
@@ -92,6 +106,17 @@
         <hr/>
         <table id="sellosDig">
           <td>
+            <xsl:element name="img">
+              <xsl:attribute name="src">
+                <xsl:value-of select="cfdi:RepresentacionImpresa/@CodigoQR"/>
+              </xsl:attribute>
+              <xsl:attribute name="height">
+                120
+              </xsl:attribute>
+              <xsl:attribute name="width">
+                120
+              </xsl:attribute>
+            </xsl:element>
             <table id="tablaInternaSellos">
               <tr>
                 <!--IV. Contener el número de folio asignado por el SAT  -->
@@ -114,10 +139,12 @@
 
           <tr><th>Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
           <tr><td id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
-          <td>
+
           <tr><th>Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
           <tr><td id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
-        </td>
+
+          <tr><th>Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
+          <tr><td id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
         </table>
         </table>
 

@@ -184,7 +184,7 @@ module CFDI
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.3
 
-    def to_xml
+    def comprobante_to_xml
       ns = {
         'xmlns:cfdi' => "http://www.sat.gob.mx/cfd/3",
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
@@ -489,12 +489,12 @@ module CFDI
 
 =end
 
-  # Forma el Código de Barra Bidimencional
+  # Función para formar el Código de Barra Bidimencional
   def qr_code document
     #La URL del acceso al servicio que pueda mostrar los datos del
     #comprobante
     #https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx
-    cbb = "https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx"
+    cbb = "https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?"
     #UUID del comprobante, precedido por el texto “&id=”
     cbb += "&id=#{@complemento.uuid}"   #Investigar si es ? o &
     #RFC del Emisor, a 12/13 posiciones, precedido por el texto ”&re=”
@@ -512,20 +512,66 @@ module CFDI
 
     #Ocho últimos caracteres del sello digital del emisor del
     #comprobante, precedido por el texto “&fe=”
-    #puts "ESTE MERO ES EL SELLO DEL QUE QUIERO LOS ULTIMOS 8"
-    #node = comprobante.xpath('//@Sello')[0]
-    #puts sello=document.xpath('//@Sello')
-    #puts sello.to_s
-    #puts sello.split('')
-
-
-
-    #puts "TODOOOOOOOOOOOOOOOOOOOO"
-    #puts cbb += "&fe=#{sello.last(8)}"
-
+    sello=document.xpath('//@Sello')
+    s=sello.to_s()
+    last8=s.split('').last(8).join
+    puts cbb += "&fe=#{last8}"
 
     img = RQRCode::QRCode.new(cbb).to_img
-    img.resize(120, 120).save("/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png")
+    #No debe de ser menor a 2.75 cm
+    #1.75 cm == 103.937008 px
+    #3.175 cm == 120 px
+    img.resize(120, 120).save("/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png")#No quedará de otra mas que guardar la imagen.
+  end
+
+  #Esta función es para generar un nuevo xml con datos adicionales para poder formar la representación impresa del CFDI debido
+  #a que se usa una hoja de transformacón y el xml timbrado no contiene algunos datos para su correspondiente representación.
+  def add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento , logo
+    ns={
+      CodigoQR: "/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png", #la misma ruta donde se guarda el CBB
+      CadOrigComplemento: cadOrigComplemento,
+      Logo:logo, #Sha la la sha la la
+      TotalLetras: total_to_words(),
+      NombRegimenFiscal:"E",
+      NombFormaPago:"F",
+      NombMetodoPago:"G"
+
+
+      #DATOS DEL EMISOR
+=begin
+      Calle:current_user.negocio.datos_fiscales_negocio.calle,
+      NumExterior:current_user.negocio.datos_fiscales_negocio.numExterior,
+      NumInterior:current_user.negocio.datos_fiscales_negocio.numInterior,
+      Colonia:current_user.negocio.datos_fiscales_negocio.colonia,
+      Codigo_postal:current_user.negocio.datos_fiscales_negocio.codigo_postal,
+      Municipio:current_user.negocio.datos_fiscales_negocio.municipio,
+      Delegacion:current_user.negocio.datos_fiscales_negocio.delegacion,
+      Estado:current_user.negocio.datos_fiscales_negocio.estado,
+      Email:current_user.negocio.datos_fiscales_negocio.email,
+=end
+      }
+    builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
+      xml.RepresentacionImpresa(ns){
+      }
+    end
+    xml_info_extra=builder.to_xml
+    #Se combinan el xml previamente timbrado con el xml que contiene los datos adicionales para la representación impresa.
+    #El resultado es un xml
+    xml1 = Nokogiri::XML(xml_copia)
+    xml2 = Nokogiri::XML(xml_info_extra)
+    xml1.children.first.add_child(xml2.children.first.clone)
+
+    a = File.open("/home/daniel/Documentos/timbox-ruby/xml_COMBINADO", "w")
+    a.write (xml1)
+    a.close
+
+    xml1
+  end
+
+  #Función para representar el total en letras
+  def total_to_words
+    decimal = format('%.2f', @total).split('.')
+    total_en_letras="#{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N."
   end
 
   private
