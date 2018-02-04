@@ -10,6 +10,7 @@
    <link rel="stylesheet"  type="text/css" href="/home/daniel/Documentos/sysChurch/lib/factura.css"/>
 
    <title>Factura Electrónica <xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
+   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"/>
 
    </head>
    <body>
@@ -28,41 +29,84 @@
             </xsl:attribute>
           </xsl:element>
         </td>
-        <td colspan="2" align="right">
+        <!--Estos datos  -->
+        <td colspan="2" align="right" >
+          <table id="negocio">
+               <tr><th class="h1" colspan="2"><b>Pacifica coaching</b></th><td></td></tr>
+               <tr><th class="h1"  colspan="2">  <xsl:value-of select="//cfdi:DomicilioEmisor/@calle"/> #
+                 <xsl:value-of select="//cfdi:DomicilioEmisor/@noExterior"/> Int.
+                 <xsl:value-of select="//cfdi:DomicilioEmisor/@noInterior"/>
+               </th><td class="h1"></td></tr>
+
+               <tr><th class="h1"  colspan="2"><xsl:value-of select="//cfdi:DomicilioEmisor/@colonia"/></th><td class="h1"></td></tr>
+               <tr><th class="h1"  colspan="2">
+                 <xsl:value-of select="//cfdi:DomicilioEmisor/@municipio"/>,
+                 <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/>. C.P.:
+                 <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>
+               </th><td class="h1"></td></tr>
+               <tr><th class="h1"  colspan="2">R.F.C.:
+                 <xsl:value-of select="cfdi:Emisor/@Rfc"/>
+               </th><td class="h1"></td></tr>
+          </table>
+        </td>
+
+        <td colspan="2" align="right" >
           <table class="serieFolio">
+               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. 3.3</b></big></big></th><td></td></tr>
                <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
                <tr><th class="h1">Folio:</th><td class="h1"><xsl:value-of select="@Folio"/></td></tr>
                <tr><th class="h1">Fecha y hora:</th><td class="h1"><xsl:value-of select="@Fecha"/></td></tr>
           </table>
         </td>
       </tr>
+
       <tr>
-        <td width="50%">
+
            <table width="100%" border="1">
               <thead>
                <tr><th colspan="2" class="h1">Emisor</th></tr>
               </thead>
               <tbody class="emisor">
-               <tr><th align="right">RFC:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
+               <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
                <tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Emisor/@Nombre"/></td></tr>
+               <tr>
+                 <th align="right">Dirección:  </th>
+                 <td>calle: <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/> #
+                            <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/> colonia:
+                            <xsl:value-of select="//cfdi:ExpedidoEn/@colonia"/>,
+                            <xsl:value-of select="//cfdi:ExpedidoEn/@municipio"/>,
+                            <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
+                 </td>
+               </tr>
                <tr><th align="right">Regimen:  </th><td><xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/></td></tr>
              </tbody>
           </table>
-        </td>
 
-        <td width="50%">
+      </tr>
+      <tr>
           <table width="100%" border="1">
              <thead>
              <tr><th colspan="2" class="h1">Receptor</th></tr>
              </thead>
              <tbody>
-             <tr><th align="right">RFC:  </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td></tr>
+             <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td></tr>
              <tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td></tr>
+
+             <tr>
+               <th align="right">Dirección:  </th>
+               <td>calle: <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/> #
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/> colonia:
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
+               </td>
+             </tr>
              <tr><th align="right">Uso CFDI:  </th><td><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/></td></tr>
+
            </tbody>
            </table>
-         </td>
       </tr>
+
          <tr>
            <table width="100%" >
              <thead>
@@ -70,7 +114,7 @@
                    <th>Cantidad</th>
                    <th>Clave Prod</th>
                    <th>Unidad</th>
-                   <th>Cve Unidad</th>
+
                    <th>Descripción</th>
                    <th>Precio</th>
                    <th>Desc</th>
@@ -79,14 +123,12 @@
              </thead>
 
              <xsl:apply-templates select="//cfdi:Concepto"/>
-
              <tr>
-
-                 <td colspan="6"></td>
+                 <td colspan="5"></td>
                  <th align="right">SubTotal:</th><td align="right">$ <xsl:value-of select="@SubTotal"/></td>
              </tr>
              <tr>
-                 <td colspan="6"></td>
+                 <td colspan="5" align="center"> <xsl:value-of select="cfdi:RepresentacionImpresa/@TotalLetras"/> </td>
                  <th align="right">Descuento:</th>
                  <td align="right">$ <xsl:value-of select="@Descuento"/></td>
              </tr>
@@ -98,7 +140,7 @@
                      <td align="right"><xsl:value-of select="@Importe"/></td>
                  </tr>
              </xsl:for-each>
-             <tr id="total"><td colspan="6"></td>
+             <tr id="total"><td colspan="5"></td>
                  <th align="right"><b>Total:</b></th><td align="right" ><b>$ <xsl:value-of select="@Total"/></b></td>
              </tr>
             </table>
@@ -106,37 +148,38 @@
         <hr/>
         <table id="sellosDig">
           <td>
-            <xsl:element name="img">
-              <xsl:attribute name="src">
-                <xsl:value-of select="cfdi:RepresentacionImpresa/@CodigoQR"/>
-              </xsl:attribute>
-              <xsl:attribute name="height">
-                120
-              </xsl:attribute>
-              <xsl:attribute name="width">
-                120
-              </xsl:attribute>
-            </xsl:element>
             <table id="tablaInternaSellos">
+
+              <tr>
+                <td rowspan="6">
+                  <xsl:element name="img">
+                    <xsl:attribute name="src"><xsl:value-of select="cfdi:RepresentacionImpresa/@CodigoQR"/></xsl:attribute>
+                    <xsl:attribute name="height">120</xsl:attribute>
+                    <xsl:attribute name="width">120</xsl:attribute>
+                  </xsl:element>
+                </td>
+              </tr><!--1 -->
               <tr>
                 <!--IV. Contener el número de folio asignado por el SAT  -->
-                <td ><b>Folio fiscal: </b> <small> <xsl:value-of select="//@UUID"/></small></td>
-              </tr>
+                <td align="left"><b>Folio fiscal: </b> <small> <xsl:value-of select="//@UUID"/></small></td>
+              </tr><!--2 -->
               <tr>
                 <!--d) Fecha y hora de emisión y de certificación de la Factura en adición a lo señalado en el artículo 29-A, fracción III del CFF.-->
-                <td ><b>Fecha y hora de certificación: </b> <small><xsl:value-of select="//@FechaTimbrado"/></small></td>
-              </tr>
+                <td align="left"><b>Fecha y hora de certificación: </b> <small><xsl:value-of select="//@FechaTimbrado"/></small></td>
+              </tr><!--3 -->
               <tr>
                 <!--b) Número de serie del CSD del emisor y del SAT. -->
-                <td ><b>Número de serie del Certificado de Sello Digital: </b> <small><xsl:value-of select="@NoCertificado"/></small></td>
-              </tr>
+                <td align="left"><b>Número de serie del Certificado de Sello Digital: </b> <small><xsl:value-of select="@NoCertificado"/></small></td>
+              </tr><!--4 -->
               <tr>
                 <!-- b) Número de serie del CSD del emisor y del SAT. -->
-                <td><b>Número de serie del Certificado de Sello Digital del SAT: </b> <small><xsl:value-of select="//@NoCertificadoSAT"/></small></td>
-              </tr>
+                <td align="left"><b>Número de serie del Certificado de Sello Digital del SAT: </b> <small><xsl:value-of select="//@NoCertificadoSAT"/></small></td>
+              </tr><!--5 -->
+
+
             </table>
           </td>
-
+         
           <tr><th>Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
           <tr><td id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
 
@@ -145,6 +188,7 @@
 
           <tr><th>Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
           <tr><td id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
+
         </table>
         </table>
 
@@ -163,7 +207,7 @@
         <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
         <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
         <td align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
-        <td align="center" class="conceptos"><xsl:value-of select="@ClaveUnidad"/></td>
+
         <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
         <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
         <td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>

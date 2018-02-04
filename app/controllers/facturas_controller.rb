@@ -233,7 +233,7 @@ class FacturasController < ApplicationController
     puts logo
 
     xml_rep_impresa = factura.add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento, logo
-    puts xml_rep_impresa
+    #puts xml_rep_impresa
 
 
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
