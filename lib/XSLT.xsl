@@ -179,19 +179,19 @@
 
             </table>
           </td>
-         
-          <tr><th>Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
-          <tr><td id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
 
-          <tr><th>Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
-          <tr><td id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
+          <tr><th >Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
+          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
 
-          <tr><th>Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
-          <tr><td id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
+          <tr><th >Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
+          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
+
+          <tr><th >Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
+          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
 
         </table>
         </table>
-
+        
         <div>
           <center>
             ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.

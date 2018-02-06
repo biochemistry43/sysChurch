@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180107004036) do
+ActiveRecord::Schema.define(version: 20180206005837) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -312,6 +312,7 @@ ActiveRecord::Schema.define(version: 20180107004036) do
     t.integer  "forma_pago_id"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.string   "folio_fiscal"
   end
 
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"

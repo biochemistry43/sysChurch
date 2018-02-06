@@ -48,16 +48,16 @@ class FacturasController < ApplicationController
 
     if request.post?
 
-      #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+
       certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
-      # la llave en formato pem, porque no encontré como usar OpenSSL con llaves tipo PKCS8
       # Esta se convierte de un archivo .key con:
       # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
       llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
       pass_llave = "12345678a"
       #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-      llave2 = CFDI::Key.new llave, pass_llave
+      #llave2 = CFDI::Key.new llave, pass_llave
 
+      #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
       serie: 'FA_V',
       folio: 1,
@@ -66,7 +66,7 @@ class FacturasController < ApplicationController
       FormaPago:'01',#CATALOGO Es de tipo string
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
-      lugarExpedicion: current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+      lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
       total: @@venta.montoVenta
       #Descuento:0 #DESCUENTO RAPPEL
     })
@@ -84,18 +84,18 @@ class FacturasController < ApplicationController
       #pais: current_user.negocio.datos_fiscales_negocio.,
       codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
     })
-    #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
-    #establecimiento en el que se expidan las Facturas Electrónicas.
+    #III. Sí se tiene más de un local o establecimiento, se deberácurrent_user.sucursal.codigo_postal señalar el domicilio del local o
+    #establecimiento en el que se expidan las Facturas Electrónicascurrent_user.sucursal.codigo_postal.
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
     expedidoEn= CFDI::DatosComunes::Domicilio.new({
-      #Estos datos los uso como datos fiscales, sin embargo si se hara distinción entre direccion comun y dirección fiscal,
+      #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
       #se debera corregir.
       calle: current_user.sucursal.calle,
       noExterior: current_user.sucursal.numExterior,
       noInterior: current_user.sucursal.numInterior,
       colonia: current_user.sucursal.colonia,
       #localidad: current_user.negocio.datos_fiscales_negocio.,
-      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      #referencia: current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
       municipio: current_user.sucursal.municipio,
       estado: current_user.sucursal.estado,
       #pais: current_user.negocio.datos_fiscales_negocio.,
@@ -175,28 +175,8 @@ class FacturasController < ApplicationController
     # Convertir la cadena del xml en base64
     xml_base64 = Base64.strict_encode64(archivo_xml)
 
-    # Generar el Envelope
-    envelope = %Q^
-      <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
-        <soapenv:Header/>
-        <soapenv:Body>
-          <urn:timbrar_cfdi soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
-            <username xsi:type=\"xsd:string\">#{usuario}</username>
-            <password xsi:type=\"xsd:string\">#{contrasena}</password>
-            <sxml xsi:type=\"xsd:string\">#{xml_base64}</sxml>
-        </urn:timbrar_cfdi>
-        </soapenv:Body>
-      </soapenv:Envelope>^
+    xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
-    # Crear un cliente de savon para hacer la petición al WS, en produccion quitar el "log: true"
-    client = Savon.client(wsdl: wsdl_url, log: true)
-
-    # Llamar el metodo timbrar
-    response = client.call(:timbrar_cfdi, { "xml" => envelope })
-
-    # Extraer el xml timbrado desde la respuesta del WS
-    response = response.to_hash
-    xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]#xml sin alteraciones listo para entregar al cliente.
     xml_copia=xml_timbrado #Se crea una copia del xml para la representación impresa
 
     archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
@@ -207,21 +187,21 @@ class FacturasController < ApplicationController
     #UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
     #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
     #document = Nokogiri::XML(File.read('/home/daniel/Documentos/timbox-ruby/xml__33.xml'))
-    document = Nokogiri::XML(xml_copia) #  se evita guardar y volver a leer.
+    #document = Nokogiri::XML(xml_copia) #  se evita guardar y volver a leer.
     #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
     factura.complemento=CFDI::Complemento.new(
       {
-        Version: document.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-        uuid:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
-        FechaTimbrado:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-        RfcProvCertif:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-        SelloCFD:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-        NoCertificadoSAT:document.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+        Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+        uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+        FechaTimbrado:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+        RfcProvCertif:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+        SelloCFD:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+        NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
       }
     )
 
     #Los nuevos datos para la representación impresa.
-    codigoQR=factura.qr_code document
+    codigoQR=factura.qr_code xml_timbrado
     cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
     logo=current_user.negocio.logo
     #totalLetras=factura.total_to_words

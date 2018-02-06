@@ -546,7 +546,8 @@ module CFDI
     xml_info_extra=builder.to_xml
     #Se combinan el xml previamente timbrado con el xml que contiene los datos adicionales para la representación impresa.
     #El resultado es un xml
-    xml1 = Nokogiri::XML(xml_copia)
+    #xml1 = Nokogiri::XML(xml_copia)
+    xml1 = xml_copia
     xml2 = Nokogiri::XML(xml_info_extra)
     xml1.children.first.add_child(xml2.children.first.clone)
 
