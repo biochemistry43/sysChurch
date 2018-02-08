@@ -11,6 +11,7 @@ class FacturasController < ApplicationController
       @consulta = true #determina si se realizó una consulta
       @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
       @@venta=@venta
+
       #EMISOR
       @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
       @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
@@ -19,6 +20,25 @@ class FacturasController < ApplicationController
       @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
 
       if @venta
+        #blank lo contrario de presentar
+        #Una venta solo se puede facturar una vez
+        @ventaFacturadaNoSi=Venta.find_by(:folio=>params[:folio]).factura.blank?
+
+        unless @ventaFacturadaNoSi
+          @fechaVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.fecha_expedicion
+          @folioVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.folio
+
+        end
+
+        @consecutivo = 0
+        if current_user.sucursal.facturas.last
+          @consecutivo = current_user.sucursal.facturas.last.consecutivo
+          if @consecutivo
+            @consecutivo += 1
+          end
+        else
+          @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+        end
         #RECEPTOR
         @rfc_receptor_f=@venta.cliente.rfc
         @nombre_receptor_f=@venta.cliente.nombre_completo
@@ -48,7 +68,6 @@ class FacturasController < ApplicationController
 
     if request.post?
 
-
       certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
       # Esta se convierte de un archivo .key con:
       # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
@@ -57,10 +76,21 @@ class FacturasController < ApplicationController
       #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
       #llave2 = CFDI::Key.new llave, pass_llave
 
+      #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
+      consecutivo = 0
+      if current_user.sucursal.facturas.last
+        consecutivo = current_user.sucursal.facturas.last.consecutivo
+        if consecutivo
+          consecutivo += 1
+        end
+      else
+        consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+      end
+
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
       serie: 'FA_V',
-      folio: 1,
+      folio: consecutivo,
       fecha: Time.now,
       #formaDePago: @@venta.venta_forma_pago.forma_pago.clave
       FormaPago:'01',#CATALOGO Es de tipo string
@@ -84,8 +114,8 @@ class FacturasController < ApplicationController
       #pais: current_user.negocio.datos_fiscales_negocio.,
       codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
     })
-    #III. Sí se tiene más de un local o establecimiento, se deberácurrent_user.sucursal.codigo_postal señalar el domicilio del local o
-    #establecimiento en el que se expidan las Facturas Electrónicascurrent_user.sucursal.codigo_postal.
+    #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
+    #establecimiento en el que se expidan las Facturas Electrónicas
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
     expedidoEn= CFDI::DatosComunes::Domicilio.new({
       #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
@@ -206,48 +236,69 @@ class FacturasController < ApplicationController
     logo=current_user.negocio.logo
     #totalLetras=factura.total_to_words
 
-    #nombRegimenFiscal=current_user.negocio.datos_fiscales_negocio.regimenFiscal.nombre
-    #nombFormaPago=
-    #nombMetodoPago=
-    puts "EL LOGO DE LA EMPRESA"
-    puts logo
-
     xml_rep_impresa = factura.add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento, logo
     #puts xml_rep_impresa
-
 
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
     html_document = template.transform(xml_rep_impresa)
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
     pdf = WickedPdf.new.pdf_from_string(html_document)
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+
     # Guardan los CFDI como representacion impresa en...
     save_path = Rails.root.join('/home/daniel/Documentos/timbox-ruby/','RepresentaciónImpresaCFDI_33.pdf')
     File.open(save_path, 'wb') do |file|
        file << pdf
     end
 
+    #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
+    @factura = Factura.new
 
-=begin
-  #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
-  document = Nokogiri::XML(File.read('/home/daniel/Documentos/prueba/xml.xml'))
-  template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/prueba/xsl.xsl'))
-  html_document = template.transform(document)
-  #File.open('/home/daniel/Documentos/prueba/CFDImpreso.html', 'w').write(html_document)
-  pdf = WickedPdf.new.pdf_from_string(html_document)
-  #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
-  # Guardan los CFDI como representacion impresa en...
-  save_path = Rails.root.join('/home/daniel/Documentos/prueba/','CFDImpreso.pdf')
-  File.open(save_path, 'wb') do |file|
-     file << pdf
-  end
+    #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
+    claveSucursal = current_user.sucursal.clave
+    folio = claveSucursal + "V"
+    folio << consecutivo.to_s
+    @factura.folio= folio
 
-=end
+    #Obtiene la fecha del xml timbrado para que no difiera el comprobante y el registro en la BD.
+    fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
+    fecha_registroBD=Time.parse(fecha_xml.to_s)
+    @factura.fecha_expedicion = Time.parse(fecha_registroBD.to_s)
 
-      #@f=params[:]
-      #Cuando se cumpla
-      redirect_to :action => "index"
-      #@devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones, :monto=>@itemVenta.precio_venta)
+    #Condición para que agregue el consecutivo de acuerdo a la numeración establecida por el usuario en la configuración de la numeración de Facturas y Notas o aplicar la númeración por default.
+    @factura.consecutivo=consecutivo
+
+    #Los estados de las facturas pueden ser:
+        #Borrador, Activa, Detenida, Cancelada
+    @factura.estado_factura="Activa"
+    current_user.facturas<<@factura
+    current_user.negocio.facturas<<@factura
+    current_user.sucursal.facturas<<@factura
+
+    folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
+    @factura.folio_fiscal=folio_fiscal_xml.to_s
+
+    #Se factura a nombre del cliente que realizó la compra en el negocio.
+    cliente_id=@@venta.cliente.id
+    Cliente.find(cliente_id).facturas << @factura
+
+    venta_id=@@venta.id
+    Venta.find(venta_id).factura = @factura #relación uno a uno
+
+    #La forma de pago pendiente...
+    #forma_pago_id=@@venta.
+
+      #Condicionar si:
+          #si se pudo timbrar el xml
+          #se pudo guardar en la nube
+          #si se logró enviar por corre electronico
+      if @factura.save
+        flash[:notice] = "La factura #{folio} se guardó exitosamente!"
+        redirect_to facturas_index_path
+      else
+        flash[:notice] = "Error al intentar guardar la factura"
+        redirect_to facturas_index_path
+      end
 
     end
   end
@@ -559,10 +610,7 @@ class FacturasController < ApplicationController
 
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def factura_params
-      params.require(:factura).permit(
-        #:folio, :fecha_expedicion, :estado_factura
-        #, :venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id, :forma_pago_id
-      )
-    end
+    #def factura_params
+      #params.require(:factura).permit(:folio, :fecha_expedicion, :estado_factura,:venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id,:forma_pago_id, :folio_fiscal, :consecutivo)
+    #end
 end

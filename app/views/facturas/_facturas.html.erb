@@ -324,9 +324,10 @@
               <td style="text-align: center;"><%=factura.fecha_expedicion %></td>
               <td style="text-align: center;"><%=factura.venta.montoVenta %></td>
 
-              <%if factura.forma_pago.nombre.eql?("efectivo")%>
-              <td style="text-align: center;"><%=factura.venta.montoVenta%></td>
-              <%end%>
+              <!--if factura.forma_pago.nombre.eql?("efectivo")-->
+              <!--<td style="text-align: center;"><factura.venta.montoVenta%></td>
+              <end>-->
+              <td style="text-align: center;"><%= %></td>
               <td style="text-align: center;"><%= %></td>
 
               <td style="text-align: center;">
@@ -334,8 +335,8 @@
                   <span class="btn btn-success"> Cerrada </span>
                 <%elsif factura.estado_factura.eql?("Borrador")%>
                   <span class="btn btn-info"> Borrador </span>
-                <%elsif factura.estado_factura.eql?("Abierta")%>
-                  <span class="btn btn-warning"> Abierta </span>
+                <%elsif factura.estado_factura.eql?("Activa")%>
+                  <span class="btn btn-warning"> Activa</span>
                 <%elsif factura.estado_factura.eql?("Anulada")%>
                   <span class="btn btn-danger"> Anulada </span>
                 <%end%>
@@ -346,6 +347,16 @@
                   <i class="fa fa-info-circle"></i>
                   <% end %>
                 <% end %>
+
+                <% if can? :read, factura%>
+                  <% if factura.estado_factura.eql?("Activa") %>
+                    <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Cancelar factura', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
+                     <i class="fa fa-close"></i>
+                    <% end %>
+                  <% end %>
+                <% end %>
+
               </td>
             </tr>
           <% end %>
@@ -363,7 +374,7 @@
       $('.data-table').DataTable({
         responsive: true,
         "language":{
-          "info": "Mostrar pag _PAGE_ de _PAGES_",PUEV15
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
           "lengthMenu": "Mostrar _MENU_ registros",
           "zeroRecords": "No hay coincidencias",
           "search": "Buscar: _INPUT_",
@@ -378,6 +389,6 @@
       });
     });
   </script>
-    <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
-    <%= javascript_include_tag "ventas" %>
+  <%= javascript_include_tag "ventas" %>
+  <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>

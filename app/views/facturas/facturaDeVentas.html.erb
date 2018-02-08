@@ -9,25 +9,33 @@
   <hr>
   <!-- Esta sección solamente se muestra si se encontró una factura y si se determina que se está
   haciendo una consulta -->
-  <% if @venta %>
-    <% if @consulta && @itemsVenta%>
+  <%if @consulta%>
+    <% if @venta && @itemsVenta%>
       <!-- Despliega los resultados encontrados en la búsqueda -->
+      <%if @ventaFacturadaNoSi%>
+        <div class="row">
+          <div class="col-md-12" style="color: gray;">
+              Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %>
+              </span>
+          </div>
+        </div>
+        <hr>
+      <%else%>
       <div class="row">
         <div class="col-md-12" style="color: gray;">
-            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+          La venta ya fue facturada el día <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaVentaFacturada %></span>
+          con folio: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folioVentaFacturada %></span> 
         </div>
       </div>
       <hr>
-      <!-- Esta sección contiene las productos o servicios vendidos en esta venta
-      en particular -->
+      <%end%>
+
     <% else %>
       <div class="row">
         <div class="col-md-12" style="color: gray;">
           No hay ventas registradas con este folio
         </div>
-
       </div>
-
       <div class="row">
         <div class="col-md-12" style="color: gray;">
           <div class="col-md-12">
@@ -35,10 +43,9 @@
           </div>
         </div>
       </div>
-
       <hr>
     <% end %>
-  <% end %>
+  <%end%>
 
   <div class="row" style="margin-bottom: 30px;">
 
@@ -84,7 +91,8 @@
         <!--end-->
   <!--  </div>-->
 
-    <% if @venta && @consulta && @itemsVenta %>
+    <% if @venta && @consulta && @itemsVenta && @ventaFacturadaNoSi%>
+
     <!-- Formulario para mostrar los datos de la venta consultada para facturar -->
     <!-- form_for @venta, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |new_f| -->
     <%= form_tag({controller: "facturas", action: "facturando"}, {:method=>:post})do%>
@@ -115,7 +123,7 @@
 
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= text_field_tag :folio, nil,{class:'form-control text_field', value:0 , disabled:true }%>
+                    <%= text_field_tag :folio, nil,{class:'form-control text_field', value: @consecutivo, disabled:true }%>
                   </div>
 
                 </div>
