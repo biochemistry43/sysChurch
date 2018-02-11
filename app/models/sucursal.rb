@@ -1,5 +1,6 @@
 class Sucursal < ActiveRecord::Base
 	has_many :facturas
+	has_many :factura_recurrentes
 
 	has_many :users
 	has_many :articulos

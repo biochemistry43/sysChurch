@@ -23,10 +23,16 @@ class FacturasController < ApplicationController
         #blank lo contrario de presentar
         #Una venta solo se puede facturar una vez
         @ventaFacturadaNoSi=Venta.find_by(:folio=>params[:folio]).factura.blank?
+        @ventaCancelada=@venta.status.eql?("Cancelada")
+
+        #Por si a alguien se le ocurre querer facturar una venta cancelada jajaja
+        #if @ventaCancelada
+         #@fechaVentaCancelada=current_user.negocio.venta_canceladas.where("venta"=>@venta).fecha
+        #end
 
         unless @ventaFacturadaNoSi
           @fechaVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.fecha_expedicion
-          @folioVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.folio
+          @folioVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.folio #Folio de la factura de la venta
 
         end
 

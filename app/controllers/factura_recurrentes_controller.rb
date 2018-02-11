@@ -5,8 +5,40 @@ class FacturaRecurrentesController < ApplicationController
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada]
 
   def facturaRecurrentes
-    @articulos=Articulo.all
+    @clientes=Cliente.all
+    @usoCfdi=UsoCfdi.all
+    @metodoDePago=MetodoPago.all
+    @formaPago=FormaPago.all
+    if request.post?
 
+      @factura_recurrente = FacturaRecurrente.new
+
+      #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
+
+
+      #@factura_recurrente.fecha_expedicion = Time.now
+
+
+      #Todas las facturas en alegra se agregan es estado borrador amenos que...
+      @factura_recurrente.estado_factura="Borrador"
+      current_user.factura_recurrentes<<@factura_recurrente
+      current_user.negocio.factura_recurrentes<<@factura_recurrente
+      current_user.sucursal.factura_recurrentes<<@factura_recurrente
+
+
+      #Se factura a nombre del cliente que realizó la compra en el negocio.
+      #cliente_id=@@venta.cliente.id
+      #Cliente.find(cliente_id).facturas << @factura
+      if @factura_recurrente.save
+        flash[:notice] = "La factura se guardó exitosamente!"
+        redirect_to factura_recurrentes_index_path
+      else
+        flash[:notice] = "Error al intentar guardar la factura"
+        redirect_to factura_recurrentes_index_path
+      end
+
+
+    end
   end
 
   def consulta_facturas

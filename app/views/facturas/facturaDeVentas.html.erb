@@ -1,4 +1,4 @@
-<div class="right_col" role="main" style="height: 900px;">
+ <div class="right_col" role="main" style="height: 900px;">
 
   <div class="page-title">
     <div class="title_left">
@@ -12,7 +12,15 @@
   <%if @consulta%>
     <% if @venta && @itemsVenta%>
       <!-- Despliega los resultados encontrados en la búsqueda -->
-      <%if @ventaFacturadaNoSi%>
+      <%if @ventaCancelada%>
+          <!--Validar si tiene alguna nota de crédito si es q tiene factura relacionada-->
+        <div class="row">
+          <div class="col-md-12" style="color: gray;">
+            La venta fue cancelada.
+          </div>
+        </div>
+        <hr>
+      <%elsif @ventaFacturadaNoSi%>
         <div class="row">
           <div class="col-md-12" style="color: gray;">
               Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %>
@@ -24,7 +32,7 @@
       <div class="row">
         <div class="col-md-12" style="color: gray;">
           La venta ya fue facturada el día <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaVentaFacturada %></span>
-          con folio: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folioVentaFacturada %></span> 
+          con folio: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folioVentaFacturada %></span>
         </div>
       </div>
       <hr>
@@ -92,7 +100,7 @@
   <!--  </div>-->
 
     <% if @venta && @consulta && @itemsVenta && @ventaFacturadaNoSi%>
-
+      <%unless @ventaCancelada%>
     <!-- Formulario para mostrar los datos de la venta consultada para facturar -->
     <!-- form_for @venta, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |new_f| -->
     <%= form_tag({controller: "facturas", action: "facturando"}, {:method=>:post})do%>
@@ -140,21 +148,21 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_emisor,'RFC emisor', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_fiscal_emisor_f,'Nombre fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :@nombre_fiscal_emisor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :regimen_fiscal_emisor_f,'Regimen fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :regimen_fiscal_emisor_f, nil,{class:'form-control text_field',value: @regimen_fiscal_emisor_f, disabled:true }%>
                   </div>
               </div>
@@ -166,13 +174,13 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor_f, disabled:true }%>
                   </div>
               </div>
@@ -253,8 +261,8 @@
     </div>
 
     </div>
+    <%end%> <!--La venta fue cancelada-->
     <%end%>
-
     <%end%>
   <!-- javascript_include_tag "cancelaciones" -->
 </div>
