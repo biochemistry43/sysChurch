@@ -48,6 +48,7 @@ class FacturasController < ApplicationController
         #RECEPTOR
         @rfc_receptor_f=@venta.cliente.rfc
         @nombre_receptor_f=@venta.cliente.nombre_completo
+        @correo_electonico_f=@@venta.cliente.enviar_al_correo
         #@uso_cfdi_receptor_f=@venta.cliente.uso_cfdi
 
         #COMPROBANTE
@@ -188,9 +189,6 @@ class FacturasController < ApplicationController
     @total_to_w= factura.total_to_words
     # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
     certificado.certifica factura
-
-    # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-    #llave2.sella factura
     # Esto genera la factura como xml
     xml= factura.comprobante_to_xml
 
@@ -200,30 +198,21 @@ class FacturasController < ApplicationController
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
     nombreArchivo ="/home/daniel/Documentos/prueba/xml33.xml"
-    #llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-    #pass_llave = "12345678a"
 
+    # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
     archivo_xml = generar_sello(xml, llave, pass_llave)
-
-    #Guardar cambios al archivo
-    #File.write(nombreArchivo, archivo_xml.to_s)
-
     # Convertir la cadena del xml en base64
     xml_base64 = Base64.strict_encode64(archivo_xml)
-
+    #Se obtiene el xml timbrado
     xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
-
-    xml_copia=xml_timbrado #Se crea una copia del xml para la representación impresa
+    #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
+    xml_copia=xml_timbrado
 
     archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
     archivo.write (xml_timbrado)
     archivo.close
     #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
-    #UNA VEZ QUE SE TIENE EL XML TIMBRADO, SE PROCEDE A GENERAR EL PDF
-    #Para poder convertir el XML a PDF primero se debe transformar en html con un XSLT
-    #document = Nokogiri::XML(File.read('/home/daniel/Documentos/timbox-ruby/xml__33.xml'))
-    #document = Nokogiri::XML(xml_copia) #  se evita guardar y volver a leer.
     #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
     factura.complemento=CFDI::Complemento.new(
       {
@@ -241,10 +230,8 @@ class FacturasController < ApplicationController
     cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
     logo=current_user.negocio.logo
     #totalLetras=factura.total_to_words
-
     xml_rep_impresa = factura.add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento, logo
     #puts xml_rep_impresa
-
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
     html_document = template.transform(xml_rep_impresa)
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)

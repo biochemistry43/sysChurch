@@ -10,4 +10,13 @@ class Cliente < ActiveRecord::Base
 	def nombre_completo
       "#{nombre} #{ape_pat} #{ape_mat}"
 	end
+
+	def enviar_al_correo
+		if email.present?
+			"Enviar a: #{email}"
+		else
+			"Si desea enviar la factura debe registrar el correo del cliente!"
+		end
+	end
+
 end

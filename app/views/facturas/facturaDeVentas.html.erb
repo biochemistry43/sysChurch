@@ -1,4 +1,4 @@
- <div class="right_col" role="main" style="height: 900px;">
+<div class="right_col" role="main" style="height: 900px;">
 
   <div class="page-title">
     <div class="title_left">
@@ -101,15 +101,39 @@
 
     <% if @venta && @consulta && @itemsVenta && @ventaFacturadaNoSi%>
       <%unless @ventaCancelada%>
-    <!-- Formulario para mostrar los datos de la venta consultada para facturar -->
+        <!-- Formulario para mostrar los datos de la venta consultada para facturar -->
     <!-- form_for @venta, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |new_f| -->
     <%= form_tag({controller: "facturas", action: "facturando"}, {:method=>:post})do%>
+    <div class="row">
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <%= label_tag :imprimir,'Imprimir', class:"control-label"%>
+      </div>
+      <div class="col-md-1 col-sm-1 col-xs-1">
+          <%=check_box_tag(:imprimir, "yes", false, {class:"icheckbox_flat-green checked", checked:"checked"})%>
+      </div>
 
-    <hr style="border-style: solid; border-width: 2px;">
+      <div class="col-md-4 col-sm-4 col-xs-4">
+
+        <%= label_tag :correo_electonico,@correo_electonico_f, class:"control-label"%>
+      </div>
+
+      <%if @venta.cliente.email.present?%>
+        <div class="col-md-1 col-sm-1 col-xs-1">
+            <%=check_box_tag(:correo_electonico, "yes", false, {class:"icheckbox_flat-green checked"})%>
+        </div>
+      <%else%>
+      <div class="col-md-4 col-sm-4 col-xs-4 input-group">
+        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+        <%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"juanperez65@hotmail.com" }%>
+      </div>
+      <%end%>
+    </div>
+
 
     <div class="col-md-12 col-sm-12 col-xs-12">
 
       <div class="row">
+          <hr style="border-style: solid; border-width: 2px;">
         <div class="panel panel-default" >
           <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
             <h3 class="panel-title">CFDI 3.3</h3>
@@ -133,7 +157,6 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= text_field_tag :folio, nil,{class:'form-control text_field', value: @consecutivo, disabled:true }%>
                   </div>
-
                 </div>
                 <!-- new_f.label :folio, "Folio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} >
                 <div class="col-lg-8">
@@ -148,21 +171,21 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_emisor,'RFC emisor', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
                     <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_fiscal_emisor_f,'Nombre fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
                     <%= text_field_tag :@nombre_fiscal_emisor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :regimen_fiscal_emisor_f,'Regimen fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
                     <%= text_field_tag :regimen_fiscal_emisor_f, nil,{class:'form-control text_field',value: @regimen_fiscal_emisor_f, disabled:true }%>
                   </div>
               </div>
@@ -174,13 +197,13 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
                     <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
                     <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor_f, disabled:true }%>
                   </div>
               </div>
@@ -221,31 +244,31 @@
             </div>
             <!--Panel para para la homologación, cálculos y redondeos -->
             <div class="panel panel-default col-md-offset-8">
-              <div class="panel-body">
+              <div class="panel-body" align="right">
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= label_tag :subtotal,'SubTotal', class:"control-label"%>
+                    <%= label_tag :subtotal,'SubTotal:', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-6">
                       <input type="text" class="form-control text_field" value= "<%= %>">
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= label_tag :descuento,'Descuento', class:"control-label"%>
+                    <%= label_tag :descuento,'Descuento:', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-6">
                       <input type="text" class="form-control text_field" value= "<%= %>">
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= label_tag :impuesto,'I.V.A', class:"control-label"%>
+                    <%= label_tag :impuesto,'I.V.A.:', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-6">
                       <input type="text" class="form-control text_field" value= "<%= %>">
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= label_tag :total,'Total', class:"control-label"%>
+                    <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>       
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
-                      <input type="text" class="form-control text_field" value= "<%=@total %>" disabled>
+                  <div class="col-md-6 col-sm-6 col-xs-6" >
+                    <big><big><big><%= label_tag :total,@total, class:"control-label"%></big></big></big>
                   </div>
               </div>
             </div>

@@ -5,10 +5,11 @@ class FacturaRecurrentesController < ApplicationController
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada]
 
   def facturaRecurrentes
-    @clientes=Cliente.all
+    @clientes=current_user.negocio.clientes
     @usoCfdi=UsoCfdi.all
     @metodoDePago=MetodoPago.all
     @formaPago=FormaPago.all
+
     if request.post?
 
       @factura_recurrente = FacturaRecurrente.new
