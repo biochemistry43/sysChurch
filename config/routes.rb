@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   post 'facturas/consulta_por_cliente'
   post 'facturas/consulta_avanzada'
   post 'facturas/facturando'
-  get 'facturas/pdf'
+  #get 'facturas/pdf'
 
 
   #resources :facturas

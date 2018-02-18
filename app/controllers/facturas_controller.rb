@@ -99,6 +99,8 @@ class FacturasController < ApplicationController
       serie: 'FA_V',
       folio: consecutivo,
       fecha: Time.now,
+      #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
+      #La moneda por default es MXN
       #formaDePago: @@venta.venta_forma_pago.forma_pago.clave
       FormaPago:'01',#CATALOGO Es de tipo string
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
@@ -181,16 +183,31 @@ class FacturasController < ApplicationController
         ValorUnitario: c.precio_venta, #el importe se calcula solo
         #Descuento: 0 #Expresado en porcentaje
       })
-      #TEMPORALMENTE COMENTADA.
+      #TEMPORALMENTE COMENTADA
       #factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-        #tax: '002', type_factor: 'Tasa', rate: 0.160000)
+      #  tax: '002', type_factor: 'Tasa', rate: 0.160000)
         #puts @cont=@cont+1
     end
+=begin
+    factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+      uuid:"123456789"
+      })
+    factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+      uuid:"987654321"
+    })
+
+    factura.cfdisrelacionados = CFDI::CfdiRelacionados.new({
+      tipoRelacion: "NOTA DE CRÉDITO"#,
+      #uuids: folis
+    })
+=end
+
     @total_to_w= factura.total_to_words
     # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
     certificado.certifica factura
     # Esto genera la factura como xml
     xml= factura.comprobante_to_xml
+    puts xml
 
     #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
     # Parametros para conexion al Webservice (URL de Pruebas)

@@ -1,30 +1,45 @@
 module CFDI
-  #
-  class CfdiRelacionados < ElementoComprobante
-    attr_accessor :tipoRelacion
-    def initialize
-      @comp_relacionados = []
-    end
-    def count_relacionados
-      @comp_relacionados.count #+ @detained.count
+
+   class Cfdirelacionado < ElementoComprobante#Vamos a complacer al SAT de como se tiene que hacer  jajaja
+
+     #attr_accessor :folios_relacionados
+     #Estos son los UUIDs(Folios fiscales de los CFDIs) relacionados que se aplicarán en la
+     #nota de crédito o también conocida como Factura de Egreso.
+
+       attr_accessor  :uuid
+
+       def uuid=(uuid)
+         @uuid=uuid
+       end
+
+  end #Clase Padre CfdiRelacionado
+
+  class CfdiRelacionados# < Cfdirelacionado
+    attr_accessor :uuids, :tipoRelacion
+
+    def initialize data={}  #No se que changos pero salió jajaja
+      #puts self.class
+      data.each do |k,v|
+        method = "#{k}=".to_sym
+        next if !self.respond_to? method
+        self.send method, v
+      end
     end
 
-    def relacionados=(data)
-      if data.is_a? Array #En caso de que sea un arreglo
-        data.map do |c|
-          c = CfdiRelacionado.new(c) unless c.is_a? CfdiRelacionado
-          @comp_relacionados << c
-        end
-      elsif data.is_a? Hash #O en el caso un hash
-        @comp_relacionados << CfdiRelacionado.new(data)
-      elsif data.is_a? CfdiRelacionado
-        @comp_relacionados << data
-      end
-      @comp_relacionados
-    end
   end
 
-  class CfdiRelacionado
-     attr_accessor  :uuid
+end
+=begin
+module CFDI
+
+  class CfdiRelacionado < ElementoComprobante
+
+    attr_accessor :uuid
+
+    def uuid= uuid
+      @uuid=uuid
+      @uuid
+    end
   end
 end
+=end

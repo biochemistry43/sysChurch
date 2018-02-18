@@ -12,10 +12,12 @@ require_relative 'cfdi/addenda.rb'
 require_relative 'cfdi/comprobante.rb'
 require_relative 'cfdi/emisor_receptor.rb'
 require_relative 'cfdi/concepto.rb'
+require_relative 'cfdi/relacionados.rb'
 require_relative 'cfdi/complemento.rb'
 #require_relative 'xml.rb'
 require_relative 'cfdi/certificado.rb'
 require_relative 'cfdi/key.rb'
+
 
 
 # Comprobantes fiscales digitales por los internets

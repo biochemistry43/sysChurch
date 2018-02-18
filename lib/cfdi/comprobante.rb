@@ -2,7 +2,7 @@ module CFDI
   class Comprobante # La clase principal para crear Comprobantes
     #Los datos del comprobante en el orden correcto.
     @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal, :Descuento, :moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
-    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :cancelada, :impuestos]
+    @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :uuidsrelacionados, :impuestos, :cfdisrelacionados]
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
     @addenda = nil
@@ -14,7 +14,10 @@ module CFDI
         subTotal: 0.00,
         #TipoCambio: 1,
         conceptos: [],
+        uuidsrelacionados: [],
         impuestos: Impuesto.new,
+        #cfdisrelacionados: [],
+        #relacionados: CfdiRelacionado.new,
         tipoDeComprobante: 'I', #CATALOGO
         #Descuento: 0.00
         #total:0.00
@@ -127,7 +130,43 @@ module CFDI
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
     #
     # @return [CFDI::Entidad] Una entidad
+    #Retorna un objeto de la clase Cfdirelacionado para poder acceder
+    def uuidsrelacionados= data #Novato novato tenia que ser un método get, no método set!
+      if data.is_a? Array #En caso de que sea un arreglo
+        data.map do |ff|
+          ff = Cfdirelacionado.new(ff) unless ff.is_a? Cfdirelacionado
+          @uuidsrelacionados << ff
+        end
+      elsif data.is_a? Hash #O en el caso de quehtml_document sea un hash
+        @uuidsrelacionados << Cfdirelacionado.new(data)
+      elsif data.is_a? Cfdirelacionado
+        @uuidsrelacionados << data
+      end
+      @uuidsrelacionados=data
+      data
+    end
 
+    #Para indicar el tipo de RElación: Nota de Crédito(Factura de egreso)... bla bla bla
+    def cfdisrelacionados= cfdisrelacionado
+      cfdisrelacionado = CfdiRelacionados.new cfdisrelacionado unless cfdisrelacionado.is_a? CfdiRelacionados
+      @cfdisrelacionados = cfdisrelacionado
+      @cfdisrelacionados
+    end
+=begin
+    def cfdisrelacionados= cfdisrelacionados
+      if cfdisrelacionados.is_a? Array
+        cfdisrelacionados.map! do |cfdi_r|
+        cfdi_r = Cfdirelacionado.new cfdi_r unless cfdi_r.is_a? Cfdirelacionado
+        end
+      elsif cfdisrelacionados.is_a? Hash
+        cfdisrelacionados << Cfdirelacionado.new(cfdi_r)
+      elsif cfdisrelacionados.is_a?
+        cfdisrelacionados << cfdisrelacionados
+      end
+      @cfdisrelacionados = cfdisrelacionados
+      cfdisrelacionados
+    end
+=end
     def emisor= emisor
       emisor = Emisor.new emisor unless emisor.is_a? Emisor
       @emisor = emisor;
@@ -161,6 +200,7 @@ module CFDI
       @conceptos = conceptos
       conceptos
     end
+
 
 
     # Asigna un complemento al comprobante
@@ -232,6 +272,23 @@ module CFDI
         xml.Comprobante(ns) do
           ins = xml.doc.root.add_namespace_definition('cfdi', 'http://www.sat.gob.mx/cfd/3')
           xml.doc.root.namespace = ins
+
+          #Si el tipo de comprobante es "E", se agregará el nodo CfdiRelaionados en el que se indicará el tipo de relación
+          #en otras palabras, si es una nota de crédito o débito...y además se agregará el elemento Cfdirelacionado para
+          #indicar cuales son los folios fiscales que incluiran en el nuevo comprobante.
+          if ns[:TipoDeComprobante]=="E"
+          xml.CfdiRelacionados(TipoRelacion: @cfdisrelacionados.tipoRelacion){
+            if @uuidsrelacionados.cout > 0
+              cont=0
+              @uuidsrelacionados.each do |ff|
+              xml.CfdiRelacionado(
+                 UUID: @uuidsrelacionados[cont].uuid
+                )
+                cont=cont+1
+              end
+            end
+          }
+          end
           xml.Emisor(@emisor.ns)  {
           }
           xml.Receptor(@receptor.ns) {
@@ -563,6 +620,14 @@ module CFDI
     decimal = format('%.2f', @total).split('.')
     total_en_letras="#{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N."
   end
+
+  #Funcion para guardar los xml
+  def guardar_xml(xml,ruta,nombre)
+    archivo = File.open("#{ruta}/#{nombre}", "w")
+    archivo.write (xml)
+    archivo.close
+  end
+
 
   private
 
