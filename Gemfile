@@ -5,7 +5,7 @@ gem 'rails', '4.2.2'
 
 gem 'nokogiri', '~> 1.6', '>= 1.6.7.1'
 gem 'savon'
-#Mejor se colocó dentro del lib para cambiar editarla
+#Mejor se colocó dentro del lib para editarla
 #gem 'timbradocfdi'
 
 #Para convertir un archivo html a pdf
@@ -17,7 +17,8 @@ gem "number_to_words"
 #Para formar el CBB(Código de Barras Bidimenciona)
 gem 'rqrcode_png'
 
-
+#Para guardar los CFDIs en la nube
+gem 'google-cloud'
 
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'

@@ -216,20 +216,17 @@
                     </a>
                     <ul class="nav child_menu" style="display: none">
                       <%if can? :create, Factura%>
-                        <li><%= link_to "CFDIs", facturas_index_path %>
+                        <li><%= link_to "Facturas", facturas_index_path %>
                         </li>
                       <%end%>
 
                       <%if can? :create, Articulo%>
-                        <li><%= link_to "CFDIs recurrentes", factura_recurrentes_index_path %>
+                        <li><%= link_to "Fact. recurrentes", factura_recurrentes_index_path %>
                         </li>
                       <%end%>
-                      <%if can? :create, MarcaProducto%>
-                        <li><%= link_to "Notas de débito", marca_productos_path %>
-                        </li>
-                      <%end%>
+
                       <%if can? :create, PresentacionProducto%>
-                        <li><%= link_to "Nota de crédito", presentacion_productos_path %>
+                        <li><%= link_to "Notas de crédito", presentacion_productos_path %>
                         </li>
                       <%end%>
                     </ul>

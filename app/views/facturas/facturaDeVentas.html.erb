@@ -171,21 +171,21 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_emisor,'RFC emisor', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_fiscal_emisor_f,'Nombre fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :@nombre_fiscal_emisor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_emisor_f, disabled:true }%>
                   </div>
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :regimen_fiscal_emisor_f,'Regimen fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :regimen_fiscal_emisor_f, nil,{class:'form-control text_field',value: @regimen_fiscal_emisor_f, disabled:true }%>
                   </div>
               </div>
@@ -197,14 +197,22 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
                   </div>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-8 col-sm-8 col-xs-8">
                     <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor_f, disabled:true }%>
+                  </div>
+                  <div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
+                  </div>
+                  <div class="col-md-8 col-sm-8 col-xs-8">
+                    <%= collection_select(nil, :uso_cfdi_id, @uso_cfdi_receptor_f, :id, :descripcion, {:prompt => 'Elija el uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                  </div>
                   </div>
               </div>
             </div>
@@ -265,7 +273,7 @@
                       <input type="text" class="form-control text_field" value= "<%= %>">
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>       
+                    <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>
                   </div>
                   <div class="col-md-6 col-sm-6 col-xs-6" >
                     <big><big><big><%= label_tag :total,@total, class:"control-label"%></big></big></big>

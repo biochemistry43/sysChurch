@@ -101,7 +101,7 @@
                           <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
                </td>
              </tr>
-             <tr><th align="right">Uso CFDI:  </th><td><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/></td></tr>
+             <tr><th align="right">Uso CFDI:  </th><td><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
 
            </tbody>
            </table>
@@ -191,7 +191,7 @@
 
         </table>
         </table>
-        
+
         <div>
           <center>
             ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.

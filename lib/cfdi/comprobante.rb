@@ -583,7 +583,7 @@ module CFDI
 
   #Esta función es para generar un nuevo xml con datos adicionales para poder formar la representación impresa del CFDI debido
   #a que se usa una hoja de transformacón y el xml timbrado no contiene algunos datos para su correspondiente representación.
-  def add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento , logo
+  def add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento , logo, uso_cfdi_descripcion
     ns={
       CodigoQR: "/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png", #la misma ruta donde se guarda el CBB
       CadOrigComplemento: cadOrigComplemento,
@@ -591,7 +591,8 @@ module CFDI
       TotalLetras: total_to_words(),
       NombRegimenFiscal:"E",
       NombFormaPago:"F",
-      NombMetodoPago:"G"
+      NombMetodoPago:"G",
+      UsoCfdiDescripcion:uso_cfdi_descripcion
       }
     builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
       xml.RepresentacionImpresa(ns){

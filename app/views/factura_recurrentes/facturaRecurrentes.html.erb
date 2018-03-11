@@ -10,7 +10,7 @@
   <%= form_tag({controller: "factura_recurrentes", action: "facturaRecurrentes"}, {:method=>:post})do%>
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="row">
-          <div class="panel panel-default" >
+          <div class="panel " >
             <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
               <h3 class="panel-title">CFDI 3.3</h3>
             </div>
@@ -22,10 +22,10 @@
                       <%= label_tag :cliente_id,'Cliente', class:"control-label"%>
                     </div>
                     <div class="col-md-7 col-sm-7 col-xs-7">
-                      <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre, {:prompt => 'Elija un cliente'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente'}, { class: "form-control col-md-7 col-xs-12" })%>
                     </div>
                     <div class="col-md-1 col-sm-1 col-xs-1">
-                    <%=link_to url = {controller: "clientes", action: "new"}, html_options = {class: "btn btn-round btn-info btn-default btn-md", remote: true} do %>
+                    <%=link_to url = {controller: "clientes", action: "new"}, html_options = {class: "btn btn-info btn-sm", remote: true} do %>
                       <i class="fa fa-plus"> </i>
                     <% end %>
                     </div>
@@ -33,10 +33,10 @@
 
                     <div>
                       <div class="col-md-4 col-sm-4 col-xs-4">
-                        <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
+                        <%= label_tag :uso_cfdi_id,'Uso C.F.D.I.', class:"control-label"%>
                       </div>
                       <div class="col-md-7 col-sm-7 col-xs-7">
-                        <%= collection_select(nil, :cliente_id, @usoCfdi, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                        <%= collection_select(nil, :uso_cfdi_id, @usoCfdi, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
                       </div>
                     </div>
                     <div>
@@ -63,6 +63,7 @@
 
 
               </div>
+
               <div class="panel  col-md-4 col-sm-4 col-xs-4">
               <div class="panel-body">
                 <div >
@@ -91,6 +92,8 @@
                 </div>
                 </div>
             </div>
+
+            <!--
             <table  class="table table-striped responsive-utilities jambo_table data-table">
               <thead>
                 <tr >
@@ -103,8 +106,45 @@
                 </tr>
               </thead>
             </table>
+          -->
 
-            <div class="panel panel-default col-md-offset-8">
+          <div class="row">
+              <div class="panel-body" id="panel-pos-body" >
+                <div class="form-group top_search">
+                  <div class="autocomplete input-group col-md-6 col-sm-6 col-xs-6">
+
+                    <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12" id="div-tabla-ventas">
+                    <table  class="table table-striped responsive-utilities jambo_table data-table">
+                      <thead>
+                        <tr class="headings">
+                          <th class="column-title">Clave </th>
+                          <th class="column-title">Nombre </th>
+                          <th class="column-title">Precio</th>
+                          <th class="column-title">Cantidad </th>
+                          <th class="column-title">Importe </th>
+                          <th class="column-title"></th>
+                          <th class="column-title"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </div> <!-- Terminar panel-pos-body -->
+
+          </div>
+
+
+
+            <div class="panel  col-md-offset-8">
               <div class="panel-body">
 
                   <div class="col-md-4 col-sm-4 col-xs-4">
@@ -148,3 +188,7 @@
       <%= render 'modalClientes'%>
 
 </div>
+<%= javascript_include_tag "autocomplete.jquery" %>
+<%= javascript_include_tag "punto-venta" %>
+
+<%= stylesheet_link_tag "autocomplete" %>

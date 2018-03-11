@@ -49,7 +49,7 @@ class FacturasController < ApplicationController
         @rfc_receptor_f=@venta.cliente.rfc
         @nombre_receptor_f=@venta.cliente.nombre_completo
         @correo_electonico_f=@@venta.cliente.enviar_al_correo
-        #@uso_cfdi_receptor_f=@venta.cliente.uso_cfdi
+        @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
 
         #COMPROBANTE
         #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
@@ -94,7 +94,12 @@ class FacturasController < ApplicationController
         consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
       end
 
-      #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+      #Uso de CFDI seleccionado por el usuario
+      #uso_cfdi_clave_f=params[:uso_cfdi_id]
+
+      @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
+
+    #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
       serie: 'FA_V',
       folio: consecutivo,
@@ -166,7 +171,7 @@ class FacturasController < ApplicationController
     factura.receptor = CFDI::Receptor.new({
       rfc: @@venta.cliente.rfc,
        nombre: @@venta.cliente.nombre_completo,
-       UsoCFDI:'G01', #CATALOGO
+       UsoCFDI:@usoCfdi.clave, #CATALOGO
        domicilioFiscal: domicilioReceptor
       })
 
@@ -246,8 +251,9 @@ class FacturasController < ApplicationController
     codigoQR=factura.qr_code xml_timbrado
     cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
     logo=current_user.negocio.logo
-    #totalLetras=factura.total_to_words
-    xml_rep_impresa = factura.add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento, logo
+    uso_cfdi_descripcion=@usoCfdi.descripcion
+
+    xml_rep_impresa = factura.add_elements_to_xml(xml_copia, codigoQR, cadOrigComplemento, logo, uso_cfdi_descripcion)
     #puts xml_rep_impresa
     template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
     html_document = template.transform(xml_rep_impresa)
@@ -260,6 +266,16 @@ class FacturasController < ApplicationController
     File.open(save_path, 'wb') do |file|
        file << pdf
     end
+
+    #require "google/cloud/storage"
+
+    #storage = Google::Cloud::Storage.new project_id: "cfdis-196902", credentials: "/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+
+
+
+    #http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-storage/v1.10.0/google/cloud/storage
+
+
 
     #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
     @factura = Factura.new
