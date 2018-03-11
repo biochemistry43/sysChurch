@@ -124,7 +124,7 @@
       <%else%>
       <div class="col-md-4 col-sm-4 col-xs-4 input-group">
         <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-        <%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"juanperez65@hotmail.com" }%>
+        <%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"Ejemplo: fulanito95@hotmail.com" }%>
       </div>
       <%end%>
     </div>
@@ -197,9 +197,15 @@
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
-                    <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
-                  </div>
+                  <%if @rfc_emisor_present%>
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
+                    </div>
+                  <%else%>
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field', :placeholder=>"Ingrese el R.F.C. del cliente"}%>
+                    </div>
+                  <%end%>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
                   </div>

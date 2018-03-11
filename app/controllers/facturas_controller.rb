@@ -46,7 +46,9 @@ class FacturasController < ApplicationController
           @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
         end
         #RECEPTOR
+        @rfc_emisor_present=@venta.cliente.rfc.present?
         @rfc_receptor_f=@venta.cliente.rfc
+
         @nombre_receptor_f=@venta.cliente.nombre_completo
         @correo_electonico_f=@@venta.cliente.enviar_al_correo
         @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
@@ -96,8 +98,6 @@ class FacturasController < ApplicationController
 
       #Uso de CFDI seleccionado por el usuario
       #uso_cfdi_clave_f=params[:uso_cfdi_id]
-
-      @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
 
     #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
@@ -168,8 +168,19 @@ class FacturasController < ApplicationController
     })
 
     #ATRIBUTOS EL RECEPTOR
+    @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
+    if @@venta.cliente.rfc.present?
+      rfc_receptor_f=@@venta.cliente.rfc
+    else
+      #Si no está registrado el R.F.C del cliente, se registra asi de facil jaja
+      rfc_receptor_f=params[:rfc_receptor]
+      cliente_id=@@venta.cliente.id
+      @cliente=Cliente.find(cliente_id)
+      @cliente.update(:rfc=>params[:rfc_receptor])
+
+    end
     factura.receptor = CFDI::Receptor.new({
-      rfc: @@venta.cliente.rfc,
+      rfc: rfc_receptor_f,
        nombre: @@venta.cliente.nombre_completo,
        UsoCFDI:@usoCfdi.clave, #CATALOGO
        domicilioFiscal: domicilioReceptor
