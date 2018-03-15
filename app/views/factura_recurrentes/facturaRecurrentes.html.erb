@@ -15,10 +15,10 @@
               <h3 class="panel-title">CFDI 3.3</h3>
             </div>
             <div class="panel-body ">
-              <div class="panel col-md-8 col-sm-8 col-xs-8">
-                <div class="panel-body">
+              <div class="panel  panel-default col-md-7 col-sm-7 col-xs-7">
+                <div class="panel-body ">
                   <div>
-                    <div class="col-md-4 col-sm-4 col-xs-4">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
                       <%= label_tag :cliente_id,'Cliente', class:"control-label"%>
                     </div>
                     <div class="col-md-7 col-sm-7 col-xs-7">
@@ -32,28 +32,28 @@
                     </div>
 
                     <div>
-                      <div class="col-md-4 col-sm-4 col-xs-4">
+                      <div class="col-md-3 col-sm-3 col-xs-3">
                         <%= label_tag :uso_cfdi_id,'Uso C.F.D.I.', class:"control-label"%>
                       </div>
-                      <div class="col-md-7 col-sm-7 col-xs-7">
-                        <%= collection_select(nil, :uso_cfdi_id, @usoCfdi, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :uso_cfdi_id, @usoCfdi, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI'}, { class: "form-control col-md-7 col-xs-12" })%>
                       </div>
                     </div>
                     <div>
-                      <div class="col-md-4 col-sm-4 col-xs-4">
+                      <div class="col-md-3 col-sm-3 col-xs-3">
                         <%= label_tag :metodo_pago,'Método de pago', class:"control-label"%>
                       </div>
-                      <div class="col-md-7 col-sm-7 col-xs-7">
-                        <%= collection_select(nil, :metodo_pago, @metodoDePago, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :metodo_pago, @metodoDePago, :id, :descripcion, {:prompt => 'Elija el método de pago'}, { class: "form-control col-md-7 col-xs-12" })%>
                       </div>
                     </div>
 
                     <div>
-                      <div class="col-md-4 col-sm-4 col-xs-4">
+                      <div class="col-md-3 col-sm-3 col-xs-3">
                         <%= label_tag :forma_pago,'Forma de pago', class:"control-label"%>
                       </div>
-                      <div class="col-md-7 col-sm-7 col-xs-7">
-                        <%= collection_select(nil, :forma_pago, @formaPago , :id, :nombre, {:prompt => 'El uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :forma_pago, @formaPago , :id, :nombre, {:prompt => 'Elija la forma de pago'}, { class: "form-control col-md-7 col-xs-12" })%>
                       </div>
                     </div>
 
@@ -64,32 +64,49 @@
 
               </div>
 
-              <div class="panel  col-md-4 col-sm-4 col-xs-4">
+              <div class="panel panel-default col-md-5 col-sm-5 col-xs-5">
               <div class="panel-body">
                 <div >
-                  <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                    <%= label_tag :fecha_inicial,'Fecha inicial', class:"control-label"%>
+                  <div class="col-md-5 col-sm-5 col-xs-5">
+                    <%= label_tag :fecha_inicial,'Proxima factura el: ', class:"control-label"%>
                   </div>
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+                  <div class="col-md-7 col-sm-7 col-xs-7">
+                    <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field text-center", selectMonths: :true}, {})%>
                   </div>
                 </div>
+
+                <div >
+                  <div class="col-md-2 col-sm-2 col-xs-2 ">
+                    <%= label_tag :recurrencia,'Cada ', class:"control-label"%>
+                  </div>
+                  <div class="col-md-3 col-sm-3 col-xs-3">
+                    <%= number_field_tag("Recurrencia", nil, {class: "form-control text_field", value:1})%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7 text-center">
+                    <%= select_tag "count", "<option>Dias</option><option>Semanas</option><option>Meses</option><option>Años</option>".html_safe, class: "form-control col-md-7 col-xs-12",prompt:"Elija la periodicidad" %>
+                  </div>
+                </div>
+
                 <div>
-                  <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                    <%= label_tag :fecha_final,'Fecha final', class:"control-label"%>
+                  <div class="col-md-5 col-sm-5 col-xs-5 ">
+                    <%= label_tag :duracion,'Duración', class:"control-label"%>
                   </div>
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
-                  </div>
-                </div>
-                <div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
-                    <%= label_tag :recurrencia,'Recurrencia', class:"control-label"%>
-                  </div>
-                  <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= number_field_tag("Recurrencia", nil, {class: "form-control text_field"})%>
+                  <div class="col-md-7 col-sm-7 col-xs-7 text-center">
+                    <%= select_tag "count", "<option>Indefinida</option><option>Hasta el día...</option>".html_safe, class: "form-control col-md-7 col-xs-12",prompt:"Elija la fecha final" %>
                   </div>
                 </div>
+
+                <div >
+                  <div class="col-md-5 col-sm-5 col-xs-5">
+                    <%= label_tag :fecha_final,'', class:"control-label"%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7">
+                    <!--input type="text" name="inputprueba" id="inputprueba" value="" class="form-control"-->
+                    <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field text-center", selectMonths: :true, :style=>"visibility: hidden"}, {})%>
+                    <!--visibility: visible -->
+                  </div>
+                </div>
+
                 </div>
             </div>
 

@@ -6,7 +6,7 @@ class FacturaRecurrentesController < ApplicationController
 
   def facturaRecurrentes
     @clientes=current_user.negocio.clientes
-    @usoCfdi=UsoCfdi.all
+    @usoCfdi=UsoCfdi.order('descripcion ASC').all
     @metodoDePago=MetodoPago.all
     @formaPago=FormaPago.all
 
@@ -21,7 +21,7 @@ class FacturaRecurrentesController < ApplicationController
 
 
       #Todas las facturas en alegra se agregan es estado borrador amenos que...
-      @factura_recurrente.estado_factura="Borrador"
+      #@factura_recurrente.estado_factura="Borrador"
       current_user.factura_recurrentes<<@factura_recurrente
       current_user.negocio.factura_recurrentes<<@factura_recurrente
       current_user.sucursal.factura_recurrentes<<@factura_recurrente
