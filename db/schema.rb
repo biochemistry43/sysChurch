@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180314123247) do
+ActiveRecord::Schema.define(version: 20180315015436) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -464,6 +464,24 @@ ActiveRecord::Schema.define(version: 20180314123247) do
     t.string   "estado"
     t.string   "email"
   end
+
+  create_table "nota_creditos", force: :cascade do |t|
+    t.string   "folio"
+    t.date     "fecha_expedicion"
+    t.decimal  "monto_devolucion"
+    t.string   "motivo"
+    t.integer  "user_id"
+    t.integer  "cliente_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "nota_creditos", ["cliente_id"], name: "index_nota_creditos_on_cliente_id"
+  add_index "nota_creditos", ["negocio_id"], name: "index_nota_creditos_on_negocio_id"
+  add_index "nota_creditos", ["sucursal_id"], name: "index_nota_creditos_on_sucursal_id"
+  add_index "nota_creditos", ["user_id"], name: "index_nota_creditos_on_user_id"
 
   create_table "pago_devolucions", force: :cascade do |t|
     t.decimal  "monto"

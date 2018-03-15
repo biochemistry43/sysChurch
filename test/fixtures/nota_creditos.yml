@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  folio: MyString
+  fecha_expedicion: 2018-03-14
+  monto_devolucion: 9.99
+  motivo: MyString
+  user_id: 
+  cliente_id: 
+  sucursal_id: 
+  negocio_id: 
+
+two:
+  folio: MyString
+  fecha_expedicion: 2018-03-14
+  monto_devolucion: 9.99
+  motivo: MyString
+  user_id: 
+  cliente_id: 
+  sucursal_id: 
+  negocio_id: 
