@@ -1,5 +1,114 @@
-<h1>New Nota Credito</h1>
+<div class="right_col" role="main" style="height: 900px;">
 
-<%= render 'form' %>
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Nota de crédito</h1>
+    </div>
+  </div> <!-- Fin de titulo-->
+  <div class="clearfix"></div>
+  <hr>
 
-<%= link_to 'Back', nota_creditos_path %>
+
+    <%= form_tag({controller: "facturas", action: "facturando"}, {:method=>:post})do%>
+
+    <div class="col-md-12 col-sm-12 col-xs-12">
+
+      <div class="row">
+          <hr style="border-style: solid; border-width: 2px;">
+        <div class="panel panel-default" >
+          <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
+            <h3 class="panel-title">C.F.D.I. de egreso 3.3</h3>
+          </div>
+
+          <div class="panel-body"> <!--El cuerpo principal del panel -->
+            <div class="panel panel-default" >
+              <div class="panel-body">
+                <div class="col-md-offset-6 col-sm-offset-6 col-xs-offset-6">
+                  <div class="col-md-2 col-sm-2 col-xs-2">
+                    <%= label_tag :serie,'Serie', class:"control-label"%>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= text_field_tag :serie, nil,{class:'form-control text_field' }%>
+                  </div>
+                  <div class="col-md-2 col-sm-2 col-xs-2">
+                    <%= label_tag :folio,'Folio', class:"control-label"%>
+
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= text_field_tag :folio, nil,{class:'form-control text_field', value: @consecutivo, disabled:true }%>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <table  class="table table-striped responsive-utilities jambo_table data-table">
+              <thead>
+                <tr>
+                  <th >UUID</th>
+                  <th>Descuento</th>
+                  <th >Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- @itemsVenta.each do |item| -->
+                  <tr>
+                    <td> <%=  %> </td>
+                    <td> <%=  %> </td>
+                    <td> <%= %> </td>
+
+                  </tr>
+                <!-- end -->
+
+              </tbody>
+            </table>
+            <!--Panel para el total representao en letras-->
+            <div class="panel panel-default col-md-6">
+              <div class="panel-body">
+                  <div class="">
+                    <%= label_tag :rfc_receptor,@total_en_letras, class:"control-label"%>
+                  </div>
+              </div>
+            </div>
+            <!--Panel para para la homologación, cálculos y redondeos -->
+            <div class="panel panel-default col-md-offset-8">
+              <div class="panel-body" align="right">
+
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :subtotal,'SubTotal:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-6">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :descuento,'Descuento:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-6">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :impuesto,'I.V.A.:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-6">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-6" >
+                    <big><big><big><%= label_tag :total,@total, class:"control-label"%></big></big></big>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
+            <div class="text-right">
+              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active"} %>
+            </div>
+          </div>
+        </div>
+    </div>
+    </div>
+    <%end%>
+  <!-- javascript_include_tag "cancelaciones" -->
+</div>

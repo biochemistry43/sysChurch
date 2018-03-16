@@ -45,11 +45,21 @@ class FacturasController < ApplicationController
         else
           @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
         end
+        #Temporalmente... 
+        if current_user.sucursal.clave.present?
+          claveSucursal = current_user.sucursal.clave
+          @serie = claveSucursal + "F"
+        else
+          folio_default="F"
+          @serie = folio_default
+        end
         #RECEPTOR
         @rfc_emisor_present=@venta.cliente.rfc.present?
         @rfc_receptor_f=@venta.cliente.rfc
+        @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
+        @nombre_fiscal_receptor_f=@venta.cliente.nombreFiscal
 
-        @nombre_receptor_f=@venta.cliente.nombre_completo
+        #@nombre_receptor_f=@venta.cliente.nombre_completo
         @correo_electonico_f=@@venta.cliente.enviar_al_correo
         @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
 
@@ -96,12 +106,23 @@ class FacturasController < ApplicationController
         consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
       end
 
-      #Uso de CFDI seleccionado por el usuario
-      #uso_cfdi_clave_f=params[:uso_cfdi_id]
+      if current_user.sucursal.clave.present?
+        #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
+        #claveSucursal = current_user.sucursal.clave
+        claveSucursal = current_user.sucursal.clave
+        folio_registroBD = claveSucursal + "F"
+        folio_registroBD << consecutivo.to_s
+        serie = claveSucursal + "F"
+      else
+        folio_default="F"
+        folio_registroBD =folio_default
+        #Una serie por default les guste o no les guste, pero útil para que no se produzca un colapso
+        serie = folio_default
+      end
 
     #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
-      serie: 'FA_V',
+      serie: serie,
       folio: consecutivo,
       fecha: Time.now,
       #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
@@ -179,9 +200,19 @@ class FacturasController < ApplicationController
       @cliente.update(:rfc=>params[:rfc_receptor])
 
     end
+    #El mismo show q  el rfc, si el sistema detecta que el cliente no está registrado con su nombre fiscal, le pedirá al usuario que lo ingrese.
+    if @@venta.cliente.nombreFiscal.present?
+      nombre_fiscal_receptor_f=@@venta.cliente.nombreFiscal
+    else
+      nombre_fiscal_receptor_f=params[:nombre_fiscal_receptor_f]
+      cliente_id=@@venta.cliente.id
+      @cliente=Cliente.find(cliente_id)
+      @cliente.update(:nombreFiscal=>nombre_fiscal_receptor_f)
+
+    end
     factura.receptor = CFDI::Receptor.new({
       rfc: rfc_receptor_f,
-       nombre: @@venta.cliente.nombre_completo,
+       nombre: nombre_fiscal_receptor_f,
        UsoCFDI:@usoCfdi.clave, #CATALOGO
        domicilioFiscal: domicilioReceptor
       })
@@ -290,13 +321,7 @@ class FacturasController < ApplicationController
 
     #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
     @factura = Factura.new
-
-    #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
-    claveSucursal = current_user.sucursal.clave
-    folio = claveSucursal + "V"
-    folio << consecutivo.to_s
-    @factura.folio= folio
-
+    @factura.folio= folio_registroBD
     #Obtiene la fecha del xml timbrado para que no difiera el comprobante y el registro en la BD.
     fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
     fecha_registroBD=Time.parse(fecha_xml.to_s)
@@ -330,7 +355,7 @@ class FacturasController < ApplicationController
           #se pudo guardar en la nube
           #si se logró enviar por corre electronico
       if @factura.save
-        flash[:notice] = "La factura #{folio} se guardó exitosamente!"
+        flash[:notice] = "La factura #{folio_registroBD} se guardó exitosamente!"
         redirect_to facturas_index_path
       else
         flash[:notice] = "Error al intentar guardar la factura"

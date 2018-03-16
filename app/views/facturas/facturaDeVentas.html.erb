@@ -137,7 +137,7 @@
           <hr style="border-style: solid; border-width: 2px;">
         <div class="panel panel-default" >
           <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
-            <h3 class="panel-title">CFDI 3.3</h3>
+            <h3 class="panel-title">CFDI DE INGRESO 3.3</h3>
           </div>
 
           <div class="panel-body">
@@ -149,7 +149,7 @@
                     <%= label_tag :serie,'Serie', class:"control-label"%>
                   </div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= text_field_tag :serie, nil,{class:'form-control text_field' }%>
+                    <%= text_field_tag :serie, nil,{class:'form-control text_field',value:@serie, disabled:true}%>
                   </div>
                   <div class="col-md-2 col-sm-2 col-xs-2">
                     <%= label_tag :folio,'Folio', class:"control-label"%>
@@ -204,15 +204,21 @@
                     </div>
                   <%else%>
                     <div class="col-md-8 col-sm-8 col-xs-8">
-                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field', :placeholder=>"Ingrese el R.F.C. del cliente"}%>
+                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field', :placeholder=>"Clave del Registro Federal del Contribuyente"}%>
                     </div>
                   <%end%>
                   <div class="col-md-4 col-sm-4 col-xs-4">
-                    <%= label_tag :nombre_receptor,'Nombre', class:"control-label"%>
+                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre fiscal', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-8">
-                    <%= text_field_tag :nombre_receptor, nil,{class:'form-control text_field',value:@nombre_receptor_f, disabled:true }%>
-                  </div>
+                  <%if @nombre_fiscal_receptor_present%>
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
+                    </div>
+                  <%else %>
+                    <div class="col-md-8 col-sm-8 col-xs-8">
+                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal"}%>
+                    </div>
+                  <%end %>
                   <div>
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
