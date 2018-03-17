@@ -59,7 +59,7 @@ class UnidadMedidasController < ApplicationController
         #format.html { redirect_to @unidad_medida, notice: 'Unidad medida was successfully updated.' }
         #format.json { render :show, status: :ok, location: @unidad_medida }
       else
-        format.json{render json: @cat_articulo.errors.full_messages, status: :unprocessable_entity}
+        format.json{render json: @unidad_medida.errors.full_messages, status: :unprocessable_entity}
         format.js { render :edit }
         #format.html { render :edit }
         #format.json { render json: @unidad_medida.errors, status: :unprocessable_entity }

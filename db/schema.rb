@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180315015436) do
+ActiveRecord::Schema.define(version: 20180316221616) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -399,6 +399,18 @@ ActiveRecord::Schema.define(version: 20180315015436) do
     t.datetime "updated_at",     null: false
     t.text     "razon_edicion"
   end
+
+  create_table "impuestos", force: :cascade do |t|
+    t.string   "nombre"
+    t.string   "tipo"
+    t.decimal  "porcentaje"
+    t.text     "descripcion"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "negocio_id"
+  end
+
+  add_index "impuestos", ["negocio_id"], name: "index_impuestos_on_negocio_id"
 
   create_table "inventario", force: :cascade do |t|
     t.integer  "cantidad"

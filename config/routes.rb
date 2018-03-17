@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :impuestos
   resources :nota_creditos
   resources :unidad_medidas
   resources :uso_cfdis

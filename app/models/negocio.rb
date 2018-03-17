@@ -1,4 +1,5 @@
 class Negocio < ActiveRecord::Base
+	has_many :impuestos
 	has_many :clave_prod_servs
 	has_many :unidad_medidas
 	has_many :factura_recurrentes

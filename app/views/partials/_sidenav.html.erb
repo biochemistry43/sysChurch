@@ -285,6 +285,12 @@
                           Empleados
                         <% end %>
                     </li>
+                    <li>
+                      <%= link_to impuestos_path do%>
+                      <i class="fa fa-dollar"><b>%</b></i>
+                        Impuestos
+                      <% end %>
+                    </li>
                   <% end %>
 
                   <!-- Aquí lo de la configuración de las facturas-->
@@ -293,24 +299,19 @@
                       <i class="fa fa-file-text-o"></i> Facturas y Notas<span class="fa fa-chevron-down"></span>
                     </a>
                       <ul class="nav child_menu" style="display: none">
-                        <li>
-                          <%= link_to caja_sucursals_path do%>
-                          <i class="fa fa-dollar"><b>%</b></i>
-                            Impuestos
-                          <% end %>
-                        </li>
+
                         <li>
                           <%= link_to caja_sucursals_path do%>
                           <i class="fa fa-keyboard-o"></i>
                             Registro emisor
                           <% end %>
                         </li>
-                        <li>
+                        <!--li>
                           <%= link_to caja_sucursals_path do%>
                           <i class="fa fa-sort-alpha-asc"></i>
                             Series y folios
                           <% end %>
-                        </li>
+                        </li-->
                         <li>
                           <a>
                             <i class="fa fa-list-alt"></i> Catálogos<span class="fa fa-chevron-down"></span>

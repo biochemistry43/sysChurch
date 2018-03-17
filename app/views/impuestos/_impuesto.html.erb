@@ -1,0 +1,19 @@
+<tr id="impuesto_<%= impuesto.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= impuesto.nombre %></td>
+  <td style="text-align: center;"><%= impuesto.tipo %></td>
+  <td style="text-align: center;"><%= impuesto.porcentaje %></td>
+  <td style="text-align: center;"><%= impuesto.descripcion %></td>
+
+  <td style="text-align: center;">
+    <% if can? :create, impuesto %>
+      <%= link_to 'Editar', edit_impuesto_path(impuesto), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :destroy, impuesto %>
+      <%= link_to 'Borrar', impuesto, remote: true, method: :delete, data: { confirm: "¿Borrar uso: #{impuesto.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
+</tr>

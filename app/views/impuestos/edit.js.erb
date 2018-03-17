@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-impuesto-title').html("<i class='glyphicon glyphicon-pencil'></i> Editar impuesto");
+
+// Render the new form
+$('#modal-body-impuesto').html('<%= j render("form") %>');
+
+// Show the dynamic dialog
+$('#modalImpuestos').modal("show");
+
+// Set focus to the first element
+$('#modalImpuestos').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

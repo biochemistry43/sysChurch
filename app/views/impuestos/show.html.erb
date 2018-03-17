@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Nombre:</strong>
+  <%= @impuesto.nombre %>
+</p>
+
+<p>
+  <strong>Tipo:</strong>
+  <%= @impuesto.tipo %>
+</p>
+
+<p>
+  <strong>Porcentaje:</strong>
+  <%= @impuesto.porcentaje %>
+</p>
+
+<p>
+  <strong>Descripcion:</strong>
+  <%= @impuesto.descripcion %>
+</p>
+
+<%= link_to 'Edit', edit_impuesto_path(@impuesto) %> |
+<%= link_to 'Back', impuestos_path %>
