@@ -45,7 +45,7 @@ class FacturasController < ApplicationController
         else
           @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
         end
-        #Temporalmente... 
+        #Temporalmente...
         if current_user.sucursal.clave.present?
           claveSucursal = current_user.sucursal.clave
           @serie = claveSucursal + "F"
@@ -304,7 +304,7 @@ class FacturasController < ApplicationController
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
 
     # Guardan los CFDI como representacion impresa en...
-    save_path = Rails.root.join('/home/daniel/Documentos/timbox-ruby/','RepresentaciónImpresaCFDI_33.pdf')
+    save_path = Rails.root.join('public/assets/','RepresentaciónImpresaCFDI_33.pdf')
     File.open(save_path, 'wb') do |file|
        file << pdf
     end
@@ -363,6 +363,13 @@ class FacturasController < ApplicationController
       end
 
     end
+  end
+
+  def readpdf
+    #Descargar de google cloud y guardar en public
+    file_name="RepresentaciónImpresaCFDI_33.pdf" #Por el momento de forma estatica
+    send_file(Rails.root.join("public/", file_name).to_s, :disposition => "inline", :type => "application/pdf")
+    #Despues de mostrar el pdf hay que borrarlo
   end
 
   def consulta_facturas

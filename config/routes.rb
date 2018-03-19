@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+
   resources :impuestos
   resources :nota_creditos
   resources :unidad_medidas
@@ -31,7 +32,7 @@ Rails.application.routes.draw do
   post 'facturas/consulta_por_cliente'
   post 'facturas/consulta_avanzada'
   post 'facturas/facturando'
-  #get 'facturas/pdf'
+  get 'facturas/readpdf'
 
 
   #resources :facturas

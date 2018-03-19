@@ -342,6 +342,13 @@
                 <%end%>
               </td>
               <td style="text-align: center;" >
+                <!--Visualizar factura-->
+                <% if can? :read, factura %>
+                  <%= link_to url={action: "readpdf", controller: "facturas"}, html_options={ class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <i class="fa fa-print"></i>
+                  <% end %>
+                <% end %>
+                <!--Ver detalles-->
                 <% if can? :read, factura %>
                   <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles factura', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-info-circle"></i>
