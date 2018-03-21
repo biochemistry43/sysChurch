@@ -9,7 +9,7 @@
    <head>
    <link rel="stylesheet"  type="text/css" href="/home/daniel/Documentos/sysChurch/lib/factura.css"/>
 
-   <title>Factura Electrónica <xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
+   <title>Nota de crédito<xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"/>
 
    </head>
@@ -52,7 +52,7 @@
 
         <td colspan="2" align="right" >
           <table class="serieFolio">
-               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Ingreso 3.3</b></big></big></th><td></td></tr>
+               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Egreso 3.3</b></big></big></th><td></td></tr>
                <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
                <tr><th class="h1">Folio:</th><td class="h1"><xsl:value-of select="@Folio"/></td></tr>
                <tr><th class="h1">Fecha y hora:</th><td class="h1"><xsl:value-of select="@Fecha"/></td></tr>
@@ -64,7 +64,7 @@
 
            <table width="100%" border="1">
               <thead>
-               <tr><th colspan="2" class="h1">Lugar de expedición</th></tr>
+               <tr><th colspan="2" class="h1">Expedido en:</th></tr>
               </thead>
               <tbody class="emisor">
               <!-- <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
@@ -78,7 +78,7 @@
                             <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
                  </td>
                </tr>
-               <tr><th align="right">Regimen:  </th><td><xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/></td></tr>
+               <!--<tr><th align="right">Regimen:  </th><td><xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/></td></tr>-->
              </tbody>
           </table>
 
