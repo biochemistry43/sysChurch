@@ -52,7 +52,7 @@
 
         <td colspan="2" align="right" >
           <table class="serieFolio">
-               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. 3.3</b></big></big></th><td></td></tr>
+               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Ingreso 3.3</b></big></big></th><td></td></tr>
                <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
                <tr><th class="h1">Folio:</th><td class="h1"><xsl:value-of select="@Folio"/></td></tr>
                <tr><th class="h1">Fecha y hora:</th><td class="h1"><xsl:value-of select="@Fecha"/></td></tr>

@@ -20,6 +20,11 @@ gem 'rqrcode_png'
 #Para guardar los CFDIs en la nube
 gem 'google-cloud'
 
+#Para enviar los documentos como archivos adjuntos por gmail
+#gem 'mail'
+
+gem 'gmail', '~> 0.6.0'
+
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'
 

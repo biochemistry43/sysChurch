@@ -228,6 +228,11 @@ GEM
     formatador (0.2.5)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
+    gmail (0.6.0)
+      gmail_xoauth (>= 0.3.0)
+      mail (>= 2.2.1)
+    gmail_xoauth (0.4.2)
+      oauth (>= 0.3.6)
     google-api-client (0.10.3)
       addressable (~> 2.3)
       googleauth (~> 0.5)
@@ -378,6 +383,7 @@ GEM
       mini_portile2 (~> 2.0.0.rc2)
     nori (2.6.0)
     number_to_words (1.2.1)
+    oauth (0.5.4)
     orm_adapter (0.5.0)
     os (0.9.6)
     pg (1.0.0)
@@ -514,6 +520,7 @@ DEPENDENCIES
   devise
   fog
   font-awesome-rails
+  gmail (~> 0.6.0)
   google-cloud
   jbuilder (~> 2.0)
   jquery-datatables-rails (~> 3.4.0)

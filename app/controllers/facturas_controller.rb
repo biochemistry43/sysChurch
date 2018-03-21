@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -254,14 +254,12 @@ class FacturasController < ApplicationController
     certificado.certifica factura
     # Esto genera la factura como xml
     xml= factura.comprobante_to_xml
-    puts xml
 
     #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
     # Parametros para conexion al Webservice (URL de Pruebas)
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
-    nombreArchivo ="/home/daniel/Documentos/prueba/xml33.xml"
 
     # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
     archivo_xml = generar_sello(xml, llave, pass_llave)
@@ -272,9 +270,10 @@ class FacturasController < ApplicationController
     #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
     xml_copia=xml_timbrado
 
-    archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
-    archivo.write (xml_timbrado)
-    archivo.close
+    #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
+    #archivo.write (xml_timbrado)
+    #archivo.close
+
     #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
     #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
@@ -303,19 +302,7 @@ class FacturasController < ApplicationController
     pdf = WickedPdf.new.pdf_from_string(html_document)
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
 
-    # Guardan los CFDI como representacion impresa en...
-    save_path = Rails.root.join('public/assets/','RepresentaciónImpresaCFDI_33.pdf')
-    File.open(save_path, 'wb') do |file|
-       file << pdf
-    end
-
-    #require "google/cloud/storage"
-
-    #storage = Google::Cloud::Storage.new project_id: "cfdis-196902", credentials: "/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-
-
-
-    #http://googlecloudplatform.github.io/google-cloud-ruby/#/docs/google-cloud-storage/v1.10.0/google/cloud/storage
+    # Guarda el CFDI como representacion impresa en la carpeta public...
 
 
 
@@ -324,8 +311,8 @@ class FacturasController < ApplicationController
     @factura.folio= folio_registroBD
     #Obtiene la fecha del xml timbrado para que no difiera el comprobante y el registro en la BD.
     fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
-    fecha_registroBD=Time.parse(fecha_xml.to_s)
-    @factura.fecha_expedicion = Time.parse(fecha_registroBD.to_s)
+    fecha_registroBD=Date.parse(fecha_xml.to_s)
+    @factura.fecha_expedicion = fecha_registroBD#Time.parse(fecha_registroBD.to_s)
 
     #Condición para que agregue el consecutivo de acuerdo a la numeración establecida por el usuario en la configuración de la numeración de Facturas y Notas o aplicar la númeración por default.
     @factura.consecutivo=consecutivo
@@ -333,6 +320,35 @@ class FacturasController < ApplicationController
     #Los estados de las facturas pueden ser:
         #Borrador, Activa, Detenida, Cancelada
     @factura.estado_factura="Activa"
+
+    #El nombre del pdf formado por: consecutivo + fecha_registroBD
+    nombre_pdf="#{consecutivo}_#{fecha_registroBD}.pdf"
+    save_path = Rails.root.join('public',nombre_pdf)
+    File.open(save_path, 'wb') do |file|
+       file << pdf
+    end
+
+    #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
+    email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
+    Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
+    #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
+    #https://myaccount.google.com/lesssecureapps
+    gmail.deliver do
+      to "dani-elorenzo95@hotmail.com"
+      subject "Hey ponte trucha que hay te va la factura, atrapala!"
+      text_part do
+        body "Text of plaintext message."
+      end
+      html_part do
+        content_type 'text/html; charset=UTF-8'
+        body "<p>Text of <em>html</em> message.</p>"
+      end
+      add_file "public/#{nombre_pdf}"
+    end
+    }
+
+
+    #S e crea un nuevo registro en la BD.
     current_user.facturas<<@factura
     current_user.negocio.facturas<<@factura
     current_user.sucursal.facturas<<@factura
@@ -367,9 +383,25 @@ class FacturasController < ApplicationController
 
   def readpdf
     #Descargar de google cloud y guardar en public
-    file_name="RepresentaciónImpresaCFDI_33.pdf" #Por el momento de forma estatica
-    send_file(Rails.root.join("public/", file_name).to_s, :disposition => "inline", :type => "application/pdf")
-    #Despues de mostrar el pdf hay que borrarlo
+    #id_negocio + fecha
+    consecutivo =@factura.consecutivo
+    fecha_expedicion=@factura.fecha_expedicion
+    fecha_expedicion.to_s
+    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+
+    if File::exists?( "public/#{file_name}")
+      file=File.open( "public/#{file_name}")
+      send_file( file, :disposition => "inline", :type => "application/pdf")
+      #File.delete("public/#{file_name}")
+    else
+      respond_to do |format|
+
+        format.html { redirect_to action: "index" }
+        flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      end
+    end
+
   end
 
   def consulta_facturas
