@@ -342,10 +342,16 @@
                 <%end%>
               </td>
               <td style="text-align: center;" >
-                <!--Visualizar factura-->
+                <!--Imprimir factura-->
                 <% if can? :read, factura %>
                   <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={ class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-print"></i>
+                  <% end %>
+                <% end %>
+                <!--Enviar factura por email -->
+                <% if can? :read, factura %>
+                  <%= link_to url={action: "enviar_email", controller: "facturas",id:factura}, html_options={ class: "btn btn-success",  title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <i class="fa fa-envelope"></i>
                   <% end %>
                 <% end %>
                 <!--Ver detalles-->

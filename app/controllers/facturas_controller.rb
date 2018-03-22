@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -266,10 +266,12 @@ class FacturasController < ApplicationController
     # Convertir la cadena del xml en base64
     xml_base64 = Base64.strict_encode64(archivo_xml)
     #Se obtiene el xml timbrado
+
     xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
     #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
     xml_copia=xml_timbrado
 
+    xml_timbrado_storage=xml_timbrado
     #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
     #archivo.write (xml_timbrado)
     #archivo.close
@@ -288,6 +290,7 @@ class FacturasController < ApplicationController
       }
     )
 
+
     #Los nuevos datos para la representación impresa.
     codigoQR=factura.qr_code xml_timbrado
     cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
@@ -301,6 +304,8 @@ class FacturasController < ApplicationController
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
     pdf = WickedPdf.new.pdf_from_string(html_document)
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+
+
 =begin
     # Guarda el CFDI como representacion impresa en la carpeta public...
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
@@ -329,7 +334,7 @@ class FacturasController < ApplicationController
     dir_mes = fecha_registroBD.strftime("%m")
     dir_anno = fecha_registroBD.strftime("%Y")
 
-    puts fecha_file= fecha_registroBD.strftime("%Y-%m-%d")
+    fecha_file= fecha_registroBD.strftime("%Y-%m-%d")
     #Nomenclatura para el nombre del archivo: consecutivo + fecha + extención
     file_name="#{consecutivo}_#{fecha_file}"
 
@@ -338,11 +343,11 @@ class FacturasController < ApplicationController
     if current_user.sucursal
       #Para los negocios que si tienen sucursales
       file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file = bucket.create_file StringIO.new(xml_timbrado.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
     else
       #Para los negocios que no tengan sucursales
       file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/pdf.pdf"
-      file = bucket.create_file StringIO.new(xml_timbrado.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/xml.xml"
+      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/xml.xml"
     end
 
     #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
@@ -456,6 +461,57 @@ class FacturasController < ApplicationController
         flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
+    end
+  end
+
+  def enviar_email
+
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+
+    bucket = storage.bucket "cfdis"
+
+    #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
+    dir_negocio = @factura.negocio.nombre #current_user.negocio.nombre
+    dir_sucursal = @factura.sucursal.nombre
+    dir_cliente = @factura.cliente.nombreFiscal
+    fecha_expedicion=@factura.fecha_expedicion
+    dir_mes = fecha_expedicion.strftime("%m")
+    dir_anno = fecha_expedicion.strftime("%Y")
+    consecutivo =@factura.consecutivo
+
+    #Se descarga el pdf de la nube y se guarda en el disco
+    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+    if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    else
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    end
+
+    #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
+    email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
+    Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
+    #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
+    #https://myaccount.google.com/lesssecureapps
+    gmail.deliver do
+      to "dani-elorenzo95@hotmail.com"
+      subject "Te reenvio la factura!"
+      text_part do
+        body "Text of plaintext message."
+      end
+      html_part do
+        content_type 'text/html; charset=UTF-8'
+        body "<p>Text of <em>html</em> message.</p>"
+      end
+      add_file "public/#{file_name}"
+    end
+    }
+    respond_to do |format|
+      format.html { redirect_to action: "index" }
+      flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+      #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
     end
   end
 

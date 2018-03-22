@@ -4,7 +4,20 @@ class NotaCreditosController < ApplicationController
   # GET /nota_creditos
   # GET /nota_creditos.json
   def index
-  
+=begin
+        factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+          uuid:"123456789"
+          })
+        factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+          uuid:"987654321"
+        })
+
+        factura.cfdisrelacionados = CFDI::CfdiRelacionados.new({
+          tipoRelacion: "NOTA DE CRÉDITO"#,
+          #uuids: folis
+        })
+=end
+
   end
 
   # GET /nota_creditos/1
