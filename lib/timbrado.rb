@@ -63,7 +63,7 @@ def timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
   response = response.to_hash
   xml_timbrado = response[:timbrar_cfdi_response][:timbrar_cfdi_result][:xml]#xml sin alteraciones listo para entregar al cliente.
 
-  document = Nokogiri::XML(xml_timbrado)
+  return document = Nokogiri::XML(xml_timbrado)
 end
 
 #Función para la cancelación de los CFDIs.

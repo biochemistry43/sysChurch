@@ -268,10 +268,7 @@ class FacturasController < ApplicationController
     #Se obtiene el xml timbrado
 
     xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
-    #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-    xml_copia=xml_timbrado
 
-    xml_timbrado_storage=xml_timbrado
     #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
     #archivo.write (xml_timbrado)
     #archivo.close
@@ -289,6 +286,13 @@ class FacturasController < ApplicationController
         NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
       }
     )
+    #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
+    xml_copia=xml_timbrado
+    xml_timbrado_storage=xml_copia.dup
+
+        a = File.open("/home/daniel/Documentos/timbox-ruby/COSAFEABUENA.xml", "w")
+        a.write (xml)
+        a.close
 
 
     #Los nuevos datos para la representación impresa.
@@ -304,7 +308,6 @@ class FacturasController < ApplicationController
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
     pdf = WickedPdf.new.pdf_from_string(html_document)
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
-
 
 =begin
     # Guarda el CFDI como representacion impresa en la carpeta public...
