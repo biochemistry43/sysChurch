@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   post 'facturas/facturando'
   get 'facturas/readpdf'
   get 'facturas/enviar_email'
+  get 'facturas/descargar_cfdis'
 
 
   #resources :facturas

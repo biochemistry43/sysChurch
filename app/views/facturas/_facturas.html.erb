@@ -350,20 +350,26 @@
                 <% end %>
                 <!--Enviar factura por email -->
                 <% if can? :read, factura %>
-                  <%= link_to url={action: "enviar_email", controller: "facturas",id:factura}, html_options={ class: "btn btn-success",  title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <%= link_to url={action: "enviar_email", controller: "facturas",id:factura}, html_options={ class: "btn btn-warning",  title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-envelope"></i>
+                  <% end %>
+                <% end %>
+
+                <% if can? :read, factura %>
+                  <%= link_to url={action: "descargar_cfdis", controller: "facturas",id:factura}, html_options={ class: "btn btn-success",  title: 'Descargar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <i class="fa fa-cloud-download"></i>
                   <% end %>
                 <% end %>
                 <!--Ver detalles-->
                 <% if can? :read, factura %>
-                  <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles factura', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-info-circle"></i>
                   <% end %>
                 <% end %>
 
                 <% if can? :read, factura%>
                   <% if factura.estado_factura.eql?("Activa") %>
-                    <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Cancelar factura', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
                      <i class="fa fa-close"></i>
                     <% end %>
