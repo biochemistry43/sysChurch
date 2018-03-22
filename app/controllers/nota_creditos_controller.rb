@@ -4,7 +4,7 @@ class NotaCreditosController < ApplicationController
   # GET /nota_creditos
   # GET /nota_creditos.json
   def index
-    @nota_creditos = NotaCredito.all
+  
   end
 
   # GET /nota_creditos/1

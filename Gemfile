@@ -18,7 +18,8 @@ gem "number_to_words"
 gem 'rqrcode_png'
 
 #Para guardar los CFDIs en la nube
-gem 'google-cloud'
+gem 'google-cloud-storage'
+#gem 'google-cloud'
 
 #Para enviar los documentos como archivos adjuntos por gmail
 #gem 'mail'

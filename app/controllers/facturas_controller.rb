@@ -301,16 +301,54 @@ class FacturasController < ApplicationController
     #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
     pdf = WickedPdf.new.pdf_from_string(html_document)
     #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
-
+=begin
     # Guarda el CFDI como representacion impresa en la carpeta public...
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
 
+    bucket = storage.bucket "cfdis"
+    #Solo se debe de asegurar que las variables en memoria sean de tipo String
+    file = bucket.create_file StringIO.new(pdf), "pdf.pdf"
+    file = bucket.create_file StringIO.new(xml_timbrado.to_s), "xml.xml"
+    puts "Uploaded #{file.name}"
+=end
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
 
+    bucket = storage.bucket "cfdis"
+
+    #Directorios
+    dir_negocio = current_user.negocio.nombre
+    dir_sucursal = current_user.sucursal.nombre
+    dir_cliente = nombre_fiscal_receptor_f
+
+    #t = Time.now
+    #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
+    fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
+    fecha_registroBD=Date.parse(fecha_xml.to_s)
+    dir_mes = fecha_registroBD.strftime("%m")
+    dir_anno = fecha_registroBD.strftime("%Y")
+
+    puts fecha_file= fecha_registroBD.strftime("%Y-%m-%d")
+    #Nomenclatura para el nombre del archivo: consecutivo + fecha + extención
+    file_name="#{consecutivo}_#{fecha_file}"
+
+    #Cosas a tener en cuenta antes de indicarle una ruta:
+      #1.-Un negocio puede o no tener sucursales
+    if current_user.sucursal
+      #Para los negocios que si tienen sucursales
+      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file = bucket.create_file StringIO.new(xml_timbrado.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+    else
+      #Para los negocios que no tengan sucursales
+      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/pdf.pdf"
+      file = bucket.create_file StringIO.new(xml_timbrado.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/xml.xml"
+    end
 
     #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
     @factura = Factura.new
     @factura.folio= folio_registroBD
-    #Obtiene la fecha del xml timbrado para que no difiera el comprobante y el registro en la BD.
-    fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
+
     fecha_registroBD=Date.parse(fecha_xml.to_s)
     @factura.fecha_expedicion = fecha_registroBD#Time.parse(fecha_registroBD.to_s)
 
@@ -382,26 +420,43 @@ class FacturasController < ApplicationController
   end
 
   def readpdf
-    #Descargar de google cloud y guardar en public
-    #id_negocio + fecha
-    consecutivo =@factura.consecutivo
-    fecha_expedicion=@factura.fecha_expedicion
-    fecha_expedicion.to_s
-    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
 
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+
+    bucket = storage.bucket "cfdis"
+
+    #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
+    dir_negocio = @factura.negocio.nombre #current_user.negocio.nombre
+    dir_sucursal = @factura.sucursal.nombre
+    dir_cliente = @factura.cliente.nombreFiscal
+    fecha_expedicion=@factura.fecha_expedicion
+    dir_mes = fecha_expedicion.strftime("%m")
+    dir_anno = fecha_expedicion.strftime("%Y")
+    consecutivo =@factura.consecutivo
+
+    #Se descarga el pdf de la nube y se guarda en el disco
+    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+    if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    else
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    end
+
+    #Se comprueba que el archivo exista en la carpeta publica de la aplicación
     if File::exists?( "public/#{file_name}")
       file=File.open( "public/#{file_name}")
       send_file( file, :disposition => "inline", :type => "application/pdf")
       #File.delete("public/#{file_name}")
     else
       respond_to do |format|
-
         format.html { redirect_to action: "index" }
         flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
     end
-
   end
 
   def consulta_facturas
