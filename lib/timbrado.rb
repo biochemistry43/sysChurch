@@ -67,7 +67,7 @@ def timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 end
 
 #Función para la cancelación de los CFDIs.
-def cancelar_cfdi
+def cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
   # Generar el Envelope para el metodo cancelar
   envelope = %Q^
   <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
@@ -95,10 +95,10 @@ def cancelar_cfdi
   documento = Nokogiri::XML(response.to_xml)
 
   # Obenter el acuse de cancelación
-  acuse = documento.xpath("//acuse_cancelacion").text
+  #acuse = documento.xpath("//acuse_cancelacion").text
   #puts acuse
 
   # Obtener los estatus de los comprobantes cancelados
-  uuids_cancelados = documento.xpath("//comprobantes_cancelados").text
+  #uuids_cancelados = documento.xpath("//comprobantes_cancelados").text
   #puts uuids_cancelados
 end

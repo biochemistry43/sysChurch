@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email, :descargar_cfdis]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email, :descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -581,6 +581,70 @@ class FacturasController < ApplicationController
     )
   end
 
+  def cancelar_cfdi
+    #require 'cfdi'
+    require 'timbrado'
+    #require 'base64'
+    #require 'savon'
+    require 'nokogiri'
+    require 'byebug'
+
+
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+
+    bucket = storage.bucket "cfdis"
+
+    #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
+    dir_negocio = @factura.negocio.nombre #current_user.negocio.nombre
+    dir_sucursal = @factura.sucursal.nombre
+    dir_cliente = @factura.cliente.nombreFiscal
+    fecha_expedicion=@factura.fecha_expedicion
+    dir_mes = fecha_expedicion.strftime("%m")
+    dir_anno = fecha_expedicion.strftime("%Y")
+    consecutivo =@factura.consecutivo
+
+    #Se descarga el pdf de la nube y se guarda en el disco
+    file_name="#{consecutivo}_#{fecha_expedicion}.xml"
+    if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    else
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      file_download_storage.download "public/#{file_name}"
+    end
+
+    xml=File.open( "public/#{file_name}")
+    xml_a_cancelar = Nokogiri::XML(xml)
+
+    # Parametros para la conexión al Webservice
+    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+    usuario = "AAA010101000"
+    contrasena = "h6584D56fVdBbSmmnB"
+
+    # Parametros para la cancelación del CFDI
+    uuid = xml_a_cancelar.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+    uuid = uuid.to_s
+    rfc = "AAA010101AAA"  
+    pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
+    bin_file = File.binread(pfx_path)
+    pfx_base64 = Base64.strict_encode64(bin_file)
+    pfx_password = "12345678a"
+
+    #puts documento
+
+    xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+    #sello=document.xpath('//@Sello')
+    a = File.open("public/xml_cancelado.xml", "w")
+    a.write (xml_cancelado)
+    a.close
+
+    send_file(
+      xml,
+      filename: "xml_a_cancelar.xml",
+      type: "application/xml"
+    )
+  end
   def consulta_facturas
     @consulta = true
     @fechas=true

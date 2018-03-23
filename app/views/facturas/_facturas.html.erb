@@ -369,7 +369,7 @@
 
                 <% if can? :read, factura%>
                   <% if factura.estado_factura.eql?("Activa") %>
-                    <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <%= link_to url={action: "cancelar_cfdi", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger",title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
                      <i class="fa fa-close"></i>
                     <% end %>
