@@ -23,7 +23,7 @@
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Forma de pago:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-money"></i></span>
-                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.forma_pago.nombre %>" >
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= %>" >
               </div>
             </div>
             <div class="form-group col-md-10 col-sm-12 col-xs-12">
@@ -47,14 +47,14 @@
           <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Nombre Fiscal</label>
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
-              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= @factura.cliente.datos_fiscales_cliente.nombreFiscal %>">
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= %>">
             </div>
           </div>
           <div class="form-group col-md-10 col-sm-12 col-xs-12">
           <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">RFC:</label>
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
-              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%=@factura.cliente.datos_fiscales_cliente.rfc %>">
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%=%>">
             </div>
           </div>
         </div>

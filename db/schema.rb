@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180316221616) do
+ActiveRecord::Schema.define(version: 20180323001942) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -676,7 +676,10 @@ ActiveRecord::Schema.define(version: 20180316221616) do
     t.text     "descripcion"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "uso_cfdi_id"
   end
+
+  add_index "uso_cfdis", ["uso_cfdi_id"], name: "index_uso_cfdis_on_uso_cfdi_id"
 
   create_table "usuarios", force: :cascade do |t|
     t.string   "nombreUsuario"

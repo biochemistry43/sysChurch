@@ -114,12 +114,12 @@
 
       <div class="col-md-4 col-sm-4 col-xs-4">
 
-        <%= label_tag :correo_electonico,@correo_electonico_f, class:"control-label"%>
+        <%= label_tag :enviar_al_correo,@correo_electonico_f, class:"control-label"%>
       </div>
 
       <%if @venta.cliente.email.present?%>
         <div class="col-md-1 col-sm-1 col-xs-1">
-            <%=check_box_tag(:correo_electonico, "yes", false, {class:" checked"})%>
+            <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked"})%>
         </div>
       <%else%>
       <div class="col-md-4 col-sm-4 col-xs-4 input-group">

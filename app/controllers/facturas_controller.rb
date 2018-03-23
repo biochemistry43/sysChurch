@@ -290,11 +290,6 @@ class FacturasController < ApplicationController
     xml_copia=xml_timbrado
     xml_timbrado_storage=xml_copia.dup
 
-        a = File.open("/home/daniel/Documentos/timbox-ruby/COSAFEABUENA.xml", "w")
-        a.write (xml)
-        a.close
-
-
     #Los nuevos datos para la representación impresa.
     codigoQR=factura.qr_code xml_timbrado
     cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
@@ -375,23 +370,50 @@ class FacturasController < ApplicationController
     end
 
     #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
-    email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
-    Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
-    #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
-    #https://myaccount.google.com/lesssecureapps
-    gmail.deliver do
-      to "dani-elorenzo95@hotmail.com"
-      subject "Hey ponte trucha que hay te va la factura, atrapala!"
-      text_part do
-        body "Text of plaintext message."
+    if @@venta.cliente.email.present?
+      correo_receptor = @@venta.cliente.email
+      enviar = params[:enviar_al_correo]
+      if "yes" == enviar
+        email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
+        Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
+        #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
+        #https://myaccount.google.com/lesssecureapps
+        gmail.deliver do
+          to correo_receptor
+          subject "TE ENVIO LA FACTURA!"
+          text_part do
+            body "Text of plaintext message."
+          end
+          html_part do
+            content_type 'text/html; charset=UTF-8'
+            body "<p>Text of <em>html</em> message.</p>"
+          end
+
+          add_file "public/#{nombre_pdf}"
+        end
+        }
       end
-      html_part do
-        content_type 'text/html; charset=UTF-8'
-        body "<p>Text of <em>html</em> message.</p>"
-      end
-      add_file "public/#{nombre_pdf}"
+    else
+      correo_electonico_receptor = params[:correo_electonico]
+        email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
+        Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
+        #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
+        #https://myaccount.google.com/lesssecureapps
+        gmail.deliver do
+          to correo_electonico_receptor
+          subject "TE ENVIO LA FACTURA!"
+          text_part do
+            body "Text of plaintext message."
+          end
+          html_part do
+            content_type 'text/html; charset=UTF-8'
+            body "<p>Text of <em>html</em> message.</p>"
+          end
+          add_file StringIO.new(pdf)
+        end
+        }
     end
-    }
+
 
 
     #S e crea un nuevo registro en la BD.
@@ -417,8 +439,12 @@ class FacturasController < ApplicationController
           #se pudo guardar en la nube
           #si se logró enviar por corre electronico
       if @factura.save
-        flash[:notice] = "La factura #{folio_registroBD} se guardó exitosamente!"
-        redirect_to facturas_index_path
+        fecha_expedicion=@factura.fecha_expedicion
+        file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+        file=File.open( "public/#{file_name}")
+        send_file( file, :disposition => "inline", :type => "application/pdf")
+        #flash[:notice] = "La factura #{folio_registroBD} se guardó exitosamente!"
+        #redirect_to facturas_index_path
       else
         flash[:notice] = "Error al intentar guardar la factura"
         redirect_to facturas_index_path
@@ -484,13 +510,17 @@ class FacturasController < ApplicationController
     consecutivo =@factura.consecutivo
 
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+    file_name="#{consecutivo}_#{fecha_expedicion}"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      file_download_storage_xml.download "public/#{file_name}.xml"
     else
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      file_download_storage_xml.download "public/#{file_name}.xml"
     end
 
     #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
@@ -508,7 +538,8 @@ class FacturasController < ApplicationController
         content_type 'text/html; charset=UTF-8'
         body "<p>Text of <em>html</em> message.</p>"
       end
-      add_file "public/#{file_name}"
+      add_file "public/#{file_name}.pdf"
+      add_file "public/#{file_name}.xml"
     end
     }
     respond_to do |format|
@@ -857,7 +888,8 @@ class FacturasController < ApplicationController
 
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    #def factura_params
+    def factura_params
+      params.require(:factura).permit(:uso_cfdi_id)
       #params.require(:factura).permit(:folio, :fecha_expedicion, :estado_factura,:venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id,:forma_pago_id, :folio_fiscal, :consecutivo)
-    #end
+    end
 end

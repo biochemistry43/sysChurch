@@ -35,8 +35,7 @@ Rails.application.routes.draw do
   get 'facturas/readpdf'
   get 'facturas/enviar_email'
   get 'facturas/descargar_cfdis'
-
-
+  
   #resources :facturas
 
 

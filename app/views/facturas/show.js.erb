@@ -1,6 +1,6 @@
 // Add the dialog title
 
-<%if @factura.estado_factura.eql?("Cerrada")%>
+<%if @factura.estado_factura.eql?("Activa")%>
   $('#modal-facturas-title').parent().css("background-color", "#92c33c");
   $('#modal-facturas-title').parent().css("color", "white");
   $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");

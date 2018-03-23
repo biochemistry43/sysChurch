@@ -309,8 +309,8 @@
             <th style="text-align: center;">Cliente </th>
             <th style="text-align: center;">Fecha</th>
             <th style="text-align: center;">Total</th>
-            <th style="text-align: center;">Pagado</th>
-            <th style="text-align: center;">Por pagar</th>
+            <!--th style="text-align: center;">Pagado</th>
+            <th style="text-align: center;">Por pagar</th-->
             <th style="text-align: center;">Estado</th>
             <th style="text-align: center;">Acciones</th>
           </tr>
@@ -327,8 +327,8 @@
               <!--if factura.forma_pago.nombre.eql?("efectivo")-->
               <!--<td style="text-align: center;"><factura.venta.montoVenta%></td>
               <end>-->
-              <td style="text-align: center;"><%= %></td>
-              <td style="text-align: center;"><%= %></td>
+              <!--td style="text-align: center;"><%= %></td>
+              <td style="text-align: center;"><%= %></td-->
 
               <td style="text-align: center;">
                 <% if factura.estado_factura.eql?("Cerrada") %>
@@ -376,6 +376,14 @@
                   <% end %>
                 <% end %>
 
+                <% if can? :read, factura%>
+                  <% if factura.estado_factura.eql?("Borrador") %>
+                  <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Eliminar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
+                   <i class="fa fa-minus"></i>
+                  <% end %>
+                 <% end %>
+               <% end %>
               </td>
             </tr>
           <% end %>
