@@ -86,7 +86,10 @@ class FacturasController < ApplicationController
     require 'timbrado'
 
     if request.post?
-
+      if params[:commit] == "Cancelar"
+        @@venta=nil #Se borran los datos por si el usuario le da "atras" en el navegador.
+        redirect_to facturas_index_path
+      else
       certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
       # Esta se convierte de un archivo .key con:
       # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
@@ -119,7 +122,6 @@ class FacturasController < ApplicationController
         #Una serie por default les guste o no les guste, pero útil para que no se produzca un colapso
         serie = folio_default
       end
-
     #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
       serie: serie,
@@ -256,65 +258,60 @@ class FacturasController < ApplicationController
     xml= factura.comprobante_to_xml
 
     #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
-    # Parametros para conexion al Webservice (URL de Pruebas)
-    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-    usuario = "AAA010101000"
-    contrasena = "h6584D56fVdBbSmmnB"
 
-    # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-    archivo_xml = generar_sello(xml, llave, pass_llave)
-    # Convertir la cadena del xml en base64
-    xml_base64 = Base64.strict_encode64(archivo_xml)
-    #Se obtiene el xml timbrado
+    #Si se presiona el botón Guardar como borrador:
+      #No se se sellará, ni se timbrará y mucho menos se generará la representación impresa
+    #unless params[:commit] == "Guardar como borrador"
 
-    xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+      # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
+      archivo_xml = generar_sello(xml, llave, pass_llave)
+      # Convertir la cadena del xml en base64
+      xml_base64 = Base64.strict_encode64(archivo_xml)
+      #Se obtiene el xml timbrado
 
-    #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
-    #archivo.write (xml_timbrado)
-    #archivo.close
+      # Parametros para conexion al Webservice (URL de Pruebas)
+      wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+      usuario = "AAA010101000"
+      contrasena = "h6584D56fVdBbSmmnB"
 
-    #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
+      xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
-    #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
-    factura.complemento=CFDI::Complemento.new(
-      {
-        Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-        uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
-        FechaTimbrado:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-        RfcProvCertif:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-        SelloCFD:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-        NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
-      }
-    )
-    #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-    xml_copia=xml_timbrado
-    xml_timbrado_storage=xml_copia.dup
+      #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
+      #archivo.write (xml_timbrado)
+      #archivo.close
 
-    #Los nuevos datos para la representación impresa.
-    codigoQR=factura.qr_code xml_timbrado
-    cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
-    logo=current_user.negocio.logo
-    uso_cfdi_descripcion=@usoCfdi.descripcion
+      #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
-    xml_rep_impresa = factura.add_elements_to_xml(xml_copia, codigoQR, cadOrigComplemento, logo, uso_cfdi_descripcion)
-    #puts xml_rep_impresa
-    template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
-    html_document = template.transform(xml_rep_impresa)
-    #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
-    pdf = WickedPdf.new.pdf_from_string(html_document)
-    #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+      #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
+      factura.complemento=CFDI::Complemento.new(
+        {
+          Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+          uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+          FechaTimbrado:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+          RfcProvCertif:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+          SelloCFD:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+          NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+        }
+      )
+      #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
+      xml_copia=xml_timbrado
+      xml_timbrado_storage=xml_copia.dup
 
-=begin
-    # Guarda el CFDI como representacion impresa en la carpeta public...
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
+      #Los nuevos datos para la representación impresa.
+      codigoQR=factura.qr_code xml_timbrado
+      cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
+      logo=current_user.negocio.logo
+      uso_cfdi_descripcion=@usoCfdi.descripcion
 
-    bucket = storage.bucket "cfdis"
-    #Solo se debe de asegurar que las variables en memoria sean de tipo String
-    file = bucket.create_file StringIO.new(pdf), "pdf.pdf"
-    file = bucket.create_file StringIO.new(xml_timbrado.to_s), "xml.xml"
-    puts "Uploaded #{file.name}"
-=end
+      xml_rep_impresa = factura.add_elements_to_xml(xml_copia, codigoQR, cadOrigComplemento, logo, uso_cfdi_descripcion)
+      #puts xml_rep_impresa
+      template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
+      html_document = template.transform(xml_rep_impresa)
+      #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
+      pdf = WickedPdf.new.pdf_from_string(html_document)
+      #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+    #end
+
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
 
@@ -416,7 +413,7 @@ class FacturasController < ApplicationController
 
 
 
-    #S e crea un nuevo registro en la BD.
+    #Se crea un nuevo registro en la BD.
     current_user.facturas<<@factura
     current_user.negocio.facturas<<@factura
     current_user.sucursal.facturas<<@factura
@@ -449,7 +446,7 @@ class FacturasController < ApplicationController
         flash[:notice] = "Error al intentar guardar la factura"
         redirect_to facturas_index_path
       end
-
+    end
     end
   end
 
@@ -473,6 +470,8 @@ class FacturasController < ApplicationController
     file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
       file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+      puts "Tipo de DATO DE PDF"
+      puts file_download_storage.class
       file_download_storage.download "public/#{file_name}"
     else
       file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
@@ -565,23 +564,34 @@ class FacturasController < ApplicationController
     consecutivo =@factura.consecutivo
 
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+    file_name="#{consecutivo}_#{fecha_expedicion}"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      file_download_storage_xml.download "public/#{file_name}.xml"
     else
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      file_download_storage_xml.download "public/#{file_name}.xml"
     end
-    ruta=File.open( "public/#{file_name}")
+    pdf = File.open( "public/#{file_name}.pdf")
     send_file(
-      ruta,
+      pdf,
       filename: "RepresentacionImpresa.pdf",
       type: "application/pdf"
+    )
+    xml = File.open( "public/#{file_name}.xml")
+    send_file(
+      xml,
+      filename: "CFDI.xml",
+      type: "application/xml"
     )
   end
 
   def cancelar_cfdi
+
     #require 'cfdi'
     require 'timbrado'
     #require 'base64'
@@ -625,7 +635,7 @@ class FacturasController < ApplicationController
     # Parametros para la cancelación del CFDI
     uuid = xml_a_cancelar.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
     uuid = uuid.to_s
-    rfc = "AAA010101AAA"  
+    rfc = "AAA010101AAA"
     pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
     bin_file = File.binread(pfx_path)
     pfx_base64 = Base64.strict_encode64(bin_file)
@@ -638,6 +648,8 @@ class FacturasController < ApplicationController
     a = File.open("public/xml_cancelado.xml", "w")
     a.write (xml_cancelado)
     a.close
+    estado_factura="Cancelada"
+    @factura.update(:estado_factura=>estado_factura) #Pasa de activa a cancelada
 
     send_file(
       xml,

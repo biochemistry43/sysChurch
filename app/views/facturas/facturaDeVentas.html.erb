@@ -296,8 +296,12 @@
           </div>
 
           <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
-            <div class="text-right">
-              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active"} %>
+            <div class="text-center">
+              <%= submit_tag 'Cancelar', {:class=>"btn btn-default btn-lg"} %>
+              <!--No tiene tanto sentido guardar facturas como borrador para un sistema que obtiene los datos directamente de la BD-->
+              <%= submit_tag 'Vista previa', {:class=>"btn btn-default btn-lg"} %>
+              <%= submit_tag 'Facturar y crear nueva', {:class=>"btn btn-default btn-lg"} %>
+              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active"}%>
             </div>
           </div>
         </div>

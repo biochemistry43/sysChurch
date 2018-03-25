@@ -247,7 +247,13 @@
             <% @devoluciones = false
                @monto_devolucion = 0 %>
           <% end %>
+          <% if venta.factura.present?%>
+            <% if venta.factura.estado_factura == "Activa"%>
+              <tr style="background-color: #FDE47F">
+            <% end%>
+          <%else%>
             <tr>
+          <%end%>
               <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;">$ <%= venta.montoVenta %></td>
@@ -317,7 +323,13 @@
             <% @devoluciones = false
                @monto_devolucion = 0 %>
           <% end %>
+          <% if venta.factura.present?%>
+            <% if venta.factura.estado_factura == "Activa"%>
+              <tr style="background-color: #FDE47F">
+            <% end%>
+          <%else%>
             <tr>
+          <%end%>
               <td style="text-align: center;"><%= venta.folio %></td>
               <td style="text-align: center;"><%= venta.fechaVenta %></td>
               <td style="text-align: center;">$ <%= venta.montoVenta %></td>
