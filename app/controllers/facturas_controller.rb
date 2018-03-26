@@ -295,7 +295,7 @@ class FacturasController < ApplicationController
       )
       #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
       xml_copia=xml_timbrado
-      xml_timbrado_storage=xml_copia.dup
+      xml_timbrado_storage=xml_copia
 
       #Los nuevos datos para la representación impresa.
       codigoQR=factura.qr_code xml_timbrado
@@ -310,6 +310,12 @@ class FacturasController < ApplicationController
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
       #pdf =  WickedPdf.new.pdf_from_html_file(html_document)
+      # Guardan los CFDI como representacion impresa en...
+      save_path = Rails.root.join('/home/daniel/Documentos/timbox-ruby/','RepresentaciónImpresaCFDI_33.pdf')
+      File.open(save_path, 'wb') do |file|
+         file << pdf
+      end
+
     #end
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
@@ -439,9 +445,29 @@ class FacturasController < ApplicationController
         fecha_expedicion=@factura.fecha_expedicion
         file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
         file=File.open( "public/#{file_name}")
-        send_file( file, :disposition => "inline", :type => "application/pdf")
-        #flash[:notice] = "La factura #{folio_registroBD} se guardó exitosamente!"
-        #redirect_to facturas_index_path
+
+        if params[:commit] == "Facturar y crear nueva"
+          enviar = params[:enviar_al_correo]
+          if "yes" == params[:imprimir]
+            send_file( file, :disposition => "inline", :type => "application/pdf")
+
+          else
+            respond_to do |format|
+            format.html { redirect_to action: "facturaDeVentas", notice: 'La factura fue registrada existoxamente!' }
+            end
+          end
+        else
+          if "yes" == params[:imprimir]
+            send_file( file, :disposition => "inline", :type => "application/pdf")
+            #flash[:notice] = "La factura #{folio_registroBD} se guardó exitosamente!"
+            #
+          else
+            respond_to do |format|
+            format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
+            end
+          end
+
+        end
       else
         flash[:notice] = "Error al intentar guardar la factura"
         redirect_to facturas_index_path
