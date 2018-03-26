@@ -269,6 +269,7 @@ class FacturasController < ApplicationController
       xml_base64 = Base64.strict_encode64(archivo_xml)
       #Se obtiene el xml timbrado
 
+
       # Parametros para conexion al Webservice (URL de Pruebas)
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
       usuario = "AAA010101000"

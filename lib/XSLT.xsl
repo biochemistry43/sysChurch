@@ -64,12 +64,12 @@
 
            <table width="100%" border="1">
               <thead>
-               <tr><th colspan="2" class="h1">Lugar de expedición</th></tr>
+               <tr><th colspan="2" class="h1">Emisor</th></tr>
               </thead>
               <tbody class="emisor">
-              <!-- <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
+               <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
                <tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Emisor/@Nombre"/></td></tr>
-               <tr>-->
+               <tr>
                  <th align="right">Dirección:  </th>
                  <td>calle: <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/> #
                             <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/> colonia:
