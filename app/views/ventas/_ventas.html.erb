@@ -251,6 +251,9 @@
             <% if venta.factura.estado_factura == "Activa"%>
               <tr style="background-color: #FDE47F">
             <% end%>
+            <% if venta.factura.estado_factura == "Cancelada"%>
+              <tr style="background-color: #F8D7CB">
+            <% end%>
           <%else%>
             <tr>
           <%end%>

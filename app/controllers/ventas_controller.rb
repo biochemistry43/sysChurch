@@ -54,8 +54,73 @@ class VentasController < ApplicationController
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
 
+      #require 'cfdi'
+      require 'timbrado'
+      #require 'base64'
+      #require 'savon'
+      require 'nokogiri'
+      require 'byebug'
+
 
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
+
+        if @venta.factura.present?
+          if @venta.factura.estado_factura == "Activa"
+
+
+            gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+            storage=gcloud.storage
+
+            bucket = storage.bucket "cfdis"
+
+            #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
+            dir_negocio = @venta.factura.negocio.nombre #current_user.negocio.nombre
+            dir_sucursal = @venta.factura.sucursal.nombre
+            dir_cliente = @venta.factura.cliente.nombreFiscal
+            fecha_expedicion=@venta.factura.fecha_expedicion
+            dir_mes = fecha_expedicion.strftime("%m")
+            dir_anno = fecha_expedicion.strftime("%Y")
+            consecutivo =@venta.factura.consecutivo
+
+            #Se descarga el pdf de la nube y se guarda en el disco
+            file_name="#{consecutivo}_#{fecha_expedicion}.xml"
+            if @venta.factura.sucursal.present? #Si la factura fue expedida en una sucursal
+              file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+              file_download_storage.download "public/#{file_name}"
+            else
+              file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+              file_download_storage.download "public/#{file_name}"
+            end
+
+            xml=File.open( "public/#{file_name}")
+            xml_a_cancelar = Nokogiri::XML(xml)
+
+            # Parametros para la conexión al Webservice
+            wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+            usuario = "AAA010101000"
+            contrasena = "h6584D56fVdBbSmmnB"
+
+            # Parametros para la cancelación del CFDI
+            uuid = xml_a_cancelar.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+            uuid = uuid.to_s
+            rfc = "AAA010101AAA"
+            pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
+            bin_file = File.binread(pfx_path)
+            pfx_base64 = Base64.strict_encode64(bin_file)
+            pfx_password = "12345678a"
+
+            #puts documento
+
+            xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+            #sello=document.xpath('//@Sello')
+            a = File.open("public/xml_CANCELADO.xml", "w")
+            a.write (xml_cancelado)
+            a.close
+
+            estado_factura="Cancelada"
+            @venta.factura.update(:estado_factura=>estado_factura) #Pasa de activa a cancelada
+          end
+        end
 
         #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
         movimiento_caja = @venta.movimiento_caja_sucursal
@@ -86,6 +151,7 @@ class VentasController < ApplicationController
         format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
         format.js {render :edit}
       end
+
     end
   end
 
