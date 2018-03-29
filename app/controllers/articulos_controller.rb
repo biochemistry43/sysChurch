@@ -174,6 +174,7 @@ class ArticulosController < ApplicationController
 
   # GET /articulos/new
   def new
+    @impuestos = current_user.negocio.impuestos
     @clave_prod_servs= current_user.negocio.clave_prod_servs
     @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
@@ -185,6 +186,7 @@ class ArticulosController < ApplicationController
 
   # GET /articulos/1/edit
   def edit
+    @impuestos = current_user.negocio.impuestos
     @clave_prod_servs= current_user.negocio.clave_prod_servs
     @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
@@ -196,6 +198,7 @@ class ArticulosController < ApplicationController
   # POST /articulos
   # POST /articulos.json
   def create
+    @impuestos = current_user.negocio.impuestos
     @clave_prod_servs= current_user.negocio.clave_prod_servs
     @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
@@ -282,6 +285,7 @@ class ArticulosController < ApplicationController
   # PATCH/PUT /articulos/1
   # PATCH/PUT /articulos/1.json
   def update
+    @impuestos = current_user.negocio.impuestos
     @clave_prod_servs= current_user.negocio.clave_prod_servs
     @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
@@ -334,7 +338,7 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :clave_prod_serv_id, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :unidad_medida_id, :suc_elegida, :tipo)
+      params.require(:articulo).permit(:clave, :impueto_id, :clave_prod_serv_id, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :unidad_medida_id, :suc_elegida, :tipo)
     end
 
 end

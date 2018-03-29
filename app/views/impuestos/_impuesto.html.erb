@@ -12,8 +12,7 @@
 
   <td style="text-align: center;">
     <% if can? :destroy, impuesto %>
-      <%= link_to 'Borrar', impuesto, remote: true, method: :delete, data: { confirm: "¿Borrar uso: #{impuesto.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+      <%= link_to 'Borrar', impuesto, remote: true, method: :delete, data: { confirm: "¿Está seguro que desea borrar el impuesto: #{impuesto.nombre}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
     <% end %>
   </td>
-
 </tr>

@@ -1,3 +1,4 @@
+
 <div class="right_col" role="main" style="height: 900px;">
 
   <div class="page-title">
@@ -109,7 +110,7 @@
         <%= label_tag :imprimir,'Imprimir', class:"control-label"%>
       </div>
       <div class="col-md-1 col-sm-1 col-xs-1">
-          <%=check_box_tag(:imprimir, "yes", false, {class:" checked", checked:"checked"})%>
+          <%=check_box_tag(:imprimir, "yes", false, {class:" checked check", checked:"checked"})%>
       </div>
 
       <div class="col-md-4 col-sm-4 col-xs-4">
@@ -119,7 +120,7 @@
 
       <%if @venta.cliente.email.present?%>
         <div class="col-md-1 col-sm-1 col-xs-1">
-            <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked"})%>
+            <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked check"})%>
         </div>
       <%else%>
       <div class="col-md-4 col-sm-4 col-xs-4 input-group">
@@ -302,6 +303,7 @@
               <!-- submit_tag 'Vista previa', {:class=>"btn btn-default btn-lg"} -->
               <%= submit_tag 'Facturar y crear nueva', {:class=>"btn btn-default btn-lg"} %>
               <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active"}%>
+
             </div>
           </div>
         </div>
@@ -314,3 +316,4 @@
     <%end%>
   <!-- javascript_include_tag "cancelaciones" -->
 </div>
+<%= stylesheet_link_tag "facturas" %>

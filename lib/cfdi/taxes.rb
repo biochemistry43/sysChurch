@@ -50,6 +50,13 @@ module CFDI
 #     end
 
      class Traslado
+=begin
+       Base para el cálculo del impuesto.
+       Impuesto (Tipo de impuesto ISR, IVA, IEPS).
+       Tipo factor (Tasa, cuota o exento).
+       Tasa o cuota (Valor de la tasa o cuota que corresponda al impuesto).
+       Importe (Monto del impuesto).
+=end
        attr_accessor  :base, :tax, :type_factor, :rate, :import #solo eran {impuesto, tasa, importe} pero como al SAT se le ocurrieron otros dos jaja
        #:Base, :Impuesto, :TipoFactor, :TasaOCuota, :Importe
        def initialize(args = {})

@@ -16,13 +16,16 @@
   <div class="item form-group<%= @impuesto.errors[:tipo].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :tipo, "Tipo: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-male"></i></span>
+      <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+      <!--Impuesto Sobre la Renta (ISR) =Retención
+          Impuesto al Valor Agregado (IVA) =>Traslado
+          Impuesto Especial sobre Producción y Servicios (IEPS) =>Traslado
+        -->
       <%= f.select(:tipo,
-        [['IVA', '601'],
-        ['IEPS', '603'],
-        ['Local', '609']],
+        [['Federal', 'Federal'],
+        ['Local', 'Local'],
+        ['Otro', 'Otro']],
         {}, { class: "form-control col-md-7 col-xs-12 text_field" }) %>
-
 
       <%if @impuesto.errors[:tipo].any? %>
         <p class="bg-danger"><%= @impuesto.errors[:tipo].to_s[/\w([^"]*)/] %></p>
@@ -33,8 +36,8 @@
   <div class="item form-group<%= @impuesto.errors[:porcentaje].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :porcentaje, "Porcentaje: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-road"></i></span>
-      <%= f.text_field :porcentaje, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "porcentaje..."} do%>
+      <span class="input-group-addon"><i class=""><b><big>%</big></b></i></span>
+      <%= f.text_field :porcentaje, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Ingresa el porcentaje del impuesto"} do%>
       <%end%>
       <%if @impuesto.errors[:porcentaje].any? %>
         <p class="bg-danger"><%= @impuesto.errors[:porcentaje].to_s[/\w([^"]*)/] %></p>
