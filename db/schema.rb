@@ -33,11 +33,11 @@ ActiveRecord::Schema.define(version: 20180329094103) do
     t.string   "tipo"
     t.integer  "unidad_medida_id"
     t.integer  "clave_prod_serv_id"
-    t.integer  "impueto_id"
+    t.integer  "impuesto_id"
   end
 
   add_index "articulos", ["clave_prod_serv_id"], name: "index_articulos_on_clave_prod_serv_id"
-  add_index "articulos", ["impueto_id"], name: "index_articulos_on_impueto_id"
+  add_index "articulos", ["impuesto_id"], name: "index_articulos_on_impuesto_id"
   add_index "articulos", ["unidad_medida_id"], name: "index_articulos_on_unidad_medida_id"
 
   create_table "bancos", force: :cascade do |t|

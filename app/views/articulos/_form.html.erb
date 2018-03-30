@@ -75,13 +75,13 @@
       <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos requeridos por el SAT:</h2>
     </div>
 
-        <div class="item form-group<%= @articulo.errors[:impueto_id].any? ? ' has-error has-feedback' : '' %>">
-          <%= f.label :impueto_id, "Impuesto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+        <div class="item form-group<%= @articulo.errors[:impuesto_id].any? ? ' has-error has-feedback' : '' %>">
+          <%= f.label :impuesto_id, "Impuesto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
           <div class="col-md-6 col-sm-6 col-xs-12 input-group">
             <span class="input-group-addon"><i class=""><big><b>%</b></big></i></span>
-            <%= collection_select(:articulo, :impueto_id, @impuestos, :id, :impuesto_porcentaje_tipo, {:prompt => 'Ninguno'}, {class: "form-control col-md-7 col-xs-12"})%>
-            <%if @articulo.errors[:impueto_id].any? %>
-              <p class="bg-danger"><%= @articulo.errors[:impueto_id].to_s[/\w([^"]*)/] %></p>
+            <%= collection_select(:articulo, :impuesto_id, @impuestos, :id, :impuesto_porcentaje_tipo, {:prompt => 'Ninguno'}, {class: "form-control col-md-7 col-xs-12"})%>
+            <%if @articulo.errors[:impuesto_id].any? %>
+              <p class="bg-danger"><%= @articulo.errors[:impuesto_id].to_s[/\w([^"]*)/] %></p>
             <% end %>
           </div>
         </div>

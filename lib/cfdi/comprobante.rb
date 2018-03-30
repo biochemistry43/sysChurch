@@ -19,7 +19,7 @@ module CFDI
         #cfdisrelacionados: [],
         #relacionados: CfdiRelacionado.new,
         tipoDeComprobante: 'I', #CATALOGO
-        #Descuento: 0.00
+        Descuento: 0.00
         #total:0.00
       }
     }
@@ -93,7 +93,9 @@ module CFDI
     #def total
       #iva = 0.0
       #iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
-      #self.subTotal #+ @.total- @Descuento
+      #total_trans = format('%.2f', @impuestos.total_traslados if) @impuestos.count_impuestos > 0
+      #self.subTotal + total_trans  #El orden es: subtotal - descuento + impuestos traslados -retenciones
+
     #end
 
     #Expresa el total en letras de forma estatica se usa la moneda nacional.

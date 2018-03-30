@@ -134,7 +134,7 @@ class FacturasController < ApplicationController
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
       lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-      total: @@venta.montoVenta
+      total: 83.52#@@venta.montoVenta
       #Descuento:0 #DESCUENTO RAPPEL
     })
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -227,16 +227,27 @@ class FacturasController < ApplicationController
         NoIdentificacion: c.articulo.clave,
         Cantidad: c.cantidad,
         ClaveUnidad:c.articulo.unidad_medida.clave,#CATALOGO
-        Unidad: c.articulo.unidad_medida.nombre,
+        Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
         Descripcion: c.articulo.nombre,
         ValorUnitario: c.precio_venta, #el importe se calcula solo
         #Descuento: 0 #Expresado en porcentaje
       })
-      #TEMPORALMENTE COMENTADA
-      #factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-      #  tax: '002', type_factor: 'Tasa', rate: 0.160000)
+
+      #if c.articulo.impuesto.present?
+      if c.articulo.impuesto.nombre == "IVA"
+        clave_impuesto = "002" #Al SAT solo le interesa la clave de los impuestos. genial
+      elsif c.articulo.impuesto.nombre == "IEPS"
+        clave_impuesto =  "003"
+      end
+
+      factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+        tax: clave_impuesto, type_factor: "Tasa", rate: 0.160000)
         #puts @cont=@cont+1
     end
+
+    #else
+    #end
+
 =begin
     factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
       uuid:"123456789"

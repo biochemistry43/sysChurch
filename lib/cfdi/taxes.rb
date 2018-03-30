@@ -24,11 +24,14 @@ module CFDI
        if data.is_a? Array #En caso de que sea un arreglo
          data.map do |c|
            c = Traslado.new(c) unless c.is_a? Traslado
+           p "ES UN MUGOROSO ARREGLO"
            @traslados << c
          end
        elsif data.is_a? Hash #O en el caso de quehtml_document sea un hash
+         p "ES UN MUGROSO HASH"
          @traslados << Traslado.new(data)
        elsif data.is_a? Traslado
+         p "ES UNA MUGROSA CLASE"
          @traslados << data
        end
        @traslados
@@ -63,20 +66,20 @@ module CFDI
          args.each { |key, value| send("#{key}=", value) }
        end
        def base=(base)
-         @base=format('%.2f', base).to_f
+         @base=format('%.6f', base).to_f
        end
 
        def rate=(rate)
-         @rate = rate
+         @rate=format('%.6f', rate).to_f
        end
 
        def import
-         @import = format('%.2f', @rate*@base).to_f
+         @import = format('%.2f', @rate * @base).to_f
        end
 
-       def cadena_original
-         [ @base, @tax, @type_factor, @rate, import] #Se le pasa la función y no el atributo para que sea parte de la cadena_original.
-       end
+       #def cadena_original
+        # [ @base, @tax, @type_factor, @rate, @import] #Se le pasa la función y no el atributo para que sea parte de la cadena_original.
+       #end
      end
 
 #POR SI SE LLEGAN A IMPLEMENTAR LOS IMPUESTOS RETENIDOS

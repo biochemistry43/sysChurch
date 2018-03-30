@@ -132,12 +132,23 @@
                  <th align="right">Descuento:</th>
                  <td align="right">$ <xsl:value-of select="@Descuento"/></td>
              </tr>
+             <tr>
+                 <td colspan="5" align="right">Impuestos: </td>
+                 <th align="right"></th>
+                 <td align="right"></td>
+             </tr>
              <xsl:for-each select="./cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado">
                  <tr>
-                   <td colspan="5" align="right">Impuestos:</td>
-                     <td><xsl:value-of select="@Impuesto"/></td>
-                     <td><xsl:value-of select="@TasaOCuota"/> %</td>
-                     <td align="right"><xsl:value-of select="@Importe"/></td>
+                     <td colspan="5" ></td>
+                     <!--Solo hay dos tipos de impuestos federales; IVA y IEPS aunque con diferentes tasas o cuotas, asi que da igual-->
+                     <xsl:if test="@Impuesto='002'">
+                       <th>I.V.A.  <xsl:value-of select="@TasaOCuota * 100"/>%
+                       <td align="right"><xsl:value-of select="@Importe"/></td>
+                     </th></xsl:if>
+                     <xsl:if test="@Impuesto='003'">
+                       <th>I.E.P.S.  <xsl:value-of select="@TasaOCuota * 100"/>%
+                       <td align="right"><xsl:value-of select="@Importe"/></td>
+                     </th></xsl:if>
                  </tr>
              </xsl:for-each>
              <tr id="total"><td colspan="5"></td>
@@ -216,9 +227,9 @@
   </tbody>
     <xsl:for-each select="./cfdi:Traslados/cfdi:Traslado">
         <tr>
-            <td colspan="2" align="right"><xsl:value-of select="@Impuesto"/></td>
-            <td align="right"><xsl:value-of select="@Importe"/></td>
-            <td><xsl:value-of select="@TasaOCuota"/> %</td>
+            <!--td colspan="2" align="right"><xsl:value-of select="@Impuesto"/></td-->
+            <!--td align="right"><xsl:value-of select="@Importe"/></td-->
+            <!--td><xsl:value-of select="@TasaOCuota"/> %</td-->
         </tr>
     </xsl:for-each>
 </xsl:template>
