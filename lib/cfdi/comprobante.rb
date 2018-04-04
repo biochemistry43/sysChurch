@@ -307,30 +307,30 @@ module CFDI
               xml.Concepto(cc) {
                 #Ahora los impuestos por cada concepto
                 if @impuestos.count_impuestos > 0
-                  xml.Impuestos {
-                    if @impuestos.traslados.count > 0 #en caso que haya algun impuesto
-                      xml.Traslados {
-                        #@impuestos.traslados.each do |t|
-                        #EL PROBLEMA ES CUANDO UN CONCEPTO NO TENGA IMPUESTOS EN MEDIO DE VARIOS CONCEPTOS
-                          xml.Traslado(
-                             Base: @impuestos.traslados[c_it].base,
-                             Impuesto: @impuestos.traslados[c_it].tax,
-                             TipoFactor: @impuestos.traslados[c_it].type_factor,
-                             TasaOCuota:  @impuestos.traslados[c_it].rate,
-                             Importe: @impuestos.traslados[c_it].import)
-
+                  if @impuestos.traslados.count > 0 #en caso que haya algun impuesto
+                    imp_vacio = @impuestos.traslados[c_it].tax #Se obtiene el primer impuesto
+                    unless imp_vacio == "Ninguno"
+                    xml.Impuestos {
+                        xml.Traslados {
+                            xml.Traslado(
+                                Base: @impuestos.traslados[c_it].base,
+                                Impuesto: @impuestos.traslados[c_it].tax,
+                                TipoFactor: @impuestos.traslados[c_it].type_factor,
+                                TasaOCuota:  @impuestos.traslados[c_it].rate,
+                                Importe: @impuestos.traslados[c_it].import)
+                        }
+                      #Agregar el nodo Impuestos por si se mas adelante se ocupan las retenciones
+                      #if @impuestos.detained.count > 0
+                      #  xml.Retenciones do
+                      #    @impuestos.detained.each do |det|
+                      #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+                      #                    importe: format('%.2f', det.import))
+                      #    end
+                      #  end
                       #end
-                      }
+                    }
                     end
-                    #if @impuestos.detained.count > 0
-                    #  xml.Retenciones do
-                    #    @impuestos.detained.each do |det|
-                    #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
-                    #                    importe: format('%.2f', det.import))
-                    #    end
-                    #  end
-                    #end
-                  }
+                  end
                 end
 
                 #xml.ComplementoConcepto
@@ -347,16 +347,29 @@ module CFDI
               total_trans.to_i > 0
             #tax_options[:totalImpuestosRetenidos] = total_detained if
               #total_detained.to_i > 0
-            xml.Impuestos(tax_options) do #itera todos los impuestos
+            #cant_it = @impuestos.traslados.count
+            xml.Impuestos(tax_options) do
               if @impuestos.traslados.count > 0
                 xml.Traslados{
                   #@impuestos.traslados.each do |t|
+                  #imp_trans = Array.new(cant_it) { Array.new(cant_it) }
+
+                    #puts "Impuestossssssssssssssssssssssss"
+                    #puts @traslados.map(&:tax)[0]
+                    #imp_vacio = @impustos.traslados[0].tax #Se obtiene el primer
+                    #puts "IMPUESTO VACIO"
+                    #puts imp_vacio
+
                     xml.Traslado(
+                      #Impuesto: @impuestos.traslados[c_it].tax,
+                      #TipoFactor:@impuestos.traslados[c_it].type_factor,
+                      #TasaOCuota: @impuestos.traslados[c_it].type_factor, #format('%.2f', t.rate),
+                      #Importe: format('%.2f', @impuestos.traslados[c_it].import)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
                       Impuesto: '002',
                       TipoFactor:"Tasa" ,
                       TasaOCuota: 0.160000, #format('%.2f', t.rate),
                       Importe: format('%.2f',@impuestos.total_traslados)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
-                  #end
+
                 }
               end
               #if @impuestos.detained.count > 0

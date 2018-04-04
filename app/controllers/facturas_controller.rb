@@ -134,7 +134,7 @@ class FacturasController < ApplicationController
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
       lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-      total: 83.52#@@venta.montoVenta
+      total: 44.88#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
       #Descuento:0 #DESCUENTO RAPPEL
     })
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -233,20 +233,22 @@ class FacturasController < ApplicationController
         #Descuento: 0 #Expresado en porcentaje
       })
 
-      #if c.articulo.impuesto.present?
-      if c.articulo.impuesto.nombre == "IVA"
-        clave_impuesto = "002" #Al SAT solo le interesa la clave de los impuestos. genial
-      elsif c.articulo.impuesto.nombre == "IEPS"
-        clave_impuesto =  "003"
+      if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
+
+        if c.articulo.impuesto.nombre == "IVA"
+          clave_impuesto = "002"
+        elsif c.articulo.impuesto.nombre == "IEPS"
+          clave_impuesto =  "003"
+        end
+
+        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+          tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
+      else
+        #Me muero de programador jajaja pero con ésta salgo de apuros
+        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
+          tax: "Ninguno", type_factor: "Nada", rate: 0.0)
       end
-
-      factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-        tax: clave_impuesto, type_factor: "Tasa", rate: 0.160000)
-        #puts @cont=@cont+1
     end
-
-    #else
-    #end
 
 =begin
     factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({

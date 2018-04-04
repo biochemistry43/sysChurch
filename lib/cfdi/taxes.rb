@@ -13,6 +13,7 @@ module CFDI
      # retorna el total de impuestos trasladados
      def total_traslados
        return 0 unless @traslados.any?
+
        @traslados.map(&:import).reduce(:+) #suma el importe de todos los impuestos trasladados
      end
      # retorna el numero total de los impuestos(trasladados y retenidos), pero como ya borré los retenidos pues no jaja :P
@@ -24,14 +25,11 @@ module CFDI
        if data.is_a? Array #En caso de que sea un arreglo
          data.map do |c|
            c = Traslado.new(c) unless c.is_a? Traslado
-           p "ES UN MUGOROSO ARREGLO"
            @traslados << c
          end
        elsif data.is_a? Hash #O en el caso de quehtml_document sea un hash
-         p "ES UN MUGROSO HASH"
          @traslados << Traslado.new(data)
        elsif data.is_a? Traslado
-         p "ES UNA MUGROSA CLASE"
          @traslados << data
        end
        @traslados
