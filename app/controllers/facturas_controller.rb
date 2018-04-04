@@ -357,12 +357,12 @@ class FacturasController < ApplicationController
       #1.-Un negocio puede o no tener sucursales
     if current_user.sucursal
       #Para los negocios que si tienen sucursales
-      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
+      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
     else
       #Para los negocios que no tengan sucursales
-      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/pdf.pdf"
-      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/xml.xml"
+      file = bucket.create_file StringIO.new(pdf), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
+      file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
     end
 
     #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
@@ -380,7 +380,7 @@ class FacturasController < ApplicationController
     @factura.estado_factura="Activa"
 
     #El nombre del pdf formado por: consecutivo + fecha_registroBD
-    nombre_pdf="#{consecutivo}_#{fecha_registroBD}.pdf"
+    nombre_pdf="#{consecutivo}_#{fecha_registroBD}_RepresentaciónImpresa.pdf"
     save_path = Rails.root.join('public',nombre_pdf)
     File.open(save_path, 'wb') do |file|
        file << pdf
@@ -457,7 +457,7 @@ class FacturasController < ApplicationController
           #si se logró enviar por corre electronico
       if @factura.save
         fecha_expedicion=@factura.fecha_expedicion
-        file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+        file_name="#{consecutivo}_#{fecha_expedicion}_RepresentaciónImpresa.pdf"
         file=File.open( "public/#{file_name}")
 
         if params[:commit] == "Facturar y crear nueva"
@@ -507,11 +507,9 @@ class FacturasController < ApplicationController
     consecutivo =@factura.consecutivo
 
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}.pdf"
+    file_name="#{consecutivo}_#{fecha_expedicion}_RepresentaciónImpresa.pdf"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
       file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      puts "Tipo de DATO DE PDF"
-      puts file_download_storage.class
       file_download_storage.download "public/#{file_name}"
     else
       file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
@@ -551,15 +549,15 @@ class FacturasController < ApplicationController
     #Se descarga el pdf de la nube y se guarda en el disco
     file_name="#{consecutivo}_#{fecha_expedicion}"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
-      file_download_storage_pdf.download "public/#{file_name}.pdf"
-      file_download_storage_xml.download "public/#{file_name}.xml"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
+      file_download_storage_pdf.download "public/#{file_name}_RepresentaciónImpresa.pdf"
+      file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
     else
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
-      file_download_storage_pdf.download "public/#{file_name}.pdf"
-      file_download_storage_xml.download "public/#{file_name}.xml"
+      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
+      file_download_storage_pdf.download "public/#{file_name}_RepresentaciónImpresa.pdf"
+      file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
     end
 
     #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
@@ -577,8 +575,8 @@ class FacturasController < ApplicationController
         content_type 'text/html; charset=UTF-8'
         body "<p>Text of <em>html</em> message.</p>"
       end
-      add_file "public/#{file_name}.pdf"
-      add_file "public/#{file_name}.xml"
+      add_file "public/#{file_name}_RepresentaciónImpresa.pdf"
+      add_file "public/#{file_name}_CFDI.xml"
     end
     }
     respond_to do |format|
@@ -604,24 +602,19 @@ class FacturasController < ApplicationController
     consecutivo =@factura.consecutivo
 
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}"
+    file_name="#{consecutivo}_#{fecha_expedicion}_CFDI"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      #file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
       file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
-      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      #file_download_storage_pdf.download "public/#{file_name}.pdf"
       file_download_storage_xml.download "public/#{file_name}.xml"
     else
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
-      file_download_storage_pdf.download "public/#{file_name}.pdf"
+      #file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.pdf"
+      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}.xml"
+      #file_download_storage_pdf.download "public/#{file_name}.pdf"
       file_download_storage_xml.download "public/#{file_name}.xml"
     end
-    pdf = File.open( "public/#{file_name}.pdf")
-    send_file(
-      pdf,
-      filename: "RepresentacionImpresa.pdf",
-      type: "application/pdf"
-    )
+
     xml = File.open( "public/#{file_name}.xml")
     send_file(
       xml,
@@ -631,14 +624,9 @@ class FacturasController < ApplicationController
   end
 
   def cancelar_cfdi
-
-    #require 'cfdi'
     require 'timbrado'
-    #require 'base64'
-    #require 'savon'
     require 'nokogiri'
     require 'byebug'
-
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
@@ -655,18 +643,25 @@ class FacturasController < ApplicationController
     consecutivo =@factura.consecutivo
 
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}.xml"
+    file_name="#{consecutivo}_#{fecha_expedicion}"
     if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
+      file_download_storage.download "public/#{file_name}_CFDI.xml"
     else
-      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-      file_download_storage.download "public/#{file_name}"
+      file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
+      file_download_storage.download "public/#{file_name}_CFDI.xml"
     end
-
-    xml=File.open( "public/#{file_name}")
-    xml_a_cancelar = Nokogiri::XML(xml)
-
+    #Se comprueba que el archivo exista en la carpeta publica de la aplicación
+    if File::exists?("public/#{file_name}_CFDI.xml")
+      xml_cfdi=File.open("public/#{file_name}_CFDI.xml")
+      xml_a_cancelar = Nokogiri::XML(xml_cfdi)
+    else
+      respond_to do |format|
+        format.html { redirect_to action: "index" }
+        flash[:notice] = "No se encontró ningun CFDI con el nombre de: #{file_name}_CFDI.xml"
+        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      end
+    end
     # Parametros para la conexión al Webservice
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
     usuario = "AAA010101000"
@@ -681,21 +676,33 @@ class FacturasController < ApplicationController
     pfx_base64 = Base64.strict_encode64(bin_file)
     pfx_password = "12345678a"
 
-    #puts documento
-
     xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
-    #sello=document.xpath('//@Sello')
-    a = File.open("public/xml_cancelado.xml", "w")
-    a.write (xml_cancelado)
-    a.close
+    #se extrae el acuse de cancelación del xml cancelado
+    acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+
+    if current_user.sucursal
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_AcuseDeCancelación.xml"
+    else
+      #Para los negocios que no tengan sucursales
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_AcuseDeCancelación.xml"
+    end
+
+    #acuse = StringIO.new(acuse.to_s)
+    #a = File.open("public/#{file_name}_AcuseDeCancelación", "w")
+    #a.write (acuse)
+    #a.close
+
     estado_factura="Cancelada"
     @factura.update(:estado_factura=>estado_factura) #Pasa de activa a cancelada
 
-    send_file(
-      xml,
-      filename: "xml_a_cancelar.xml",
-      type: "application/xml"
-    )
+    #xml_acuse = File.open( "public/#{file_name}_AcuseDeCancelación.xml")
+    #Refresca la pagina
+    redirect_to :back
+    #send_file(
+    #  xml_acuse,
+    #  filename: "AcuseDeCancelación.xml",
+    #  type: "application/xml"
+    #)
   end
   def consulta_facturas
     @consulta = true
