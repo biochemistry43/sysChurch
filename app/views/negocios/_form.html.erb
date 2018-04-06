@@ -43,7 +43,6 @@
     }
   </script>
 
-
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="text-center">
       <%= image_tag(@negocio.logo_url, class: "img img-thumbnail", id: "logo_negocio") if @negocio.logo.present? %>
@@ -157,7 +156,7 @@
   </div>
 <%end%>
 
-<%= form_for @datosFiscales, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |d| %>
+<%= form_for @datosFiscales, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}   do |d| %>
   <% if @datosFiscales.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@datosFiscales.errors.count, "error") %> prohibited this negocio from being saved:</h2>
@@ -169,9 +168,38 @@
     </div>
   <% end %>
 
-
   <div class="col-md-8 col-md-offset-4 col-sm-6 col-xs-12 personal-info">
     <h3>Información Fiscal</h3>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+      <div class="text-center">
+        <!--image_tag(@negocio.logo_url, class: "img img-thumbnail", id: "logo_negocio") if @negocio.logo.present? -->
+        <h6>Certificado (.cer)</h6>
+           <!--<input type="file" class="text-center center-block well well-sm">-->
+        <%= d.file_field :cer, class: "text-center center-block well well-sm", id: "certificado", :onChange=>"validarcertificado()" %>
+      </div>
+      <div class="text-center">
+        <!--image_tag(@negocio.logo_url, class: "img img-thumbnail", id: "logo_negocio") if @negocio.logo.present? -->
+        <h6>Llave (.key)</h6>
+           <!--<input type="file" class="text-center center-block well well-sm">-->
+        <%= d.file_field :key, class: "text-center center-block well well-sm", id: "llave", :onChange=>"validarllave()" %>
+      </div>
+      <div class="form-group">
+        <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+        <%= d.label :rfc, "Contraseña: ", :class=>'col-lg-4 control-label' %>
+        <div class="col-lg-8">
+          <!-- <input class="form-control" value="Bishop" type="text"> -->
+          <!-- d.text_field :rfc, class: "form-control"-->
+          <%=password_field(:user, :password, onchange: "if ($('#user_password').val().length > 10) { alert('Your password needs to be shorter!'); }",class: "form-control") %>
+        <!--input type="password" id="user_password" name="user[password]" onchange="if ($('#user_password').val().length > 30) { alert('Your password needs to be shorter!'); }"/-->
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+
+
     <div class="form-group">
       <%= d.label :nombreFiscal, "Nombre Fiscal: ", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Primer nombre:</label> -->
@@ -309,3 +337,4 @@
     </div>
   </div>
 <%end%>
+<%= javascript_include_tag "negocios" %>
