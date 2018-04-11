@@ -295,6 +295,10 @@ module CFDI
           }
           xml.Receptor(@receptor.ns) {
           }
+          arrayTrasladados=[]
+          #Variable para comprobar que existe almenos un concepto con impuestos aplicables(IVA o IEPS)
+          impuestos_aplicables = false
+          cant_trasladados_federales = 0
           xml.Conceptos {
             c_it=0
             @conceptos.each do |concepto|
@@ -306,29 +310,37 @@ module CFDI
               }.to_h
               xml.Concepto(cc) {
                 #Ahora los impuestos por cada concepto
-                if @impuestos.count_impuestos > 0
-                  if @impuestos.traslados.count > 0 #en caso que haya algun impuesto
-                    imp_vacio = @impuestos.traslados[c_it].tax #Se obtiene el primer impuesto
+                if @impuestos.count_impuestos > 0#en caso que haya algun impuesto
+                  if @impuestos.traslados.count > 0
+                    imp_vacio = @impuestos.traslados[c_it].tax
                     unless imp_vacio == "Ninguno"
-                    xml.Impuestos {
-                        xml.Traslados {
-                            xml.Traslado(
-                                Base: @impuestos.traslados[c_it].base,
-                                Impuesto: @impuestos.traslados[c_it].tax,
-                                TipoFactor: @impuestos.traslados[c_it].type_factor,
-                                TasaOCuota:  @impuestos.traslados[c_it].rate,
-                                Importe: @impuestos.traslados[c_it].import)
-                        }
-                      #Agregar el nodo Impuestos por si se mas adelante se ocupan las retenciones
-                      #if @impuestos.detained.count > 0
-                      #  xml.Retenciones do
-                      #    @impuestos.detained.each do |det|
-                      #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
-                      #                    importe: format('%.2f', det.import))
-                      #    end
-                      #  end
-                      #end
-                    }
+                      #Se llena un arreglo con los impuestos de los conceptos sin importar que se repitan y además
+                      #Y se excluyen aquellos "disque impuestos" de los conceptos que no tienen ningun impuesto relacionado.
+                      arrayTrasladados << [@impuestos.traslados[c_it].tax,
+                                           @impuestos.traslados[c_it].type_factor,
+                                           @impuestos.traslados[c_it].rate,
+                                           @impuestos.traslados[c_it].import]
+                      cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
+                      impuestos_aplicables = true
+                      xml.Impuestos {
+                          xml.Traslados {
+                              xml.Traslado(
+                                  Base: @impuestos.traslados[c_it].base,
+                                  Impuesto: @impuestos.traslados[c_it].tax,
+                                  TipoFactor: @impuestos.traslados[c_it].type_factor,
+                                  TasaOCuota:  @impuestos.traslados[c_it].rate,
+                                  Importe: @impuestos.traslados[c_it].import)
+                          }
+                        #Agregar el nodo Impuestos por si se mas adelante se ocupan las retenciones
+                        #if @impuestos.detained.count > 0
+                        #  xml.Retenciones do
+                        #    @impuestos.detained.each do |det|
+                        #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+                        #                    importe: format('%.2f', det.import))
+                        #    end
+                        #  end
+                        #end
+                      }
                     end
                   end
                 end
@@ -338,8 +350,8 @@ module CFDI
               c_it=c_it+1
             end
           }
-
-          if @impuestos.count_impuestos > 0
+          #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
+          if impuestos_aplicables
             tax_options = {}
             total_trans = format('%.2f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
@@ -351,35 +363,97 @@ module CFDI
             xml.Impuestos(tax_options) do
               if @impuestos.traslados.count > 0
                 xml.Traslados{
-                  #@impuestos.traslados.each do |t|
-                  #imp_trans = Array.new(cant_it) { Array.new(cant_it) }
+                #if @impuestos.count_impuestos > 0
+                resumen_traslados=[] #Para guardar todos los diferentes impuestos trasladados.
 
-                    #puts "Impuestossssssssssssssssssssssss"
-                    #puts @traslados.map(&:tax)[0]
-                    #imp_vacio = @impustos.traslados[0].tax #Se obtiene el primer
-                    #puts "IMPUESTO VACIO"
-                    #puts imp_vacio
+                #Se obtienen los valores del primer impuesto traslado y se almacenan.
+                impuesto_it = arrayTrasladados[0][0] #Impuesto => tax
+                tipoFactor_it = arrayTrasladados[0][1] #TipoFactor => type_factor
+                tasaOCuota_it = arrayTrasladados[0][2] #TasaOCuota => rate
+                importe_it = arrayTrasladados[0][3] #Importe => import
+                resumen_traslados << [impuesto_it, tipoFactor_it, tasaOCuota_it, importe_it]
+
+                #Si solo hay uno, pues para que hacerle al cuento. Se agrega un solo hijo "Traslado" al elemento padre "Traslados"
+                if arrayTrasladados.length == 1
+                  xml.Traslado(
+                  Impuesto: impuesto_it,
+                  TipoFactor:tipoFactor_it ,
+                  TasaOCuota: tasaOCuota_it,
+                  Importe: format('%.2f',importe_it)
+                  )
+                else
+                  it = 0 #Es un apuntador (No siempre incremente de uno en uno)
+                  while it < arrayTrasladados.length #Itera todos los impuestos de los conceptos(Excluyendo los impuestos vacios)
+                    repeticiones = 0 #Lleva el control de los impuestos totalmente identicos
+                    indice_cambio = 0
+                    indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
+                    bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
+
+                    val = 0
+                    while val < arrayTrasladados.length
+                      #Se identifican los valores iguales
+                      if arrayTrasladados[it][0] == arrayTrasladados[val][0] && arrayTrasladados[it][2] == arrayTrasladados[val][2]
+                        #Se suman sus importes, para el mismo tipo de impuestos que tienen la misma tasa o cuoata,
+                        #El indice 3 pertenece a los importes de los impuestos
+
+                        if it != val #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
+                          resumen_traslados[indice][3] = resumen_traslados[indice][3] + arrayTrasladados[val][3]
+                          repeticiones += 1
+                        elsif it == val
+                          repeticiones += 1
+                        end
+
+                        #Se agrega un elemento "Traslado" con la suma total de sus importes de los impuestos identicamente = y esto se hace  por cada impuesto diferente que se identifiquen
+                        if val == arrayTrasladados.length - 1 && repeticiones == arrayTrasladados.length
+                          # No tiene caso seguir iterando por que todos son iguales.
+                          it = repeticiones #if repeticiones == arrayTrasladados.length
+                        end
+
+                      else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
+                        #Detecta el primer cambio y de aquí partimos señores!
+                        #indice_cambio =  val
+                        ite = 0
+                        #SEGUIRAN ENTRANDO
+                        while ite < resumen_traslados.length
+                          if resumen_traslados[ite][0] != arrayTrasladados[val][0] && resumen_traslados[ite][2] != arrayTrasladados[val][2]
+                            indice_cambio = val if indice_cambio > it
+                          end
+                          ite += 1
+                        end
+                        if val == arrayTrasladados.length - 1
+                          resumen_traslados << [arrayTrasladados[indice_cambio][0],
+                                                arrayTrasladados[indice_cambio][1],
+                                                arrayTrasladados[indice_cambio][2],
+                                                arrayTrasladados[indice_cambio][3]]
+                        end
+                      end
+                      val += 1
+                    end #Fin de bucle anidado
 
                     xml.Traslado(
-                      #Impuesto: @impuestos.traslados[c_it].tax,
-                      #TipoFactor:@impuestos.traslados[c_it].type_factor,
-                      #TasaOCuota: @impuestos.traslados[c_it].type_factor, #format('%.2f', t.rate),
-                      #Importe: format('%.2f', @impuestos.traslados[c_it].import)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
-                      Impuesto: '002',
-                      TipoFactor:"Tasa" ,
-                      TasaOCuota: 0.160000, #format('%.2f', t.rate),
-                      Importe: format('%.2f',@impuestos.total_traslados)) #En las facturas electronicas el unico impuesto es el IVA trasladado por lo que no hay problem
+                    Impuesto: resumen_traslados[indice][0],
+                    TipoFactor:resumen_traslados[indice][1] ,
+                    TasaOCuota: resumen_traslados[indice][2],
+                    Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe de todos los impuestos trasladados(Que sean diferentes en tipo o tasa)
+                    )
 
+                    indice += 1 #Se haya agregado otro o todos hayan sido iguales da igual. Se imcrementa!
+                    indice_cambio =  0
+                    bandera_cambio = true
+                    #it += 1
+                  end
+
+                end
                 }
+                #if @impuestos.detained.count > 0
+                #  xml.Retenciones do
+                #    @impuestos.detained.each do |det|
+                #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+                #                    importe: format('%.2f', det.import))
+                #    end
+                #  end
+                #end
               end
-              #if @impuestos.detained.count > 0
-              #  xml.Retenciones do
-              #    @impuestos.detained.each do |det|
-              #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
-              #                    importe: format('%.2f', det.import))
-              #    end
-              #  end
-              #end
             end
           end
 
