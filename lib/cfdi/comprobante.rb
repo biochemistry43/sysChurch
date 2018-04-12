@@ -382,67 +382,72 @@ module CFDI
                   Importe: format('%.2f',importe_it)
                   )
                 else
+                  detectaCambio = false
+                  indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
                   it = 0 #Es un apuntador (No siempre incremente de uno en uno)
-                  while it < arrayTrasladados.length #Itera todos los impuestos de los conceptos(Excluyendo los impuestos vacios)
-                    repeticiones = 0 #Lleva el control de los impuestos totalmente identicos
+                  while it < arrayTrasladados.length #Itera todos los impuestos de los conceptos(Excluidos los impuestos vacios)
                     indice_cambio = 0
-                    indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
-                    bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
 
+                    bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
+                    #Para comparar los atributos de  impuesto seleccionado a impuesto.
                     val = 0
                     while val < arrayTrasladados.length
                       #Se identifican los valores iguales
                       if arrayTrasladados[it][0] == arrayTrasladados[val][0] && arrayTrasladados[it][2] == arrayTrasladados[val][2]
-                        #Se suman sus importes, para el mismo tipo de impuestos que tienen la misma tasa o cuoata,
+                        #Se suman los importes de los impuestos iguales
                         #El indice 3 pertenece a los importes de los impuestos
-
                         if it != val #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
                           resumen_traslados[indice][3] = resumen_traslados[indice][3] + arrayTrasladados[val][3]
-                          repeticiones += 1
-                        elsif it == val
-                          repeticiones += 1
                         end
-
-                        #Se agrega un elemento "Traslado" con la suma total de sus importes de los impuestos identicamente = y esto se hace  por cada impuesto diferente que se identifiquen
-                        if val == arrayTrasladados.length - 1 && repeticiones == arrayTrasladados.length
-                          # No tiene caso seguir iterando por que todos son iguales.
-                          it = repeticiones #if repeticiones == arrayTrasladados.length
+                        #En este caso se trata del mismo, es igual por que es el mismo jaja.
+                        if val == arrayTrasladados.length - 1 && detectaCambio == true && it == val
+                          #El último impuesto diferente y huerfanito se agrega al arreglo.
+                          resumen_traslados << [arrayTrasladados[val][0],
+                                                arrayTrasladados[val][1],
+                                                arrayTrasladados[val][2],
+                                                arrayTrasladados[val][3]]
                         end
 
                       else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
                         #Detecta el primer cambio y de aquí partimos señores!
-                        #indice_cambio =  val
-                        ite = 0
-                        #SEGUIRAN ENTRANDO
-                        while ite < resumen_traslados.length
-                          if resumen_traslados[ite][0] != arrayTrasladados[val][0] && resumen_traslados[ite][2] != arrayTrasladados[val][2]
-                            indice_cambio = val if indice_cambio > it
+                        detectaCambio = true
+                        if bandera_cambio
+                          if val > it
+                            ite = 0
+                            #Se comprueba que no se haya tomado en cuenta el mismo impuesto antes.
+                            while ite < resumen_traslados.length
+                              if resumen_traslados[ite][0] != arrayTrasladados[val][0] && resumen_traslados[ite][2] != arrayTrasladados[val][2]
+                                #indice_cambio = val if indice_cambio > it
+                                bandera_cambio = false #Esto asegura que sea el indice proximo y no el proximo del proximo
+                                indice_cambio = val
+                              end
+                              ite += 1
+                            end
                           end
-                          ite += 1
-                        end
-                        if val == arrayTrasladados.length - 1
-                          resumen_traslados << [arrayTrasladados[indice_cambio][0],
-                                                arrayTrasladados[indice_cambio][1],
-                                                arrayTrasladados[indice_cambio][2],
-                                                arrayTrasladados[indice_cambio][3]]
                         end
                       end
                       val += 1
                     end #Fin de bucle anidado
 
+                    #Se agrega un elemento Traslado por cada impuesto estrictamente diferente
                     xml.Traslado(
                     Impuesto: resumen_traslados[indice][0],
-                    TipoFactor:resumen_traslados[indice][1] ,
+                    TipoFactor:resumen_traslados[indice][1],
                     TasaOCuota: resumen_traslados[indice][2],
-                    Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe de todos los impuestos trasladados(Que sean diferentes en tipo o tasa)
+                    Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe por cada impuesto diferente
                     )
 
-                    indice += 1 #Se haya agregado otro o todos hayan sido iguales da igual. Se imcrementa!
-                    indice_cambio =  0
-                    bandera_cambio = true
-                    #it += 1
+                    if detectaCambio
+                      if it == arrayTrasladados.length - 1
+                        it = arrayTrasladados.length
+                      else
+                        it = indice_cambio
+                      end
+                      indice += 1 #Solo si hay cambio seguirá entrando
+                    else #Si no se detecto cambio quiere decir que todos los impuestos traslados son identicos
+                      it = arrayTrasladados.length #Solo un novato entra en un ciclo infinito jaja cual -1 ni que nada
+                    end
                   end
-
                 end
                 }
                 #if @impuestos.detained.count > 0
@@ -456,6 +461,7 @@ module CFDI
               end
             end
           end
+
 
 
 =begin

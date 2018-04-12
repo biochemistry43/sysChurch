@@ -134,7 +134,7 @@ class FacturasController < ApplicationController
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
       lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-      total: 59.00#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
+      total: 75.208#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
       #Descuento:0 #DESCUENTO RAPPEL
     })
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
