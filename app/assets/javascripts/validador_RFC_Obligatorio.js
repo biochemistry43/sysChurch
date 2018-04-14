@@ -43,7 +43,7 @@
         //Handler para el evento cuando cambia el input
         // -Lleva la RFC a mayúsculas para validarlo
         // -Elimina los espacios que pueda tener antes o después
-      var validarRFC_Opcional = function(e){
+      var validador_RFC_Obligatorio = function(e){
         var input = document.getElementById("rfc_input");
         var rfc = input.value.trim().toUpperCase()
         var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
@@ -59,11 +59,11 @@
 
       };
         //Se pone a la escucha el sumit del formulario
-        var boton=document.getElementById("RFC_Obligatorio");
-        boton.addEventListener("click",validarRFC_Opcional);
+        var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
+        facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
 
-        var boton2=document.getElementById("RFC_Obligatorio2");
-        boton2.addEventListener("click",validarRFC_Opcional);
+        var facturarAhora=document.getElementById("RFC_Obligatorio2");
+        facturarAhora.addEventListener("click",validador_RFC_Obligatorio);
 
     }()
     )

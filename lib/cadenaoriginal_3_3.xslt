@@ -6,12 +6,15 @@
   <!--
 		En esta sección se define la inclusión de las plantillas de utilerías para colapsar espacios
 	-->
-  <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/2/cadenaoriginal_2_0/utilerias.xslt"/>
-  <!-- 
-		En esta sección se define la inclusión de las demás plantillas de transformación para 
-		la generación de las cadenas originales de los complementos fiscales 
+  <!--xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/2/cadenaoriginal_2_0/utilerias.xslt"/-->
+    <xsl:include href="lib/assets/utilerias.xsl"/>
+
+  <!--
+		En esta sección se define la inclusión de las demás plantillas de transformación para
+		la generación de las cadenas originales de los complementos fiscales
 	-->
-  <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/EstadoDeCuentaCombustible/ecc11.xslt"/> 
+  <!--
+  <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/EstadoDeCuentaCombustible/ecc11.xslt"/>
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/donat/donat11.xslt"/>
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/divisas/divisas.xslt"/>
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xslt"/>
@@ -37,8 +40,8 @@
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/terceros/terceros11.xslt"/>
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xslt"/>
   <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/detallista/detallista.xslt"/>
+-->
 
-	
   <!-- Aquí iniciamos el procesamiento de la cadena original con su | inicial y el terminador || -->
   <xsl:template match="/">|<xsl:apply-templates select="/cfdi:Comprobante"/>||</xsl:template>
   <!--  Aquí iniciamos el procesamiento de los datos incluidos en el comprobante -->
