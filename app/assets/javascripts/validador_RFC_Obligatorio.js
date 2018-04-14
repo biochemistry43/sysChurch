@@ -1,5 +1,4 @@
 (function(){
-
       //Función para validar un RFC
       // Devuelve el RFC sin espacios ni guiones si es correcto
       // Devuelve false si es inválido
@@ -50,9 +49,8 @@
         var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
         var colorearRojo=document.getElementById("errorRFC");
 
-        if (!rfcCorrecto && rfc.length > 0 ) {
-           var PacienteId = $(this.data("id"));
-           alert("HOLITA"+ PacienteId);
+        if (!rfcCorrecto) {
+
           colorearRojo.className+=" has-error has-feedback";
 
           e.preventDefault();
@@ -61,8 +59,11 @@
 
       };
         //Se pone a la escucha el sumit del formulario
-        var boton=document.getElementById("RFC_Opcional");
+        var boton=document.getElementById("RFC_Obligatorio");
         boton.addEventListener("click",validarRFC_Opcional);
+
+        var boton2=document.getElementById("RFC_Obligatorio2");
+        boton2.addEventListener("click",validarRFC_Opcional);
 
     }()
     )
