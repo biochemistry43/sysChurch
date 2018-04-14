@@ -196,10 +196,10 @@ class FacturasController < ApplicationController
       rfc_receptor_f=@@venta.cliente.rfc
     else
       #Si no está registrado el R.F.C del cliente, se registra asi de facil jaja
-      rfc_receptor_f=params[:rfc_receptor]
+      rfc_receptor_f=params[:rfc_input]
       cliente_id=@@venta.cliente.id
       @cliente=Cliente.find(cliente_id)
-      @cliente.update(:rfc=>params[:rfc_receptor])
+      @cliente.update(:rfc=>params[:rfc_input])
 
     end
     #El mismo show q  el rfc, si el sistema detecta que el cliente no está registrado con su nombre fiscal, le pedirá al usuario que lo ingrese.

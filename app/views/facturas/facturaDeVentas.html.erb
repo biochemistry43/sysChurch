@@ -195,19 +195,21 @@
             <!--Panel para los datos de RECEPTOR-->
             <div class="panel panel-default col-md-6">
               <div class="panel-body">
-
+                <div class="item form-group" id="errorRFC">
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
                   <%if @rfc_emisor_present%>
                     <div class="col-md-8 col-sm-8 col-xs-8">
-                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                     </div>
                   <%else%>
                     <div class="col-md-8 col-sm-8 col-xs-8">
-                      <%= text_field_tag :rfc_receptor, nil,{class:'form-control text_field', :placeholder=>"Clave del Registro Federal del Contribuyente"}%>
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Clave del Registro Federal del Contribuyente"}%>
                     </div>
                   <%end%>
+                </div>
+
                   <div class="col-md-4 col-sm-4 col-xs-4">
                     <%= label_tag :nombre_fiscal_receptor_f,'Nombre fiscal', class:"control-label"%>
                   </div>
@@ -297,12 +299,12 @@
           </div>
 
           <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
-            <div class="text-center">
+            <div class="text-center" id="ListPage">
               <%= submit_tag 'Cancelar', {:class=>"btn btn-default btn-lg"} %>
               <!--No tiene tanto sentido guardar facturas como borrador para un sistema que obtiene los datos directamente de la BD-->
               <!-- submit_tag 'Vista previa', {:class=>"btn btn-default btn-lg"} -->
-              <%= submit_tag 'Facturar y crear nueva', {:class=>"btn btn-default btn-lg"} %>
-              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active"}%>
+              <%= submit_tag 'Facturar y crear nueva', {:class=>"btn btn-default btn-lg",:id=>"validador2"} %>
+              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active", :id=>"validador"}%>
 
             </div>
           </div>
@@ -317,3 +319,4 @@
   <!-- javascript_include_tag "cancelaciones" -->
 </div>
 <%= stylesheet_link_tag "facturas" %>
+<%= javascript_include_tag "validador_RFC" %>
