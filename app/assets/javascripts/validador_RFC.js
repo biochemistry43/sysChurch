@@ -51,8 +51,8 @@
         var colorearRojo=document.getElementById("errorRFC");
 
         if (!rfcCorrecto && rfc.length > 0 ) {
-           var PacienteId = $(this.data("id"));
-           alert("HOLITA"+ PacienteId);
+           //var PacienteId = $(this.data("id"));
+           //alert("HOLITA"+ PacienteId);
           colorearRojo.className+=" has-error has-feedback";
 
           e.preventDefault();

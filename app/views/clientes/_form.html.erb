@@ -1,14 +1,17 @@
 <%= form_for @cliente, remote: true, :html=> { :class=>'form-horizontal form-label-left', :role=>"form"  } do |f| %>
-
+<div class="col-md-12 col-sm-12 col-xs-12">
+<div class="col-xs-9">
+<div class="tab-content">
+<div class="tab-pane active" id="generales">
   <div class="item form-group">
     <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos generales del Cliente:</h2>
   </div>
 
   <div class="item form-group<%= @cliente.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :nombre, "Nombre(s)*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-user"></i></span>
-      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"nombre o nombres del cliente..."} do%>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Nombre o nombres del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:nombre].any? %>
         <p class="bg-danger"><%= @cliente.errors[:nombre].to_s[/\w([^"]*)/] %></p>
@@ -18,7 +21,7 @@
 
   <div class="item form-group<%= @cliente.errors[:ape_pat].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :ape_pat, "Apellido paterno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-male"></i></span>
       <%= f.text_field :ape_pat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido paterno del cliente..."} do%>
       <%end%>
@@ -30,7 +33,7 @@
 
   <div class="item form-group<%= @cliente.errors[:ape_mat].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :ape_mat, "Apellido materno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-female"></i></span>
       <%= f.text_field :ape_mat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido materno del cliente..."} do%>
       <%end%>
@@ -42,7 +45,7 @@
 
   <div class="item form-group<%= @cliente.errors[:fecha_nac].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :fecha_nac, "Fecha de nacimiento: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
       <%= f.date_picker :fecha_nac, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"fecha de nacimiento..."} do%>
       <%end%>
@@ -58,7 +61,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionCalle].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionCalle, "Calle: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-road"></i></span>
       <%= f.text_field :direccionCalle, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Calle..."} do%>
       <%end%>
@@ -70,7 +73,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionNumeroExt].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionNumeroExt, "Número exterior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-home"></i></span>
       <%= f.text_field :direccionNumeroExt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número exterior..."} do%>
       <%end%>
@@ -82,7 +85,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionNumeroInt].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionNumeroInt, "Número interior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-home"></i></span>
       <%= f.text_field :direccionNumeroInt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número interior..."} do%>
       <%end%>
@@ -94,7 +97,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionColonia].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionColonia, "Colonia: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-tree"></i></span>
       <%= f.text_field :direccionColonia, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Colonia del cliente..."} do%>
       <%end%>
@@ -106,7 +109,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionMunicipio].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionMunicipio, "Municipio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-building"></i></span>
       <%= f.text_field :direccionMunicipio, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Municipio de la dirección del cliente..."} do%>
       <%end%>
@@ -118,7 +121,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionDelegacion].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionDelegacion, "Delegación: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-building"></i></span>
       <%= f.text_field :direccionDelegacion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Delegación del cliente si existe..."} do%>
       <%end%>
@@ -130,7 +133,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionEstado].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionEstado, "Estado: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
       <%= f.text_field :direccionEstado, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Estado de residencia..."} do%>
       <%end%>
@@ -142,7 +145,7 @@
 
   <div class="item form-group<%= @cliente.errors[:direccionCp].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :direccionCp, "Código postal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
       <%= f.text_field :direccionCp, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "C.P...."} do%>
       <%end%>
@@ -158,7 +161,7 @@
 
   <div class="item form-group<%= @cliente.errors[:telefono1].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :telefono1, "Teléfono 1: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-phone"></i></span>
       <%= f.text_field :telefono1, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Teléfono del cliente"} do%>
       <%end%>
@@ -170,7 +173,7 @@
 
   <div class="item form-group<%= @cliente.errors[:telefono2].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :telefono2, "Teléfono 2: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-phone"></i></span>
       <%= f.text_field :telefono2, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Teléfono del cliente"} do%>
       <%end%>
@@ -182,7 +185,7 @@
 
   <div class="item form-group<%= @cliente.errors[:email].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :email, "Email: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
       <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "email del cliente"} do%>
       <%end%>
@@ -193,38 +196,126 @@
   </div>
 
 
-  <div class="item form-group">
-    <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos Fiscales:</h2>
-  </div>
 
-  <div class="item form-group<%= @cliente.errors[:nombreFiscal].any? ? ' has-error has-feedback' : '' %>">
-    <%= f.label :nombreFiscal, "Nombre Fiscal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-user"></i></span>
-      <%= f.text_field :nombreFiscal, {class: "form-control col-md-7 col-xs-12 text_field ", :placeholder=>"Nombre, denominación o razón social"} do%>
-      <%end%>
-      <%if @cliente.errors[:nombreFiscal].any? %>
-        <p class="bg-danger"><%= @cliente.errors[:nombreFiscal].to_s[/\w([^"]*)/] %></p>
-      <% end %>
+</div>
+
+<div class="tab-pane" id="facturación">
+
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos Fiscales:</h2>
     </div>
-  </div>
 
-  <div class="item form-group<%= @cliente.errors[:rfc].any? ? ' has-error has-feedback' : '' %>" id="errorRFC">
-    <%= f.label :rfc, "RFC: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
-    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-      <span class="input-group-addon"><i class="fa fa-user"></i></span>
-      <%= f.text_field :rfc, {class: "form-control col-md-7 col-xs-12 text_field ", :placeholder=>"Clave del Registro Federal del Contribuyente", id: "rfc_input" }%>
-
-      <!--pre id="resultado"></pre-->
-      <%if @cliente.errors[:rfc].any? %>
-        <p class="bg-danger"><%= @cliente.errors[:rfc].to_s[/\w([^"]*)/] %></p>
-      <% end %>
+    <div class="item form-group<%= @cliente.errors[:nombreFiscal].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :nombreFiscal, "Nombre Fiscal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <%= f.text_field :nombreFiscal, {class: "form-control col-md-7 col-xs-12 text_field  ", :placeholder=>"Nombre, denominación o razón social"} do%>
+        <%end%>
+        <%if @cliente.errors[:nombreFiscal].any? %>
+          <p class="bg-danger"><%= @cliente.errors[:nombreFiscal].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
     </div>
-  </div>
 
+    <div class="item form-group<%= @cliente.errors[:rfc].any? ? ' has-error has-feedback' : '' %>" id="errorRFC">
+      <%= f.label :rfc, "RFC: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <%= f.text_field :rfc, {class: "form-control col-md-7 col-xs-12 text_field ", :placeholder=>"Clave del Registro Federal del Contribuyente", id: "rfc_input" }%>
+
+        <!--pre id="resultado"></pre-->
+        <%if @cliente.errors[:rfc].any? %>
+          <p class="bg-danger"><%= @cliente.errors[:rfc].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Dirección Fiscal:</h2>
+    </div>
+
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Calle:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-road"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número exterior:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-home"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número interior:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-home"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Colonia:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tree"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Localidad:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-building"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Referencia:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-university"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Referencia...">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Municipio:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-building"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Estado:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
+      </div>
+    </div>
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">C.P.:</label>
+      <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
+        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
+      </div>
+    </div>
+</div>
+</div>
   <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
 
     <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success", id:"RFC_Opcional"%>
   </div>
+
+
+</div>
+  <div class="col-xs-3">
+
+    <ul class="nav nav-tabs tabs-right">
+      <li class="active"><a href="#generales" data-toggle="tab">Datos básicos</a></li>
+
+      <li><a href="#facturación" data-toggle="tab">Datos de facturación</a></li>
+    </ul>
+  </div>
+
+</div>
 <% end %>
+
 <%= javascript_include_tag "validador_RFC" %>

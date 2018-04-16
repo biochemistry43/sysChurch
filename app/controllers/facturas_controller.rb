@@ -123,6 +123,8 @@ class FacturasController < ApplicationController
         serie = folio_default
       end
     #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+    #puts "Forma PAGOS"
+    #puts @camposFormaPago = @@venta.venta_forma_pago.venta_forma_pago_campos
     factura = CFDI::Comprobante.new({
       serie: serie,
       folio: consecutivo,

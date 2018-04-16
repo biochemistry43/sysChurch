@@ -79,6 +79,7 @@ div{
 	font-size: 18 !important;
 }
 #sellosDig{
+	font-size: 10;
 	word-break: break-all;
 
 }
@@ -86,6 +87,7 @@ div{
 	text-transform: none !important;
 }
 #tablaInternaSellos{
+	font-size: 10;
 	border:none;
 	width: 100%;
 	align:left;
