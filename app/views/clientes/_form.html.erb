@@ -205,28 +205,20 @@
       <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos Fiscales:</h2>
     </div>
 
-    <div class="item form-group<%= @cliente.errors[:nombreFiscal].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :nombreFiscal, "Nombre Fiscal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+
+    <div class="item form-group ">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Nombre Fiscal:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <%= f.text_field :nombreFiscal, {class: "form-control col-md-7 col-xs-12 text_field  ", :placeholder=>"Nombre, denominación o razón social"} do%>
-        <%end%>
-        <%if @cliente.errors[:nombreFiscal].any? %>
-          <p class="bg-danger"><%= @cliente.errors[:nombreFiscal].to_s[/\w([^"]*)/] %></p>
-        <% end %>
+        <input name="nombreFiscal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Nombre, denominación o razón social.">
       </div>
     </div>
 
-    <div class="item form-group<%= @cliente.errors[:rfc].any? ? ' has-error has-feedback' : '' %>" id="errorRFC">
-      <%= f.label :rfc, "RFC: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="item form-group " id="errorRFC">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">R.F.C.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <%= f.text_field :rfc, {class: "form-control col-md-7 col-xs-12 text_field ", :placeholder=>"Clave del Registro Federal del Contribuyente", id: "rfc_input" }%>
-
-        <!--pre id="resultado"></pre-->
-        <%if @cliente.errors[:rfc].any? %>
-          <p class="bg-danger"><%= @cliente.errors[:rfc].to_s[/\w([^"]*)/] %></p>
-        <% end %>
+        <input name="rfc" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Clave del Registro Federal del Contribuyente" id="rfc_input">
       </div>
     </div>
 
@@ -238,63 +230,63 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Calle:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-road"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
+        <input name="calle_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número exterior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
+        <input name="numExterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número interior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
+        <input name="numInterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Colonia:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-tree"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
+        <input name="colonia_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Localidad:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
+        <input name="localidad_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
       </div>
     </div>
-    <div class="item form-group ">
+    <!--div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Referencia:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-university"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Referencia...">
+        <input name="referencia_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Referencia...">
       </div>
-    </div>
+    </div-->
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Municipio:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
+        <input name="municipio_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Estado:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
+        <input name="estado_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">C.P.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-        <input type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
+        <input name="codigo_postal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
       </div>
     </div>
 </div>

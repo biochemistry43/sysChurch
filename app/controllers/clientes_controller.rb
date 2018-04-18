@@ -43,10 +43,26 @@ class ClientesController < ApplicationController
   def create
     @cliente = Cliente.new(cliente_params)
 
+    #nombreFiscal = params[:nombreFiscal_f]
+    #rfc_f = params[:rfc_f]
+    calle_f = params[:calle_f ]
+    numExterior_f = params[:numExterior_f]
+    numInterior_f = params[:numInterior_f]
+    colonia_f = params[:colonia_f]
+    localidad_f = params[:localidad_f]
+    #referencia_f = params[:referencia_f]
+    municipio_f = params[:municipio_f]
+    estado_f = params[:estado_f]
+    codigo_postal_f = params[:codigo_postal_f]
+
+    @datosFiscalesCliente=DatosFiscalesCliente.new( calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+
     respond_to do |format|
       if @cliente.valid?
-        if @cliente.save
+        if @cliente.save && @datosFiscalesCliente.save
+
           current_user.negocio.clientes << @cliente
+          @cliente.datos_fiscales_cliente = @datosFiscalesCliente
           #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
           #format.json { render :show, status: :created, location: @cliente }
           format.json { head :no_content}
@@ -73,7 +89,7 @@ class ClientesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cliente_params
-      params.require(:cliente).permit(:nombre, :direccionCalle, :direccionNumeroExt, :direccionNumeroInt, :direccionColonia, :direccionMunicipio, :direccionDelegacion, :direccionEstado, :direccionCp, :telefono1, :telefono2, :email, :ape_pat, :ape_mat, :fecha_nac, :nombreFiscal, :rfc)
+      params.require(:cliente).permit(:nombre, :direccionCalle, :direccionNumeroExt, :direccionNumeroInt, :direccionColonia, :direccionMunicipio, :direccionDelegacion, :direccionEstado, :direccionCp, :telefono1, :telefono2, :email, :ape_pat, :ape_mat, :fecha_nac)
     end
 
 end
