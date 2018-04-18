@@ -11,7 +11,7 @@
     <%= f.label :nombre, "Nombre(s)*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-user"></i></span>
-      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Nombre o nombres del cliente..."} do%>
+      <%= f.text_field :nombre, {id: "nombre", class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Nombre o nombres del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:nombre].any? %>
         <p class="bg-danger"><%= @cliente.errors[:nombre].to_s[/\w([^"]*)/] %></p>
@@ -23,7 +23,7 @@
     <%= f.label :ape_pat, "Apellido paterno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-male"></i></span>
-      <%= f.text_field :ape_pat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido paterno del cliente..."} do%>
+      <%= f.text_field :ape_pat, {id: "ape_pat", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido paterno del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:ape_pat].any? %>
         <p class="bg-danger"><%= @cliente.errors[:ape_pat].to_s[/\w([^"]*)/] %></p>
@@ -35,7 +35,7 @@
     <%= f.label :ape_mat, "Apellido materno*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-female"></i></span>
-      <%= f.text_field :ape_mat, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido materno del cliente..."} do%>
+      <%= f.text_field :ape_mat, {id: "ape_mat", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Apellido materno del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:ape_mat].any? %>
         <p class="bg-danger"><%= @cliente.errors[:ape_mat].to_s[/\w([^"]*)/] %></p>
@@ -63,7 +63,7 @@
     <%= f.label :direccionCalle, "Calle: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-road"></i></span>
-      <%= f.text_field :direccionCalle, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Calle..."} do%>
+      <%= f.text_field :direccionCalle, {id: "direccionCalle", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Calle..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionCalle].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionCalle].to_s[/\w([^"]*)/] %></p>
@@ -75,7 +75,7 @@
     <%= f.label :direccionNumeroExt, "Número exterior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-home"></i></span>
-      <%= f.text_field :direccionNumeroExt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número exterior..."} do%>
+      <%= f.text_field :direccionNumeroExt, {id: "direccionNumeroExt", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número exterior..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionNumeroExt].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionNumeroExt].to_s[/\w([^"]*)/] %></p>
@@ -87,7 +87,7 @@
     <%= f.label :direccionNumeroInt, "Número interior: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-home"></i></span>
-      <%= f.text_field :direccionNumeroInt, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número interior..."} do%>
+      <%= f.text_field :direccionNumeroInt, {id: "direccionNumeroInt", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Número interior..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionNumeroInt].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionNumeroInt].to_s[/\w([^"]*)/] %></p>
@@ -99,7 +99,7 @@
     <%= f.label :direccionColonia, "Colonia: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-tree"></i></span>
-      <%= f.text_field :direccionColonia, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Colonia del cliente..."} do%>
+      <%= f.text_field :direccionColonia, {id: "direccionColonia", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Colonia del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionColonia].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionColonia].to_s[/\w([^"]*)/] %></p>
@@ -111,7 +111,7 @@
     <%= f.label :direccionMunicipio, "Municipio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-building"></i></span>
-      <%= f.text_field :direccionMunicipio, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Municipio de la dirección del cliente..."} do%>
+      <%= f.text_field :direccionMunicipio, {id: "direccionMunicipio", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Municipio de la dirección del cliente..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionMunicipio].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionMunicipio].to_s[/\w([^"]*)/] %></p>
@@ -135,7 +135,7 @@
     <%= f.label :direccionEstado, "Estado: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
-      <%= f.text_field :direccionEstado, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Estado de residencia..."} do%>
+      <%= f.text_field :direccionEstado, {id: "direccionEstado", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Estado de residencia..."} do%>
       <%end%>
       <%if @cliente.errors[:direccionEstado].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionEstado].to_s[/\w([^"]*)/] %></p>
@@ -147,7 +147,7 @@
     <%= f.label :direccionCp, "Código postal: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
     <div class="col-md-9 col-sm-9 col-xs-12 input-group">
       <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-      <%= f.text_field :direccionCp, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "C.P...."} do%>
+      <%= f.text_field :direccionCp, {id: "direccionCp", class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "C.P...."} do%>
       <%end%>
       <%if @cliente.errors[:direccionCp].any? %>
         <p class="bg-danger"><%= @cliente.errors[:direccionCp].to_s[/\w([^"]*)/] %></p>
@@ -210,7 +210,7 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Nombre Fiscal:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <input name="nombreFiscal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Nombre, denominación o razón social.">
+        <input name="nombreFiscal_f" id="nombreFiscal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Nombre, denominación o razón social.">
       </div>
     </div>
 
@@ -218,47 +218,52 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">R.F.C.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <input name="rfc_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Clave del Registro Federal del Contribuyente" id="rfc_input">
+        <input name="rfc_f"  type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Clave del Registro Federal del Contribuyente" id="rfc_input">
       </div>
     </div>
 
     <div class="item form-group">
       <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Dirección Fiscal:</h2>
+      <div align="right">
+      <button class="btn btn-success" id="btn_usarDireccion" type="button">
+         <i class="fa fa-hand-o-down"></i> Usar misma dirección
+       </button>
+       </div>
     </div>
 
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Calle:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-road"></i></span>
-        <input name="calle_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
+        <input name="calle_f" id="calle_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número exterior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input name="numExterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
+        <input name="numExterior_f" id="numExterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número interior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input name="numInterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
+        <input name="numInterior_f" id="numInterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Colonia:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-tree"></i></span>
-        <input name="colonia_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
+        <input name="colonia_f" id="colonia_f"  type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Localidad:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input name="localidad_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
+        <input name="localidad_f" id="localidad_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
       </div>
     </div>
     <!--div class="item form-group ">
@@ -272,21 +277,21 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Municipio:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input name="municipio_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
+        <input name="municipio_f" id="municipio_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Estado:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
-        <input name="estado_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
+        <input name="estado_f" id="estado_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">C.P.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-        <input name="codigo_postal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
+        <input name="codigo_postal_f" id="codigo_postal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
       </div>
     </div>
 </div>
@@ -298,16 +303,20 @@
 
 
 </div>
-  <div class="col-xs-3">
+  <div class="col-xs-3" align="center">
 
     <ul class="nav nav-tabs tabs-right">
       <li class="active"><a href="#generales" data-toggle="tab">Datos básicos</a></li>
 
       <li><a href="#facturación" data-toggle="tab">Datos de facturación</a></li>
-    </ul>
+
+
+
   </div>
 
 </div>
 <% end %>
 
 <%= javascript_include_tag "validador_RFC" %>
+
+<%= javascript_include_tag "clientes" %>
