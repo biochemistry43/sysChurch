@@ -4,7 +4,7 @@
       <h1>Facturas de ventas</h1>
     </div>
   </div>
-  <div id="summernote">Hello Summernote</div>
+  <!--div id="summernote">Hello Summernote</div-->
 
 
   <div class="clearfix"></div>
@@ -349,7 +349,7 @@
                 <% end %>
 
                   <% unless factura.estado_factura.eql?("Borrador") %>
-                    <%= link_to url={action: "enviar_email", controller: "facturas"}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <%= link_to url={action: "enviar_email", controller: "facturas", id: factura}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <i class="fa fa-envelope"></i>
                     <% end %>
                   <% end%>
@@ -419,10 +419,6 @@
     });
   </script>
 
-  <script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote();
-  });
 
 </script>
   <%= javascript_include_tag "ventas" %>

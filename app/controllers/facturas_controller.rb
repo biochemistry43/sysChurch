@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf,:descargar_cfdis, :cancelar_cfdi]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email, :descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -533,6 +533,13 @@ class FacturasController < ApplicationController
   end
 
   def enviar_email
+
+    @destinatario = @factura.cliente.email#params[:user]
+    @mensaje = "Hola"#params[:mensaje]
+    @tema = "Nada"#params[:tema]
+
+    FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
+
 =begin
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage

@@ -1,20 +1,33 @@
 <form action="">
+
   <div class="col-md-12 col-sm-12 col-xs-12">
-
-
+    <div class="row">
       <div class="tab-content">
-
-        <div class="tab-pane active">
+        <div>
             <div class="form-group col-md-10 col-sm-12 col-xs-12">
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Para: </label>
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
-                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "" >
+                <span class="input-group-addon"><i class="fa fa-smile-o"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @destinatario%>" >
+              </div>
+            </div>
+
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Su mensaje: </label>
+              <div class="input-group">
+
+                <textarea name="mensaje" id="summernote" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @destinatario%>"></textarea>
+
               </div>
             </div>
 
         </div>
       </div>
 
+    </div>
   </div>
 </form>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote();
+  });
