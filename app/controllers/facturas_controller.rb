@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email, :descargar_cfdis, :cancelar_cfdi]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf,:descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -533,7 +533,7 @@ class FacturasController < ApplicationController
   end
 
   def enviar_email
-
+=begin
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
 
@@ -586,6 +586,7 @@ class FacturasController < ApplicationController
       flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
       #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
     end
+=end
   end
 
   def descargar_cfdis

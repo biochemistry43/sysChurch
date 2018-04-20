@@ -1,0 +1,17 @@
+// Add the dialog title
+  //$('#modal-facturas-title').parent().css("background-color", "#92c33c");
+  //$('#modal-facturas-title').parent().css("color", "white");
+  //$('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");
+
+$('#modal-emails-title').html("<i class='glyphicon glyphicon-plus'></i> Enviar CFDIs por email");
+
+// Render the new form
+$('.modal-body-emails').html('<%= j render("enviar_email") %>');
+
+// Show the dynamic dialog
+$('#modalEmails').modal("show");
+
+// Set focus to the first element
+$('#modalEmails').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

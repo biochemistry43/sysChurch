@@ -357,7 +357,7 @@
                 <% end %>
 
                   <% unless factura.estado_factura.eql?("Borrador") %>
-                    <%= link_to url={action: "enviar_email", controller: "facturas",id:factura}, html_options={ class: "btn btn-warning",  title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <%= link_to url={action: "enviar_email", controller: "facturas"}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <i class="fa fa-envelope"></i>
                     <% end %>
                   <% end%>
@@ -402,6 +402,7 @@
       </div>
     </div>
     <%= render 'modalFacturas'%>
+    <%= render 'modalEmails'%>
   </div>
 
   <script>
