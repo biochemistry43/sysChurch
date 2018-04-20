@@ -26,6 +26,9 @@ gem 'google-cloud-storage'
 
 gem 'gmail', '~> 0.6.0'
 
+#Editor de texto basado en bootstrap
+gem 'summernote-rails'
+
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'
 

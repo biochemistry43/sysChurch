@@ -4,6 +4,8 @@
       <h1>Facturas de ventas</h1>
     </div>
   </div>
+  <div id="summernote">Hello Summernote</div>
+
 
   <div class="clearfix"></div>
   <hr>
@@ -66,17 +68,7 @@
     </div>
     <%end%>
 
-
-
-
-
-
-
-
-
   <hr style="border-style: solid; border-width: 2px;">
-
-
 
     <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
       Filtros por fecha <i class="fa fa-sort-down"></i>
@@ -425,6 +417,13 @@
       });
     });
   </script>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote();
+  });
+
+</script>
   <%= javascript_include_tag "ventas" %>
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
