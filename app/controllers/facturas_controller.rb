@@ -532,13 +532,61 @@ class FacturasController < ApplicationController
     end
   end
 
-  def enviar_email
+  def enviar_email_post
+    #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
+    if request.post?
+      @destinatario = params[:destinatario]
+      @mensaje = params[:summernote]
 
-    @destinatario = @factura.cliente.email#params[:user]
-    @mensaje = "Hola"#params[:mensaje]
-    @tema = "Nada"#params[:tema]
+      @tema = params[:tema]
+=begin
+      #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
+      #email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
+      Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
+      #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
+      #https://myaccount.google.com/lesssecureapps
+      gmail.deliver do
+        to "dani-elorenzo95@hotmail.com"
+        subject "Te reenvio la factura!"
 
-    FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
+        html_part do
+          content_type 'text/html; charset = UTF-8'
+           body '<h1> Esto es HTML </h1>'
+        end
+
+
+        add_file "public/IMG_20171225_243621204.jpg"
+      end
+      }
+      respond_to do |format|
+        format.html { redirect_to action: "index"}
+        flash[:notice] = "Los comprobantes se han enviado a #{@destinatario}!"
+        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      end
+=end
+
+
+      #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
+      FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
+
+      respond_to do |format|
+        format.html { redirect_to action: "index"}
+        flash[:notice] = "Los comprobantes se han enviado a #{@destinatario}!"
+        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      end
+
+    end
+  end
+
+  def enviar_email #get
+    #Solo se muestran los datos
+    @destinatario = @factura.cliente.email
+    #El mensaje de correos de la configuracion de cada negocio
+    @mensaje = "Hola cara de bola"
+    #=
+    @tema = "Nada"
+
+    #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
 
 =begin
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"

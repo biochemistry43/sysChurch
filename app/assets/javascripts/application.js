@@ -15,6 +15,7 @@
 //= require bootstrap-sprockets
 //= require jquery_ujs
 //= require summernote
+//= require summernote/lang/summernote-es-ES
 //= require jQuery.print
 //= require js/notify/pnotify.core
 //= require js/notify/pnotify.buttons
