@@ -364,10 +364,10 @@
                   <% end %>
 
                   <% if factura.estado_factura.eql?("Activa") %>
-                    <%= link_to url={action: "cancelar_cfdi", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger",title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
-                    <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
+                    <!--Se le manda su id :)-->
+                    <%= link_to edit_venta_path(factura.venta.id),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
                      <i class="fa fa-close"></i>
-                     <%end%>
+                    <% end %>
                   <%else%>
                     <% if factura.estado_factura.eql?("Borrador")%>
                         <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-danger", remote: true , title: 'Eliminar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
@@ -395,6 +395,7 @@
     </div>
     <%= render 'modalFacturas'%>
     <%= render 'modalEmails'%>
+    <%= render 'modalVentas'%>
   </div>
 
   <script>
