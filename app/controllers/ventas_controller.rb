@@ -60,6 +60,7 @@ class VentasController < ApplicationController
       #require 'savon'
       require 'nokogiri'
       require 'byebug'
+      
 
 
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
