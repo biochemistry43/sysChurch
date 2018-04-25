@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email, :descargar_cfdis, :cancelar_cfdi]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
   before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
@@ -434,8 +434,6 @@ class FacturasController < ApplicationController
         }
     end
 
-
-
     #Se crea un nuevo registro en la BD.
     current_user.facturas<<@factura
     current_user.negocio.facturas<<@factura
@@ -531,37 +529,33 @@ class FacturasController < ApplicationController
     if request.post?
       @destinatario = params[:destinatario]
       @mensaje = params[:summernote]
-
       @tema = params[:tema]
-=begin
-      #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
-      #email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
-      Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
-      #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
-      #https://myaccount.google.com/lesssecureapps
-      gmail.deliver do
-        to "dani-elorenzo95@hotmail.com"
-        subject "Te reenvio la factura!"
 
-        html_part do
-          content_type 'text/html; charset = UTF-8'
-           body '<h1> Esto es HTML </h1>'
-        end
+      ruta_storage = @factura.ruta_storage
 
+      #Se descargan los archivos que el usuario haya indicado que se enviarán como archivos adjuntos
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
 
-        add_file "public/IMG_20171225_243621204.jpg"
+      bucket = storage.bucket "cfdis"
+
+      fecha_expedicion=@factura.fecha_expedicion
+      consecutivo =@factura.consecutivo
+      file_name = "#{consecutivo}_#{fecha_expedicion}"
+      comprobantes = {}
+      if params[:pdf] == "yes"
+        comprobantes[:pdf] = "public/#{file_name}_RepresentaciónImpresa.pdf"
+        file_download_storage_xml = bucket.file "#{ruta_storage}_RepresentaciónImpresa.pdf"
+        file_download_storage_xml.download "public/#{file_name}_RepresentaciónImpresa.pdf"
       end
-      }
-      respond_to do |format|
-        format.html { redirect_to action: "index"}
-        flash[:notice] = "Los comprobantes se han enviado a #{@destinatario}!"
-        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      if params[:xml] == "yes"
+        comprobantes[:xml] = "public/#{file_name}_CFDI.xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
+        file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
       end
-=end
-
 
       #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-      FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
+      FacturasEmail.factura_email(@destinatario, @mensaje, @tema, comprobantes).deliver_now
 
       respond_to do |format|
         format.html { redirect_to action: "index"}
@@ -575,67 +569,9 @@ class FacturasController < ApplicationController
   def enviar_email #get
     #Solo se muestran los datos
     @destinatario = @factura.cliente.email
-    #El mensaje de correos de la configuracion de cada negocio
     @mensaje = "Hola cara de bola"
-    #=
-    @tema = "Nada"
+    @tema = "Envío de factura de venta"
 
-    #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-
-=begin
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-
-    bucket = storage.bucket "cfdis"
-
-    #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
-    dir_negocio = @factura.negocio.nombre #current_user.negocio.nombre
-    dir_sucursal = @factura.sucursal.nombre
-    dir_cliente = @factura.cliente.nombreFiscal
-    fecha_expedicion=@factura.fecha_expedicion
-    dir_mes = fecha_expedicion.strftime("%m")
-    dir_anno = fecha_expedicion.strftime("%Y")
-    consecutivo =@factura.consecutivo
-
-    #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}"
-    if @factura.sucursal.present? #Si la factura fue expedida en una sucursal
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
-      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
-      file_download_storage_pdf.download "public/#{file_name}_RepresentaciónImpresa.pdf"
-      file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
-    else
-      file_download_storage_pdf = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_RepresentaciónImpresa.pdf"
-      file_download_storage_xml = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}_CFDI.xml"
-      file_download_storage_pdf.download "public/#{file_name}_RepresentaciónImpresa.pdf"
-      file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
-    end
-
-    #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
-    email_negocio=current_user.negocio.email #== 'leinadlm95@gmail.com'
-    Gmail.connect!('leinadlm95@gmail.com', 'ZGFuaQ==') {|gmail|
-    #Vaya a la sección "Aplicaciones menos seguras" de mi cuenta .
-    #https://myaccount.google.com/lesssecureapps
-    gmail.deliver do
-      to "dani-elorenzo95@hotmail.com"
-      subject "Te reenvio la factura!"
-      text_part do
-        body "Text of plaintext message."
-      end
-      html_part do
-        content_type 'text/html; charset=UTF-8'
-        body "<p>Text of <em>html</em> message.</p>"
-      end
-      add_file "public/#{file_name}_RepresentaciónImpresa.pdf"
-      add_file "public/#{file_name}_CFDI.xml"
-    end
-    }
-    respond_to do |format|
-      format.html { redirect_to action: "index" }
-      flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
-      #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-    end
-=end
   end
 
   def descargar_cfdis
@@ -679,8 +615,7 @@ class FacturasController < ApplicationController
 
     ruta_storage = @factura.ruta_storage
 
-    #Se descarga el pdf de la nube y se guarda en el disco
-    #Se descarga el pdf de la nube y se guarda en el disco
+    #Se descarga el xml
     file_name = "#{consecutivo}_#{fecha_expedicion}"
 
     file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
@@ -900,33 +835,6 @@ class FacturasController < ApplicationController
   # GET /facturas
   # GET /facturas.json
   def index
-    #require 'foo.rb'
-  	#include Saluda
-  	#include FacturasHelper
-  		#@hola=Salud::Salu.new.sal()
-
-  #CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON PROFACT
-=begin
-  @user_key = "mvpNUXmQfK8="
-  @timbrado = Timbradocfdi::Generator.new(@user_key)
-  @rfcEmisor = "AAA010101AAA"
-
-  def self.registroEmisor
-    contrasena = "12345678a"
-    base64Cer = "/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer"
-    base64Key = "/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.key"
-    @regEmisor=@timbrado.registroEmisor(@rfcEmisor, base64Cer, base64Key, contrasena)
-  end
-
-  def self.timbraCFDI
-    comprobante = "/home/daniel/Documentos/prueba/xml_3_3.xml"
-    @tim=@timbrado.timbraCFDI(comprobante, 1)
-  end
-
-  self.registroEmisor
-  self.timbraCFDI
-=end
-#-------------------------------------------------------------------------------
 
     @consulta = false
     @avanzada = false

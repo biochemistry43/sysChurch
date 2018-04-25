@@ -53,47 +53,31 @@ class VentasController < ApplicationController
       venta = params[:venta]
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
-
-      #require 'cfdi'
+      #Changos que hacen estas cosas aquí? jajja
       require 'timbrado'
-      #require 'base64'
-      #require 'savon'
       require 'nokogiri'
       require 'byebug'
-      
-
 
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
 
         if @venta.factura.present?
           if @venta.factura.estado_factura == "Activa"
 
-
+            #Se obtiene el xml de de la nube nublada :3 y se guarda en la carpeta publica
             gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
             storage=gcloud.storage
-
             bucket = storage.bucket "cfdis"
 
-            #Se realizan las consultas para asignarle el nombre a cada directorio por que son los mismo que se usan en google cloud storage
-            dir_negocio = @venta.factura.negocio.nombre #current_user.negocio.nombre
-            dir_sucursal = @venta.factura.sucursal.nombre
-            dir_cliente = @venta.factura.cliente.nombreFiscal
             fecha_expedicion=@venta.factura.fecha_expedicion
-            dir_mes = fecha_expedicion.strftime("%m")
-            dir_anno = fecha_expedicion.strftime("%Y")
             consecutivo =@venta.factura.consecutivo
 
-            #Se descarga el pdf de la nube y se guarda en el disco
-            file_name="#{consecutivo}_#{fecha_expedicion}.xml"
-            if @venta.factura.sucursal.present? #Si la factura fue expedida en una sucursal
-              file_download_storage = bucket.file "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-              file_download_storage.download "public/#{file_name}"
-            else
-              file_download_storage = bucket.file "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
-              file_download_storage.download "public/#{file_name}"
-            end
+            ruta_storage = @venta.factura.ruta_storage
+            file_name = "#{consecutivo}_#{fecha_expedicion}_CFDI.xml"
+            file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
+            file_download_storage_xml.download "public/#{file_name}"
 
             xml=File.open( "public/#{file_name}")
+
             xml_a_cancelar = Nokogiri::XML(xml)
 
             # Parametros para la conexión al Webservice

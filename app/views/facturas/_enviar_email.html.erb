@@ -1,4 +1,4 @@
-<%= form_tag({ controller: "facturas", action: "enviar_email_post" }, { :method => :post}) do %>
+<%= form_tag({ controller: "facturas", action: "enviar_email_post", id: @factura.id }, { :method => :post}) do %>
 <div class="col-md-12 col-sm-12 col-xs-12">
 <div class="col-md-10 col-sm-10 col-xs-12">
   <div class="row">
