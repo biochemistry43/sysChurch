@@ -319,7 +319,13 @@ class FacturasController < ApplicationController
       logo=current_user.negocio.logo
       uso_cfdi_descripcion=@usoCfdi.descripcion
 
-      xml_rep_impresa = factura.add_elements_to_xml(xml_copia, codigoQR, cadOrigComplemento, logo, uso_cfdi_descripcion)
+      #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}
+      hash_info[:Telefono1Receptor]= @@venta.cliente.telefono1 if @@venta.cliente.telefono1
+      hash_info[:EmailReceptor]= @@venta.cliente.email if @@venta.cliente.email
+      
+
+      xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
       template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
       html_document = template.transform(xml_rep_impresa)
@@ -388,7 +394,7 @@ class FacturasController < ApplicationController
     File.open(save_path, 'wb') do |file|
        file << pdf
     end
-
+=begin
     #Enviando un correo electrónico al cliente con los comprobantes adjuntos.
     if @@venta.cliente.email.present?
       correo_receptor = @@venta.cliente.email
@@ -433,7 +439,7 @@ class FacturasController < ApplicationController
         end
         }
     end
-
+=end
     #Se crea un nuevo registro en la BD.
     current_user.facturas<<@factura
     current_user.negocio.facturas<<@factura

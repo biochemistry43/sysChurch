@@ -47,6 +47,9 @@
                <tr><th class="h1"  colspan="2">R.F.C.:
                  <xsl:value-of select="cfdi:Emisor/@Rfc"/>
                </th><td class="h1"></td></tr>
+               <tr><th class="h1"  colspan="2">Régimen fiscal:
+                 <xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/>
+               </th><td class="h1"></td></tr>
           </table>
         </td>
 
@@ -64,11 +67,11 @@
 
            <table width="100%" border="1">
               <thead>
-               <tr><th colspan="2" class="h1">Emisor</th></tr>
+               <tr><th colspan="2" class="h1">Lugar de expedición:</th></tr>
               </thead>
               <tbody class="emisor">
-               <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr>
-               <tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Emisor/@Nombre"/></td></tr>
+               <!--tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Emisor/@Rfc"/></td></tr-->
+               <!--tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Emisor/@Nombre"/></td></tr-->
                <tr>
                  <th align="right">Dirección:  </th>
                  <td>calle: <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/> #
@@ -78,7 +81,10 @@
                             <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
                  </td>
                </tr>
-               <tr><th align="right">Regimen:  </th><td><xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/></td></tr>
+               <tr>
+                 <th align="right">Teléfono:</th>
+                 <td></td></tr>
+
              </tbody>
           </table>
 
@@ -102,7 +108,8 @@
                </td>
              </tr>
              <tr><th align="right">Uso CFDI:  </th><td><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
-
+             <tr><th align="right">Teléfono:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td></tr>
+              <tr><th align="right">Email:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td></tr>
            </tbody>
            </table>
       </tr>

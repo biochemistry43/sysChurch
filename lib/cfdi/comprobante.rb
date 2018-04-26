@@ -678,29 +678,36 @@ module CFDI
 
   #Esta función es para generar un nuevo xml con datos adicionales para poder formar la representación impresa del CFDI debido
   #a que se usa una hoja de transformacón y el xml timbrado no contiene algunos datos para su correspondiente representación.
-  def add_elements_to_xml xml_copia, codigoQR, cadOrigComplemento , logo, uso_cfdi_descripcion
+  def add_elements_to_xml(hash_info)
     ns={
       CodigoQR: "/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png", #la misma ruta donde se guarda el CBB
-      CadOrigComplemento: cadOrigComplemento,
-      Logo:logo, #Sha la la sha la la
+      CadOrigComplemento: hash_info.fetch(:cadOrigComplemento),
+      Logo: hash_info.fetch(:logo),
       TotalLetras: total_to_words(),
       NombRegimenFiscal:"E",
       NombFormaPago:"F",
       NombMetodoPago:"G",
-      UsoCfdiDescripcion:uso_cfdi_descripcion
+      UsoCfdiDescripcion: hash_info.fetch(:uso_cfdi_descripcion)
       }
+      datos_receptor={}
+      datos_receptor[:Telefono1Receptor] = hash_info.fetch(:Telefono1Receptor) if hash_info.key?(:Telefono1Receptor)
+      datos_receptor[:EmailReceptor] = hash_info.fetch(:EmailReceptor) if hash_info.key?(:EmailReceptor)
+
     builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
       xml.RepresentacionImpresa(ns){
+        xml.DatosReceptor(datos_receptor){
+          xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
+        }
         xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
         xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
-        xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
+
       }
     end
     xml_info_extra=builder.to_xml
     #Se combinan el xml previamente timbrado con el xml que contiene los datos adicionales para la representación impresa.
     #El resultado es un xml
     #xml1 = Nokogiri::XML(xml_copia)
-    xml1 = xml_copia
+    xml1 = hash_info.fetch(:xml_copia)
     xml2 = Nokogiri::XML(xml_info_extra)
     xml1.children.first.add_child(xml2.children.first.clone)
 
