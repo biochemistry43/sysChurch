@@ -136,7 +136,7 @@ class FacturasController < ApplicationController
       condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
       metodoDePago: 'PUE', #CATALOGO
       lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-      total: 75.208#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
+      total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
       #Descuento:0 #DESCUENTO RAPPEL
     })
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -323,7 +323,7 @@ class FacturasController < ApplicationController
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}
       hash_info[:Telefono1Receptor]= @@venta.cliente.telefono1 if @@venta.cliente.telefono1
       hash_info[:EmailReceptor]= @@venta.cliente.email if @@venta.cliente.email
-      
+
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
