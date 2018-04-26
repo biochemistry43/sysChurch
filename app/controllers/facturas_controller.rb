@@ -182,20 +182,21 @@ class FacturasController < ApplicationController
     })
     #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
     domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-      calle: @@venta.cliente.direccionCalle,
-      noExterior: @@venta.cliente.direccionNumeroExt,
-      noInterior: @@venta.cliente.direccionNumeroInt,
-      colonia: @@venta.cliente.direccionColonia,
+      calle: @@venta.cliente.datos_fiscales_cliente.calle,
+      noExterior: @@venta.cliente.datos_fiscales_cliente.numExterior,
+      noInterior: @@venta.cliente.datos_fiscales_cliente.numInterior,
+      colonia: @@venta.cliente.datos_fiscales_cliente.colonia,
+      localidad: @@venta.cliente.datos_fiscales_cliente.localidad,
       #referencia: current_user.negocio.datos_fiscales_negocio.,
-      municipio: @@venta.cliente.direccionMunicipio,
-      estado: @@venta.cliente.direccionEstado,    #pais: current_user.negocio.datos_fiscales_negocio.,
-      codigoPostal: @@venta.cliente.direccionCp
+      municipio: @@venta.cliente.datos_fiscales_cliente.municipio,
+      estado: @@venta.cliente.datos_fiscales_cliente.estado,    #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: @@venta.cliente.datos_fiscales_cliente.codigo_postal
     })
 
     #ATRIBUTOS EL RECEPTOR
     @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
-    if @@venta.cliente.rfc.present?
-      rfc_receptor_f=@@venta.cliente.rfc
+    if @@venta.cliente.datos_fiscales_cliente.rfc.present?
+      rfc_receptor_f=@@venta.cliente.datos_fiscales_cliente.rfc
     else
       #Si no está registrado el R.F.C del cliente, se registra asi de facil jaja
       rfc_receptor_f=params[:rfc_input]
@@ -205,8 +206,8 @@ class FacturasController < ApplicationController
 
     end
     #El mismo show q  el rfc, si el sistema detecta que el cliente no está registrado con su nombre fiscal, le pedirá al usuario que lo ingrese.
-    if @@venta.cliente.nombreFiscal.present?
-      nombre_fiscal_receptor_f=@@venta.cliente.nombreFiscal
+    if @@venta.cliente.datos_fiscales_cliente.nombreFiscal.present?
+      nombre_fiscal_receptor_f=@@venta.cliente.datos_fiscales_cliente.nombreFiscal
     else
       nombre_fiscal_receptor_f=params[:nombre_fiscal_receptor_f]
       cliente_id=@@venta.cliente.id
