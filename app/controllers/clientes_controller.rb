@@ -38,9 +38,14 @@ class ClientesController < ApplicationController
     estado_f = params[:estado_f]
     codigo_postal_f = params[:codigo_postal_f]
 
-
     respond_to do |format|
-      if @cliente.update(cliente_params) &&  @cliente.datos_fiscales_cliente.update(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+      if @cliente.update(cliente_params)
+        if @cliente.datos_fiscales_cliente.present?
+          @cliente.datos_fiscales_cliente.update(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+        else
+          @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+          @cliente.datos_fiscales_cliente = @datosFiscalesCliente if @datosFiscalesCliente.save && nombreFiscal_f.length > 0 && rfc_f.length > 0
+        end
 
         format.json { head :no_content }
         format.js
@@ -74,10 +79,12 @@ class ClientesController < ApplicationController
 
     respond_to do |format|
       if @cliente.valid?
-        if @cliente.save && @datosFiscalesCliente.save
-
+        if @cliente.save
           current_user.negocio.clientes << @cliente
-          @cliente.datos_fiscales_cliente = @datosFiscalesCliente
+          if nombreFiscal_f.length > 0 && rfc_f.length > 0
+
+            @cliente.datos_fiscales_cliente = @datosFiscalesCliente if @datosFiscalesCliente.save
+          end
           #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
           #format.json { render :show, status: :created, location: @cliente }
           format.json { head :no_content}
