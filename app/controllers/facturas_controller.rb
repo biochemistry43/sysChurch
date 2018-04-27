@@ -576,8 +576,8 @@ class FacturasController < ApplicationController
   def enviar_email #get
     #Solo se muestran los datos
     @destinatario = @factura.cliente.email
-    @mensaje = "Hola cara de bola"
-    @tema = "Envío de factura de venta"
+    @mensaje = current_user.negocio.config_comprobante.msg_email
+    @tema = current_user.negocio.config_comprobante.asunto_email
 
   end
 

@@ -299,6 +299,8 @@
                       <i class="fa fa-file-text-o"></i> Facturas y Notas<span class="fa fa-chevron-down"></span>
                     </a>
                       <ul class="nav child_menu" style="display: none">
+                        <!--Se le pasa el id del negocio por que tambien se mostrará la canfiguraución de las factuuras recurrentes y notas de crédito-->
+                        <li><%= link_to controller: "config_comprobantes", action:"show", id:current_user.negocio.id do%><i class="fa fa-envelope"></i>plantillas emails<%end%></li>
                         <li>
                           <a>
                             <i class="fa fa-list-alt"></i> Catálogos<span class="fa fa-chevron-down"></span>

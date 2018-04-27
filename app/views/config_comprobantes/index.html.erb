@@ -1,0 +1,45 @@
+<!--
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Config Comprobantes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tipo comprobante</th>
+      <th>Asunto email</th>
+      <th>Msg email</th>
+      <th>Tipo fuente</th>
+      <th>Tam fuente</th>
+      <th>Color fondo</th>
+      <th>Color titulos</th>
+      <th>Color banda</th>
+      <th>Negocio</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @config_comprobantes.each do |config_comprobante| %>
+      <tr>
+        <td><%= config_comprobante.tipo_comprobante %></td>
+        <td><%= config_comprobante.asunto_email %></td>
+        <td><%= config_comprobante.msg_email %></td>
+        <td><%= config_comprobante.tipo_fuente %></td>
+        <td><%= config_comprobante.tam_fuente %></td>
+        <td><%= config_comprobante.color_fondo %></td>
+        <td><%= config_comprobante.color_titulos %></td>
+        <td><%= config_comprobante.color_banda %></td>
+        <td><%= config_comprobante.negocio %></td>
+        <td><%= link_to 'Show', config_comprobante %></td>
+        <td><%= link_to 'Edit', edit_config_comprobante_path(config_comprobante) %></td>
+        <td><%= link_to 'Destroy', config_comprobante, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Config comprobante', new_config_comprobante_path %>
+-->

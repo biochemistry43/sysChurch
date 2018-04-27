@@ -1,4 +1,5 @@
 class Negocio < ActiveRecord::Base
+	has_one :config_comprobante
 	has_many :impuestos
 	has_many :clave_prod_servs
 	has_many :unidad_medidas

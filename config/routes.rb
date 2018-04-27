@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
 
+  resources :config_comprobantes
   resources :impuestos
   resources :nota_creditos
   resources :unidad_medidas
