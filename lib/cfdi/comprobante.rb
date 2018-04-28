@@ -236,7 +236,6 @@ module CFDI
         Folio: @folio,
         Fecha: @fecha,
         FormaPago: @FormaPago,
-        CondicionesDePago: @condicionesDePago,
         SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
         Total: sprintf('%.2f', @total),
@@ -246,6 +245,8 @@ module CFDI
 
         LugarExpedicion: @lugarExpedicion,
       }
+      #El campo Condiciones de pago no debe de existir en las facturas globales.
+      ns[:CondicionesDePago] = @condicionesDePago if @condicionesDePago
       #ns[:serie] = @serie if @serie
       #ns[:TipoCambio] = @TipoCambio if @TipoCambio
       #ns[:NumCtaPago] = @NumCtaPago if @NumCtaPago && @NumCtaPago!=''

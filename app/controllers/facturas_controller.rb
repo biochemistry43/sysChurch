@@ -81,6 +81,8 @@ class FacturasController < ApplicationController
     end
   end
 
+
+
   def facturando
     require 'cfdi'
     require 'timbrado'
@@ -922,6 +924,213 @@ class FacturasController < ApplicationController
       end
     end
   end
+
+
+  def factura_global_publico_gral
+    #Una factura global es simplemente un Comprobante Fiscal que se emite por ventas que no están amparadas por un CFDI, se emite por que el contribuyente está obligado a reportar todos sus ingresos al SAT, no solo por los ingresos en la que los clientes exigieron una factura electrónica.
+    require 'cfdi'
+    require 'timbrado'
+
+    certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
+    # Esta se convierte de un archivo .key con:
+    # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
+    llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+    pass_llave = "12345678a"
+    #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
+    consecutivo = 0
+    if current_user.sucursal.facturas.last
+      consecutivo = current_user.sucursal.facturas.last.consecutivo
+      if consecutivo
+        consecutivo += 1
+      end
+    else
+      consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+    end
+
+    if current_user.sucursal.clave.present?
+      #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
+      #claveSucursal = current_user.sucursal.clave
+      claveSucursal = current_user.sucursal.clave
+      folio_registroBD = claveSucursal + "F"
+      folio_registroBD << consecutivo.to_s
+      serie = claveSucursal + "F"
+    else
+      folio_default="F"
+      folio_registroBD =folio_default
+      #Una serie por default les guste o no les guste, pero útil para que no se produzca un colapso
+      serie = folio_default
+    end
+
+#YA SE AGREGARON LA MAYORIA DE CAMPOS PREEDEFINIDOS Y MODIFICABLES SOLO FALAL VERIFICAR ALGUNOS...
+=begin
+    Lo que NO debe de contener el CFDI de ventas al público en general:
+    Residencia Fiscal (Extranjero)
+    ID de Registro (Extranjero)
+=end
+
+=begin
+    Lo que SI debe de incluir:
+    Forma de pago: Se debe incluír la forma de pago que predomine en el total de la factura. Sí existen dos o más formas de pago predominantes, se debe elegir la que consideren más conveniente. No esta permitido utilizar la clave “99-por definir”.
+    Campos Predefinidos en el Concepto
+      Datos que deben de contener los campos para que el SAT identifique que se trata de un CFDI Global:
+    Campos modificables en el Concepto
+      Los únicos campos del concepto que SI se pueden modificar son:
+      Tipo de Cambio.
+      Descuento (si existiera)
+=end
+
+    #Según la periodicidad en la que se expedirán facturas simplificadas(tomada de la configuración de facturación)
+    hoy = Time.now.strftime("%Y-%m-%d")
+    #inicio_semana
+    #fin_semana
+    #inicio_mes
+    #fin_mes
+
+    begin
+      #No usar rescue Exception => e. En su lugar, usar rescue => e o mejor aún, identificar la excepción que queremos capturar, como rescue ActiveRecord::RecordNotSaved.
+      @ventas = current_user.negocio.ventas.where(fechaVenta: hoy )
+      #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
+      @ventasss=[]
+      @ventass.each do |v|
+        if v.factura.blank?
+            @ventasss.push(v)
+        end
+      end
+      #Se obtiene el nombre de la forma de pago (Que no es el nombre correcto pero bueno...)
+      folio =  @ventasss.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
+      puts "RESULTADO"
+      puts folio
+
+    rescue => e
+      puts "NO HAY VENTAS CON ESTA FECHA"
+    end
+
+
+    #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+    factura = CFDI::Comprobante.new({
+      serie: serie,
+      folio: consecutivo,
+      fecha: Time.now,
+      #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
+      #Moneda: MXN Peso Mexicano, USD Dólar Americano, Etc…
+      #La moneda por default es MXN
+      FormaPago:'01',
+      #El campo Condiciones de pago no debe de existir
+      #Método de pago: SIEMPRE debe ser la clave “PUE” (Pago en una sola exhibición); en el caso de que se venda a parcialidades o diferido, se deberá proceder a emitir el CFDI con complemento de pagos, detallando los datos del cliente que los realiza; en pocas palabras, no esta permitido emitir un CFDI global con ventas a parcialidades o diferidas.
+      metodoDePago: 'PUE',
+      #El código postal de la matriz o sucursal
+      lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+      total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
+      #Descuento:0 #DESCUENTO RAPPEL
+    })
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    #DATOS DEL EMISOR(Direción de la Matriz y son los que aparecen en el encabezado del comprobante)
+    domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
+      calle: current_user.negocio.datos_fiscales_negocio.calle,
+      noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
+      noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
+      colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+      #localidad: current_user.negocio.datos_fiscales_negocio.,
+      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      municipio: current_user.negocio.datos_fiscales_negocio.municipio,
+      estado: current_user.negocio.datos_fiscales_negocio.estado,
+      #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
+    })
+    #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
+    #establecimiento en el que se expidan las Facturas Electrónicas
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    expedidoEn= CFDI::DatosComunes::Domicilio.new({
+      #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
+      #se debera corregir.
+      calle: current_user.sucursal.calle,
+      noExterior: current_user.sucursal.numExterior,
+      noInterior: current_user.sucursal.numInterior,
+      colonia: current_user.sucursal.colonia,
+      #localidad: current_user.negocio.datos_fiscales_negocio.,
+      #referencia: current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
+      municipio: current_user.sucursal.municipio,
+      estado: current_user.sucursal.estado,
+      #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: current_user.sucursal.codigo_postal
+    })
+
+    #ATRIBUTOS DEL EMISOR
+    factura.emisor = CFDI::Emisor.new({
+      #rfc: 'AAA010101AAA',
+      rfc: current_user.negocio.datos_fiscales_negocio.rfc,
+      nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
+      regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal, #CATALOGO
+      domicilioFiscal: domicilioEmisor,
+      expedidoEn: expedidoEn
+    })
+=begin
+    #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+    domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
+      calle: @venta.cliente.datos_fiscales_cliente.calle,
+      noExterior: @venta.cliente.datos_fiscales_cliente.numExterior,
+      noInterior: @venta.cliente.datos_fiscales_cliente.numInterior,
+      colonia: @venta.cliente.datos_fiscales_cliente.colonia,
+      localidad: @venta.cliente.datos_fiscales_cliente.localidad,
+      #referencia: current_user.negocio.datos_fiscales_negocio.,
+      municipio: @venta.cliente.datos_fiscales_cliente.municipio,
+      estado:@@venta.cliente.datos_fiscales_cliente.estado,    #pais: current_user.negocio.datos_fiscales_negocio.,
+      codigoPostal: @venta.cliente.datos_fiscales_cliente.codigo_postal
+    })
+=end
+    #ATRIBUTOS EL RECEPTOR
+    factura.receptor = CFDI::Receptor.new({
+       #RFC receptor: Debe contener el RFC genérico (XAXX010101000) y el campo “Nombre” no debe existir.
+       rfc: "XAXX010101000",
+       #El Uso del CFDI es un campo obligatorio, se registra la clave P01 (por definir).
+       UsoCFDI: "P01"#,
+       #domicilioFiscal: domicilioReceptor
+      })
+
+    @itemsVenta.each do |c|
+      factura.conceptos << CFDI::Concepto.new({
+        #Clave de Producto o Servicio: 01010101 (Por Definir)
+        ClaveProdServ: 01010101, #CATALOGO
+        #En un CFDI normal es la clave interna que se le asigna a los productos pero que ni la ocupo por el momento...
+        #Peo para un comprobante simplificado ess el Número de Identificación: En él se pondrá el número de folio del ticket de venta o número de operación del comprobante, este puede ser un valor alfanumérico de 1 a 20 dígitos.
+        NoIdentificacion: @venta.folio,
+        #Cantidad: Se debe incluir el valor “1″.
+        Cantidad: 1 ,
+        #Clave Unidad de Medida: Se debe incluir la clave “ACT” (Actividad).
+        ClaveUnidad: "ACT",
+        #Unidad de medida: No debe existir el campo.
+        #Descripción: Debe tener el texto “Venta“.
+        Descripcion: "Venta",
+        #Valor unitario: El precio sin impuestos del concepto a facturar.()
+        ValorUnitario: c.precio_venta,
+        #Descuento: 0 #Expresado en porcentaje
+      })
+      #Impuestos Trasladados (IVA o IEPS)
+      #Impuestos trasladados: Deben indicar:
+        #la base
+        #el tipo de impuestos
+        #si es tasa o cuota,
+        #el valor de esta de la tasa o cuota
+        #el impuesto que trasladan por cada comprobante simplificado.
+      if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
+
+        if c.articulo.impuesto.nombre == "IVA"
+          clave_impuesto = "002"
+        elsif c.articulo.impuesto.nombre == "IEPS"
+          clave_impuesto =  "003"
+        end
+
+        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+          tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
+      else
+        #Me muero de programador jajaja pero con ésta salgo de apuros
+        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
+          tax: "Ninguno", type_factor: "Nada", rate: 0.0)
+      end
+      #Los montos del IVA e IEPS deberán estar desglosados en forma expresa y por separado en cada uno de los CFDI globales.
+    end
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
