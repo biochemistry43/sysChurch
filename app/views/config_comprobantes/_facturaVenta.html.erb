@@ -1,5 +1,5 @@
 <%= form_for @config_comprobante do |f| %>
-<!--:index => id -->
+
   <% if @config_comprobante.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@config_comprobante.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
@@ -11,6 +11,7 @@
       </ul>
     </div>
   <% end %>
+
 
   <div class="row">
     <div class="form-group">
@@ -62,6 +63,7 @@
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
+
   </div>
 <% end %>
 

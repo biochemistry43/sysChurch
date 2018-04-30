@@ -16,7 +16,8 @@
   </div> <!--Fin de botón -->
   <div class="row">
     <div class="col-sm-2">
-        <%= link_to 'Factura global del día', facturas_facturaDeVentas_path, class: "btn btn-default btn-lg", Sid: "" %>
+        <%= link_to 'Factura global del día', url={controller: "facturas", action: "factura_global_publico_gral"}, html_options={class: "btn btn-default btn-lg", id: ""} %>
+
     </div>
   </div> <!--Fin de botón -->
 

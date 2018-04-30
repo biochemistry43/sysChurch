@@ -124,9 +124,8 @@ class FacturasController < ApplicationController
         #Una serie por default les guste o no les guste, pero útil para que no se produzca un colapso
         serie = folio_default
       end
-    #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
-    #puts "Forma PAGOS"
-    #puts @camposFormaPago = @@venta.venta_forma_pago.venta_forma_pago_campos
+
+    #1.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     factura = CFDI::Comprobante.new({
       serie: serie,
       folio: consecutivo,
@@ -276,17 +275,11 @@ class FacturasController < ApplicationController
     xml= factura.comprobante_to_xml
 
     #ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
-
-    #Si se presiona el botón Guardar como borrador:
-      #No se se sellará, ni se timbrará y mucho menos se generará la representación impresa
-    #unless params[:commit] == "Guardar como borrador"
-
       # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
       archivo_xml = generar_sello(xml, llave, pass_llave)
       # Convertir la cadena del xml en base64
       xml_base64 = Base64.strict_encode64(archivo_xml)
       #Se obtiene el xml timbrado
-
 
       # Parametros para conexion al Webservice (URL de Pruebas)
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
@@ -294,12 +287,6 @@ class FacturasController < ApplicationController
       contrasena = "h6584D56fVdBbSmmnB"
 
       xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
-
-      #archivo = File.open("/home/daniel/Documentos/timbox-ruby/xml__33.xml", "w")
-      #archivo.write (xml_timbrado)
-      #archivo.close
-
-      #File.open('/home/daniel/Documentos/timbox-ruby/xmlT33.xml', 'w').write(xml_timbrado)
 
       #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
       factura.complemento=CFDI::Complemento.new(
@@ -314,7 +301,7 @@ class FacturasController < ApplicationController
       )
       #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
       xml_copia=xml_timbrado
-      xml_timbrado_storage=xml_copia
+      xml_timbrado_storage = factura.comprobante_to_xml #Hasta este punto se le agregado el complemento con eso es suficiente para el CFDI
 
       #Los nuevos datos para la representación impresa.
       codigoQR=factura.qr_code xml_timbrado
@@ -371,7 +358,7 @@ class FacturasController < ApplicationController
     else
       ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
     end
-
+    
     #Los comprobantes de almacenan en google cloud
     file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
     file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_CFDI.xml"
@@ -988,20 +975,19 @@ class FacturasController < ApplicationController
 
     begin
       #No usar rescue Exception => e. En su lugar, usar rescue => e o mejor aún, identificar la excepción que queremos capturar, como rescue ActiveRecord::RecordNotSaved.
-      @ventas = current_user.negocio.ventas.where(fechaVenta: hoy )
+      @ventas_del_dia = current_user.negocio.ventas.where(fechaVenta: hoy )
       #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
-      @ventasss=[]
-      @ventass.each do |v|
+      @ventas=[]
+      @ventas_del_dia.each do |v|
         if v.factura.blank?
-            @ventasss.push(v)
+            @ventas.push(v)
         end
       end
       #Se obtiene el nombre de la forma de pago (Que no es el nombre correcto pero bueno...)
-      folio =  @ventasss.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
-      puts "RESULTADO"
+      folio =  @ventas.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
       puts folio
-
     rescue => e
+      puts "FECHA: #{hoy}"
       puts "NO HAY VENTAS CON ESTA FECHA"
     end
 
@@ -1087,13 +1073,14 @@ class FacturasController < ApplicationController
        #domicilioFiscal: domicilioReceptor
       })
 
-    @itemsVenta.each do |c|
+    @ventas.each do |v|
+      puts "VENTAS"
       factura.conceptos << CFDI::Concepto.new({
         #Clave de Producto o Servicio: 01010101 (Por Definir)
         ClaveProdServ: 01010101, #CATALOGO
         #En un CFDI normal es la clave interna que se le asigna a los productos pero que ni la ocupo por el momento...
         #Peo para un comprobante simplificado ess el Número de Identificación: En él se pondrá el número de folio del ticket de venta o número de operación del comprobante, este puede ser un valor alfanumérico de 1 a 20 dígitos.
-        NoIdentificacion: @venta.folio,
+        NoIdentificacion: v.folio,
         #Cantidad: Se debe incluir el valor “1″.
         Cantidad: 1 ,
         #Clave Unidad de Medida: Se debe incluir la clave “ACT” (Actividad).
@@ -1102,7 +1089,9 @@ class FacturasController < ApplicationController
         #Descripción: Debe tener el texto “Venta“.
         Descripcion: "Venta",
         #Valor unitario: El precio sin impuestos del concepto a facturar.()
-        ValorUnitario: c.precio_venta,
+        #En este campo se debe de registrarel subtotal del comprobante de operaciones con el público en gral.
+        ValorUnitario: v.montoVenta,
+        #El importe siempre será la tabla del 1 jaja 1x1=1 1x2=2...
         #Descuento: 0 #Expresado en porcentaje
       })
       #Impuestos Trasladados (IVA o IEPS)
@@ -1112,23 +1101,34 @@ class FacturasController < ApplicationController
         #si es tasa o cuota,
         #el valor de esta de la tasa o cuota
         #el impuesto que trasladan por cada comprobante simplificado.
-      if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
+      @itemsVenta = v.item_ventas
 
-        if c.articulo.impuesto.nombre == "IVA"
-          clave_impuesto = "002"
-        elsif c.articulo.impuesto.nombre == "IEPS"
-          clave_impuesto =  "003"
+      @itemsVenta.each do |c|
+        puts "ITEM VENTAS"
+        if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
+
+          if c.articulo.impuesto.nombre == "IVA"
+            clave_impuesto = "002"
+          elsif c.articulo.impuesto.nombre == "IEPS"
+            clave_impuesto =  "003"
+          end
+
+          factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
+            tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
+        else
+          #Me muero de programador jajaja pero con ésta salgo de apuros
+          factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
+            tax: "Ninguno", type_factor: "Nada", rate: 0.0)
         end
-
-        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-          tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
-      else
-        #Me muero de programador jajaja pero con ésta salgo de apuros
-        factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
-          tax: "Ninguno", type_factor: "Nada", rate: 0.0)
+        #Los montos del IVA e IEPS deberán estar desglosados en forma expresa y por separado en cada uno de los CFDI globales.
       end
-      #Los montos del IVA e IEPS deberán estar desglosados en forma expresa y por separado en cada uno de los CFDI globales.
     end
+
+
+
+    flash[:notice] = "HOLA CARA DE BOLA"
+    redirect_to facturas_index_path
+
   end
 
 
