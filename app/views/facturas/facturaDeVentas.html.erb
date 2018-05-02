@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class="item form-group">
-          <div class="col-md-1 col-sm-1 col-xs-1">
+          <div class="col-md-1 col-sm-1 col-xs-12">
             <div style="text-align: right;">
               Folio:
             </div>
@@ -106,29 +106,28 @@
     <!-- form_for @venta, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |new_f| -->
     <%= form_tag({controller: "facturas", action: "facturando"}, {:method=>:post})do%>
     <div class="row">
-      <div class="col-md-1 col-sm-1 col-xs-1">
+      <div class="col-md-1 col-sm-1 col-xs-12">
         <%= label_tag :imprimir,'Imprimir', class:"control-label"%>
       </div>
-      <div class="col-md-1 col-sm-1 col-xs-1">
+      <div class="col-md-1 col-sm-1 col-xs-12">
           <%=check_box_tag(:imprimir, "yes", false, {class:" checked check", checked:"checked"})%>
       </div>
-
-      <div class="col-md-4 col-sm-4 col-xs-4">
-
-        <%= label_tag :enviar_al_correo,@correo_electonico_f, class:"control-label"%>
+      <div class="col-md-2 col-sm-2 col-xs-12">
+        <!--%= label_tag :enviar_al_correo, @correo_electonico_f, class:"control-label"%-->
+        <%=label_tag :enviar_email, "Enviar a email", class: "control-label" %>
       </div>
-
-      <%if @venta.cliente.email.present?%>
-        <div class="col-md-1 col-sm-1 col-xs-1">
+      <!--%if @venta.cliente.email.present?%-->
+        <!--div class="col-md-1 col-sm-1 col-xs-12">
             <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked check"})%>
-        </div>
-      <%else%>
-      <div class="col-md-4 col-sm-4 col-xs-4 input-group">
+        </div-->
+      <!--%else%-->
+      <div class="col-md-5 col-sm-5 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"Ejemplo: fulanito95@hotmail.com" }%>
+        <!--%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"Ejemplo: fulanito95@hotmail.com" }%-->
+        <%= email_field_tag :destinatario, nil,{class:'form-control text_field', value: @email_receptor}%>
       </div>
-      <%end%>
+      <!--%end%-->
     </div>
 
 

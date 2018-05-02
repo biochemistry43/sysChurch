@@ -92,24 +92,28 @@
       <tr>
           <table width="100%" border="1">
              <thead>
-             <tr><th colspan="2" class="h1">Receptor</th></tr>
+             <tr><th colspan="4" class="h1">Receptor</th></tr>
              </thead>
              <tbody>
-             <tr><th align="right">R.F.C.:  </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td></tr>
-             <tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td></tr>
+             <tr>
+               <th align="right">R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+               <th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
+             </tr>
 
              <tr>
-               <th align="right">Dirección:  </th>
-               <td>calle: <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/> #
-                          <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/> colonia:
+               <th align="right">Dirección: </th>
+               <td  colspan="3">Calle: <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/> #
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/> Col.
                           <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
                           <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
                           <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
                </td>
              </tr>
-             <tr><th align="right">Uso CFDI:  </th><td><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
-             <tr><th align="right">Teléfono:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td></tr>
-              <tr><th align="right">Email:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td></tr>
+             <tr><th align="right">Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
+             <tr>
+               <th align="right">Teléfono:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td>
+               <th align="right">Email:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td>
+             </tr>
            </tbody>
            </table>
       </tr>
@@ -141,7 +145,7 @@
              </tr>
 
              <tr>
-             <td colspan="5" align="right">Traslados: </td>
+             <td colspan="5" align="right">TRASLADOS: </td>
              <th ></th>
              <td ></td>
              </tr>
@@ -164,6 +168,14 @@
             </table>
          </tr>
         <hr/>
+        <!--Que no lo cuentien jaja lea las letras chiquitas jajaja -->
+        <p class="condicionesDePago"><xsl:value-of select="@CondicionesDePago"/></p>
+        <br/>
+
+
+        <div class="firma">(FIRMA DE CONFORMIDAD)</div>
+
+
         <table id="sellosDig">
           <td>
             <table id="tablaInternaSellos">
@@ -176,41 +188,41 @@
                     <xsl:attribute name="width">120</xsl:attribute>
                   </xsl:element>
                 </td>
+                <th align="right">Folio fiscal: </th>
+                <td align="left" class="folioFiscal"> <xsl:value-of select="//@UUID"/></td>
               </tr><!--1 -->
               <tr>
-                <!--IV. Contener el número de folio asignado por el SAT  -->
-                <td align="left"><b>Folio fiscal: </b> <small> <xsl:value-of select="//@UUID"/></small></td>
-              </tr><!--2 -->
-              <tr>
+                <th align="right" >Fecha y hora de certificación:  </th>
                 <!--d) Fecha y hora de emisión y de certificación de la Factura en adición a lo señalado en el artículo 29-A, fracción III del CFF.-->
-                <td align="left"><b>Fecha y hora de certificación: </b> <small><xsl:value-of select="//@FechaTimbrado"/></small></td>
+                <td align="left"> <small><xsl:value-of select="//@FechaTimbrado"/></small></td>
               </tr><!--3 -->
               <tr>
                 <!--b) Número de serie del CSD del emisor y del SAT. -->
-                <td align="left"><b>Número de serie del Certificado de Sello Digital: </b> <small><xsl:value-of select="@NoCertificado"/></small></td>
+                <th align="right" >Número de serie del Certificado de Sello Digital: </th>
+                <td align="left"> <small><xsl:value-of select="@NoCertificado"/></small></td>
               </tr><!--4 -->
               <tr>
                 <!-- b) Número de serie del CSD del emisor y del SAT. -->
-                <td align="left"><b>Número de serie del Certificado de Sello Digital del SAT: </b> <small><xsl:value-of select="//@NoCertificadoSAT"/></small></td>
+                <th align="right" >Número de serie del Certificado de Sello Digital del SAT: </th>
+                <td align="left"> <small><xsl:value-of select="//@NoCertificadoSAT"/></small></td>
               </tr><!--5 -->
 
 
             </table>
           </td>
 
-          <tr><th >Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
-          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
+          <tr colspan="3"><th >Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
+          <tr colspan="3"><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
 
-          <tr><th >Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
-          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
+          <tr colspan="3"><th >Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
+          <tr colspan="3"><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
 
-          <tr><th >Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
-          <tr><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
+          <tr colspan="3"><th >Cadena original del complemento de certificación digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
+          <tr colspan="3"><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td></tr>
 
         </table>
         </table>
-
-        <div>
+        <div class="leyenda">
           <center>
             ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.
           </center>
