@@ -16,7 +16,7 @@
   </div> <!--Fin de botón -->
   <div class="row">
     <div class="col-sm-2">
-        <%= link_to  url={controller: "facturas", action: "factura_global_publico_gral"}, html_options={class: "btn btn-default", id: ""} do%>
+        <%= link_to  url={controller: "facturas", action: "factura_global_publico_gral"}, html_options={class: "btn btn-default"} do%>
           <i class="fa fa-file-text-o"></i> Factura global
         <%end%>
 
@@ -351,7 +351,7 @@
                 <% if can? :read, factura %>
 
                 <% if factura.estado_factura.eql?("Activa") %>
-                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', target: :_blank} do %>
+                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-print"></i>
                   <% end %>
                 <% end %>

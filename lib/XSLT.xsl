@@ -95,25 +95,38 @@
              <tr><th colspan="4" class="h1">Receptor</th></tr>
              </thead>
              <tbody>
-             <tr>
-               <th align="right">R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
-               <th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
-             </tr>
 
-             <tr>
-               <th align="right">Dirección: </th>
-               <td  colspan="3">Calle: <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/> #
-                          <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/> Col.
-                          <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
-                          <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
-                          <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
-               </td>
-             </tr>
-             <tr><th align="right">Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
-             <tr>
-               <th align="right">Teléfono:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td>
-               <th align="right">Email:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td>
-             </tr>
+             <!--El atributo Nombre servirá para mostrar o no mostrar información en la Representación impresa cuando se trate de factura de venta o  factura global.
+                 El xml de las facturas globales(simplificadas) no continen el atributo Nombre por reglas del SAT, porque no son expedidas a un cliente en específico-->
+             <xsl:choose>
+                <xsl:when test="cfdi:Receptor/@Nombre">
+                  <tr>
+                    <th align="right">R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+                    <th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+                  </tr>
+                  <tr>
+                    <th align="right">Dirección: </th>
+                    <td colspan="3">Calle: <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/> #
+                       <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/> Col.
+                       <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
+                       <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
+                       <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
+                    </td>
+                  </tr>
+                  <tr><th align="right">Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
+                  <tr>
+                    <th align="right">Teléfono:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td>
+                    <th align="right">Email:</th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td>
+                  </tr>
+                </xsl:when>
+                <xsl:otherwise>
+                  <tr>
+                    <th align="right">R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+                    <th align="right">Nombre:  </th><td>Público en general.</td>
+                  </tr>
+                  <tr><th align="right">Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
+                </xsl:otherwise>
+             </xsl:choose>
            </tbody>
            </table>
       </tr>
