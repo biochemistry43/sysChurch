@@ -214,13 +214,7 @@
         <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
     </tr>
   </tbody>
-    <xsl:for-each select="./cfdi:Traslados/cfdi:Traslado">
-        <tr>
-            <td colspan="2" align="right"><xsl:value-of select="@Impuesto"/></td>
-            <td align="right"><xsl:value-of select="@Importe"/></td>
-            <td><xsl:value-of select="@TasaOCuota"/> %</td>
-        </tr>
-    </xsl:for-each>
+
 </xsl:template>
 
 

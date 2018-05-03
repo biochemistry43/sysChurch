@@ -948,7 +948,8 @@ class FacturasController < ApplicationController
         #El código postal de la matriz o sucursal
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
-        total:55.68
+        #total:55.68
+        total: 83.52
         #Descuento:0 #DESCUENTO RAPPEL
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*

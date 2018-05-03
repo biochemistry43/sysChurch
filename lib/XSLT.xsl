@@ -55,10 +55,17 @@
 
         <td colspan="2" align="right" >
           <table class="serieFolio">
-               <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Ingreso 3.3</b></big></big></th><td></td></tr>
-               <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
-               <tr><th class="h1">Folio:</th><td class="h1"><xsl:value-of select="@Folio"/></td></tr>
-               <tr><th class="h1">Fecha y hora:</th><td class="h1"><xsl:value-of select="@Fecha"/></td></tr>
+            <xsl:choose>
+               <xsl:when test="cfdi:Receptor/@Nombre">
+                 <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Ingreso 3.3</b></big></big></th><td></td></tr>
+               </xsl:when>
+               <xsl:otherwise>
+                 <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. global 3.3</b></big></big></th><td></td></tr>
+               </xsl:otherwise>
+            </xsl:choose>
+            <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>
+            <tr><th class="h1">Folio:</th><td class="h1"><xsl:value-of select="@Folio"/></td></tr>
+            <tr><th class="h1">Fecha y hora:</th><td class="h1"><xsl:value-of select="@Fecha"/></td></tr>
           </table>
         </td>
       </tr>
@@ -74,8 +81,8 @@
                <!--tr><th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Emisor/@Nombre"/></td></tr-->
                <tr>
                  <th align="right">Dirección:  </th>
-                 <td>calle: <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/> #
-                            <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/> colonia:
+                 <td>Calle: <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/> #
+                            <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/> Col.
                             <xsl:value-of select="//cfdi:ExpedidoEn/@colonia"/>,
                             <xsl:value-of select="//cfdi:ExpedidoEn/@municipio"/>,
                             <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
@@ -141,7 +148,10 @@
 
                    <th>Descripción</th>
                    <th>Precio</th>
-                   <th>Desc</th>
+                   <xsl:choose>
+                      <xsl:when test="cfdi:Receptor/@Nombre"><th>Desc</th></xsl:when>
+                      <xsl:otherwise><th>Impuestos T.</th></xsl:otherwise>
+                   </xsl:choose>
                    <th>Importe</th>
                </tr>
              </thead>
@@ -181,14 +191,12 @@
             </table>
          </tr>
         <hr/>
-        <!--Que no lo cuentien jaja lea las letras chiquitas jajaja -->
-        <p class="condicionesDePago"><xsl:value-of select="@CondicionesDePago"/></p>
-        <br/>
-
-
-        <div class="firma">(FIRMA DE CONFORMIDAD)</div>
-
-
+        <xsl:if test="cfdi:Receptor/@Nombre"> <!--El atributo condicionesDePago no existe en las facturas globales -->
+          <!--Que no lo cuentien jaja lea las letras chiquitas jajaja -->
+          <p class="condicionesDePago"><xsl:value-of select="@CondicionesDePago"/></p>
+          <br/>
+          <div class="firma">(FIRMA DE CONFORMIDAD)</div>
+        </xsl:if>
         <table id="sellosDig">
           <td>
             <table id="tablaInternaSellos">
@@ -246,24 +254,43 @@
 
 <xsl:template match="//cfdi:Concepto">
   <tbody>
-    <tr>
-        <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
-        <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
-        <td align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
+    <xsl:choose>
+       <xsl:when test="//cfdi:Receptor/@Nombre">
+         <tr>
+             <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
+             <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
+             <td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
+             <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
+         </tr>
+       </xsl:when>
+       <xsl:otherwise>
+         <tr>
+             <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@ClaveUnidad"/></td>
+             <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/> - <xsl:value-of select="@NoIdentificacion"/></td>
+             <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
+             <!--La columna que era para los descuentos, será para desglosar los impuestos de cada movimiento-->
+             <!--td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td-->
 
-        <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
-        <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
-        <td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
-        <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
-    </tr>
+             <!--Que locura! se desglosan los impuestos de cada movimiento(los impuestos que pudieran tener los conceptos de cada venta, pueden ser de 1...)-->
+             <xsl:for-each select="./cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado"> <!--Selecciona el nodo actual-->
+                <td align="center" class="conceptos">
+                  B=$<xsl:value-of select="@Base"/> -
+                  <xsl:if test="@Impuesto='002'">IVA </xsl:if>
+                  <xsl:if test="@Impuesto='003'">IEPS </xsl:if>
+                  <xsl:value-of select="@TasaOCuota * 100"/>% - T=$
+                  <xsl:value-of select="@Importe"/>
+                </td>
+             </xsl:for-each>
+             <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
+         </tr>
+       </xsl:otherwise>
+    </xsl:choose>
   </tbody>
-
-  <xsl:for-each select="./cfdi:Traslados/cfdi:Traslado">
-  <tr><td colspan="2" align="right"><xsl:value-of select="@Impuesto"/></td>
-      <td align="right"><xsl:value-of select="@Importe"/></td>
-      <td><xsl:value-of select="@TasaOCuota"/> %</td>
-  </tr>
-</xsl:for-each>
 </xsl:template>
 
 

@@ -47,12 +47,12 @@ module CFDI
       rfc=  @rfc
     end
     def ns
-      datos_emisor = {
+      datos_receptor = {
         Rfc: @rfc,
         UsoCFDI: @UsoCFDI
       }
-      datos_emisor[:Nombre] = @nombre if @nombre
-      return (datos_emisor)
+      datos_receptor[:Nombre] = @nombre if @nombre
+      return (datos_receptor)
     end
   end
 
