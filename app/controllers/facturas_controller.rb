@@ -141,7 +141,9 @@ class FacturasController < ApplicationController
         condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
         metodoDePago: 'PUE', #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-        total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
+        #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
+        total: 55.68
+        #total:40.88
         #Descuento:0 #DESCUENTO RAPPEL
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -227,7 +229,7 @@ class FacturasController < ApplicationController
         })
 
       #<< para que puedan ser agragados los conceptos que se deseen.
-      #@cont=0
+      cont=0
       @@itemsVenta.each do |c|
         factura.conceptos << CFDI::Concepto.new({
           ClaveProdServ: c.articulo.clave_prod_serv.clave, #CATALOGO
@@ -241,20 +243,15 @@ class FacturasController < ApplicationController
         })
 
         if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
-
           if c.articulo.impuesto.nombre == "IVA"
             clave_impuesto = "002"
           elsif c.articulo.impuesto.nombre == "IEPS"
             clave_impuesto =  "003"
           end
-
           factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-            tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
-        else
-          #Me muero de programador jajaja pero con ésta salgo de apuros
-          factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
-            tax: "Ninguno", type_factor: "Nada", rate: 0.0)
+            tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f, concepto_id: cont )
         end
+        cont += 1
       end
 
 =begin
@@ -949,7 +946,10 @@ class FacturasController < ApplicationController
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
         #total:55.68
-        total: 83.52
+        #total: 83.52
+        #total: 124.4 #Las tres ventas del día
+        #total: 40.88
+        total:96.56
         #Descuento:0 #DESCUENTO RAPPEL
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -1017,8 +1017,8 @@ class FacturasController < ApplicationController
          #domicilioFiscal: domicilioReceptor
         })
 
+      cont = 0 #Para marcar los impuestos que le pertenecen a una venta
       @ventas.each do |v|
-        puts "VENTAS"
         factura.conceptos << CFDI::Concepto.new({
           #Clave de Producto o Servicio: 01010101 (Por Definir)
           ClaveProdServ: "01010101", #CATALOGO
@@ -1048,24 +1048,18 @@ class FacturasController < ApplicationController
         @itemsVenta = v.item_ventas
 
         @itemsVenta.each do |c|
-          puts "ITEM VENTAS"
           if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
-
             if c.articulo.impuesto.nombre == "IVA"
               clave_impuesto = "002"
             elsif c.articulo.impuesto.nombre == "IEPS"
               clave_impuesto =  "003"
             end
-
             factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-              tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f )
-          else
-            #Me muero de programador jajaja pero con ésta salgo de apuros
-            factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: 0.0,
-              tax: "Ninguno", type_factor: "Nada", rate: 0.0)
+              tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f, concepto_id: cont)
           end
           #Los montos del IVA e IEPS deberán estar desglosados en forma expresa y por separado en cada uno de los CFDI globales.
         end
+        cont += 1
       end
 
       #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
@@ -1073,7 +1067,7 @@ class FacturasController < ApplicationController
       # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
       certificado.certifica factura
       # Esto genera la factura como xml
-      xml= factura.comprobante_to_xml
+      puts xml= factura.comprobante_to_xml
       # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
       archivo_xml = generar_sello(xml, llave, pass_llave)
 

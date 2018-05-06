@@ -284,6 +284,8 @@
                   <xsl:if test="@Impuesto='003'">IEPS </xsl:if>
                   <xsl:value-of select="@TasaOCuota * 100"/>% - T=$
                   <xsl:value-of select="@Importe"/>
+                  <br/>
+                   <!--Un saltito de ranita para que se muetren dentro de la misma fila de cada movimiento-->
                 </td>
              </xsl:for-each>
              <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>

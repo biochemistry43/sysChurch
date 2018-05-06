@@ -245,7 +245,7 @@ module CFDI
 
         LugarExpedicion: @lugarExpedicion,
       }
-      #El campo Condiciones de pago no debe de existir en las facturas globales.
+      #El campo Condiciones de pago no debe de existir en los
       ns[:CondicionesDePago] = @condicionesDePago if @condicionesDePago
       #ns[:serie] = @serie if @serie
       #ns[:TipoCambio] = @TipoCambio if @TipoCambio
@@ -300,8 +300,10 @@ module CFDI
           #Variable para comprobar que existe almenos un concepto con impuestos aplicables(IVA o IEPS)
           impuestos_aplicables = false
           cant_trasladados_federales = 0
+          c_it=0
           xml.Conceptos {
-            c_it=0
+            indice_bonito = 0
+            indice_vta_c = 0
             @conceptos.each do |concepto|
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
@@ -313,51 +315,52 @@ module CFDI
                 #Ahora los impuestos por cada concepto
                 if @impuestos.count_impuestos > 0#en caso que haya algun impuesto
                   if @impuestos.traslados.count > 0
-                    imp_vacio = @impuestos.traslados[c_it].tax
-                    unless imp_vacio == "Ninguno"
-                      #Se llena un arreglo con los impuestos de los conceptos sin importar que se repitan y además
-                      #Y se excluyen aquellos "disque impuestos" de los conceptos que no tienen ningun impuesto relacionado.
-                      arrayTrasladados << [@impuestos.traslados[c_it].tax,
-                                           @impuestos.traslados[c_it].type_factor,
-                                           @impuestos.traslados[c_it].rate,
-                                           @impuestos.traslados[c_it].import]
-                      cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
-                      impuestos_aplicables = true
-                      xml.Impuestos {
-                          xml.Traslados {
-                              xml.Traslado(
-                                  Base: @impuestos.traslados[c_it].base,
-                                  Impuesto: @impuestos.traslados[c_it].tax,
-                                  TipoFactor: @impuestos.traslados[c_it].type_factor,
-                                  TasaOCuota:  @impuestos.traslados[c_it].rate,
-                                  Importe: @impuestos.traslados[c_it].import)
-                          }
-                        #Agregar el nodo Impuestos por si se mas adelante se ocupan las retenciones
-                        #if @impuestos.detained.count > 0
-                        #  xml.Retenciones do
-                        #    @impuestos.detained.each do |det|
-                        #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
-                        #                    importe: format('%.2f', det.import))
-                        #    end
-                        #  end
-                        #end
+                    #Para cuando se trata de facturas globales... Una venta(Concepto) puede tener varios impuestos porque contiene de 1 a N conceptos
+                    #Por esa razón es que se procede a verificar que la venta(concepto) tenga por lo menos un impuesto federal.
+                    xml.Impuestos {
+                      xml.Traslados { #Aquí esta el detalle chato cara de gatooo jajaja
+                        i = 0
+                        #Se recorren los impuestos por venta(Concepto) de todos los conceptos(Producto) que pudieran tener
+                        while i < @impuestos.traslados.count #podría mejorarse con un apuntador en lugar de recorrer todos los impuestos por cada concepto pero tengo flojerita jajaja.
+                          imp_vacio = @impuestos.traslados[i].tax
+                          if c_it == @impuestos.traslados[i].concepto_id
+                            xml.Traslado(
+                              Base: @impuestos.traslados[i].base,
+                              Impuesto: @impuestos.traslados[i].tax,
+                              TipoFactor: @impuestos.traslados[i].type_factor,
+                              TasaOCuota:  @impuestos.traslados[i].rate,
+                              Importe: @impuestos.traslados[i].import)
+                            #cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
+                            #impuestos_aplicables = true
+                          end
+                        i +=1
+                        end
+                        #arre_ImpPorVenta.each {|x| arrayTrasladados << x }
                       }
-                    end
+                      #Agregar el nodo Impuestos por si se mas adelante se ocupan las retenciones
+                      #if @impuestos.detained.count > 0
+                      #  xml.Retenciones do
+                      #    @impuestos.detained.each do |det|
+                      #      xml.Retencion(impuesto: det.tax, tasa: format('%.2f', det.rate),
+                      #                    importe: format('%.2f', det.import))
+                      #    end
+                      #  end
+                      #end
+                    }
                   end
                 end
-
                 #xml.ComplementoConcepto
               }
               c_it=c_it+1
             end
           }
+
           #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
-          if impuestos_aplicables
+          if @impuestos.traslados.count > 0
             tax_options = {}
             total_trans = format('%.2f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
-            tax_options[:TotalImpuestosTrasladados] = total_trans if
-              total_trans.to_i > 0
+            tax_options[:TotalImpuestosTrasladados] = total_trans if total_trans.to_i > 0
             #tax_options[:totalImpuestosRetenidos] = total_detained if
               #total_detained.to_i > 0
             #cant_it = @impuestos.traslados.count
@@ -366,91 +369,81 @@ module CFDI
                 xml.Traslados{
                 #if @impuestos.count_impuestos > 0
                 resumen_traslados=[] #Para guardar todos los diferentes impuestos trasladados.
-
                 #Se obtienen los valores del primer impuesto traslado y se almacenan.
-                impuesto_it = arrayTrasladados[0][0] #Impuesto => tax
-                tipoFactor_it = arrayTrasladados[0][1] #TipoFactor => type_factor
-                tasaOCuota_it = arrayTrasladados[0][2] #TasaOCuota => rate
-                importe_it = arrayTrasladados[0][3] #Importe => import
+                primer_impuesto_traslado = @impuestos.traslados.first
+                impuesto_it = primer_impuesto_traslado.tax #Impuesto => tax
+                tipoFactor_it = primer_impuesto_traslado.type_factor #TipoFactor => type_factor
+                tasaOCuota_it = primer_impuesto_traslado.rate #TasaOCuota => rate
+                importe_it = primer_impuesto_traslado.import #Importe => import
                 resumen_traslados << [impuesto_it, tipoFactor_it, tasaOCuota_it, importe_it]
 
-                #Si solo hay uno, pues para que hacerle al cuento. Se agrega un solo hijo "Traslado" al elemento padre "Traslados"
-                if arrayTrasladados.length == 1
-                  xml.Traslado(
-                  Impuesto: impuesto_it,
-                  TipoFactor:tipoFactor_it ,
-                  TasaOCuota: tasaOCuota_it,
-                  Importe: format('%.2f',importe_it)
-                  )
-                else
-                  detectaCambio = false
-                  indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
-                  it = 0 #Es un apuntador (No siempre incremente de uno en uno)
-                  while it < arrayTrasladados.length #Itera todos los impuestos de los conceptos(Excluidos los impuestos vacios)
-                    indice_cambio = 0
+                detectaCambio = false
+                indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
+                it = 0 #Es un apuntador (No siempre incremente de uno en uno)
+                while it < c_it #Itera todos los impuestos de los conceptos(Excluidos los impuestos vacios)
+                indice_cambio = 0
+                  #puts "ENNTRÉ: #{it}"
+                  bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
+                  #Para comparar los atributos de  impuesto seleccionado a impuesto.
+                  val = 0
+                  while val < @impuestos.traslados.count
+                    #Se identifican los valores iguales
+                    if @impuestos.traslados[it].tax == @impuestos.traslados[val].tax && @impuestos.traslados[it].rate == @impuestos.traslados[val].rate
+                      #Se suman los importes de los impuestos iguales
+                      #El indice 3 pertenece a los importes de los impuestos
+                      if it != val #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
+                        resumen_traslados[indice][3] = resumen_traslados[indice][3] + @impuestos.traslados[val].import
+                      end
 
-                    bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
-                    #Para comparar los atributos de  impuesto seleccionado a impuesto.
-                    val = 0
-                    while val < arrayTrasladados.length
-                      #Se identifican los valores iguales
-                      if arrayTrasladados[it][0] == arrayTrasladados[val][0] && arrayTrasladados[it][2] == arrayTrasladados[val][2]
-                        #Se suman los importes de los impuestos iguales
-                        #El indice 3 pertenece a los importes de los impuestos
-                        if it != val #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
-                          resumen_traslados[indice][3] = resumen_traslados[indice][3] + arrayTrasladados[val][3]
-                        end
-                        #En este caso se trata del mismo, es igual por que es el mismo jaja.
-                        if val == arrayTrasladados.length - 1 && detectaCambio == true && it == val
-                          #El último impuesto diferente y huerfanito se agrega al arreglo.
-                          resumen_traslados << [arrayTrasladados[val][0],
-                                                arrayTrasladados[val][1],
-                                                arrayTrasladados[val][2],
-                                                arrayTrasladados[val][3]]
-                        end
-
-                      else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
-                        #Detecta el primer cambio y de aquí partimos señores!
-                        detectaCambio = true
-                        if bandera_cambio
-                          if val > it
-                            ite = 0
-                            #Se comprueba que no se haya tomado en cuenta el mismo impuesto antes.
-                            while ite < resumen_traslados.length
-                              if resumen_traslados[ite][0] != arrayTrasladados[val][0] && resumen_traslados[ite][2] != arrayTrasladados[val][2]
-                                #indice_cambio = val if indice_cambio > it
-                                bandera_cambio = false #Esto asegura que sea el indice proximo y no el proximo del proximo
-                                indice_cambio = val
-                              end
-                              ite += 1
+                      if detectaCambio == true && it == val # && val == arrayTrasladados.length - 1
+                        #El último impuesto diferente y huerfanito se agrega al arreglo.
+                        resumen_traslados << [@impuestos.traslados[val].tax,
+                                              @impuestos.traslados[val].type_factor,
+                                              @impuestos.traslados[val].rate,
+                                              @impuestos.traslados[val].import]
+                      end
+                    else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
+                      #Detecta el primer cambio y de aquí partimos señores!
+                      detectaCambio = true
+                      if bandera_cambio
+                        if val > it
+                          ite = 0
+                          #Se comprueba que no se haya tomado en cuenta el mismo impuesto antes.
+                          while ite < resumen_traslados.length
+                            if resumen_traslados[ite][0] != @impuestos.traslados[val].tax && resumen_traslados[ite][2] != @impuestos.traslados[val].rate
+                              #indice_cambio = val if indice_cambio > it
+                              bandera_cambio = false #Esto asegura que sea el indice proximo y no el proximo del proximo
+                              indice_cambio = val
                             end
+                            ite += 1
                           end
                         end
                       end
-                      val += 1
-                    end #Fin de bucle anidado
-
-                    #Se agrega un elemento Traslado por cada impuesto estrictamente diferente
-                    xml.Traslado(
-                    Impuesto: resumen_traslados[indice][0],
-                    TipoFactor:resumen_traslados[indice][1],
-                    TasaOCuota: resumen_traslados[indice][2],
-                    Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe por cada impuesto diferente
-                    )
-
-                    if detectaCambio
-                      if it == arrayTrasladados.length - 1
-                        it = arrayTrasladados.length
-                      else
-                        it = indice_cambio
-                      end
-                      indice += 1 #Solo si hay cambio seguirá entrando
-                    else #Si no se detecto cambio quiere decir que todos los impuestos traslados son identicos
-                      it = arrayTrasladados.length #Solo un novato entra en un ciclo infinito jaja cual -1 ni que nada
                     end
+                    val += 1
+                  end #Fin de bucle anidado
+                  #Se agrega un elemento Traslado por cada impuesto estrictamente diferente
+                  xml.Traslado(
+                  Impuesto: resumen_traslados[indice][0],
+                  TipoFactor:resumen_traslados[indice][1],
+                  TasaOCuota: resumen_traslados[indice][2],
+                  Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe por cada impuesto diferente
+                  )
+
+                  if bandera_cambio == false
+                    #if it == arrayTrasladados.length - 1
+                    #  it = arrayTrasladados.length
+                    #else
+                    #  it = indice_cambio
+                    #end
+                    it += 1  #Si hay un cambio y que éste no se haya tomado en cuanta, se incrementa
+                    indice += 1 #Solo si hay cambio seguirá entrando
+                  else #Si no se detecto cambio quiere decir que todos los impuestos traslados son identicos
+                    #it = arrayTrasladados.length #Solo un novato entra en un ciclo infinito jaja cual -1 ni que nada
+                    break
                   end
                 end
-                }
+              }
                 #if @impuestos.detained.count > 0
                 #  xml.Retenciones do
                 #    @impuestos.detained.each do |det|
