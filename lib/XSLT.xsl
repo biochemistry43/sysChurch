@@ -277,17 +277,17 @@
              <!--td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td-->
 
              <!--Que locura! se desglosan los impuestos de cada movimiento(los impuestos que pudieran tener los conceptos de cada venta, pueden ser de 1...)-->
-             <xsl:for-each select="./cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado"> <!--Selecciona el nodo actual-->
-                <td align="center" class="conceptos">
-                  B=$<xsl:value-of select="@Base"/> -
-                  <xsl:if test="@Impuesto='002'">IVA </xsl:if>
-                  <xsl:if test="@Impuesto='003'">IEPS </xsl:if>
-                  <xsl:value-of select="@TasaOCuota * 100"/>% - T=$
-                  <xsl:value-of select="@Importe"/>
-                  <br/>
-                   <!--Un saltito de ranita para que se muetren dentro de la misma fila de cada movimiento-->
-                </td>
-             </xsl:for-each>
+             <td align="center" class="conceptos">
+               <xsl:for-each select="./cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado"> <!--Selecciona el nodo actual-->
+                 B=$<xsl:value-of select="@Base"/> -
+                 <xsl:if test="@Impuesto='002'">IVA </xsl:if>
+                 <xsl:if test="@Impuesto='003'">IEPS </xsl:if>
+                 <xsl:value-of select="@TasaOCuota * 100"/>% - T=$
+                 <xsl:value-of select="@Importe"/>
+                 <br/>
+                  <!--Un saltito de ranita para que se muetren dentro de la misma fila de cada movimiento-->
+                </xsl:for-each>
+             </td>
              <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
          </tr>
        </xsl:otherwise>
