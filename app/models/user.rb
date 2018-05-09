@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_many :nota_creditos
   has_many :facturas
   has_many :factura_recurrentes
   # Include default devise modules. Others available are:

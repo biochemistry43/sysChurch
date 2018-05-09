@@ -1,4 +1,5 @@
 class Cliente < ActiveRecord::Base
+	has_many :nota_creditos
 	has_many :facturas
 	has_many :factura_recurrentes
 	belongs_to :negocio
