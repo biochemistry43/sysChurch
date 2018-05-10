@@ -148,21 +148,25 @@ class FacturasController < ApplicationController
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
       #DATOS DEL EMISOR
-      domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-        calle: current_user.negocio.datos_fiscales_negocio.calle,
-        noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
-        noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
-        colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+      hash_domicilioEmisor = {}
+      if current_user.negocio.datos_fiscales_negocio
+        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio : " "
+        hash_domicilioEmisor[:noExterior] = current_user.negocio.datos_fiscales_negocio.numExterior ? current_user.negocio.datos_fiscales_negocio.numExterior : " "
+        hash_domicilioEmisor[:noInterior] = current_user.negocio.datos_fiscales_negocio.numInterior ? current_user.negocio.datos_fiscales_negocio.numInterior : " "
+        hash_domicilioEmisor[:colonia] = current_user.negocio.datos_fiscales_negocio.colonia ? current_user.negocio.datos_fiscales_negocio.colonia : " "
         #localidad: current_user.negocio.datos_fiscales_negocio.,
         #referencia: current_user.negocio.datos_fiscales_negocio.,
-        municipio: current_user.negocio.datos_fiscales_negocio.municipio,
-        estado: current_user.negocio.datos_fiscales_negocio.estado,
+        hash_domicilioEmisor[:municipio] = current_user.negocio.datos_fiscales_negocio.municipio ? current_user.negocio.datos_fiscales_negocio.municipio : " "
+        hash_domicilioEmisor[:estado] = current_user.negocio.datos_fiscales_negocio.estado ? current_user.negocio.datos_fiscales_negocio.estado : " "
         #pais: current_user.negocio.datos_fiscales_negocio.,
-        codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
-      })
+        hash_domicilioEmisor[:codigoPostal] = current_user.negocio.datos_fiscales_negocio.codigo_postal ? current_user.negocio.datos_fiscales_negocio.estado : " "
+      end
+      domicilioEmisor = CFDI::DatosComunes::Domicilio.new(hash_domicilioEmisor)
+
       #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
       #establecimiento en el que se expidan las Facturas Electrónicas
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+
       expedidoEn= CFDI::DatosComunes::Domicilio.new({
         #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
         #se debera corregir.
@@ -187,17 +191,19 @@ class FacturasController < ApplicationController
         expedidoEn: expedidoEn
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
-      domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-        calle: @@venta.cliente.datos_fiscales_cliente.calle,
-        noExterior: @@venta.cliente.datos_fiscales_cliente.numExterior,
-        noInterior: @@venta.cliente.datos_fiscales_cliente.numInterior,
-        colonia: @@venta.cliente.datos_fiscales_cliente.colonia,
-        localidad: @@venta.cliente.datos_fiscales_cliente.localidad,
+      hash_domicilioReceptor = {}
+      if @@venta.cliente.datos_fiscales_cliente
+        hash_domicilioReceptor[:calle] = @@venta.cliente.datos_fiscales_cliente.calle ? @@venta.cliente.datos_fiscales_cliente.calle : " "
+        hash_domicilioReceptor[:noExterior] = @@venta.cliente.datos_fiscales_cliente.numExterior ? @@venta.cliente.datos_fiscales_cliente.numExterior : " "
+        hash_domicilioReceptor[:noInterior] = @@venta.cliente.datos_fiscales_cliente.numInterior ? @@venta.cliente.datos_fiscales_cliente.numInterior :  " "
+        hash_domicilioReceptor[:colonia] = @@venta.cliente.datos_fiscales_cliente.colonia ? @@venta.cliente.datos_fiscales_cliente.numInterior : " "
+        hash_domicilioReceptor[:localidad] = @@venta.cliente.datos_fiscales_cliente.localidad ? @@venta.cliente.datos_fiscales_cliente.localidad : " "
         #referencia: current_user.negocio.datos_fiscales_negocio.,
-        municipio: @@venta.cliente.datos_fiscales_cliente.municipio,
-        estado: @@venta.cliente.datos_fiscales_cliente.estado,    #pais: current_user.negocio.datos_fiscales_negocio.,
-        codigoPostal: @@venta.cliente.datos_fiscales_cliente.codigo_postal
-      })
+        hash_domicilioReceptor[:municipio] = @@venta.cliente.datos_fiscales_cliente.municipio ? @@venta.cliente.datos_fiscales_cliente.municipio  : " "
+        hash_domicilioReceptor[:estado] = @@venta.cliente.datos_fiscales_cliente.estado ? @@venta.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
+        hash_domicilioReceptor[:codigoPostal] = @@venta.cliente.datos_fiscales_cliente.codigo_postal ? @@venta.cliente.datos_fiscales_cliente.codigo_postal : " "
+      end
+      domicilioReceptor = CFDI::DatosComunes::Domicilio.new(hash_domicilioReceptor)
 
       #Atributos deel receptor
       @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
@@ -1286,18 +1292,20 @@ class FacturasController < ApplicationController
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
       #DATOS DEL EMISOR(Direción de la Matriz y son los que aparecen en el encabezado del comprobante)
-      domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-        calle: current_user.negocio.datos_fiscales_negocio.calle,
-        noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
-        noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
-        colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+      hash_domicilioEmisor = {}
+      if current_user.negocio.datos_fiscales_negocio
+        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio : " "
+        hash_domicilioEmisor[:noExterior] = current_user.negocio.datos_fiscales_negocio.numExterior ? current_user.negocio.datos_fiscales_negocio.numExterior : " "
+        hash_domicilioEmisor[:noInterior] = current_user.negocio.datos_fiscales_negocio.numInterior ? current_user.negocio.datos_fiscales_negocio.numInterior : " "
+        hash_domicilioEmisor[:colonia] = current_user.negocio.datos_fiscales_negocio.colonia ? current_user.negocio.datos_fiscales_negocio.colonia : " "
         #localidad: current_user.negocio.datos_fiscales_negocio.,
         #referencia: current_user.negocio.datos_fiscales_negocio.,
-        municipio: current_user.negocio.datos_fiscales_negocio.municipio,
-        estado: current_user.negocio.datos_fiscales_negocio.estado,
+        hash_domicilioEmisor[:municipio] = current_user.negocio.datos_fiscales_negocio.municipio ? current_user.negocio.datos_fiscales_negocio.municipio : " "
+        hash_domicilioEmisor[:estado] = current_user.negocio.datos_fiscales_negocio.estado ? current_user.negocio.datos_fiscales_negocio.estado : " "
         #pais: current_user.negocio.datos_fiscales_negocio.,
-        codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
-      })
+        hash_domicilioEmisor[:codigoPostal] = current_user.negocio.datos_fiscales_negocio.codigo_postal ? current_user.negocio.datos_fiscales_negocio.estado : " "
+      end
+      domicilioEmisor = CFDI::DatosComunes::Domicilio.new(hash_domicilioEmisor)
       #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
       #establecimiento en el que se expidan las Facturas Electrónicas
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*

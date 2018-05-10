@@ -741,24 +741,24 @@ class DevolucionesController < ApplicationController
               #Datos del emisor
                 #Opción 1: Obtener extraer los datos del xml
                 #Opción 2: Obtener los datos por consultas
-
               #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
               #establecimiento en el que se expidan las Facturas Electrónicas
               #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
               @factura = @venta.factura
-              domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-                calle: @factura.negocio.datos_fiscales_negocio.calle,
-                #calle: current_user.negocio.datos_fiscales_negocio.calle,
-                noExterior: @factura.negocio.datos_fiscales_negocio.numExterior,
-                noInterior: @factura.negocio.datos_fiscales_negocio.numInterior,
-                colonia: @factura.negocio.datos_fiscales_negocio.colonia,
+              hash_domicilioEmisor = {}
+              if @factura.negocio.datos_fiscales_negocio
+                hash_domicilioEmisor[:calle] = @factura.negocio.datos_fiscales_negocio.calle ? @factura.negocio.datos_fiscales_negocio : " "
+                hash_domicilioEmisor[:noExterior] = @factura.negocio.datos_fiscales_negocio.numExterior ? @factura.negocio.datos_fiscales_negocio.numExterior : " "
+                hash_domicilioEmisor[:noInterior] = @factura.negocio.datos_fiscales_negocio.numInterior ? @factura.negocio.datos_fiscales_negocio.numInterior : " "
+                hash_domicilioEmisor[:colonia] = @factura.negocio.datos_fiscales_negocio.colonia ? @factura.negocio.datos_fiscales_negocio.colonia : " "
                 #localidad: current_user.negocio.datos_fiscales_negocio.,
                 #referencia: current_user.negocio.datos_fiscales_negocio.,
-                municipio: @factura.negocio.datos_fiscales_negocio.municipio,
-                estado: @factura.negocio.datos_fiscales_negocio.estado,
+                hash_domicilioEmisor[:municipio] = @factura.negocio.datos_fiscales_negocio.municipio ? @factura.negocio.datos_fiscales_negocio.municipio : " "
+                hash_domicilioEmisor[:estado] = @factura.negocio.datos_fiscales_negocio.estado ? @factura.negocio.datos_fiscales_negocio.estado : " "
                 #pais: current_user.negocio.datos_fiscales_negocio.,
-                codigoPostal: @factura.negocio.datos_fiscales_negocio.codigo_postal
-              })
+                hash_domicilioEmisor[:codigoPostal] = @factura.negocio.datos_fiscales_negocio.codigo_postal ? @factura.negocio.datos_fiscales_negocio.estado : " "
+              end
+              domicilioEmisor = CFDI::DatosComunes::Domicilio.new(hash_domicilioEmisor)
 
               expedidoEn= CFDI::DatosComunes::Domicilio.new({
                 #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
@@ -784,17 +784,19 @@ class DevolucionesController < ApplicationController
               })
 
               #La dirección fiscal del cliente para empezar no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
-              domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-                calle: @factura.cliente.datos_fiscales_cliente.calle,
-                noExterior: @factura.cliente.datos_fiscales_cliente.numExterior,
-                noInterior: @factura.cliente.datos_fiscales_cliente.numInterior,
-                colonia: @factura.cliente.datos_fiscales_cliente.colonia,
-                localidad: @factura.cliente.datos_fiscales_cliente.localidad,
+              hash_domicilioReceptor = {}
+              if @factura.cliente.datos_fiscales_cliente
+                hash_domicilioReceptor[:calle] @factura.cliente.datos_fiscales_cliente.calle ? @factura.cliente.datos_fiscales_cliente.calle : " "
+                hash_domicilioReceptor[:noExterior] @factura.cliente.datos_fiscales_cliente.numExterior ? @factura.cliente.datos_fiscales_cliente.numExterior : " "
+                hash_domicilioReceptor[:noInterior] @factura.cliente.datos_fiscales_cliente.numInterior ? @factura.cliente.datos_fiscales_cliente.numInterior :  " "
+                hash_domicilioReceptor[:colonia] @factura.cliente.datos_fiscales_cliente.colonia ? @factura.cliente.datos_fiscales_cliente.numInterior : " "
+                hash_domicilioReceptor[:localidad] @factura.cliente.datos_fiscales_cliente.localidad ? @factura.cliente.datos_fiscales_cliente.localidad : " "
                 #referencia: current_user.negocio.datos_fiscales_negocio.,
-                municipio: @factura.cliente.datos_fiscales_cliente.municipio,
-                estado: @factura.cliente.datos_fiscales_cliente.estado,    #pais: current_user.negocio.datos_fiscales_negocio.,
-                codigoPostal: @factura.cliente.datos_fiscales_cliente.codigo_postal
-              })
+                hash_domicilioReceptor[:municipio] @factura.cliente.datos_fiscales_cliente.municipio ? @factura.cliente.datos_fiscales_cliente.municipio  : " "
+                hash_domicilioReceptor[:estado] @factura.cliente.datos_fiscales_cliente.estado ? @factura.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
+                hash_domicilioReceptor[:codigoPostal] @factura.cliente.datos_fiscales_cliente.codigo_postal ? @factura.cliente.datos_fiscales_cliente.codigo_postal : " "
+              end
+              domicilioReceptor = CFDI::DatosComunes::Domicilio.new(hash_domicilioReceptor)
 
               #Atributos del receptor
               rfc_receptor_f = @factura.cliente.datos_fiscales_cliente.rfc
