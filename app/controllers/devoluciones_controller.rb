@@ -786,16 +786,16 @@ class DevolucionesController < ApplicationController
               #La dirección fiscal del cliente para empezar no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
               hash_domicilioReceptor = {}
               if @factura.cliente.datos_fiscales_cliente
-                hash_domicilioReceptor[:calle] @factura.cliente.datos_fiscales_cliente.calle ? @factura.cliente.datos_fiscales_cliente.calle : " "
-                hash_domicilioReceptor[:noExterior] @factura.cliente.datos_fiscales_cliente.numExterior ? @factura.cliente.datos_fiscales_cliente.numExterior : " "
-                hash_domicilioReceptor[:noInterior] @factura.cliente.datos_fiscales_cliente.numInterior ? @factura.cliente.datos_fiscales_cliente.numInterior :  " "
-                hash_domicilioReceptor[:colonia] @factura.cliente.datos_fiscales_cliente.colonia ? @factura.cliente.datos_fiscales_cliente.numInterior : " "
-                hash_domicilioReceptor[:localidad] @factura.cliente.datos_fiscales_cliente.localidad ? @factura.cliente.datos_fiscales_cliente.localidad : " "
+                hash_domicilioReceptor[:calle] = @factura.cliente.datos_fiscales_cliente.calle ? @factura.cliente.datos_fiscales_cliente.calle : " "
+                hash_domicilioReceptor[:noExterior] = @factura.cliente.datos_fiscales_cliente.numExterior ? @factura.cliente.datos_fiscales_cliente.numExterior : " "
+                hash_domicilioReceptor[:noInterior] = @factura.cliente.datos_fiscales_cliente.numInterior ? @factura.cliente.datos_fiscales_cliente.numInterior :  " "
+                hash_domicilioReceptor[:colonia] = @factura.cliente.datos_fiscales_cliente.colonia ? @factura.cliente.datos_fiscales_cliente.numInterior : " "
+                hash_domicilioReceptor[:localidad] = @factura.cliente.datos_fiscales_cliente.localidad ? @factura.cliente.datos_fiscales_cliente.localidad : " "
                 #referencia: current_user.negocio.datos_fiscales_negocio.,
-                hash_domicilioReceptor[:municipio] @factura.cliente.datos_fiscales_cliente.municipio ? @factura.cliente.datos_fiscales_cliente.municipio  : " "
-                hash_domicilioReceptor[:estado] @factura.cliente.datos_fiscales_cliente.estado ? @factura.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
-                hash_domicilioReceptor[:codigoPostal] @factura.cliente.datos_fiscales_cliente.codigo_postal ? @factura.cliente.datos_fiscales_cliente.codigo_postal : " "
-              end
+                hash_domicilioReceptor[:municipio] = @factura.cliente.datos_fiscales_cliente.municipio ? @factura.cliente.datos_fiscales_cliente.municipio  : " "
+                hash_domicilioReceptor[:estado] = @factura.cliente.datos_fiscales_cliente.estado ? @factura.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
+                hash_domicilioReceptor[:codigoPostal] = @factura.cliente.datos_fiscales_cliente.codigo_postal ? @factura.cliente.datos_fiscales_cliente.codigo_postal : " "
+              end #No a cualquiera le pasa q se le olvide poner el signo de = jajaja
               domicilioReceptor = CFDI::DatosComunes::Domicilio.new(hash_domicilioReceptor)
 
               #Atributos del receptor
