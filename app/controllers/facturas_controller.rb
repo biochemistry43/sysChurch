@@ -5,7 +5,7 @@ class FacturasController < ApplicationController
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
-  def facturaDeVentas
+  def buscarVentaFacturar
     @consulta = false
     if request.post?
       #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
@@ -14,7 +14,7 @@ class FacturasController < ApplicationController
         venta_id = @venta.id
         redirect_to action: "mostrarDetallesVenta", id: venta_id
       else
-        redirect_to action:"facturaDeVentas"
+        redirect_to action:"buscarVentaFacturar"
       end
     end
   end
@@ -76,21 +76,56 @@ class FacturasController < ApplicationController
 
       #COMPROBANTE
       #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
-      @total=@venta.montoVenta
-      #@rfc_receptor=
-      decimal = format('%.2f', @total).split('.')
-      @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
+
+      #para mostrar el subtotal.
+      @subtotal = 0.00
+      @iva =0.00
+      @ieps = 0.00
+      @itemsVenta = @venta.item_ventas
+      @itemsVenta.each do |c|
+        importe_concepto = (c.precio_venta * c.cantidad) #Incluye impuestos(si esq), descuentos(si esq)...
+        if c.articulo.impuesto.present? #No imposta de que tipo de impuestos sean
+          tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
+          #Se calcula el precio bruto de cada concepto
+          base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+          importe_impuesto_concepto = (base_gravable * tasaOCuota)
+          #valorUnitario = base_gravable / c.cantidad
+          @subtotal += base_gravable
+
+          if c.articulo.impuesto.tipo == "Federal"
+            if c.articulo.impuesto.nombre == "IVA"
+              @iva = @iva += importe_impuesto_concepto
+            elsif c.articulo.impuesto.nombre == "IEPS"
+              @ieps = importe_impuesto_concepto
+            end
+            #Los locales que show? luego luego jaja
+          end
+        else
+          @subtotal += importe_concepto
+        end
+      end
+      #@iva = '%.2f' % @iva.round(2)
+      #@ieps = '%.2f' % @ieps.round(2)
+      @subtotal = '%.2f' % @subtotal.round(2)
+      #@descuento_string = '%.2f' % descuento.round(2)
+      #por el momento el descuento es:
+      descuento = 0.00
+      @descuento_string = '%.2f' % descuento.round(2)
+      @total_string = '%.2f' % @venta.montoVenta.round(2)
+
+      #decimal = format('%.2f', @venta.montoVenta).split('.')
+      decimal = '%.2f' %  @venta.montoVenta.round(2)
+      @total_en_letras="( #{@venta.montoVenta.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
       @fechaVenta=  @venta.fechaVenta
 
-      @itemsVenta  = @venta.item_ventas
-
+      #@itemsVenta  = @venta.item_ventas
       @@itemsVenta=@itemsVenta
     else
       @folio = @venta.folio
     end
   end
 
-  def facturando
+  def facturarVenta
     #POST
     if request.post?
       require 'cfdi'
@@ -787,7 +822,7 @@ class FacturasController < ApplicationController
               send_file( file, :disposition => "inline", :type => "application/pdf")
             else
               respond_to do |format|
-              format.html { redirect_to action: "facturaDeVentas", notice: 'La factura fue registrada existoxamente!' }
+              format.html { redirect_to action: "buscarVentaFacturar", notice: 'La factura fue registrada existoxamente!' }
               end
             end
           else
