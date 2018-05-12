@@ -9,6 +9,7 @@
   <div class="row" style="margin-bottom: 30px;">
       <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
       <%= form_tag({ controller: "facturas", action: "buscarVentaFacturar" }, {:class=> "form-horizontal", :method => :post}) do %>
+
         <div class="item form-group">
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div style="text-align: left; color: black;">
@@ -16,25 +17,23 @@
             </div>
           </div>
         </div>
-        <div class="item form-group">
-          <div class="col-md-1 col-sm-1 col-xs-12">
-            <div style="text-align: right;">
-              Folio:
-            </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+
+          <div class="col-md-2 col-sm-2 col-xs-2">
+            <%=label_tag :folio, "Folio", class: "control-label" %>
+
           </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="col-md-6 col-sm-6 col-xs-6">
             <div class="text-center">
-  		        <%= text_field_tag :folio, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"folio de la venta..."} do%>
+  		        <%= text_field_tag :folio, nil, {class: "form-control text_field", :placeholder=>"Folio de la venta..."} do%>
               <span class="input-group-addon"><i class="fa fa-user"></i></span>
   		        <%end%>
             </div>
           </div>
-          <div class="item form-group">
-            <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-4">
               <div class="text-left" >
                 <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
               </div>
-            </div>
           </div>
         </div>
       <% end %>
