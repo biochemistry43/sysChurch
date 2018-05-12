@@ -142,7 +142,7 @@ class FacturasController < ApplicationController
         metodoDePago: 'PUE', #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
-        total: 55.68
+        total: '%.2f' % @@venta.montoVenta.round(2)
         #total:40.88
         #Descuento:0 #DESCUENTO RAPPEL
       })
@@ -150,7 +150,7 @@ class FacturasController < ApplicationController
       #DATOS DEL EMISOR
       hash_domicilioEmisor = {}
       if current_user.negocio.datos_fiscales_negocio
-        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio : " "
+        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio.calle : " "
         hash_domicilioEmisor[:noExterior] = current_user.negocio.datos_fiscales_negocio.numExterior ? current_user.negocio.datos_fiscales_negocio.numExterior : " "
         hash_domicilioEmisor[:noInterior] = current_user.negocio.datos_fiscales_negocio.numInterior ? current_user.negocio.datos_fiscales_negocio.numInterior : " "
         hash_domicilioEmisor[:colonia] = current_user.negocio.datos_fiscales_negocio.colonia ? current_user.negocio.datos_fiscales_negocio.colonia : " "
@@ -233,30 +233,46 @@ class FacturasController < ApplicationController
          UsoCFDI:@usoCfdi.clave, #CATALOGO
          domicilioFiscal: domicilioReceptor
         })
-
       #<< para que puedan ser agragados los conceptos que se deseen.
       cont=0
       @@itemsVenta.each do |c|
-        factura.conceptos << CFDI::Concepto.new({
-          ClaveProdServ: c.articulo.clave_prod_serv.clave, #CATALOGO
-          NoIdentificacion: c.articulo.clave,
-          Cantidad: c.cantidad,
-          ClaveUnidad:c.articulo.unidad_medida.clave,#CATALOGO
-          Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
-          Descripcion: c.articulo.nombre,
-          ValorUnitario: c.precio_venta, #el importe se calcula solo
-          #Descuento: 0 #Expresado en porcentaje
-        })
+        hash_conceptos={ClaveProdServ: c.articulo.clave_prod_serv.clave, #Catálogo
+                        NoIdentificacion: c.articulo.clave,
+                        Cantidad: c.cantidad,
+                        ClaveUnidad:c.articulo.unidad_medida.clave,#Catálogo
+                        Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
+                        Descripcion: c.articulo.nombre
+                        }
+        #Iba por mal camino queriendo sumar... o ammm bueno viendolo de otra forma... mejor se restan el porcentaje que corresponde al impuesto, si esque el concepto tiene impuestos.
+        #Una condición más para comprobar que tenga impuesto sin importar de que tipo sea.
+        importe_concepto = (c.precio_venta * c.cantidad).to_f #Incluye impuestos(si esq), descuentos(si esq)...
+        if c.articulo.impuesto.present? #Impuestos a la inversa
+          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 0.160000 => 1.160000
+          #Se calcula el precio bruto de cada concepto
+          base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
+          importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f
 
-        if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
-          if c.articulo.impuesto.nombre == "IVA"
-            clave_impuesto = "002"
-          elsif c.articulo.impuesto.nombre == "IEPS"
-            clave_impuesto =  "003"
+          valorUnitario = base_gravable / c.cantidad
+
+          if c.articulo.impuesto.tipo == "Federal"
+            if c.articulo.impuesto.nombre == "IVA"
+              clave_impuesto = "002"
+            elsif c.articulo.impuesto.nombre == "IEPS"
+              clave_impuesto =  "003"
+            end
+            factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+              tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto, concepto_id: cont)
+          #end
+          #elsif c.articulo.impuesto.tipo == "Local"
+            #Para el complemento de impuestos locales.
           end
-          factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-            tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f, concepto_id: cont )
+          hash_conceptos[:ValorUnitario] = valorUnitario
+          hash_conceptos[:Importe] = base_gravable
+        else
+          hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
+          hash_conceptos[:Importe] = importe_concepto
         end
+        factura.conceptos << CFDI::Concepto.new(hash_conceptos)
         cont += 1
       end
 
@@ -279,7 +295,7 @@ class FacturasController < ApplicationController
       # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
       certificado.certifica factura
       # Esto genera la factura como xml
-      xml= factura.comprobante_to_xml
+      p xml= factura.comprobante_to_xml
       # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
       archivo_xml = generar_sello(xml, llave, pass_llave)
 
@@ -1310,7 +1326,7 @@ class FacturasController < ApplicationController
       #DATOS DEL EMISOR(Direción de la Matriz y son los que aparecen en el encabezado del comprobante)
       hash_domicilioEmisor = {}
       if current_user.negocio.datos_fiscales_negocio
-        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio : " "
+        hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio.calle : " "
         hash_domicilioEmisor[:noExterior] = current_user.negocio.datos_fiscales_negocio.numExterior ? current_user.negocio.datos_fiscales_negocio.numExterior : " "
         hash_domicilioEmisor[:noInterior] = current_user.negocio.datos_fiscales_negocio.numInterior ? current_user.negocio.datos_fiscales_negocio.numInterior : " "
         hash_domicilioEmisor[:colonia] = current_user.negocio.datos_fiscales_negocio.colonia ? current_user.negocio.datos_fiscales_negocio.colonia : " "

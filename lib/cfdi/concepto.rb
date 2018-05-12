@@ -51,8 +51,10 @@ module CFDI
     # El importe de este concepto
     #
     # @return [Float] El valor unitario multiplicado por la Cantidad
-    def Importe
-      return @ValorUnitario*@Cantidad
+    def Importe= importe
+      #@Importe = '%.2f' % importe.round(2)
+      @Importe = importe.to_f
+      @Importe
     end
 
 
@@ -62,6 +64,7 @@ module CFDI
     # @return [Integer] La Cantidad
     def Cantidad= qty
       @Cantidad = qty.to_f
+      #@Cantidad = '%.6f' % qty.round(6)
       @Cantidad
     end
 

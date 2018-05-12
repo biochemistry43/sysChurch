@@ -79,29 +79,18 @@ module CFDI
     #DESCUENTO POR PAGO PUNTUAL
     #...
     def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto
-      ret = 0
+      subtotal = 0.00
       @conceptos.each do |c|
-        ret += c.Importe
+        subtotal += c.Importe
       end
-      ret # @return [Float] El subtotal del comprobante
+      subtotal # @ return [Float] El subtotal del comprobante
     end
-
-    # @return [Float] El subtotal multiplicado por la tasa
-
-
-    #Sería mejor calcular estos datos antes y no aquí para no tener diferencias en la base de datos o hacer el mismo calculo dos veces.
-    #def total
-      #iva = 0.0
-      #iva = (self.subTotal*@opciones[:tasa]) if @impuestos.count > 0
-      #total_trans = format('%.2f', @impuestos.total_traslados if) @impuestos.count_impuestos > 0
-      #self.subTotal + total_trans  #El orden es: subtotal - descuento + impuestos traslados -retenciones
-
-    #end
 
     #Expresa el total en letras de forma estatica se usa la moneda nacional.
     def total_to_words
-      decimal = format('%.2f', @total).split('.')
-      "( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
+      total = @total.to_f
+      decimal = format('%.2f', total).split('.')
+      "( #{total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
     end
 
 =begin
@@ -308,7 +297,7 @@ module CFDI
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
               cc = cc.map {|k,v|
-                v = sprintf('%.2f', v) if v.is_a? Float
+                v = '%.2f' % v.round(6) if v.is_a? Float
                 [k,v]
               }.to_h
               xml.Concepto(cc) {
@@ -325,11 +314,12 @@ module CFDI
                           imp_vacio = @impuestos.traslados[i].tax
                           if c_it == @impuestos.traslados[i].concepto_id
                             xml.Traslado(
-                              Base: @impuestos.traslados[i].base,
+                              Base: '%.6f' % (@impuestos.traslados[i].base).round(6),
                               Impuesto: @impuestos.traslados[i].tax,
                               TipoFactor: @impuestos.traslados[i].type_factor,
-                              TasaOCuota:  @impuestos.traslados[i].rate,
-                              Importe: @impuestos.traslados[i].import)
+                              TasaOCuota: '%.6f' % (@impuestos.traslados[i].rate).round(6),
+                              #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
+                              Importe: '%.2f' % (@impuestos.traslados[i].import).round(2))
                             #cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
                             #impuestos_aplicables = true
                           end
@@ -358,7 +348,8 @@ module CFDI
           #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
           if @impuestos.traslados.count > 0
             tax_options = {}
-            total_trans = format('%.2f', @impuestos.total_traslados)
+            total_trans = '%.2f' % (@impuestos.total_traslados).round(2)
+            #total_trans = format('%.6f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
             tax_options[:TotalImpuestosTrasladados] = total_trans if total_trans.to_i > 0
             #tax_options[:totalImpuestosRetenidos] = total_detained if
@@ -426,8 +417,9 @@ module CFDI
                   xml.Traslado(
                   Impuesto: resumen_traslados[indice][0],
                   TipoFactor:resumen_traslados[indice][1],
-                  TasaOCuota: resumen_traslados[indice][2],
-                  Importe: format('%.2f',resumen_traslados[indice][3]) #Esto es el importe por cada impuesto diferente
+                  TasaOCuota: '%.6f' % resumen_traslados[indice][2].round(2),
+                  #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
+                  Importe: '%.2f' % resumen_traslados[indice][3].round(2) #Esto es el importe por cada impuesto diferente
                   )
 
                   if bandera_cambio == false
@@ -710,12 +702,6 @@ module CFDI
     a.close
 
     xml1
-  end
-
-  #Función para representar el total en letras
-  def total_to_words
-    decimal = format('%.2f', @total).split('.')
-    total_en_letras="#{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N."
   end
 
   #Funcion para guardar los xml

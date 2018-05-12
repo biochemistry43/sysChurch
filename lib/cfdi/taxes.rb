@@ -65,15 +65,15 @@ module CFDI
          args.each { |key, value| send("#{key}=", value) }
        end
        def base=(base)
-         @base=format('%.6f', base).to_f
+         @base= base.to_f
        end
 
        def rate=(rate)
-         @rate=format('%.6f', rate).to_f
+         @rate= rate.to_f
        end
 
-       def import
-         @import = format('%.2f', @rate * @base).to_f
+       def import=(importe)
+         @import = importe.to_f
        end
 
        #def cadena_original

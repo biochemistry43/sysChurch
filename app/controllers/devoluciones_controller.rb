@@ -747,7 +747,7 @@ class DevolucionesController < ApplicationController
               @factura = @venta.factura
               hash_domicilioEmisor = {}
               if @factura.negocio.datos_fiscales_negocio
-                hash_domicilioEmisor[:calle] = @factura.negocio.datos_fiscales_negocio.calle ? @factura.negocio.datos_fiscales_negocio : " "
+                hash_domicilioEmisor[:calle] = @factura.negocio.datos_fiscales_negocio.calle ? @factura.negocio.datos_fiscales_negocio.calle : " "
                 hash_domicilioEmisor[:noExterior] = @factura.negocio.datos_fiscales_negocio.numExterior ? @factura.negocio.datos_fiscales_negocio.numExterior : " "
                 hash_domicilioEmisor[:noInterior] = @factura.negocio.datos_fiscales_negocio.numInterior ? @factura.negocio.datos_fiscales_negocio.numInterior : " "
                 hash_domicilioEmisor[:colonia] = @factura.negocio.datos_fiscales_negocio.colonia ? @factura.negocio.datos_fiscales_negocio.colonia : " "
