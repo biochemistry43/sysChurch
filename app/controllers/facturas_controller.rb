@@ -247,7 +247,7 @@ class FacturasController < ApplicationController
         #Una condición más para comprobar que tenga impuesto sin importar de que tipo sea.
         importe_concepto = (c.precio_venta * c.cantidad).to_f #Incluye impuestos(si esq), descuentos(si esq)...
         if c.articulo.impuesto.present? #Impuestos a la inversa
-          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 0.160000 => 1.160000
+          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 16% => 0.160000 
           #Se calcula el precio bruto de cada concepto
           base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
           importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f

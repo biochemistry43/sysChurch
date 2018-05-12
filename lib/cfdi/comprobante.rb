@@ -297,7 +297,7 @@ module CFDI
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
               cc = cc.map {|k,v|
-                v = '%.2f' % v.round(6) if v.is_a? Float
+                v = '%.2f' % v.round(2) if v.is_a? Float
                 [k,v]
               }.to_h
               xml.Concepto(cc) {
@@ -417,7 +417,7 @@ module CFDI
                   xml.Traslado(
                   Impuesto: resumen_traslados[indice][0],
                   TipoFactor:resumen_traslados[indice][1],
-                  TasaOCuota: '%.6f' % resumen_traslados[indice][2].round(2),
+                  TasaOCuota: '%.6f' % resumen_traslados[indice][2].round(6),
                   #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
                   Importe: '%.2f' % resumen_traslados[indice][3].round(2) #Esto es el importe por cada impuesto diferente
                   )
