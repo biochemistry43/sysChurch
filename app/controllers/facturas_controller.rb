@@ -8,92 +8,98 @@ class FacturasController < ApplicationController
   def facturaDeVentas
     @consulta = false
     if request.post?
-      @consulta = true #determina si se realizó una consulta
-      @venta = Venta.find_by :folio=>params[:folio] #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
-      @@venta=@venta
-
-      #EMISOR
-      @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
-      @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
-
-      #AQUÍ CONDICIONES PARA QUE MUESTRE EL NOMBRE Y NO LA CLAVE DEL REGIMEN.
-      @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
-
+      #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
+      @venta = Venta.find_by :folio=>params[:folio]
       if @venta
-        #blank lo contrario de presentar
-        #Una venta solo se puede facturar una vez
-        @ventaFacturadaNoSi=Venta.find_by(:folio=>params[:folio]).factura.blank?
-        @ventaCancelada=@venta.status.eql?("Cancelada")
-
-        #Por si a alguien se le ocurre querer facturar una venta cancelada jajaja
-        #if @ventaCancelada
-         #@fechaVentaCancelada=current_user.negocio.venta_canceladas.where("venta"=>@venta).fecha
-        #end
-
-        unless @ventaFacturadaNoSi
-          @fechaVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.fecha_expedicion
-          @folioVentaFacturada=Venta.find_by(:folio=>params[:folio]).factura.folio #Folio de la factura de la venta
-
-        end
-
-        @consecutivo = 0
-        if current_user.sucursal.facturas.last
-          @consecutivo = current_user.sucursal.facturas.last.consecutivo
-          if @consecutivo
-            @consecutivo += 1
-          end
-        else
-          @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
-        end
-        #Temporalmente...
-        if current_user.sucursal.clave.present?
-          claveSucursal = current_user.sucursal.clave
-          @serie = claveSucursal + "F"
-        else
-          folio_default="F"
-          @serie = folio_default
-        end
-        #RECEPTOR
-        @rfc_emisor_present=@venta.cliente.rfc.present?
-        @rfc_receptor_f=@venta.cliente.rfc
-        @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
-        @nombre_fiscal_receptor_f=@venta.cliente.nombreFiscal
-        @email_receptor = @@venta.cliente.email
-
-        #@nombre_receptor_f=@venta.cliente.nombre_completo
-        #@correo_electonico_f=@@venta.cliente.enviar_al_correo
-        @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
-
-        #COMPROBANTE
-        #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
-        @total=@venta.montoVenta
-        #@rfc_receptor=
-        decimal = format('%.2f', @total).split('.')
-        @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
-        @fechaVenta=  @venta.fechaVenta
-
-        @itemsVenta  = @venta.item_ventas
-
-        @@itemsVenta=@itemsVenta
-
+        venta_id = @venta.id
+        redirect_to action: "mostrarDetallesVenta", id: venta_id
       else
-        @folio = params[:folio]
+        redirect_to action:"facturaDeVentas"
       end
     end
   end
 
+  def mostrarDetallesVenta
+    @venta = Venta.find(params[:id]) if params.key?(:id)
 
+    @@venta = @venta
+    @consulta = true #determina si se realizó una consulta
+    #EMISOR
+    @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
+    @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
+
+    #AQUÍ CONDICIONES PARA QUE MUESTRE EL NOMBRE Y NO LA CLAVE DEL REGIMEN.
+    @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
+    #La venta debe de ser del mismo negocio o mostrará que no hay ventas registradas con X folio de venta
+    if @venta && current_user.negocio.id == @venta.negocio.id
+      #blank lo contrario de presentar
+      #Una venta solo se puede facturar una vez
+      @ventaFacturadaNoSi=@venta.factura.blank?
+      @ventaCancelada=@venta.status.eql?("Cancelada")
+
+      #Por si a alguien se le ocurre querer facturar una venta cancelada jajaja
+      #if @ventaCancelada
+       #@fechaVentaCancelada=current_user.negocio.venta_canceladas.where("venta"=>@venta).fecha
+      #end
+      unless @ventaFacturadaNoSi
+        @fechaVentaFacturada = @venta.factura.fecha_expedicion
+        @folioVentaFacturada = @venta.factura.folio #Folio de la factura de la venta
+      end
+
+      @consecutivo = 0
+      if current_user.sucursal.facturas.last
+        @consecutivo = current_user.sucursal.facturas.last.consecutivo
+        if @consecutivo
+          @consecutivo += 1
+        end
+      else
+        @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+      end
+      #Temporalmente...
+      if current_user.sucursal.clave.present?
+        claveSucursal = current_user.sucursal.clave
+        @serie = claveSucursal + "F"
+      else
+        folio_default="F"
+        @serie = folio_default
+      end
+      #RECEPTOR
+      @rfc_emisor_present=@venta.cliente.rfc.present?
+      @rfc_receptor_f=@venta.cliente.rfc
+      @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
+      @nombre_fiscal_receptor_f=@venta.cliente.nombreFiscal
+      @email_receptor = @venta.cliente.email
+
+      #@nombre_receptor_f=@venta.cliente.nombre_completo
+      #@correo_electonico_f=@venta.cliente.enviar_al_correo
+      @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
+
+      #COMPROBANTE
+      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
+      @total=@venta.montoVenta
+      #@rfc_receptor=
+      decimal = format('%.2f', @total).split('.')
+      @total_en_letras="( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
+      @fechaVenta=  @venta.fechaVenta
+
+      @itemsVenta  = @venta.item_ventas
+
+      @@itemsVenta=@itemsVenta
+    else
+      @folio = @venta.folio
+    end
+  end
 
   def facturando
-    require 'cfdi'
-    require 'timbrado'
-
+    #POST
     if request.post?
+      require 'cfdi'
+      require 'timbrado'
       if params[:commit] == "Cancelar"
-        @@venta=nil #Se borran los datos por si el usuario le da "atras" en el navegador.
+        @venta=nil #Se borran los datos por si el usuario le da "atras" en el navegador.
         redirect_to facturas_index_path
       else
-
+        @venta = Venta.find(params[:id]) if params.key?(:id)
         #1.- CERTIFICADOS,  LLAVES Y CLAVES
         certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
         # Esta se convierte de un archivo .key con:
@@ -136,13 +142,13 @@ class FacturasController < ApplicationController
         fecha: fecha_expedicion_f,
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #La moneda por default es MXN
-        #formaDePago: @@venta.venta_forma_pago.forma_pago.clave
+        #formaDePago: @venta.venta_forma_pago.forma_pago.clave
         FormaPago:'01',#CATALOGO Es de tipo string
         condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
         metodoDePago: 'PUE', #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
-        total: '%.2f' % @@venta.montoVenta.round(2)
+        total: '%.2f' % @venta.montoVenta.round(2)
         #total:40.88
         #Descuento:0 #DESCUENTO RAPPEL
       })
@@ -192,37 +198,37 @@ class FacturasController < ApplicationController
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
       hash_domicilioReceptor = {}
-      if @@venta.cliente.datos_fiscales_cliente
-        hash_domicilioReceptor[:calle] = @@venta.cliente.datos_fiscales_cliente.calle ? @@venta.cliente.datos_fiscales_cliente.calle : " "
-        hash_domicilioReceptor[:noExterior] = @@venta.cliente.datos_fiscales_cliente.numExterior ? @@venta.cliente.datos_fiscales_cliente.numExterior : " "
-        hash_domicilioReceptor[:noInterior] = @@venta.cliente.datos_fiscales_cliente.numInterior ? @@venta.cliente.datos_fiscales_cliente.numInterior :  " "
-        hash_domicilioReceptor[:colonia] = @@venta.cliente.datos_fiscales_cliente.colonia ? @@venta.cliente.datos_fiscales_cliente.numInterior : " "
-        hash_domicilioReceptor[:localidad] = @@venta.cliente.datos_fiscales_cliente.localidad ? @@venta.cliente.datos_fiscales_cliente.localidad : " "
+      if @venta.cliente.datos_fiscales_cliente
+        hash_domicilioReceptor[:calle] = @venta.cliente.datos_fiscales_cliente.calle ? @venta.cliente.datos_fiscales_cliente.calle : " "
+        hash_domicilioReceptor[:noExterior] = @venta.cliente.datos_fiscales_cliente.numExterior ? @venta.cliente.datos_fiscales_cliente.numExterior : " "
+        hash_domicilioReceptor[:noInterior] = @venta.cliente.datos_fiscales_cliente.numInterior ? @venta.cliente.datos_fiscales_cliente.numInterior :  " "
+        hash_domicilioReceptor[:colonia] = @venta.cliente.datos_fiscales_cliente.colonia ? @venta.cliente.datos_fiscales_cliente.numInterior : " "
+        hash_domicilioReceptor[:localidad] = @venta.cliente.datos_fiscales_cliente.localidad ? @venta.cliente.datos_fiscales_cliente.localidad : " "
         #referencia: current_user.negocio.datos_fiscales_negocio.,
-        hash_domicilioReceptor[:municipio] = @@venta.cliente.datos_fiscales_cliente.municipio ? @@venta.cliente.datos_fiscales_cliente.municipio  : " "
-        hash_domicilioReceptor[:estado] = @@venta.cliente.datos_fiscales_cliente.estado ? @@venta.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
-        hash_domicilioReceptor[:codigoPostal] = @@venta.cliente.datos_fiscales_cliente.codigo_postal ? @@venta.cliente.datos_fiscales_cliente.codigo_postal : " "
+        hash_domicilioReceptor[:municipio] = @venta.cliente.datos_fiscales_cliente.municipio ? @venta.cliente.datos_fiscales_cliente.municipio  : " "
+        hash_domicilioReceptor[:estado] = @venta.cliente.datos_fiscales_cliente.estado ? @venta.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
+        hash_domicilioReceptor[:codigoPostal] = @venta.cliente.datos_fiscales_cliente.codigo_postal ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
       end
       domicilioReceptor = CFDI::DatosComunes::Domicilio.new(hash_domicilioReceptor)
 
       #Atributos deel receptor
       @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
-      if @@venta.cliente.datos_fiscales_cliente.rfc.present?
-        rfc_receptor_f=@@venta.cliente.datos_fiscales_cliente.rfc
+      if @venta.cliente.datos_fiscales_cliente.rfc.present?
+        rfc_receptor_f=@venta.cliente.datos_fiscales_cliente.rfc
       else
         #Si no está registrado el R.F.C del cliente, se registra asi de facil jaja
         rfc_receptor_f=params[:rfc_input]
-        cliente_id=@@venta.cliente.id
+        cliente_id=@venta.cliente.id
         @cliente=Cliente.find(cliente_id)
         @cliente.update(:rfc=>params[:rfc_input])
 
       end
       #El mismo show q  el rfc, si el sistema detecta que el cliente no está registrado con su nombre fiscal, le pedirá al usuario que lo ingrese.
-      if @@venta.cliente.datos_fiscales_cliente.nombreFiscal.present?
-        nombre_fiscal_receptor_f=@@venta.cliente.datos_fiscales_cliente.nombreFiscal
+      if @venta.cliente.datos_fiscales_cliente.nombreFiscal.present?
+        nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente.nombreFiscal
       else
         nombre_fiscal_receptor_f=params[:nombre_fiscal_receptor_f]
-        cliente_id=@@venta.cliente.id
+        cliente_id=@venta.cliente.id
         @cliente=Cliente.find(cliente_id)
         @cliente.update(:nombreFiscal=>nombre_fiscal_receptor_f)
 
@@ -247,7 +253,7 @@ class FacturasController < ApplicationController
         #Una condición más para comprobar que tenga impuesto sin importar de que tipo sea.
         importe_concepto = (c.precio_venta * c.cantidad).to_f #Incluye impuestos(si esq), descuentos(si esq)...
         if c.articulo.impuesto.present? #Impuestos a la inversa
-          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 16% => 0.160000 
+          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 16% => 0.160000
           #Se calcula el precio bruto de cada concepto
           base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
           importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f
@@ -340,8 +346,8 @@ class FacturasController < ApplicationController
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}
-      hash_info[:Telefono1Receptor]= @@venta.cliente.telefono1 if @@venta.cliente.telefono1
-      hash_info[:EmailReceptor]= @@venta.cliente.email if @@venta.cliente.email
+      hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
+      hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
 
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
@@ -392,11 +398,11 @@ class FacturasController < ApplicationController
 
         #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        txtVariable_nombCliente = @@venta.cliente.nombre_completo # =>nombreCliente
-        txtVariable_fechaVenta =  @@venta.fechaVenta # => fechaVenta
-        txtVariable_consecutivoVenta = @@venta.consecutivo # => númeroVenta
-        txtVariable_montoVenta = @@venta.montoVenta # => totalVenta
-        txtVariable_folioVenta = @@venta.folio # => folioVenta
+        txtVariable_nombCliente = @venta.cliente.nombre_completo # =>nombreCliente
+        txtVariable_fechaVenta =  @venta.fechaVenta # => fechaVenta
+        txtVariable_consecutivoVenta = @venta.consecutivo # => númeroVenta
+        txtVariable_montoVenta = @venta.montoVenta # => totalVenta
+        txtVariable_folioVenta = @venta.folio # => folioVenta
         txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
         #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
         mensaje = current_user.negocio.config_comprobante.msg_email
@@ -434,10 +440,10 @@ class FacturasController < ApplicationController
           current_user.sucursal.facturas<<@factura
 
           #Se factura a nombre del cliente que realizó la compra en el negocio.
-          cliente_id=@@venta.cliente.id
+          cliente_id=@venta.cliente.id
           Cliente.find(cliente_id).facturas << @factura
 
-          venta_id=@@venta.id
+          venta_id=@venta.id
           Venta.find(venta_id).factura = @factura #relación uno a uno
           end
 =end
@@ -464,9 +470,9 @@ class FacturasController < ApplicationController
             end
           end
 
-      end
-    end
-  end
+      end #fin de else que permiten facturar
+    end #Fin del méodo post
+  end #Fin del controlador
 
   #NOTAS DE CRÉDITO
   def nota_credito
