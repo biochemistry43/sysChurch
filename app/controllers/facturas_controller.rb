@@ -353,7 +353,6 @@ class FacturasController < ApplicationController
 
       bucket = storage.bucket "cfdis"
 
-
       #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
       #Se obtiene el xml timbrado
       xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
@@ -468,7 +467,7 @@ class FacturasController < ApplicationController
 
           @factura.folio_fiscal = folio_fiscal_xml
           @factura.ruta_storage =  ruta_storage
-=begin
+
           if @factura.save
           current_user.facturas<<@factura
           current_user.negocio.facturas<<@factura
@@ -481,7 +480,7 @@ class FacturasController < ApplicationController
           venta_id=@venta.id
           Venta.find(venta_id).factura = @factura #relación uno a uno
           end
-=end
+
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
@@ -1202,6 +1201,9 @@ class FacturasController < ApplicationController
   # GET /facturas/1.json
   def show
     @items  = @factura.venta.item_ventas
+    @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
+    @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
+
   end
 
   # GET /facturas/new
@@ -1328,9 +1330,12 @@ class FacturasController < ApplicationController
     #fin_mes
 
     #begin
-      #No usar rescue Exception => e. En su lugar, usar rescue => e o mejor aún, identificar la excepción que queremos capturar, como rescue ActiveRecord::RecordNotSaved.
-      @ventas_del_dia = current_user.negocio.ventas.where(fechaVenta: hoy )
-      #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
+    #No usar rescue Exception => e. En su lugar, usar rescue => e o mejor aún, identificar la excepción que queremos capturar, como rescue ActiveRecord::RecordNotSaved.
+    @ventas_del_dia = current_user.negocio.ventas.where(fechaVenta: hoy )
+    #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
+
+    unless @ventas_del_dia.empty?
+
       @ventas=[]
       @ventas_del_dia.each do |v|
         if v.factura.blank?
@@ -1627,7 +1632,10 @@ class FacturasController < ApplicationController
               #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
             end
           end
-
+      else
+          redirect_to :back
+          flash[:notice] = "No existe ninguna venta del día de hoy!"
+      end
       #puts folio
     #rescue => e
       #puts "FECHA: #{hoy}"

@@ -190,21 +190,21 @@
             <div class="panel panel-default col-md-6 col-sm-6 col-xs-12">
               <div class="panel-body">
                 <div class="col-md-12 col-sm-12 col-xs-12" id="errorRFC">
-                  <div class="col-md-4 col-sm-4 col-xs-4">
+                  <div class="col-md-4 col-sm-4 col-xs-3">
                     <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
                   </div>
                   <%if @rfc_emisor_present%>
-                    <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="col-md-5 col-sm-5 col-xs-12">
                       <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                     </div>
                   <%else%>
-                    <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="col-md-5 col-sm-5 col-xs-12">
                       <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Clave del Registro Federal del Contribuyente"}%>
                     </div>
                   <%end%>
-                  <div class="col-md-4 col-sm-4 col-xs-12">
+                  <div class="col-md-3 col-sm-3 col-xs-12">
                   <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true} do %>
-                    Editar cliente &nbsp; &ensp; <i class="fa fa-plus"> </i>
+                    Editar <i class="fa fa-pencil"> </i>
                   <% end %>
                   </div>
                 </div>

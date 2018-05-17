@@ -1,6 +1,24 @@
+
 <div class="right_col" role="main">
+
+  <script type="text/javascript" src="../jquery.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      setTimeout(function() {
+          $(".content").fadeOut(1500);
+      },10000);
+    });
+  </script>
+
   <div class="page-title">
+    <% flash.each do |key, value| %>
+      <div class="alert alert-danger alert-dismissable content">
+        <button type="button" class="close" data-dismiss="alert" >&times;</button>
+        <strong> </strong> <%=value%>
+      </div>
+    <% end %>
     <div class="title_left">
+
       <h1>Facturas de ventas</h1>
     </div>
   </div>
