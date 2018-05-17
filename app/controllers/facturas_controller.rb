@@ -25,11 +25,6 @@ class FacturasController < ApplicationController
     @@venta = @venta
     @consulta = true #determina si se realizó una consulta
     #EMISOR
-    @rfc_emisor_f= current_user.negocio.datos_fiscales_negocio.rfc #el rfc del emisor
-    @nombre_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.nombreFiscal
-
-    #AQUÍ CONDICIONES PARA QUE MUESTRE EL NOMBRE Y NO LA CLAVE DEL REGIMEN.
-    @regimen_fiscal_emisor_f=current_user.negocio.datos_fiscales_negocio.regimen_fiscal
     #La venta debe de ser del mismo negocio o mostrará que no hay ventas registradas con X folio de venta
     if @venta && current_user.negocio.id == @venta.negocio.id
       #blank lo contrario de presentar
@@ -69,6 +64,16 @@ class FacturasController < ApplicationController
       @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
       @nombre_fiscal_receptor_f=@venta.cliente.nombreFiscal
       @email_receptor = @venta.cliente.email
+
+      @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : " "
+      @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : " "
+      @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : " "
+      @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : " "
+      @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : " "
+      @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : " "
+      @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : " "
+      @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
+
 
       #@nombre_receptor_f=@venta.cliente.nombre_completo
       #@correo_electonico_f=@venta.cliente.enviar_al_correo

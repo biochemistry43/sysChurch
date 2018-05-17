@@ -157,71 +157,143 @@
                 </div>-->
               </div>
             </div>
-            <!--Panel para los datos del EMISOR -->
-            <div class="panel panel-default col-md-6 col-sm-6 col-xs-12">
-              <div class="panel-body">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :rfc_emisor,'RFC emisor', class:"control-label"%>
-                  </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= text_field_tag :rfc_emisor, nil,{class:'form-control text_field',value:@rfc_emisor_f, disabled:true }%>
-                  </div>
-                </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :nombre_fiscal_emisor_f,'Nombre fiscal', class:"control-label"%>
-                  </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= text_field_tag :@nombre_fiscal_emisor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_emisor_f, disabled:true }%>
-                  </div>
-                </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :regimen_fiscal_emisor_f,'Regimen fiscal', class:"control-label"%>
-                  </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= text_field_tag :regimen_fiscal_emisor_f, nil,{class:'form-control text_field',value: @regimen_fiscal_emisor_f, disabled:true }%>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <!--Panel para los datos de RECEPTOR-->
-            <div class="panel panel-default col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
               <div class="panel-body">
-                <div class="col-md-12 col-sm-12 col-xs-12" id="errorRFC">
-                  <div class="col-md-4 col-sm-4 col-xs-3">
-                    <%= label_tag :rfc_receptor,'RFC receptor', class:"control-label"%>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12" id="errorRFC">
+                  <div class="col-md-2 col-sm-2 col-xs-3">
+                    <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
                   </div>
                   <%if @rfc_emisor_present%>
-                    <div class="col-md-5 col-sm-5 col-xs-12">
+                    <div class="col-md-10 col-sm-10 col-xs-12">
                       <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                     </div>
                   <%else%>
-                    <div class="col-md-5 col-sm-5 col-xs-12">
-                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Clave del Registro Federal del Contribuyente"}%>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Ingrese el R.F.C."}%>
                     </div>
                   <%end%>
-                  <div class="col-md-3 col-sm-3 col-xs-12">
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-2 col-sm-2 col-xs-12">
+                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
+                  </div>
+                  <%if @nombre_fiscal_receptor_present%>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
+                    </div>
+                  <%else %>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal o razón social."}%>
+                    </div>
+                  <%end %>
+                </div>
+                <!--
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                  <div class="col-md-12 col-sm-12 col-xs-12">
                   <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true} do %>
                     Editar <i class="fa fa-pencil"> </i>
                   <% end %>
                   </div>
                 </div>
+              -->
+              </div>
+
+                <!--Se muestra la dirección del cliente -->
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre fiscal', class:"control-label"%>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :calle,'Calle:', class:"control-label"%>
+                    </div>
+
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :calle, nil,{class:'form-control text_field',value:@calle_receptor_f, disabled:true }%>
+                    </div>
                   </div>
-                  <%if @nombre_fiscal_receptor_present%>
-                    <div class="col-md-8 col-sm-8 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
-                    </div>
-                  <%else %>
-                    <div class="col-md-8 col-sm-8 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal"}%>
-                    </div>
-                  <%end %>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= label_tag :no_Interior,'No. Interior:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= number_field_tag("no_Interior", nil, {class: "form-control text_field", value:1})%>
+                      </div>
+
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= label_tag :no_Exteior,'No. Exterior:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= number_field_tag("no_Exterior", nil, {class: "form-control text_field", value:1})%>
+                      </div>
+                  </div>
                 </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :colonia,'Municipio:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :colonia, nil,{class:'form-control text_field',value:@colonia_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :estado,'Estado:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :estado, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :municipio,'Municipio:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :municipio, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :estado,'Estado:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :estado, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :referencia,'Referencia:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :referencia, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :cp,'C.P.:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :cp, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="col-md-4 col-sm-4 col-xs-12">
                     <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
