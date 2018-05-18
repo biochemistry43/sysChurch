@@ -173,10 +173,11 @@
                       <% end %>
 
                     </div>
+
                     <div class="col-md-6 col-sm-6 col-xs-12">
-                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
-                        Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
-                      <% end %>
+                      <button class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="btn_datos_manualmente" type="button">
+                         Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      </button>
                     </div>
 
                 </div>
@@ -207,23 +208,14 @@
                   </div>
                   <%if @nombre_fiscal_receptor_present%>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
+                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
                     </div>
                   <%else %>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_f, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal o razón social."}%>
+                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal o razón social."}%>
                     </div>
                   <%end %>
                 </div>
-                <!--
-                <div class="col-md-2 col-sm-2 col-xs-12">
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                  <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true} do %>
-                    Editar <i class="fa fa-pencil"> </i>
-                  <% end %>
-                  </div>
-                </div>
-              -->
               </div>
 
               <div class="row" style="text-align:center;">
@@ -238,7 +230,7 @@
                     </div>
 
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :calle, nil,{class:'form-control text_field',value:@calle_receptor_f, disabled:true }%>
+                      <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field',value:@calle_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
@@ -247,14 +239,14 @@
                         <%= label_tag :no_Interior,'No. Interior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Interior", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
+                        <%= number_field_tag("no_Interior_vf", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
                       </div>
 
                       <div class="col-md-3 col-sm-3 col-xs-12">
                         <%= label_tag :no_Exteior,'No. Exterior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Exterior", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
+                        <%= number_field_tag("no_Exterior_vf", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
                       </div>
                   </div>
                 </div>
@@ -265,7 +257,7 @@
                       <%= label_tag :colonia,'Colonia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :colonia, nil,{class:'form-control text_field',value: @colonia_receptor_f, disabled:true }%>
+                      <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
@@ -274,7 +266,7 @@
                       <%= label_tag :localidad,'Localidad:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :localidad, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
+                      <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
                     </div>
                   </div>
                 </div>
@@ -286,7 +278,7 @@
                       <%= label_tag :municipio,'Municipio:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :municipio, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                      <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
@@ -295,7 +287,7 @@
                       <%= label_tag :estado,'Estado:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :estado, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                      <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
                     </div>
                   </div>
                 </div>
@@ -306,7 +298,7 @@
                       <%= label_tag :referencia,'Referencia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :referencia, nil,{class:'form-control text_field',value:@referencia_receptor_f, disabled:true }%>
+                      <%= text_field_tag :referencia_receptor_vf, nil,{class:'form-control text_field',value:@referencia_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
@@ -315,7 +307,7 @@
                       <%= label_tag :cp,'C.P.:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :cp, nil,{class:'form-control text_field',value:@cp_receptor_f, disabled:true }%>
+                      <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, disabled:true }%>
                     </div>
                   </div>
                 </div>
@@ -459,5 +451,24 @@
   <!-- javascript_include_tag "cancelaciones" -->
       <%= render 'modalClientes'%>
 </div>
+
+<script type="text/javascript">
+jQuery("#btn_datos_manualmente").click(function () {
+  //Datos generales
+  jQuery("#rfc_input").removeAttr("disabled").focus().val("");
+  jQuery("#nombre_fiscal_receptor_vf").removeAttr("disabled").val("");
+  //Dirección fiscal
+  jQuery("#calle_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#numExterior_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#numInterior_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#colonia_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#localidad_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#municipio_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#estado_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#referencia_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#cp_receptor_vf").removeAttr("disabled").val("");
+});
+</script>
+
 <%= stylesheet_link_tag "facturas" %>
 <%= javascript_include_tag "validador_RFC_Obligatorio" %>
