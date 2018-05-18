@@ -159,8 +159,32 @@
             </div>
 
             <!--Panel para los datos de RECEPTOR-->
+            <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
+              <h3 class="panel-title">DATOS DEL RECEPTOR.</h3>
+            </div>
             <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
               <div class="panel-body">
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
+                        Editar cliente original. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      <% end %>
+
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
+                        Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      <% end %>
+                    </div>
+
+                </div>
+
+                <div class="row" style="text-align:center;">
+                  <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Datos generales:</h2>
+                </div>
+
                 <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="col-md-6 col-sm-6 col-xs-12" id="errorRFC">
                   <div class="col-md-2 col-sm-2 col-xs-3">
@@ -202,6 +226,9 @@
               -->
               </div>
 
+              <div class="row" style="text-align:center;">
+                <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección fiscal del cliente:</h2>
+              </div>
                 <!--Se muestra la dirección del cliente -->
                 <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -220,14 +247,14 @@
                         <%= label_tag :no_Interior,'No. Interior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Interior", nil, {class: "form-control text_field", value:1})%>
+                        <%= number_field_tag("no_Interior", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
                       </div>
 
                       <div class="col-md-3 col-sm-3 col-xs-12">
                         <%= label_tag :no_Exteior,'No. Exterior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Exterior", nil, {class: "form-control text_field", value:1})%>
+                        <%= number_field_tag("no_Exterior", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
                       </div>
                   </div>
                 </div>
@@ -235,19 +262,19 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="col-md-2 col-sm-2 col-xs-12">
-                      <%= label_tag :colonia,'Municipio:', class:"control-label"%>
+                      <%= label_tag :colonia,'Colonia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :colonia, nil,{class:'form-control text_field',value:@colonia_receptor_f, disabled:true }%>
+                      <%= text_field_tag :colonia, nil,{class:'form-control text_field',value: @colonia_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
                   <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="col-md-2 col-sm-2 col-xs-12">
-                      <%= label_tag :estado,'Estado:', class:"control-label"%>
+                      <%= label_tag :localidad,'Localidad:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :estado, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
+                      <%= text_field_tag :localidad, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
                     </div>
                   </div>
                 </div>
@@ -279,7 +306,7 @@
                       <%= label_tag :referencia,'Referencia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :referencia, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                      <%= text_field_tag :referencia, nil,{class:'form-control text_field',value:@referencia_receptor_f, disabled:true }%>
                     </div>
                   </div>
 
@@ -288,32 +315,45 @@
                       <%= label_tag :cp,'C.P.:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :cp, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                      <%= text_field_tag :cp, nil,{class:'form-control text_field',value:@cp_receptor_f, disabled:true }%>
                     </div>
                   </div>
                 </div>
 
 
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
+
+              </div>
+              <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
+                <h3 class="panel-title">USO DE CFDI.</h3>
+              </div>
+              <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
+                <div class="panel-body">
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= collection_select(nil, :uso_cfdi_id, @uso_cfdi_receptor_f, :id, :descripcion, {:prompt => 'Elija el uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                    </div>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= collection_select(nil, :uso_cfdi_id, @uso_cfdi_receptor_f, :id, :descripcion, {:prompt => 'Elija el uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
-                  </div>
+
                 </div>
               </div>
             </div>
 
+
+
+
+
             <table  class="table table-striped responsive-utilities jambo_table data-table">
               <thead>
                 <tr >
-                  <th >Clave </th>
-                  <th >Cantidad </th>
-                  <th>Unidad</th>
-                  <th >Descripción </th>
-                  <th >Precio</th>
-                  <th >Importe </th>
+                  <th >CLAVE </th>
+                  <th >CANTIDAD </th>
+                  <th >UNIDAD</th>
+                  <th >DESCRIPCIÓN </th>
+                  <th >PRECIO</th>
+                  <th >IMPORTE </th>
                 </tr>
               </thead>
               <tbody>

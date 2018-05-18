@@ -72,6 +72,7 @@ class FacturasController < ApplicationController
       @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : " "
       @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : " "
       @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : " "
+      #@referencia_referencia_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
       @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
 
 
@@ -289,8 +290,6 @@ class FacturasController < ApplicationController
                         Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
                         Descripcion: c.articulo.nombre
                         }
-        #Iba por mal camino queriendo sumar... o ammm bueno viendolo de otra forma... mejor se restan el porcentaje que corresponde al impuesto, si esque el concepto tiene impuestos.
-        #Una condición más para comprobar que tenga impuesto sin importar de que tipo sea.
         importe_concepto = (c.precio_venta * c.cantidad).to_f #Incluye impuestos(si esq), descuentos(si esq)...
         if c.articulo.impuesto.present? #Impuestos a la inversa
           tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 16% => 0.160000
@@ -387,7 +386,6 @@ class FacturasController < ApplicationController
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}
       hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
       hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
-
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
