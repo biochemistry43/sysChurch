@@ -1,0 +1,28 @@
+// Add the dialog title
+
+<%if @factura.estado_factura.eql?("Activa")%>
+  $('#modal-facturas-title').parent().css("background-color", "#92c33c");
+  $('#modal-facturas-title').parent().css("color", "white");
+  $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");
+<%elsif @factura.estado_factura.eql?("Abierta") %>
+  $('#modal-facturas-title').parent().css("background-color","#ffd633");
+  $('#modal-facturas-title').parent().css("color", "white");
+  $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");
+<%elsif @factura.estado_factura.eql?("Anulada") %>
+  $('#modal-facturas-title').parent().css("background-color", "#ff1a1a");
+  $('#modal-facturas-title').parent().css("color", "white");
+  $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");
+<%end%>
+
+
+
+// Render the new form
+$('.modal-body-facturas').html('<%= j render("detallesFactura") %>');
+
+// Show the dynamic dialog
+$('#modalFacturas').modal("show");
+
+// Set focus to the first element
+$('#modalFacturas').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

@@ -14,6 +14,8 @@
 //= require 'jspdf'
 //= require bootstrap-sprockets
 //= require jquery_ujs
+//= require summernote
+//= require summernote/lang/summernote-es-ES
 //= require jQuery.print
 //= require js/notify/pnotify.core
 //= require js/notify/pnotify.buttons
@@ -54,7 +56,7 @@ $(document).ready(function() {
 	/*$(".data-table").contentChange(function(){
 	   $RIGHT_COL.css('min-height', $(window).height());
 
-        
+
 	});*/
 
 
@@ -84,4 +86,3 @@ jQuery.fn.contentChange = function(callback){
       }
     }
   },500);
-

@@ -15,19 +15,19 @@
       var apiFile = (window.File && window.FileReader);
       if(apiFile == false){
         alert("Tu navegador no soporta la carga de imágenes o archivos. Actualiza tu navegador");
-        return; 
+        return;
       }
       document.getElementById("negocio_logo").addEventListener('change', seleccionarArchivo, false);
-          
+
       function seleccionarArchivo(evt){
         var archivo = evt.target.files[0];
         if(archivo.type.match("image.*")==false){
           var msg = "Este archivo no es un archivo de imagen";
           document.getElementById('msgFoto').innerHTML = msg;
           return;
-        }  
-          
-            
+        }
+
+
         //Creamos un objeto FileReader
         var datos = new FileReader();
         //Leemos al archivo
@@ -39,10 +39,9 @@
           $("#logo_negocio").attr('src', resultado);
         }
       }
-      
+
     }
   </script>
-
 
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="text-center">
@@ -144,7 +143,7 @@
         <%= f.email_field :email, class: "form-control"%>
       </div>
     </div>
-        
+
     <div class="form-group">
       <label class="col-md-3 control-label"></label>
       <div class="col-md-8">
@@ -157,7 +156,7 @@
   </div>
 <%end%>
 
-<%= form_for @datosFiscales, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |d| %>
+<%= form_for @datosFiscales, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}   do |d| %>
   <% if @datosFiscales.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@datosFiscales.errors.count, "error") %> prohibited this negocio from being saved:</h2>
@@ -168,10 +167,39 @@
       </ul>
     </div>
   <% end %>
-            
-            
+
   <div class="col-md-8 col-md-offset-4 col-sm-6 col-xs-12 personal-info">
     <h3>Información Fiscal</h3>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-4">
+      <div class="text-center">
+        <!--image_tag(@negocio.logo_url, class: "img img-thumbnail", id: "logo_negocio") if @negocio.logo.present? -->
+        <h6>Certificado (.cer)</h6>
+           <!--<input type="file" class="text-center center-block well well-sm">-->
+        <%= d.file_field :cer, class: "text-center center-block well well-sm", id: "certificado", :onChange=>"validarcertificado()" %>
+      </div>
+      <div class="text-center">
+        <!--image_tag(@negocio.logo_url, class: "img img-thumbnail", id: "logo_negocio") if @negocio.logo.present? -->
+        <h6>Llave (.key)</h6>
+           <!--<input type="file" class="text-center center-block well well-sm">-->
+        <%= d.file_field :key, class: "text-center center-block well well-sm", id: "llave", :onChange=>"validarllave()" %>
+      </div>
+      <div class="form-group">
+        <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+        <%= d.label :rfc, "Contraseña: ", :class=>'col-lg-4 control-label' %>
+        <div class="col-lg-8">
+          <!-- <input class="form-control" value="Bishop" type="text"> -->
+          <!-- d.text_field :rfc, class: "form-control"-->
+          <%=password_field(:user, :password, onchange: "if ($('#user_password').val().length > 10) { alert('Your password needs to be shorter!'); }",class: "form-control") %>
+        <!--input type="password" id="user_password" name="user[password]" onchange="if ($('#user_password').val().length > 30) { alert('Your password needs to be shorter!'); }"/-->
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+
+
     <div class="form-group">
       <%= d.label :nombreFiscal, "Nombre Fiscal: ", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Primer nombre:</label> -->
@@ -180,12 +208,49 @@
         <%= d.text_field :nombreFiscal, class: "form-control"%>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="errorRFC">
       <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
       <%= d.label :rfc, "RFC:", :class=>'col-lg-3 control-label' %>
       <div class="col-lg-8">
         <!-- <input class="form-control" value="Bishop" type="text"> -->
-        <%= d.text_field :rfc, class: "form-control"%>
+        <%= d.text_field :rfc, class: "form-control", id: "rfc_input"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= d.label :regimen_fiscal, "Regimen Fiscal:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <!--En caso de personas MORALES -->
+         <%= d.select(:regimen_fiscal,
+           [['General de Ley Personas Morales', '601'],
+           ['Personas Morales con Fines no Lucrativos', '603'],
+           ['Consolidación', '609'],
+           ['Residentes en el Extranjero sin Establecimiento Permanente en México', '610'],
+           ['Sociedades Cooperativas de Producción que optan por diferir sus ingresos', '620'],
+           ['Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras', '622'],
+           ['Opcional para Grupos de Sociedades', '623'],
+           ['Coordinados', '624'],
+           ['Hidrocarburos', '628'],
+           ['Régimen de Enajenación o Adquisición de Bienes', '607'],],
+           {}, { :class => 'form-control' }) %>
+
+           <!--Para personas FÍSICAS -->
+           <!-- d.select(:regimen_fiscal,
+             [['Sueldos y Salarios e Ingresos Asimilados a Salarios', '605'],
+             ['Arrendamiento', '606'],
+             ['Demás ingresos', '608'],
+             ['Residentes en el Extranjero sin Establecimiento Permanente en México', '610'],
+             ['Ingresos por Dividendos (socios y accionistas)', '611'],
+             ['Personas Físicas con Actividades Empresariales y Profesionales', '612'],
+             ['Ingresos por intereses', '614'],
+             ['Sin obligaciones fiscales', '616'],
+             ['Incorporación Fiscal', '621'],
+             ['Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras', '622'],
+             ['De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales', '629'],
+             ['Enajenación de acciones en bolsa de valores', '630'],
+             ['Régimen de los ingresos por obtención de premios', '615'],],
+             {}, { :class => 'form-control'}) -->
       </div>
     </div>
     <div class="form-group">
@@ -260,11 +325,11 @@
         <%= d.email_field :email, class: "form-control"%>
       </div>
     </div>
-      
+
     <div class="form-group">
       <label class="col-md-3 control-label"></label>
       <div class="col-md-8">
-        <%= d.submit "Guardar Cambios", :class=>"btn btn-primary"%>
+        <%= d.submit "Guardar Cambios", :class=>"btn btn-primary", :id=>"RFC_Opcional"%>
         <!-- <input class="btn btn-primary" value="Guardar Cambios" type="button"> -->
         <span></span>
         <input class="btn btn-danger" value="Cancelar" type="reset">
@@ -272,5 +337,5 @@
     </div>
   </div>
 <%end%>
-
-
+<%= javascript_include_tag "negocios" %>
+<%= javascript_include_tag "validador_RFC" %>

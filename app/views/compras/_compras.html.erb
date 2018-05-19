@@ -1,7 +1,7 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Compras realizadas 
+      <h1>Compras realizadas
           <% if can? :create, Negocio%>
           <%= current_user.negocio.nombre.capitalize %>
           <% else %>
@@ -19,13 +19,13 @@
     <div class="col-md-12" style="color: gray;">
         Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @compras.size %></span>  compras con este criterio.
     </div>
-    
+
   </div>
 
   <!-- todo: verificar en el controlador la variable consulta -->
   <!-- Si se trata de una consulta, mostrar este contenido -->
   <% if @consulta %>
-    
+
     <div class="row">
       <div class="col-md-12" style="color: gray;">
 
@@ -39,8 +39,8 @@
         <% if @porFactura %>
           Compras que coinciden con la factura o ticket: <span style="color:#5B7ECC; font-size: 16px;"> <%= @factura %></span>
         <% end %>
-        
-        
+
+
         <!-- todo: Verificar que se encuentre la variable avanzada -->
         <!-- Si se trata de una consulta avanzada, entonces debe mostrar estos criterios de consulta -->
         <% if @avanzada %>
@@ -78,20 +78,20 @@
             <div class="col-md-12">
             <!-- todo: Programar los datos que devolverá la variable sucursal -->
               <% if @sucursal %>
-                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>  
+                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>
               <% else %>
                 Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
               <% end %>
             </div>
           <% end %>
-          
+
 
         <% end %> <!-- Fin de criterios mostrados cuando se hace una consulta avanzada -->
 
       </div>
-      
+
     </div>
-      
+
 
   <% end %> <!-- Termina el div que muestra los criterios de búsqueda cuando se realiza una consulta -->
 
@@ -100,7 +100,7 @@
   <div class="row">
     <!-- Si el usuario puede ver las compras, Este botón le permitirá ver todas las compras de su sucursal o todas las compras del negocio dependiendo sus privilegios.
     Este botón sirve de alguna manera para deshacer los filtros que se hayan realizado -->
-    <% if can? :read, Compra %> 
+    <% if can? :read, Compra %>
       <%= link_to compras_path, html_options = {class: "btn btn-warning"} do %>
       <i class="fa fa-shopping-cart"> Mostrar todas las compras </i>
       <% end %>
@@ -108,9 +108,9 @@
 
     <!-- Si el usuario tiene privilegios de administrador, Tendrá disponible este botón para que en lugar de ver las compras
     de todas las sucursales, vea únicamente las compras de su propia sucursal -->
-    <% if can? :create, Negocio %> 
+    <% if can? :create, Negocio %>
       <!-- Todo: definir en el controlador, la funcion solo_sucursal -->
-      <%= link_to url = {controller:"compras", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo compras de mi sucursal", method: :post} do %>  
+      <%= link_to url = {controller:"compras", action:"solo_sucursal"}, html_options =  {class: "btn btn-primary", title: "Sólo compras de mi sucursal", method: :post} do %>
         <span class="fa fa-shopping-cart" style=""> Sólo compras de mi sucursal</span>
       <% end %>
     <% end %>
@@ -124,11 +124,11 @@
 
   <hr>
 
-  <button id="filtros_por_factura" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+  <button id="filtros_por_factura" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtro por factura o ticket <i class="fa fa-sort-down"></i>
   </button>
    <!-- Este buscador sencillo, permite al usuario buscar compras por número de ticket o factura -->
-  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_factura"> 
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_factura">
     <!-- Todo: Definir en el controlador la funcion consulta_compras -->
     <%= form_tag({ controller: "compras", action: "consulta_compra_factura" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
@@ -136,10 +136,10 @@
           Búsqueda por ticket o factura:
         </div>
       </div>
-      
+
       <div class="col-md-1 col-sm-1 col-xs-1">
         <div style="text-align: right; color: black;">
-          Factura No.: 
+          Factura No.:
         </div>
       </div>
 
@@ -160,12 +160,12 @@
   </div>
   <!-- Termina buscador por rango numero de ticket o factura -->
 
-  <button id="filtros_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+  <button id="filtros_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtros por fechas <i class="fa fa-sort-down"></i>
   </button>
 
    <!-- Este buscador sencillo, permite al usuario buscar compras realizadas en determinado rango de fechas -->
-  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha"> 
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
     <!-- Todo: Definir en el controlador la funcion consulta_compras -->
     <%= form_tag({ controller: "compras", action: "consulta_compras" }, {:class=> "form-horizontal", :method => :post}) do %>
       <div class="col-md-2 col-sm-6 col-xs-12">
@@ -173,10 +173,10 @@
           Búsqueda por fechas:
         </div>
       </div>
-      
+
       <div class="col-md-1 col-sm-1 col-xs-1">
         <div style="text-align: right; color: black;">
-          Desde: 
+          Desde:
         </div>
       </div>
 
@@ -191,11 +191,11 @@
           Hasta:
         </div>
       </div>
-        
+
       <div class="col-md-2 col-sm-6 col-xs-12">
         <div class="text-center">
           <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
-            
+
         </div>
       </div>
 
@@ -209,7 +209,7 @@
   <!-- Termina buscador por rango de fechas -->
 
   <!-- Este botón despliega el div con las opciones para filtros avanzados -->
-  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;"> 
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
     Filtros Avanzados <i class="fa fa-sort-down"></i>
   </button>
 
@@ -278,13 +278,13 @@
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>  
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
           </div>
         </div>
       </div>
-      
+
       <% if can? :create, Negocio %>
-        
+
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
@@ -302,7 +302,7 @@
 
       <div class="item form-group">
         <div class="col-md-3 col-sm-6 col-xs-12">
-          
+
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-left">
@@ -312,9 +312,9 @@
       </div>
     <% end %>
   </div> <!-- Termina zona de selección de filtros avanzados -->
-  
+
   <div class="col-md-12 col-sm-12 col-xs-12">
-    
+
 
     <div class="row">
       <div>
@@ -341,37 +341,37 @@
       				  <td style="text-align: center;"><%= compra.folio_compra %> / <%= compra.ticket_compra %></td>
       				  <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
       				  <td style="text-align: center;"><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
-               
+
       				  <td style="text-align: center;"><%= compra.monto_compra %></td>
                  <td style="text-align: center;">
                   <% if compra.status.eql?("Activa") %>
                     <span class="btn btn-success"> Activa </span>
                   <% elsif compra.status.eql?("Cancelada") %>
                     <span class="btn btn-danger"> Cancelada </span>
-                  <% end %>    
+                  <% end %>
                 </td>
       				  <td style="text-align: center;"><%= compra.user.sucursal.nombre %></td>
-                <td style="text-align: center;"> 
-                  <% if can? :read, compra %> 
+                <td style="text-align: center;">
+                  <% if can? :read, compra %>
                     <%= link_to compra_path(compra), html_options = {class: "btn btn-info", remote: true , title: 'Detalles compra', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                     <i class="fa fa-info-circle"></i>
                     <% end %>
                   <% end %>
-                  
+
                   <% unless  compra.status.eql?("Cancelada")%>
-                    
+
                     <% if can? :update, compra %>
                       <% @historial = compra.historial_ediciones_compras.size %>
-                   
+
                       <% if @historial <= 3 && compra.status.eql?("Activa")%>
                         <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: compra.status.eql?("Activa") ? 'Editar compra' : '', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
                           <i class="fa fa-pencil"></i>
                         <% end %>
                       <% else %>
                         <button class="btn btn-warning" title="Sólo se permiten tres ediciones" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>
-                        
+
                       <% end %>
-                      
+
                     <% end %>
                   <% end %>
 
@@ -411,14 +411,14 @@
                 <td style="text-align: center;"><%= compra.folio_compra %> / <%= compra.ticket_compra %></td>
                 <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
                 <td style="text-align: center;"><%= compra.user.perfil ? compra.user.perfil.nombre : compra.user.email %></td>
-               
+
                 <td style="text-align: center;"><%= compra.monto_compra %></td>
                  <td style="text-align: center;">
                   <% if compra.status.eql?("Activa") %>
                     <span class="btn btn-success"> Activa </span>
                   <% elsif compra.status.eql?("Cancelada") %>
                     <span class="btn btn-danger"> Cancelada </span>
-                  <% end %>    
+                  <% end %>
                 </td>
                 <td style="text-align: center;"><%= compra.user.sucursal.nombre %></td>
               </tr>
@@ -426,12 +426,12 @@
           </tbody>
         </table>
     </div>
-    
+
   </div>
   <%= render ("modalCompras") %>
   <script>
     $(document).ready(function(){
-  
+
       $('.data-table').DataTable({
         responsive: true,
         "language":{
@@ -452,7 +452,7 @@
     });
 
     function fnExcelReport() {
-        
+
       var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
       tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
 
@@ -466,10 +466,10 @@
       tab_text = tab_text + '</table></body></html>';
 
       var data_type = 'data:application/vnd.ms-excel';
-        
+
       var ua = window.navigator.userAgent;
       var msie = ua.indexOf("MSIE ");
-        
+
       if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
           if (window.navigator.msSaveBlob) {
               var blob = new Blob([tab_text], {

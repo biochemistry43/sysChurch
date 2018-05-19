@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Clave:</strong>
+  <%= @clave_prod_serv.clave %>
+</p>
+
+<p>
+  <strong>Nombre:</strong>
+  <%= @clave_prod_serv.nombre %>
+</p>
+
+<%= link_to 'Edit', edit_clave_prod_serv_path(@clave_prod_serv) %> |
+<%= link_to 'Back', clave_prod_servs_path %>

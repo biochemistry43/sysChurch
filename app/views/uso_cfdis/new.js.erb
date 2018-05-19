@@ -1,0 +1,13 @@
+// Add the dialog title
+$('#modal-usos-title').html("<i class='glyphicon glyphicon-plus'></i> Crear nuevo uso para el CDFI");
+
+// Render the new form
+$('.modal-body-uso-cfdis').html('<%= j render("form") %>');
+
+// Show the dynamic dialog
+$('#modalUsoCFDIs').modal("show");
+
+// Set focus to the first element
+$('#modalUsoCFDIs').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

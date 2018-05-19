@@ -1,0 +1,18 @@
+<tr id="metodo_pago_<%= metodo_pago.id%>" class="rowsearch">
+  <td style="text-align: center;"><%= metodo_pago.clave %></td>
+  <td style="text-align: center;"><%= metodo_pago.descripcion %></td>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :create, metodo_pago %>
+      <%= link_to 'Editar', edit_metodo_pago_path(metodo_pago), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+    <% end %>
+  </td>
+
+  <td style="text-align: center;">
+    <% if can? :destroy, metodo_pago %>
+      <%= link_to 'Borrar', metodo_pago, remote: true, method: :delete, data: { confirm: "¿Está seguro que desea borrar: #{metodo_pago.descripcion}?"}, class: "btn btn-danger btn-xs" %><i class="fa fa-trash-o">
+    <% end %>
+  </td>
+
+</tr>

@@ -1,8 +1,33 @@
 source 'https://rubygems.org'
 ruby "2.2.2"
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.2'
+
+gem 'nokogiri', '~> 1.6', '>= 1.6.7.1'
+gem 'savon'
+#Mejor se colocó dentro del lib para editarla
+#gem 'timbradocfdi'
+
+#Para convertir un archivo html a pdf
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
+#Gema que sirve para describir un número en palabras
+gem "number_to_words"
+#Para formar el CBB(Código de Barras Bidimenciona)
+gem 'rqrcode_png'
+
+#Para guardar los CFDIs en la nube
+gem 'google-cloud-storage'
+#gem 'google-cloud'
+
+#Para enviar los documentos como archivos adjuntos por gmail
+#gem 'mail'
+
+gem 'gmail', '~> 0.6.0'
+
+#Editor de texto basado en bootstrap
+gem 'summernote-rails'
 
 # Gemas que permiten subir imágenes al proyecto
 gem 'carrierwave'
@@ -79,10 +104,9 @@ end
 
 group :production do
    # Use postgresql as the database for Active Record in production
-   gem 'pg'
+   gem 'pg' #se debe de instalar la dependencia faltante con: sudo apt-get install libpq-dev
 end
 
-gem 'rails_12factor', group: :production  
+gem 'rails_12factor', group: :production
 
-gem 'unicorn'  
-
+gem 'unicorn'

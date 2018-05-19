@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170718030425) do
+ActiveRecord::Schema.define(version: 20180427042346) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -31,7 +31,14 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.integer  "presentacion_producto_id"
     t.string   "suc_elegida"
     t.string   "tipo"
+    t.integer  "unidad_medida_id"
+    t.integer  "clave_prod_serv_id"
+    t.integer  "impuesto_id"
   end
+
+  add_index "articulos", ["clave_prod_serv_id"], name: "index_articulos_on_clave_prod_serv_id"
+  add_index "articulos", ["impuesto_id"], name: "index_articulos_on_impuesto_id"
+  add_index "articulos", ["unidad_medida_id"], name: "index_articulos_on_unidad_medida_id"
 
   create_table "bancos", force: :cascade do |t|
     t.string   "tipoCuenta"
@@ -126,6 +133,16 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.integer  "negocio_id"
   end
 
+  create_table "clave_prod_servs", force: :cascade do |t|
+    t.integer  "clave"
+    t.string   "nombre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "negocio_id"
+  end
+
+  add_index "clave_prod_servs", ["negocio_id"], name: "index_clave_prod_servs_on_negocio_id"
+
   create_table "clientes", force: :cascade do |t|
     t.string   "nombre"
     t.string   "direccionCalle"
@@ -146,6 +163,8 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.string   "ape_pat"
     t.string   "ape_mat"
     t.date     "fecha_nac"
+    t.string   "nombreFiscal"
+    t.string   "rfc"
   end
 
   create_table "compra_articulos_devueltos", force: :cascade do |t|
@@ -195,6 +214,21 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.string   "observaciones"
   end
 
+  create_table "config_comprobantes", force: :cascade do |t|
+    t.string   "asunto_email"
+    t.string   "msg_email"
+    t.string   "tipo_fuente"
+    t.string   "tam_fuente"
+    t.string   "color_fondo"
+    t.string   "color_titulos"
+    t.string   "color_banda"
+    t.integer  "negocio_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "config_comprobantes", ["negocio_id"], name: "index_config_comprobantes_on_negocio_id"
+
   create_table "datos_fiscales_clientes", force: :cascade do |t|
     t.string   "nombreFiscal"
     t.string   "rfc"
@@ -210,14 +244,15 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
+    t.string   "localidad"
   end
 
   create_table "datos_fiscales_negocios", force: :cascade do |t|
     t.string   "nombreFiscal"
     t.string   "rfc"
     t.integer  "negocio_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.string   "calle"
     t.string   "numExterior"
     t.string   "numInterior"
@@ -227,6 +262,10 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
+    t.string   "regimen_fiscal"
+    t.string   "path_cer"
+    t.string   "path_key"
+    t.string   "password"
   end
 
   create_table "datos_fiscales_sucursals", force: :cascade do |t|
@@ -270,6 +309,67 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  create_table "factura_recurrente_articulos", force: :cascade do |t|
+    t.integer  "factura_recurrente_id"
+    t.integer  "articulo_id"
+    t.decimal  "cantidad"
+    t.decimal  "precio"
+    t.decimal  "monto"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "factura_recurrente_articulos", ["articulo_id"], name: "index_factura_recurrente_articulos_on_articulo_id"
+  add_index "factura_recurrente_articulos", ["factura_recurrente_id"], name: "index_factura_recurrente_articulos_on_factura_recurrente_id"
+
+  create_table "factura_recurrentes", force: :cascade do |t|
+    t.string   "folio"
+    t.integer  "user_id"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "cliente_id"
+    t.integer  "forma_pago_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.date     "fecha_inicio"
+    t.integer  "uso_cfdi_id"
+    t.integer  "frecuencia_num"
+    t.string   "frecuencia_tiempo"
+    t.string   "duracion"
+    t.decimal  "total"
+  end
+
+  add_index "factura_recurrentes", ["cliente_id"], name: "index_factura_recurrentes_on_cliente_id"
+  add_index "factura_recurrentes", ["forma_pago_id"], name: "index_factura_recurrentes_on_forma_pago_id"
+  add_index "factura_recurrentes", ["negocio_id"], name: "index_factura_recurrentes_on_negocio_id"
+  add_index "factura_recurrentes", ["sucursal_id"], name: "index_factura_recurrentes_on_sucursal_id"
+  add_index "factura_recurrentes", ["user_id"], name: "index_factura_recurrentes_on_user_id"
+  add_index "factura_recurrentes", ["uso_cfdi_id"], name: "index_factura_recurrentes_on_uso_cfdi_id"
+
+  create_table "facturas", force: :cascade do |t|
+    t.string   "folio"
+    t.date     "fecha_expedicion"
+    t.string   "estado_factura"
+    t.integer  "venta_id"
+    t.integer  "user_id"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "cliente_id"
+    t.integer  "forma_pago_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.string   "folio_fiscal"
+    t.integer  "consecutivo"
+    t.string   "ruta_storage"
+  end
+
+  add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
+  add_index "facturas", ["forma_pago_id"], name: "index_facturas_on_forma_pago_id"
+  add_index "facturas", ["negocio_id"], name: "index_facturas_on_negocio_id"
+  add_index "facturas", ["sucursal_id"], name: "index_facturas_on_sucursal_id"
+  add_index "facturas", ["user_id"], name: "index_facturas_on_user_id"
+  add_index "facturas", ["venta_id"], name: "index_facturas_on_venta_id"
 
   create_table "forma_pagos", force: :cascade do |t|
     t.string   "nombre"
@@ -331,6 +431,18 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.text     "razon_edicion"
   end
 
+  create_table "impuestos", force: :cascade do |t|
+    t.string   "nombre"
+    t.string   "tipo"
+    t.decimal  "porcentaje"
+    t.text     "descripcion"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "negocio_id"
+  end
+
+  add_index "impuestos", ["negocio_id"], name: "index_impuestos_on_negocio_id"
+
   create_table "inventario", force: :cascade do |t|
     t.integer  "cantidad"
     t.string   "unidad"
@@ -355,6 +467,13 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "negocio_id"
+  end
+
+  create_table "metodo_pagos", force: :cascade do |t|
+    t.string   "clave"
+    t.string   "descripcion"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "movimiento_caja_sucursals", force: :cascade do |t|
@@ -388,6 +507,24 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.string   "estado"
     t.string   "email"
   end
+
+  create_table "nota_creditos", force: :cascade do |t|
+    t.string   "folio"
+    t.date     "fecha_expedicion"
+    t.decimal  "monto_devolucion"
+    t.string   "motivo"
+    t.integer  "user_id"
+    t.integer  "cliente_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "nota_creditos", ["cliente_id"], name: "index_nota_creditos_on_cliente_id"
+  add_index "nota_creditos", ["negocio_id"], name: "index_nota_creditos_on_negocio_id"
+  add_index "nota_creditos", ["sucursal_id"], name: "index_nota_creditos_on_sucursal_id"
+  add_index "nota_creditos", ["user_id"], name: "index_nota_creditos_on_user_id"
 
   create_table "pago_devolucions", force: :cascade do |t|
     t.decimal  "monto"
@@ -532,6 +669,18 @@ ActiveRecord::Schema.define(version: 20170718030425) do
     t.datetime "updated_at",      null: false
   end
 
+  create_table "unidad_medidas", force: :cascade do |t|
+    t.string   "clave"
+    t.string   "nombre"
+    t.text     "descripcion"
+    t.string   "simbolo"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "negocio_id"
+  end
+
+  add_index "unidad_medidas", ["negocio_id"], name: "index_unidad_medidas_on_negocio_id"
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "",       null: false
     t.string   "encrypted_password",     default: "",       null: false
@@ -552,6 +701,16 @@ ActiveRecord::Schema.define(version: 20170718030425) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+
+  create_table "uso_cfdis", force: :cascade do |t|
+    t.string   "clave"
+    t.text     "descripcion"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "uso_cfdi_id"
+  end
+
+  add_index "uso_cfdis", ["uso_cfdi_id"], name: "index_uso_cfdis_on_uso_cfdi_id"
 
   create_table "usuarios", force: :cascade do |t|
     t.string   "nombreUsuario"

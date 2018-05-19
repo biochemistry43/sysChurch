@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Folio:</strong>
+  <%= @nota_credito.folio %>
+</p>
+
+<p>
+  <strong>Fecha expedicion:</strong>
+  <%= @nota_credito.fecha_expedicion %>
+</p>
+
+<p>
+  <strong>Monto devolucion:</strong>
+  <%= @nota_credito.monto_devolucion %>
+</p>
+
+<p>
+  <strong>Motivo:</strong>
+  <%= @nota_credito.motivo %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @nota_credito.user %>
+</p>
+
+<p>
+  <strong>Cliente:</strong>
+  <%= @nota_credito.cliente %>
+</p>
+
+<p>
+  <strong>Sucursal:</strong>
+  <%= @nota_credito.sucursal %>
+</p>
+
+<p>
+  <strong>Negocio:</strong>
+  <%= @nota_credito.negocio %>
+</p>
+
+<%= link_to 'Edit', edit_nota_credito_path(@nota_credito) %> |
+<%= link_to 'Back', nota_creditos_path %>

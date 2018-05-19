@@ -1,4 +1,5 @@
 class ArticulosController < ApplicationController
+
   #before_filter :authenticate_user!
   load_and_authorize_resource
   before_action :set_articulo, only: [:edit, :update, :destroy]
@@ -10,6 +11,7 @@ class ArticulosController < ApplicationController
   # GET /articulos
   # GET /articulos.json
   def index
+
     if current_user.perfil
       if can? :create, Negocio
         @articulos = current_user.negocio.articulos
@@ -33,7 +35,7 @@ class ArticulosController < ApplicationController
     articulo = Articulo.find(@criteria)#where('clave = ? AND sucursal_id = ?', @criteria, current_user.sucursal.id)
     render :json => articulo
   end
-    
+
   def showByCriteria
     @criteria = params[:criteria]
 
@@ -43,7 +45,7 @@ class ArticulosController < ApplicationController
       articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, current_user.negocio.id)
     end
 
-    #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
+    #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
     render :json => articulos
   end
 
@@ -56,7 +58,7 @@ class ArticulosController < ApplicationController
       articulos = Articulo.where('(nombre ILIKE ? OR clave ILIKE ?) AND (sucursal_id = ?) AND (tipo = ?) AND (negocio_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id, 'comercializable', current_user.negocio.id)
     end
 
-    #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)    
+    #articulos = Articulo.where('(nombre LIKE ? OR clave LIKE ?) AND (sucursal_id = ?)', @criteria + '%', @criteria  + '%', current_user.sucursal.id)
     render :json => articulos
   end
 
@@ -87,11 +89,11 @@ class ArticulosController < ApplicationController
       @categoria = nil
       @marca = nil
       @sucursal = nil
-      
+
       unless cat.empty?
         @categoria = CatArticulo.find(cat)
       end
-      
+
       unless mar.empty?
         @marca = MarcaProducto.find(mar)
       end
@@ -99,7 +101,7 @@ class ArticulosController < ApplicationController
       unless suc.empty?
         @sucursal = Sucursal.find(suc)
       end
-      
+
       if @categoria
         unless @sucursal && @marca
           if can? :create, Negocio
@@ -172,6 +174,9 @@ class ArticulosController < ApplicationController
 
   # GET /articulos/new
   def new
+    @impuestos = current_user.negocio.impuestos
+    @clave_prod_servs= current_user.negocio.clave_prod_servs
+    @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @presentaciones = current_user.negocio.presentacion_productos
@@ -181,6 +186,9 @@ class ArticulosController < ApplicationController
 
   # GET /articulos/1/edit
   def edit
+    @impuestos = current_user.negocio.impuestos
+    @clave_prod_servs= current_user.negocio.clave_prod_servs
+    @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @sucursales = current_user.negocio.sucursals
@@ -190,6 +198,9 @@ class ArticulosController < ApplicationController
   # POST /articulos
   # POST /articulos.json
   def create
+    @impuestos = current_user.negocio.impuestos
+    @clave_prod_servs= current_user.negocio.clave_prod_servs
+    @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @sucursales = current_user.negocio.sucursals
@@ -226,7 +237,7 @@ class ArticulosController < ApplicationController
 
     #Si el usuario no eligió una sucursal para asignar el artículo, entonces añado el artículo
     #a la sucursal a la que el usuario pertenece.
-    #De lo contrario, busco la sucursal en la tabla de sucursales, en base al nombre de la 
+    #De lo contrario, busco la sucursal en la tabla de sucursales, en base al nombre de la
     #sucursal elegida y ahí es donde se asigna el artículo.
     if suc.empty?
       current_user.sucursal.articulos << @articulo
@@ -236,13 +247,13 @@ class ArticulosController < ApplicationController
       sucElegida.articulos << @articulo
       @articulo.suc_elegida = sucElegida.nombre
     end
-    
-    
+
+
     respond_to do |format|
       if @articulo.valid?
         if @articulo.save
 
-          
+
           unless existenciaInicial
             existenciaInicial = 0
           end
@@ -253,7 +264,7 @@ class ArticulosController < ApplicationController
 
           #añado esta entrada a almacén a la lista de entradas de almacén relacionadas con el
           #artículo.
-          @articulo.entrada_almacens << entradaAlmacen          
+          @articulo.entrada_almacens << entradaAlmacen
           #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
           #format.json { render :show, status: :created, location: @articulo }
           format.json { head :no_content}
@@ -262,7 +273,7 @@ class ArticulosController < ApplicationController
           #format.html { render :new }
           #format.json { render json: @articulo.errors, status: :unprocessable_entity }
           format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
-          format.js {render :new} 
+          format.js {render :new}
         end
       else
         format.js { render :new }
@@ -274,6 +285,9 @@ class ArticulosController < ApplicationController
   # PATCH/PUT /articulos/1
   # PATCH/PUT /articulos/1.json
   def update
+    @impuestos = current_user.negocio.impuestos
+    @clave_prod_servs= current_user.negocio.clave_prod_servs
+    @unidades_medidas= current_user.negocio.unidad_medidas
     @categories = current_user.negocio.cat_articulos
     @marcas = current_user.negocio.marca_productos
     @presentaciones = current_user.negocio.presentacion_productos
@@ -324,7 +338,7 @@ class ArticulosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def articulo_params
-      params.require(:articulo).permit(:clave, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :suc_elegida, :tipo)
+      params.require(:articulo).permit(:clave, :impuesto_id, :clave_prod_serv_id, :nombre, :descripcion, :stock, :cat_articulo_id, :existencia, :precioCompra, :precioVenta, :fotoProducto, :marca_producto_id, :presentacion_producto_id, :unidad_medida_id, :suc_elegida, :tipo)
     end
 
 end

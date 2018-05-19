@@ -71,6 +71,44 @@
         <% end %>
       </div>
     </div>
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos requeridos por el SAT:</h2>
+    </div>
+
+        <div class="item form-group<%= @articulo.errors[:impuesto_id].any? ? ' has-error has-feedback' : '' %>">
+          <%= f.label :impuesto_id, "Impuesto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+            <span class="input-group-addon"><i class=""><big><b>%</b></big></i></span>
+            <%= collection_select(:articulo, :impuesto_id, @impuestos, :id, :impuesto_porcentaje_tipo, {:prompt => 'Ninguno'}, {class: "form-control col-md-7 col-xs-12"})%>
+            <%if @articulo.errors[:impuesto_id].any? %>
+              <p class="bg-danger"><%= @articulo.errors[:impuesto_id].to_s[/\w([^"]*)/] %></p>
+            <% end %>
+          </div>
+        </div>
+        <!--Se agregó unidad de medida, dato requerido por el SAT para indicar la clave de la unidad de medida por cada nodo CONCEPTO en los CFDIs
+        Al usuario se le muestra el nombre y no la clave para facilidad. -->
+        <div class="item form-group<%= @articulo.errors[:unidad_medida_id].any? ? ' has-error has-feedback' : '' %>">
+          <%= f.label :unidad_medida_id, "Unidad de medida: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+            <span class="input-group-addon"><i class="fa fa-asterisk"></i></span>
+            <%= collection_select(:articulo, :unidad_medida_id, @unidades_medidas, :id, :nombre_simbolo_UM, {:prompt => 'Seleccione la unidad de medida'}, {class: "form-control col-md-7 col-xs-12"})%>
+            <%if @articulo.errors[:unidad_medida_id].any? %>
+              <p class="bg-danger"><%= @articulo.errors[:unidad_medida_id].to_s[/\w([^"]*)/] %></p>
+            <% end %>
+          </div>
+        </div>
+        <!--La clave de productos o servicios es un dato requerido por el SAT y esta no sustituye a la clave interna del  -->
+        <div class="item form-group<%= @articulo.errors[:clave_prod_serv_id].any? ? ' has-error has-feedback' : '' %>">
+          <%= f.label :clave_prod_serv_id, "Clasificación del producto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+            <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%= collection_select(:articulo, :clave_prod_serv_id, @clave_prod_servs, :id, :clave_nomb_producto , {:prompt => 'Seleccione el producto o servicio'}, {class: "form-control col-md-7 col-xs-12"})%>
+            <%if @articulo.errors[:clave_prod_serv_id].any? %>
+              <p class="bg-danger"><%= @articulo.errors[:clave_prod_serv_id].to_s[/\w([^"]*)/] %></p>
+            <% end %>
+          </div>
+        </div>
+
 
     <div class="item form-group">
       <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de almacén:</h2>
@@ -87,7 +125,7 @@
         </div>
       </div>
     <% end %>
-    
+
 
     <div class="item form-group<%= @articulo.errors[:stock].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :stock, "Stock: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
@@ -149,21 +187,21 @@
         <% [['Comercializable', 'comercializable'], ['Otros usos', 'otros usos']].each do |c| -%>
           <% if @articulo.tipo.eql?("comercializable") %>
             <% if c.last.eql?("comercializable") %>
-              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>
             <% end %>
           <% elsif @articulo.tipo.eql?("otros usos") %>
             <% if c.last.eql?("otros usos") %>
-              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>    
+              <%= content_tag(:option, c.first, value: c.last, :selected => "selected") %>
             <% end %>
           <% else %>
-            <%= content_tag(:option, c.first, value: c.last) %>    
+            <%= content_tag(:option, c.first, value: c.last) %>
           <% end %>
         <% end %>
         <%if @articulo.errors[:tipo].any? %>
           <p class="bg-danger"><%= @articulo.errors[:tipo].to_s[/\w([^"]*)/] %></p>
         <% end %>
 
-        
+
       <% end %>
       </div>
     </div>
@@ -172,10 +210,8 @@
        f.label :foto
        f.file_field :fotoProducto, class: "form-control has-feedback-left"
     </div>-->
-    
+
      <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
           <%= f.submit @articulo.new_record? ? "Crear articulo" : "Actualizar articulo", :class => "btn btn-success"%>
         </div>
   <% end %>
-
-

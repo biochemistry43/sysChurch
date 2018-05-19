@@ -1,0 +1,474 @@
+<div class="right_col" role="main" style="height: 900px;">
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Facturar ventas</h1>
+    </div>
+  </div> <!-- Fin de titulo-->
+  <div class="clearfix"></div>
+  <hr>
+  <!-- Esta sección solamente se muestra si se encontró una factura y si se determina que se está
+  haciendo una consulta -->
+  <%if @consulta%>
+    <% if @venta && @itemsVenta%>
+      <!-- Despliega los resultados encontrados en la búsqueda -->
+      <%if @ventaCancelada%>
+          <!--Validar si tiene alguna nota de crédito si es q tiene factura relacionada-->
+        <div class="row">
+          <div class="col-md-12" style="color: gray;">
+            La venta fue cancelada.
+          </div>
+        </div>
+        <hr>
+      <%elsif @ventaFacturadaNoSi%>
+        <div class="row">
+          <div class="col-md-12" style="color: gray;">
+              Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %>
+              </span>
+          </div>
+        </div>
+        <hr>
+      <%else%>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          La venta ya fue facturada el día <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaVentaFacturada %></span>
+          con folio: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folioVentaFacturada %></span>
+        </div>
+      </div>
+      <hr>
+      <%end%>
+    <% else %>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          No hay ventas registradas con este folio
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12" style="color: gray;">
+          <div class="col-md-12">
+            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
+          </div>
+        </div>
+      </div>
+      <hr>
+    <% end %>
+  <%end%>
+
+  <div class="row" style="margin-bottom: 30px;">
+
+      <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
+      <%= form_tag({ controller: "facturas", action: "buscarVentaFacturar" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="item form-group">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div style="text-align: left; color: black;">
+              Proporcione el folio de la venta que desea facturar.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+
+          <div class="col-md-2 col-sm-2 col-xs-2">
+            <%=label_tag :folio, "Folio", class: "control-label" %>
+
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="text-center">
+              <%= text_field_tag :folio, nil, {class: "form-control text_field", :placeholder=>"Folio de la venta..."} do%>
+              <span class="input-group-addon"><i class="fa fa-user"></i></span>
+              <%end%>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 col-xs-4">
+              <div class="text-left" >
+                <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
+              </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <!--<div class="row" style="margin-bottom: 30px;">-->
+        <!--form_tag({controller: "facturas", action: "new"}, {:class=> "form-horizontal",method:=> :get}) do -->
+        <!--end-->
+  <!--  </div>-->
+
+    <% if @venta && @consulta && @itemsVenta && @ventaFacturadaNoSi%>
+      <%unless @ventaCancelada%>
+        <!-- Formulario para mostrar los datos de la venta consultada para facturar -->
+    <!-- form_for @venta, :html=> {:class=>'form-horizontal', :role=>'form', :multipart => true}  do |new_f| -->
+    <%= form_tag({controller: "facturas", action: "facturarVenta", id: @venta.id}, {:method=>:post})do%>
+    <div class="row">
+      <div class="col-md-1 col-sm-1 col-xs-12">
+        <%= label_tag :imprimir,'Imprimir', class:"control-label"%>
+      </div>
+      <div class="col-md-1 col-sm-1 col-xs-12">
+          <%=check_box_tag(:imprimir, "yes", false, {class:" checked check", checked:"checked"})%>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-12">
+        <!--%= label_tag :enviar_al_correo, @correo_electonico_f, class:"control-label"%-->
+        <%=label_tag :enviar_email, "Enviar a email", class: "control-label" %>
+      </div>
+      <!--%if @venta.cliente.email.present?%-->
+        <!--div class="col-md-1 col-sm-1 col-xs-12">
+            <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked check"})%>
+        </div-->
+      <!--%else%-->
+      <div class="col-md-5 col-sm-5 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+        <!--%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"Ejemplo: fulanito95@hotmail.com" }%-->
+        <%= email_field_tag :destinatario, nil,{class:'form-control text_field', value: @email_receptor}%>
+      </div>
+      <!--%end%-->
+    </div>
+
+
+    <div class="col-md-12 col-sm-12 col-xs-12">
+
+      <div class="row">
+          <hr style="border-style: solid; border-width: 2px;">
+        <div class="panel panel-default" >
+          <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
+            <h3 class="panel-title">CFDI DE INGRESO 3.3</h3>
+          </div>
+
+          <div class="panel-body">
+            <!--Panel para el encabezado del comprobante-->
+            <div class="panel panel-default" >
+              <div class="panel-body">
+                <div class="col-md-offset-6 col-sm-offset-6 col-xs-offset-6">
+                  <div class="col-md-2 col-sm-2 col-xs-12">
+                    <%= label_tag :serie,'Serie', class:"control-label"%>
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    <%= text_field_tag :serie, nil,{class:'form-control text_field',value:@serie, disabled:true}%>
+                  </div>
+                  <div class="col-md-2 col-sm-2 col-xs-12">
+                    <%= label_tag :folio,'Folio', class:"control-label"%>
+
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    <%= text_field_tag :folio, nil,{class:'form-control text_field', value: @consecutivo, disabled:true }%>
+                  </div>
+                </div>
+                <!-- new_f.label :folio, "Folio: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} >
+                <div class="col-lg-8">
+
+                  < new_f.text_field :folio, class: "form-control",value:@rfc_emisor>
+                </div>-->
+              </div>
+            </div>
+
+            <!--Panel para los datos de RECEPTOR-->
+            <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
+              <h3 class="panel-title">DATOS DEL RECEPTOR.</h3>
+            </div>
+            <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
+              <div class="panel-body">
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
+                        Editar cliente original. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      <% end %>
+
+                    </div>
+
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <button class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="btn_datos_manualmente" type="button">
+                         Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      </button>
+                    </div>
+
+                </div>
+
+                <div class="row" style="text-align:center;">
+                  <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Datos generales:</h2>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12" id="errorRFC">
+                  <div class="col-md-2 col-sm-2 col-xs-3">
+                    <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
+                  </div>
+                  <%if @rfc_emisor_present%>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
+                    </div>
+                  <%else%>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Ingrese el R.F.C."}%>
+                    </div>
+                  <%end%>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="col-md-2 col-sm-2 col-xs-12">
+                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
+                  </div>
+                  <%if @nombre_fiscal_receptor_present%>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
+                    </div>
+                  <%else %>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal o razón social."}%>
+                    </div>
+                  <%end %>
+                </div>
+              </div>
+
+              <div class="row" style="text-align:center;">
+                <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección fiscal del cliente:</h2>
+              </div>
+                <!--Se muestra la dirección del cliente -->
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :calle,'Calle:', class:"control-label"%>
+                    </div>
+
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field',value:@calle_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= label_tag :no_Interior,'No. Interior:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= number_field_tag("no_Interior_vf", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
+                      </div>
+
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= label_tag :no_Exteior,'No. Exterior:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-3 col-sm-3 col-xs-12">
+                        <%= number_field_tag("no_Exterior_vf", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
+                      </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :colonia,'Colonia:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :localidad,'Localidad:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :municipio,'Municipio:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :estado,'Estado:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :referencia,'Referencia:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :referencia_receptor_vf, nil,{class:'form-control text_field',value:@referencia_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :cp,'C.P.:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, disabled:true }%>
+                    </div>
+                  </div>
+                </div>
+
+
+
+              </div>
+              <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
+                <h3 class="panel-title">USO DE CFDI.</h3>
+              </div>
+              <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
+                <div class="panel-body">
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                      <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
+                    </div>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <%= collection_select(nil, :uso_cfdi_id, @uso_cfdi_receptor_f, :id, :descripcion, {:prompt => 'Elija el uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+            <table  class="table table-striped responsive-utilities jambo_table data-table">
+              <thead>
+                <tr >
+                  <th >CLAVE </th>
+                  <th >CANTIDAD </th>
+                  <th >UNIDAD</th>
+                  <th >DESCRIPCIÓN </th>
+                  <th >PRECIO</th>
+                  <th >IMPORTE </th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @itemsVenta.each do |item| %>
+                  <tr>
+                    <td> <%= item.articulo.clave_prod_serv.clave %> </td>
+                    <td> <%= item.cantidad %> </td>
+                    <td> <%= item.articulo.unidad_medida.nombre%> </td>
+                    <td> <%= item.articulo.nombre %> </td>
+                    <td>$  <%= item.precio_venta %> </td>
+                    <td>$  <%= item.precio_venta * item.cantidad %> </td>
+                  </tr>
+                <% end %>
+
+              </tbody>
+            </table>
+            <!--Panel para el total representao en letras-->
+            <div class="">
+              <div class="panel panel-default col-md-8 col-sm-8 col-xs-12">
+                <div class="panel-body">
+                    <div class="">
+                      <%= label_tag :total_letras,@total_en_letras, class:"control-label"%>
+                    </div>
+                </div>
+              </div>
+              <!--Panel para para la homologación, cálculos y redondeos -->
+              <div class="panel panel-default col-md-4 col-sm-4 col-xs-12">
+                <div class="panel-body" align="right">
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                      <%= label_tag :subtotal,'Subtotal:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <%= label_tag :subtotal ,"$ " + @subtotal, class:"control-label"%>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                      <%= label_tag :descuento, 'Descuento:', class:"control-label"%>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <%= label_tag :descuento ,"$ " + @descuento_string, class:"control-label"%>
+                    </div>
+                  </div>
+
+                  <%if @iva > 0%>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                      <div class="col-md-6 col-sm-6 col-xs-6">
+                        <%= label_tag :impuesto_iva,'I.V.A.:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-6 col-sm-6 col-xs-6">
+                          <%= label_tag :impuesto_iva,"$ " + '%.2f' % @iva.round(2),  class:"control-label"%>
+                      </div>
+                    </div>
+                  <%end%>
+
+                  <%if @ieps > 0%>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                      <div class="col-md-6 col-sm-6 col-xs-6">
+                        <%= label_tag :impuesto_ieps,'I.E.P.S.:', class:"control-label"%>
+                      </div>
+                      <div class="col-md-6 col-sm-6 col-xs-6">
+                          <%= label_tag :impuesto_ieps, "$ " + '%.2f' % @ieps.round(2),  class:"control-label"%>
+                      </div>
+                    </div>
+                  <%end%>
+
+                  <div class="clearfix"></div>
+                  <hr>
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                      <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6" >
+                      <big><big><big><%= label_tag :total,"$ " + @total_string, class:"control-label"%></big></big></big>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+
+          <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
+            <div class="text-center" id="ListPage">
+              <%= submit_tag 'Cancelar', {:class=>"btn btn-default btn-lg"} %>
+              <!--No tiene tanto sentido guardar facturas como borrador para un sistema que obtiene los datos directamente de la BD-->
+              <!-- submit_tag 'Vista previa', {:class=>"btn btn-default btn-lg"} -->
+              <%= submit_tag 'Facturar y crear nueva', {:class=>"btn btn-default btn-lg",:id=>"RFC_Obligatorio2"} %>
+              <%= submit_tag 'Facturar ahora', {:class=>"btn btn-primary btn-lg active", :id=>"RFC_Obligatorio"}%>
+
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    </div>
+    <%end%> <!--La venta fue cancelada-->
+    <%end%>
+    <%end%>
+  <!-- javascript_include_tag "cancelaciones" -->
+      <%= render 'modalClientes'%>
+</div>
+
+<script type="text/javascript">
+jQuery("#btn_datos_manualmente").click(function () {
+  //Datos generales
+  jQuery("#rfc_input").removeAttr("disabled").focus().val("");
+  jQuery("#nombre_fiscal_receptor_vf").removeAttr("disabled").val("");
+  //Dirección fiscal
+  jQuery("#calle_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#numExterior_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#numInterior_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#colonia_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#localidad_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#municipio_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#estado_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#referencia_receptor_vf").removeAttr("disabled").val("");
+  jQuery("#cp_receptor_vf").removeAttr("disabled").val("");
+});
+</script>
+
+<%= stylesheet_link_tag "facturas" %>
+<%= javascript_include_tag "validador_RFC_Obligatorio" %>

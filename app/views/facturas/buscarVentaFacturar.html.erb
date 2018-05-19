@@ -1,0 +1,41 @@
+<div class="right_col" role="main" style="height: 900px;">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Facturar ventas</h1>
+    </div>
+  </div> <!-- Fin de titulo-->
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row" style="margin-bottom: 30px;">
+      <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
+      <%= form_tag({ controller: "facturas", action: "buscarVentaFacturar" }, {:class=> "form-horizontal", :method => :post}) do %>
+
+        <div class="item form-group">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div style="text-align: left; color: black;">
+              Proporcione el folio de la venta que desea facturar.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+
+          <div class="col-md-2 col-sm-2 col-xs-2">
+            <%=label_tag :folio, "Folio", class: "control-label" %>
+
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="text-center">
+  		        <%= text_field_tag :folio, nil, {class: "form-control text_field", :placeholder=>"Folio de la venta..."} do%>
+              <span class="input-group-addon"><i class="fa fa-user"></i></span>
+  		        <%end%>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 col-xs-4">
+              <div class="text-left" >
+                <%= submit_tag 'Buscar venta', {:class=>"btn btn-info"} %>
+              </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+</div>

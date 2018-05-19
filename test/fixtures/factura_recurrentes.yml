@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  folio: MyString
+  fecha_expedicion: 2017-11-10
+  estado_factura: MyString
+  tiempo_recurrente: 1
+  user_id: 
+  negocio_id: 
+  sucursal_id: 
+  cliente_id: 
+  forma_pago_id: 
+
+two:
+  folio: MyString
+  fecha_expedicion: 2017-11-10
+  estado_factura: MyString
+  tiempo_recurrente: 1
+  user_id: 
+  negocio_id: 
+  sucursal_id: 
+  cliente_id: 
+  forma_pago_id: 

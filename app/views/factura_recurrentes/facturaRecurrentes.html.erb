@@ -1,0 +1,211 @@
+<div class="right_col" role="main" style="height: 900px;">
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Factura recurrente</h1>
+    </div>
+  </div> <!-- Fin de titulo-->
+  <div class="clearfix"></div>
+  <hr>
+  <%= form_tag({controller: "factura_recurrentes", action: "facturaRecurrentes"}, {:method=>:post})do%>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="row">
+          <div class="panel " >
+            <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
+              <h3 class="panel-title">CFDI 3.3</h3>
+            </div>
+            <div class="panel-body ">
+              <div class="panel  panel-default col-md-7 col-sm-7 col-xs-7">
+                <div class="panel-body ">
+                  <div>
+                    <div class="col-md-3 col-sm-3 col-xs-3">
+                      <%= label_tag :cliente_id,'Cliente', class:"control-label"%>
+                    </div>
+                    <div class="col-md-7 col-sm-7 col-xs-7">
+                      <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente'}, { class: "form-control col-md-7 col-xs-12" })%>
+                    </div>
+                    <div class="col-md-1 col-sm-1 col-xs-1">
+                    <%=link_to url = {controller: "clientes", action: "new"}, html_options = {class: "btn btn-info btn-sm", remote: true} do %>
+                      <i class="fa fa-plus"> </i>
+                    <% end %>
+                    </div>
+                    </div>
+
+                    <div>
+                      <div class="col-md-3 col-sm-3 col-xs-3">
+                        <%= label_tag :uso_cfdi_id,'Uso C.F.D.I.', class:"control-label"%>
+                      </div>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :uso_cfdi_id, @usoCfdi, :id, :descripcion, {:prompt => 'El uso que le dará al CFDI'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="col-md-3 col-sm-3 col-xs-3">
+                        <%= label_tag :metodo_pago,'Método de pago', class:"control-label"%>
+                      </div>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :metodo_pago, @metodoDePago, :id, :descripcion, {:prompt => 'Elija el método de pago'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="col-md-3 col-sm-3 col-xs-3">
+                        <%= label_tag :forma_pago,'Forma de pago', class:"control-label"%>
+                      </div>
+                      <div class="col-md-9 col-sm-9 col-xs-9">
+                        <%= collection_select(nil, :forma_pago, @formaPago , :id, :nombre, {:prompt => 'Elija la forma de pago'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      </div>
+                    </div>
+
+
+
+                  </div>
+
+
+              </div>
+
+              <div class="panel panel-default col-md-5 col-sm-5 col-xs-5">
+              <div class="panel-body">
+                <div >
+                  <div class="col-md-5 col-sm-5 col-xs-5">
+                    <%= label_tag :fecha_inicial,'Proxima factura el: ', class:"control-label"%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7">
+                    <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text_field text-center", selectMonths: :true}, {})%>
+                  </div>
+                </div>
+
+                <div >
+                  <div class="col-md-2 col-sm-2 col-xs-2 ">
+                    <%= label_tag :recurrencia,'Cada ', class:"control-label"%>
+                  </div>
+                  <div class="col-md-3 col-sm-3 col-xs-3">
+                    <%= number_field_tag("Recurrencia", nil, {class: "form-control text_field", value:1})%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7 text-center">
+                    <%= select_tag "count", "<option>Dias</option><option>Semanas</option><option>Meses</option><option>Años</option>".html_safe, class: "form-control col-md-7 col-xs-12",prompt:"Elija la periodicidad" %>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="col-md-5 col-sm-5 col-xs-5 ">
+                    <%= label_tag :duracion,'Duración', class:"control-label"%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7 text-center">
+                    <%= select_tag "count", "<option>Indefinida</option><option>Hasta el día...</option>".html_safe, class: "form-control col-md-7 col-xs-12",prompt:"Elija la fecha final" %>
+                  </div>
+                </div>
+
+                <div >
+                  <div class="col-md-5 col-sm-5 col-xs-5">
+                    <%= label_tag :fecha_final,'', class:"control-label"%>
+                  </div>
+                  <div class="col-md-7 col-sm-7 col-xs-7">
+                    <!--input type="text" name="inputprueba" id="inputprueba" value="" class="form-control"-->
+                    <%= date_picker_tag("fecha_final", nil, {class: "form-control text_field text-center", selectMonths: :true, :style=>"visibility: hidden"}, {})%>
+                    <!--visibility: visible -->
+                  </div>
+                </div>
+
+                </div>
+            </div>
+
+            <!--
+            <table  class="table table-striped responsive-utilities jambo_table data-table">
+              <thead>
+                <tr >
+                  <th >Clave </th>
+                  <th >Cantidad </th>
+                  <th>Unidad</th>
+                  <th >Descripción </th>
+                  <th >Precio</th>
+                  <th >Importe </th>
+                </tr>
+              </thead>
+            </table>
+          -->
+
+          <div class="row">
+              <div class="panel-body" id="panel-pos-body" >
+                <div class="form-group top_search">
+                  <div class="autocomplete input-group col-md-6 col-sm-6 col-xs-6">
+
+                    <input type="text" class="form-control" id="search-product" placeholder="Buscar producto...">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12" id="div-tabla-ventas">
+                    <table  class="table table-striped responsive-utilities jambo_table data-table">
+                      <thead>
+                        <tr class="headings">
+                          <th class="column-title">Clave </th>
+                          <th class="column-title">Nombre </th>
+                          <th class="column-title">Precio</th>
+                          <th class="column-title">Cantidad </th>
+                          <th class="column-title">Importe </th>
+                          <th class="column-title"></th>
+                          <th class="column-title"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </div> <!-- Terminar panel-pos-body -->
+
+          </div>
+
+
+
+            <div class="panel  col-md-offset-8">
+              <div class="panel-body">
+
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :subtotal,'SubTotal', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :descuento,'Descuento', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :impuesto,'I.V.A', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input type="text" class="form-control text_field" value= "<%= %>">
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    <%= label_tag :total,'Total', class:"control-label"%>
+                  </div>
+                  <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input type="text" class="form-control text_field" value= "<%=@total %>" disabled>
+                  </div>
+              </div>
+            </div>
+
+            </div>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
+            <div class="text-right">
+              <%= submit_tag 'Guardar', {:class=>"btn btn-primary btn-lg active"} %>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+  <%end%>
+      <%= render 'modalClientes'%>
+
+</div>
+<%= javascript_include_tag "autocomplete.jquery" %>
+<%= javascript_include_tag "punto-venta" %>
+
+<%= stylesheet_link_tag "autocomplete" %>

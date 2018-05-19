@@ -1,0 +1,55 @@
+<%= form_for @unidad_medida, remote: true, :html=>{ :class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
+
+  <div class="item form-group">
+    <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos para crear una unidad de medida:</h2>
+  </div>
+
+  <div class="item form-group<%= @unidad_medida.errors[:clave].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :clave, "Clave: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-key"></i></span>
+      <%= f.text_field :clave, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del catálogo..."} do%>
+      <%end%>
+      <%if @unidad_medida.errors[:clave].any? %>
+        <p class="bg-danger"><%= @unidad_medida.errors[:clave].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="item form-group<%= @unidad_medida.errors[:nombre].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :nombre, "Nombre: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+      <%= f.text_field :nombre, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del catálogo..."} do%>
+      <%end%>
+      <%if @unidad_medida.errors[:nombre].any? %>
+        <p class="bg-danger"><%= @unidad_medida.errors[:nombre].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="item form-group<%= @unidad_medida.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :descripcion, "Descripción: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+      <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Introduzca la descripción..."} do%>
+      <%end%>
+      <%if @unidad_medida.errors[:descripcion].any? %>
+        <p class="bg-danger"><%= @unidad_medida.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="item form-group<%= @unidad_medida.errors[:simbolo].any? ? ' has-error has-feedback' : '' %>">
+    <%= f.label :simbolo, "Símbolo: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+    <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+      <span class="input-group-addon"><i class="fa fa-paw"></i></span>
+      <%= f.text_field :simbolo, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca la clave del catálogo..."} do%>
+      <%end%>
+      <%if @unidad_medida.errors[:simbolo].any? %>
+        <p class="bg-danger"><%= @unidad_medida.errors[:simbolo].to_s[/\w([^"]*)/] %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+    <%= f.submit @unidad_medida.new_record? ? "Crear" : "Actualizar", :class => "btn btn-success"%>
+  </div>
+<% end %>

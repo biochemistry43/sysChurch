@@ -12,7 +12,7 @@ class ComprasController < ApplicationController
     @avanzada = false
     @rangoFechas = false
     @porFactura = false
-    
+
     if can? :create, Negocio
       @compras = current_user.negocio.compras.where(fecha: Date.today.beginning_of_month..Date.today.end_of_month)
     else
@@ -55,12 +55,12 @@ class ComprasController < ApplicationController
         @compras = current_user.negocio.compras.where(["folio_compra = ? or ticket_compra=?", @factura, @factura])
       else
       end
-      
+
     end
   end
 
-  
-  #Este método devuelve un listado de compras en base a un rango de fechas. 
+
+  #Este método devuelve un listado de compras en base a un rango de fechas.
   def consulta_compras
     @consulta = true
     @porFactura = false
@@ -87,7 +87,7 @@ class ComprasController < ApplicationController
   end
 
   #Consulta avanzada devolverá una lista de compras en base en una serie de criterios que pueden ser combinables entre si.
-  #Los criterios pueden ser: Rango de fechas, proveedor, comprador, status de la compra, 
+  #Los criterios pueden ser: Rango de fechas, proveedor, comprador, status de la compra,
   #sucursal (en el caso de administradores)
   def consulta_avanzada
     @consulta = true
@@ -139,7 +139,7 @@ class ComprasController < ApplicationController
       unless @suc.empty?
         @sucursal = Sucursal.find(@suc)
       end
-      
+
       #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
 
@@ -160,63 +160,63 @@ class ComprasController < ApplicationController
         #Si el único criterio elegido fue el status
         if @status
           unless @comprador && @sucursal && @proveedor
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)
           end
         end
 
         #Si el único criterio elegido fue el proveedor
         if @proveedor
           unless @sucursal && @status && @comprador
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)
           end
         end
 
         #Si se filtra por sucursal y comprador
         if @sucursal && @comprador
           unless @status && @proveedor
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador)
           end
         end
 
         #Si se filtra por sucursal y status
         if @sucursal && @status
           unless @comprador && @proveedor
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, status: @status)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, status: @status)
           end
         end
 
         #Si se filtra por sucursal y proveedor
         if @sucursal && @proveedor
           unless @status && @usuario
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor)
           end
         end
-        
+
         #Si se filtra por comprador y status
         if @comprador && @status
           unless @sucursal && @proveedor
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)  
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)
           end
         end
 
         #Si se filtra por comprador y proveedor
         if @comprador && @proveedor
           unless @sucursal && @status
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)              
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)
           end
         end
 
         #Si se filtra por status y proveedor
         if @status && @proveedor
           unless @sucursal && @comprador
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)              
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)
           end
         end
 
         #Si se filtra por sucursal, comprador y status
         if @sucursal && @comprador && @status
           unless @proveedor
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador, status: @status)              
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, user: @comprador, status: @status)
           end
         end
 
@@ -230,25 +230,25 @@ class ComprasController < ApplicationController
         #Si se filtra por sucursal, proveedor y comprador
         if @sucursal && @proveedor && @comprador
           unless @status
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor, user: @comprador)              
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, sucursal: @sucursal, proveedor: @proveedor, user: @comprador)
           end
         end
 
         #Si se filtra por comprador, status y proveedor
         if @comprador && @status && @proveedor
           unless @sucursal
-            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)              
+            @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)
           end
         end
 
         #Cuando se elige una opción en cada uno de los criterios de filtrado: comprador, status, proveedor, sucursal
         if @comprador && @status && @proveedor && @sucursal
-          @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor, sucursal:@sucursal)              
+          @compras = current_user.negocio.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor, sucursal:@sucursal)
         end
       #################################################################################################################
       #Si el usuario no es un administrador o subadministrador
       else
-        
+
         #Si el único criterio elegido fue el comprador.
         if @comprador
           unless @proveedor && @status
@@ -259,41 +259,41 @@ class ComprasController < ApplicationController
         #Si el único criterio elegido fue el status
         if @status
           unless @comprador && @proveedor
-            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)  
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status)
           end
         end
 
         #Si el único criterio elegido fue el proveedor
         if @proveedor
           unless @status && @comprador
-            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)  
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, proveedor: @proveedor)
           end
         end
-        
+
         #Si se filtra por comprador y status
         if @comprador && @status
           unless @proveedor
-            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)  
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, status: @status)
           end
         end
 
         #Si se filtra por comprador y proveedor
         if @comprador && @proveedor
           unless @status
-            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)              
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, user: @comprador, proveedor: @proveedor)
           end
         end
 
         #Si se filtra por status y proveedor
         if @status && @proveedor
           unless @comprador
-            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)              
+            @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, status: @status, proveedor: @proveedor)
           end
         end
 
         #Si se filtra por comprador, status y proveedor
         if @comprador && @status && @proveedor
-          @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)              
+          @compras = current_user.sucursal.compras.where(fecha: @fechaInicial.beginning_of_day..@fechaFinal.end_of_day, comprador: @comprador, status: @status, proveedor: @proveedor)
         end
 
       end
@@ -355,7 +355,7 @@ class ComprasController < ApplicationController
 
           origen_recurso = params[:select_origen_recurso]
 
-          #Si se cumple esta condición, significa que el recurso para la compra, provendrá de alguna de las cajas 
+          #Si se cumple esta condición, significa que el recurso para la compra, provendrá de alguna de las cajas
           #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
           if origen_recurso.include? "caja_venta"
             tamano_cadena_origen = origen_recurso.length
@@ -370,7 +370,7 @@ class ComprasController < ApplicationController
             #Verifico que la caja tenga el saldo necesario para realizar la operación de compra.
             if @cajaVenta.saldo >= monto_compra
               @gasto = Gasto.new(:monto=>monto_compra, :concepto=>"Compra de mercancía", :tipo=>"compra")
-              
+
               #creación y relación del registro de pago de la compra al proveedor indicado
               @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
 
@@ -410,7 +410,7 @@ class ComprasController < ApplicationController
                     precio = articulo["precio"]
                     cantidad = articulo["cantidad"]
                     importe = articulo["importe"]
-                    
+
                     detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
                     entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
                     bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
@@ -443,7 +443,7 @@ class ComprasController < ApplicationController
               else
                 format.html { render :new }
                 format.json { render json: @compra.errors, status: :unprocessable_entity }
-              end  
+              end
 
             else
               format.html { render :new }
@@ -472,7 +472,7 @@ class ComprasController < ApplicationController
 
                 #creación y relación del registro de pago de la compra al proveedor indicado
                 @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
-                
+
                 #relaciones del registro de gasto
                 @categoriaGasto.gastos << @gasto
                 current_user.gastos << @gasto
@@ -508,7 +508,7 @@ class ComprasController < ApplicationController
                       precio = articulo["precio"]
                       cantidad = articulo["cantidad"]
                       importe = articulo["importe"]
-                      
+
                       detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
                       entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
                       bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
@@ -541,7 +541,7 @@ class ComprasController < ApplicationController
                 else
                   format.html { render :new }
                   format.json { render json: @compra.errors, status: :unprocessable_entity }
-                end  
+                end
 
 
               else
@@ -551,9 +551,9 @@ class ComprasController < ApplicationController
               end
             end
           end
-          
+
         elsif tipo_pago.eql?("Credito") #Si la compra es a crédito
-          
+
           fecha_limite = DateTime.parse(compra_params[:fecha_limite_pago]).to_date
           @pagoPendiente = PagoPendiente.new(:fecha_vencimiento=>fecha_limite, :saldo=>monto_compra, :compra=>@compra, :proveedor=>@compra.proveedor, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio)
           if @compra.valid?
@@ -576,7 +576,7 @@ class ComprasController < ApplicationController
                 precio = articulo["precio"]
                 cantidad = articulo["cantidad"]
                 importe = articulo["importe"]
-                
+
                 detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
                 entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
                 bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
@@ -609,7 +609,7 @@ class ComprasController < ApplicationController
             format.html { render :new }
             format.json { render json: @compra.errors, status: :unprocessable_entity }
           end
-          
+
 
         end
       else
@@ -628,7 +628,7 @@ class ComprasController < ApplicationController
     #if request.get?
     #  @compra = Compra.find(params[:compra])
     #end
-    
+
     #Si la petición ha venido por el método post, entonces se procede a la actualización de la compra.
     if request.patch?
       @monto_anterior = @compra.monto_compra
@@ -659,7 +659,7 @@ class ComprasController < ApplicationController
             entrada_almacen.destroy
           end
 
-          
+
           articulos = compra_params[:articulos]
           fecha = DateTime.parse(compra_params[:fecha]).to_date
           razon_edicion = params[:compra_razon]
@@ -671,7 +671,7 @@ class ComprasController < ApplicationController
           current_user.sucursal.historial_ediciones_compras << historial
           current_user.historial_ediciones_compras << historial
 
-          
+
 
           hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
 
@@ -683,13 +683,13 @@ class ComprasController < ApplicationController
           nuevaExistencia = 0
 
 
-          hashArticulos.collect { |articulo|  
+          hashArticulos.collect { |articulo|
 
             codigo = articulo["codigo"]
             precio = articulo["precio"]
             cantidad = articulo["cantidad"]
             importe = articulo["importe"]
-                
+
             detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
             entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
             bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
@@ -697,25 +697,25 @@ class ComprasController < ApplicationController
             #Se relaciona el artículo comprado con la compra
             bd_articulo.detalle_compras << detalleCompra
 
-            #Se relaciona una entrada al almacén con un artículo 
+            #Se relaciona una entrada al almacén con un artículo
             bd_articulo.entrada_almacens << entradaAlmacen
 
             #obtiene la existencia actual del artículo para actualizarla posteriormente añadiendole las nuevas
             #compras
             existencia_actual = bd_articulo.existencia
 
-            #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de 
+            #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de
             #esta compra.
             nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
 
             #Se actualiza también el precio de compra del artículo. TODO hacer un historial de precios de compra por artículo.
             bd_articulo.precioCompra = detalleCompra.precio_compra
 
-            #Se actualiza la nueva existencia y se guarda el artículo 
+            #Se actualiza la nueva existencia y se guarda el artículo
             bd_articulo.existencia = nuevaExistencia
             bd_articulo.save
           }
-            
+
           format.html { redirect_to compras_path, notice: 'Compra actualizada' }
           format.json { render :index, status: :created, location: @compra }
         else
@@ -735,9 +735,9 @@ class ComprasController < ApplicationController
       compra = params[:compra]
       observaciones = compra[:observaciones]
       @items = @compra.detalle_compras
-      
+
       if @compra.update(:observaciones => observaciones, :status => "Cancelada")
-        
+
         CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>current_user.negocio, :sucursal=>current_user.sucursal)
         @compra.detalle_compras.each do |itemCompra|
           CompraArticulosDevuelto.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
@@ -749,7 +749,7 @@ class ComprasController < ApplicationController
           itemCompra.save
 
           entradasAlmacen = EntradaAlmacen.where(:compra=>@compra)
-          
+
           entradasAlmacen.each do |entradaAlmacen|
             entradaAlmacen.destroy
           end
@@ -811,7 +811,7 @@ class ComprasController < ApplicationController
         end
       else
         current_user.sucursal.users.each do |comprador|
-          #Llena un array con todos los compradores de la sucursal 
+          #Llena un array con todos los compradores de la sucursal
           #(usuarios de la sucursal que pueden hacer una compra)
           #Siempre y cuando no sean auxiliares o almacenistas o compradors pues no tiene autorización para comprar
           if comprador.role != "auxiliar" || comprador.role != "almacenista" || comprador.role != "comprador"

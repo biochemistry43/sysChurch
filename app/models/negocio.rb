@@ -1,4 +1,11 @@
 class Negocio < ActiveRecord::Base
+	has_many :nota_creditos
+	has_one :config_comprobante
+	has_many :impuestos
+	has_many :clave_prod_servs
+	has_many :unidad_medidas
+	has_many :factura_recurrentes
+	has_many :facturas
 	mount_uploader :logo, FotoProductoUploader
 	has_many :users
 	has_many :sucursals
@@ -29,4 +36,5 @@ class Negocio < ActiveRecord::Base
 	has_many :pago_pendientes
 	has_many :proveedores
 	has_many :caja_sucursals
+
 end

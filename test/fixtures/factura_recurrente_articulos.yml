@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  factura_recurrente_id: 
+  articulo_id: 
+  cantidad: 9.99
+  precio: 9.99
+  monto: 9.99
+
+two:
+  factura_recurrente_id: 
+  articulo_id: 
+  cantidad: 9.99
+  precio: 9.99
+  monto: 9.99

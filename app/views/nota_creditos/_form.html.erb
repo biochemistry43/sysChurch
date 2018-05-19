@@ -1,0 +1,49 @@
+<%= form_for(@nota_credito) do |f| %>
+  <% if @nota_credito.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@nota_credito.errors.count, "error") %> prohibited this nota_credito from being saved:</h2>
+
+      <ul>
+      <% @nota_credito.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :folio %><br>
+    <%= f.text_field :folio %>
+  </div>
+  <div class="field">
+    <%= f.label :fecha_expedicion %><br>
+    <%= f.date_select :fecha_expedicion %>
+  </div>
+  <div class="field">
+    <%= f.label :monto_devolucion %><br>
+    <%= f.text_field :monto_devolucion %>
+  </div>
+  <div class="field">
+    <%= f.label :motivo %><br>
+    <%= f.text_field :motivo %>
+  </div>
+  <div class="field">
+    <%= f.label :user_id %><br>
+    <%= f.text_field :user_id %>
+  </div>
+  <div class="field">
+    <%= f.label :cliente_id %><br>
+    <%= f.text_field :cliente_id %>
+  </div>
+  <div class="field">
+    <%= f.label :sucursal_id %><br>
+    <%= f.text_field :sucursal_id %>
+  </div>
+  <div class="field">
+    <%= f.label :negocio_id %><br>
+    <%= f.text_field :negocio_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

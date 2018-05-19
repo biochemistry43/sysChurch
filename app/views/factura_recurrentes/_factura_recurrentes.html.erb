@@ -1,0 +1,212 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Facturas Recurrentes</h1>
+    </div>
+  </div>
+
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row">
+    <div class="div-add-button">
+        <%= link_to 'Nueva factura recurrente', factura_recurrentes_facturaRecurrentes_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
+    </div>
+  </div> <!--Fin de botón -->
+
+
+  <button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+    Filtros por fecha <i class="fa fa-sort-down"></i>
+  </button>
+  <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+  <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
+    <%= form_tag({ controller: "factura_recurrentes", action: "consulta_facturas" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          Búsqueda por fechas:
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Desde:
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-1 col-xs-1">
+        <div style="text-align: right; color: black;">
+          Hasta:
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+
+        </div>
+      </div>
+
+      <div class="col-md-1 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Consultar facturas', {:class=>"btn btn-info"} %>
+        </div>
+      </div>
+    <% end %>
+  </div> <!--Fin de busqueda por fecha-->
+
+  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+  <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+    Filtros Avanzados <i class="fa fa-sort-down"></i>
+  </button>
+
+  <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+  <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+    <%= form_tag({ controller: "factura_recurrentes", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <div class="item form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div style="text-align: left; color: black;">
+            Elija un conjunto de criterios para hacer un filtro más detallado.
+          </div>
+        </div>
+      </div>
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Seleccione un rango de fechas:
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Cajero:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :perfil_id, @cajeros, :id, :nombre, {:prompt => 'Elija un cajero'}, { class: "form-control col-md-7 col-xs-12" })%>
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Status de factura:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>
+          </div>
+        </div>
+      </div>
+
+      <% if can? :create, Negocio %>
+
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Sucursal:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="text-left">
+            <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="row">
+    <div>
+      <table class="table table-striped responsive-utilities jambo_table data-table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Fecha inicial</th>
+            <th>Fecha final</th>
+            <th>Frecuencia</th>
+            <th>Restantes</th>
+            <th>Total</th>
+            <th >Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @factura_recurrentes.each do |factura_R| %>
+            <tr>
+              <td><%=%></td>
+              <td><%=%></td>
+              <td><%=%></td>
+              <td><%= %></td>
+              <td><%=%></td>
+              <td><%= %></td>
+              <td><%=%></td>
+
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function(){
+
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+    });
+  </script>
+  <%= javascript_include_tag "ventas" %>
+  <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
+</div>

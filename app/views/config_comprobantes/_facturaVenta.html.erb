@@ -1,0 +1,99 @@
+<%= form_for @config_comprobante do |f| %>
+
+  <% if @config_comprobante.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@config_comprobante.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
+
+      <ul>
+      <% @config_comprobante.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <div class="row">
+    <div class="form-group">
+      <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
+      <div class="input-group col-md-7 col-sm-7 col-xs-12">
+        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+        <%= f.text_field :asunto_email, class:'form-control text_field'%>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group">
+      <div class="control-label col-md-2 col-sm-2 col-xs-12">
+        <%= f.label :msg_email, "Su mensaje: ", class:"control-label"%>
+      </div>
+      <div class="input-group col-md-7 col-sm-7 col-xs-12">
+         <!--textarea id="summernote" name="summernote"></textarea-->
+        <%= f.text_area :msg_email, class:'form-control text_field', id: "summernote"%>
+      </div>
+  </div>
+  </div>
+
+  <!--
+  <div class="field">
+    <%= f.label :tipo_fuente %><br>
+    <%= f.text_field :tipo_fuente %>
+  </div>
+  <div class="field">
+    <%= f.label :tam_fuente %><br>
+    <%= f.text_field :tam_fuente %>
+  </div>
+  <div class="field">
+    <%= f.label :color_fondo %><br>
+    <%= f.text_field :color_fondo %>
+  </div>
+  <div class="field">
+    <%= f.label :color_titulos %><br>
+    <%= f.text_field :color_titulos %>
+  </div>
+  <div class="field">
+    <%= f.label :color_banda %><br>
+    <%= f.text_field :color_banda %>
+  </div>
+  <div class="field">
+    <%= f.label :negocio_id %><br>
+    <%= f.text_field :negocio_id %>
+  </div>-->
+  <div class="actions" align="center">
+    <input class="btn btn-default" value="Cancelar" type="reset">
+    <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
+
+  </div>
+<% end %>
+
+<script type="text/javascript">
+
+  //$(document).ready(function() {
+  //  $('#summernote').summernote();
+  //});
+
+    $('#summernote').summernote({
+      tabsize: 2,
+      height: 170,
+      minHeight: 170,
+      maxHeight: 170,
+      lang: 'es-ES', // default: 'en-US'
+      focus: true,
+      toolbar: [
+      // [groupName, [list of button]]
+      ['fontname',['fontname']],
+      ['fontsize', ['fontsize']],
+      ['style', ['bold', 'italic', 'underline', 'clear']],
+      ['font', ['strikethrough', 'superscript', 'subscript']],
+      ['color', ['color']],
+      //['para', ['ul', 'ol', 'paragraph']],
+      ['height', ['height']],
+      ['insert',['link','table','hr']],
+      ['misc',['undo','redo']]
+
+    ]
+
+  });
+
+</script>

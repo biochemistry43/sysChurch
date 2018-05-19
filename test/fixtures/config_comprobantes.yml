@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tipo_comprobante: MyString
+  asunto_email: MyString
+  msg_email: MyString
+  tipo_fuente: MyString
+  tam_fuente: MyString
+  color_fondo: MyString
+  color_titulos: MyString
+  color_banda: MyString
+  negocio_id: 
+
+two:
+  tipo_comprobante: MyString
+  asunto_email: MyString
+  msg_email: MyString
+  tipo_fuente: MyString
+  tam_fuente: MyString
+  color_fondo: MyString
+  color_titulos: MyString
+  color_banda: MyString
+  negocio_id: 

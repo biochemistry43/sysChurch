@@ -1,5 +1,49 @@
 Rails.application.routes.draw do
-  
+
+
+  resources :config_comprobantes
+  resources :impuestos
+  resources :nota_creditos
+  resources :unidad_medidas
+  resources :uso_cfdis
+  resources :clave_prod_servs
+  resources :metodo_pagos
+  #resources :factura_recurrentes
+  get 'factura_recurrentes/index'
+  get 'factura_recurrentes/show'
+  post 'factura_recurrentes/consulta_facturas'
+  post 'factura_recurrentes/consulta_avanzada'
+  post 'factura_recurrentes/facturaRecurrentes'
+  get 'factura_recurrentes/facturaRecurrentes'
+
+
+  #resources :facturas
+  get 'facturas/index'
+  get 'facturas/show'
+  get 'facturas/new'
+  get 'facturas/create'
+  get 'facturas/edit'
+  get 'facturas/update'
+  get 'facturas/destroy'
+
+  post 'facturas/buscarVentaFacturar'
+  get 'facturas/buscarVentaFacturar'
+  post 'facturas/consulta_facturas'
+  post 'facturas/consulta_por_folio'
+  post 'facturas/consulta_por_cliente'
+  post 'facturas/consulta_avanzada'
+  get 'facturas/mostrarDetallesVenta'
+  post 'facturas/facturarVenta'
+  get 'facturas/readpdf'
+  get 'facturas/enviar_email'
+  post 'facturas/enviar_email_post'
+  get 'facturas/descargar_cfdis'
+  get 'facturas/cancelar_cfdi'
+  get 'facturas/factura_global_publico_gral'
+  post 'facturas/factura_global_publico_gral'
+  #resources :facturas
+
+
   get 'corte_cajas/show'
 
   post 'corte_cajas/show'
@@ -62,7 +106,7 @@ Rails.application.routes.draw do
 
   resources :presentacion_productos
   resources :marca_productos
-  
+
   resources :empleados
   get 'empleados/index'
   get 'empleados/show'
@@ -79,7 +123,7 @@ Rails.application.routes.draw do
   get 'datos_fiscales_negocios/update'
   get 'datos_fiscales_negocios/destroy'
 
-  resources :clientes  
+  resources :clientes
   get 'clientes/index'
   get 'clientes/show'
   get 'clientes/new'
@@ -91,7 +135,7 @@ Rails.application.routes.draw do
   resources :negocios
   resources :datos_fiscales_negocios
 
-  
+
 
   resources :sucursals
   resources :ventas
@@ -106,7 +150,7 @@ Rails.application.routes.draw do
   resources :bancos
   resources :proveedores
   get 'inventarios/index'
-  
+
   resources :articulos
   get 'articulos/showByCriteria'
   get 'articulos/showByCriteriaForPos'
@@ -131,10 +175,10 @@ Rails.application.routes.draw do
   #resources :punto_venta
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-   
+
   # You can have the root of your site routed with "root"
   #root 'devise/registrations#new'
-  
+
   get 'inventarios/showByCriteria'
   get 'articulos/showByCriteria/:criteria' => 'articulos#showByCriteria'
   get 'articulos/showByCriteriaForPos/:criteria' => 'articulos#showByCriteriaForPos'
@@ -152,14 +196,14 @@ Rails.application.routes.draw do
   patch 'compras/actualizar/:id' => 'compras#actualizar'
   get 'gastos_generales' => 'gasto_corrientes#index'
 
-  
+
   post 'gasto_generals/solo_sucursal'
   post 'gasto_generals/consulta_avanzada'
   post 'gasto_generals/consulta_por_fechas'
-  
-  
+
+
   root :to=> 'plainpage#index'
-  devise_scope :user do 
+  devise_scope :user do
     #devise_for :users
     get "/login" => "devise/sessions#new"
     delete "/logout" => "devise/sessions#destroy"
@@ -183,7 +227,7 @@ Rails.application.routes.draw do
 
   # Example resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
-   
+
   # Example resource route with options:
   #   resources :products do
   #     member do

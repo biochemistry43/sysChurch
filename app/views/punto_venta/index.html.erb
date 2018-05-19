@@ -32,12 +32,11 @@
                     <div  class="form-group">
                       
                         Caja asignada: <%= @cajaAsignada.numero_caja %> <%= @cajaAsignada.nombre.capitalize %>
+
                         <%= hidden_field_tag :caja,  @cajaAsignada.id %>
                       
                         <!--Elija una caja: Esta opción ya no estará disponible por causar problmemas de gestión
                           collection_select(nil, :caja, @cajas, :id, :nombre, {:prompt => 'Seleccione una caja', :selected=>@cajaAsignada}, { class: "form-control col-md-7 col-xs-12" })-->
-                      
-                      
                     </div>
                   </form>
                 </div>
@@ -48,16 +47,16 @@
                     <li><i class="fa fa-envelope"></i> Email: <strong><%=current_user.email%></strong>  </li>
                   </ul>
                 </div>
-                        
-                       
-                
+
+
+
               </div>
               <div class="right col-xs-5 text-center"></div>
             </div>
-                    
+
           </div>
       </div>
-                
+
         <div class="col-md-12 col-sm-12 col-xs-12 datos-cliente">
           <div class="well profile_view">
             <div class="col-sm-12">
@@ -115,11 +114,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                        
+
                 </tbody>
               </table>
             </div>
-            
+
           </div>
           <div class="row" id="botones-venta">
 
@@ -135,10 +134,10 @@
                 </div>
 
               </div>
-            
-          </div> <!-- Terminar div fila de botones venta -->  
 
-        </div> <!-- Terminar panel-pos-body -->  
+          </div> <!-- Terminar div fila de botones venta -->
+
+        </div> <!-- Terminar panel-pos-body -->
       </div>
     </div>
   </div>
@@ -147,7 +146,7 @@
   <%if current_user.negocio%>
     <%= image_tag(current_user.negocio.logo_url, id: "logo_negocio") if current_user.negocio.logo.present? %>
   <%end%>
-    
+
     <!--modal para actuailización de cantidad de proudcto-->
     <div class="modal" id="actualizarCantidad">
       <div class="modal-dialog">
@@ -206,10 +205,10 @@
                     <input type="text" class="form-control campo-pago" id="campo-paga-con">
                     <label for="">Usted debe dar este cambio:</label>
                     <div style="text-align: center;">
-                       
-                      <h1 id="cambio_cliente"></h1>  
+
+                      <h1 id="cambio_cliente"></h1>
                     </div>
-                    
+
                   </div>
                 </div>
                 <%@formas_pago.each do |forma|%>
@@ -236,14 +235,14 @@
                     </div>
                   <%end%>
                 <%end%>
-                
+
                 </div>
               </div>
               <div class="clearfix"></div>
               <div class="modal-footer" id="modal-footer-pago">
                 <div class="left">
                   <div class="checkbox">
-                    
+
                     <h2 style="display:inline;"><input name="isPrintTicket" id="isPrintTicket" type="checkbox" ype="checkbox" value="" checked="">¿Imprimir ticket?</h2><span class="glyphicon glyphicon-print"></span>
                   </div>
                 </div>
@@ -253,7 +252,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal" id="modalClie">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -304,7 +303,7 @@
     <% if @venta %>
       <%= render ("ticket") %>
       <script>
-        
+
         $("#print-div").print({
 
           globalStyles: false,

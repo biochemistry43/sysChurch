@@ -25,8 +25,28 @@ class ClientesController < ApplicationController
   end
 
   def update
+
+    nombreFiscal_f = params[:nombreFiscal_f]
+    rfc_f = params[:rfc_f]
+    calle_f = params[:calle_f ]
+    numExterior_f = params[:numExterior_f]
+    numInterior_f = params[:numInterior_f]
+    colonia_f = params[:colonia_f]
+    localidad_f = params[:localidad_f]
+    #referencia_f = params[:referencia_f]
+    municipio_f = params[:municipio_f]
+    estado_f = params[:estado_f]
+    codigo_postal_f = params[:codigo_postal_f]
+
     respond_to do |format|
       if @cliente.update(cliente_params)
+        if @cliente.datos_fiscales_cliente.present?
+          @cliente.datos_fiscales_cliente.update(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+        else
+          @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+          @cliente.datos_fiscales_cliente = @datosFiscalesCliente if @datosFiscalesCliente.save && nombreFiscal_f.length > 0 && rfc_f.length > 0
+        end
+
         format.json { head :no_content }
         format.js
         #format.html { redirect_to @cliente, notice: 'Las datos del cliente han sido actualizados' }
@@ -43,10 +63,28 @@ class ClientesController < ApplicationController
   def create
     @cliente = Cliente.new(cliente_params)
 
+    nombreFiscal_f = params[:nombreFiscal_f]
+    rfc_f = params[:rfc_f]
+    calle_f = params[:calle_f ]
+    numExterior_f = params[:numExterior_f]
+    numInterior_f = params[:numInterior_f]
+    colonia_f = params[:colonia_f]
+    localidad_f = params[:localidad_f]
+    #referencia_f = params[:referencia_f]
+    municipio_f = params[:municipio_f]
+    estado_f = params[:estado_f]
+    codigo_postal_f = params[:codigo_postal_f]
+
+    @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+
     respond_to do |format|
       if @cliente.valid?
         if @cliente.save
           current_user.negocio.clientes << @cliente
+          if nombreFiscal_f.length > 0 && rfc_f.length > 0
+
+            @cliente.datos_fiscales_cliente = @datosFiscalesCliente if @datosFiscalesCliente.save
+          end
           #format.html { redirect_to @cliente, notice: 'Creación exitosa del nuevo cliente' }
           #format.json { render :show, status: :created, location: @cliente }
           format.json { head :no_content}
