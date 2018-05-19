@@ -1,8 +1,9 @@
 class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
-  before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
+  #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
+  before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
   def buscarVentaFacturar
@@ -1072,7 +1073,6 @@ class FacturasController < ApplicationController
     if request.post?
       @rfc = params[:rfc]
       cliente=Cliente.find_by rfc: @rfc
-      @facturas = Factura.find_by cliente_id:cliente
       if can? :create, Negocio
         @facturas = current_user.negocio.facturas.where(cliente_id: cliente)
       else
@@ -1087,13 +1087,18 @@ class FacturasController < ApplicationController
 
     @fechas=false
     @por_folio=false
+
+    #@clientes = current_user.negocio.clientes.nombre
+
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
-      perfil_id = params[:perfil_id]
-      @cajero = nil
-      unless perfil_id.empty?
-        @cajero = Perfil.find(perfil_id).user
+      cliente_id = params[:cliente_id]
+      #@cajero = nil
+      @cliente = nil
+
+      unless cliente_id.empty?
+        @cliente = Cliente.find(cliente_id).id #id, nombre_completo
       end
 
       @estado_factura = params[:estado_factura]
@@ -1104,16 +1109,15 @@ class FacturasController < ApplicationController
         @sucursal = Sucursal.find(@suc)
       end
 
-      #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
         unless @suc.empty?
-          #valida si se eligió un cajero específico para esta consulta
-          if @cajero
+          #valida si se eligió un cliente específico para esta consulta
+          if @cliente
             #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
             unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura, sucursal: @sucursal)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
             end
 
           # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
@@ -1129,15 +1133,15 @@ class FacturasController < ApplicationController
         #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
         else
           #valida si se eligió un cajero específico para esta consulta
-          if @cajero
+          if @cliente
             #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
             unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, user: @cajero)
+              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
             end
 
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+          # Si no se eligió cliente, entonces no filtra las ventas por el cliente
           else
             #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
             unless @estado_factura.eql?("Todas")
@@ -1151,17 +1155,17 @@ class FacturasController < ApplicationController
       #Si el usuario no es un administrador o subadministrador
       else
 
-        #valida si se eligió un cajero específico para esta consulta
-        if @cajero
+        #valida si se eligió un cliente específico para esta consulta
+        if @cliente
 
           #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
           unless @estado_factura.eql?("Todas")
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, estado_factura: @estado_factura)
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
           else
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: @cliente)
           end #Termina unless @estado_factura.eql?("Todas")
 
-        # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+        # Si no se eligió cliente, entonces no filtra las ventas por el cliente
         else
 
           #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
@@ -1658,30 +1662,12 @@ class FacturasController < ApplicationController
     def set_factura
       @factura = Factura.find(params[:id])
     end
-    def set_cajeros
-      @cajeros = []
-      if can? :create, Negocio
-        current_user.negocio.users.each do |cajero|
-          #Llena un array con todos los cajeros del negocio
-          #(usuarios del negocio que pueden hacer una venta, no solo el rol de cajero)
-          #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
-          if cajero.role != "auxiliar" || cajero.role != "almacenista"
-            @cajeros.push(cajero.perfil)
-          end
-        end
-      else
-        current_user.sucursal.users.each do |cajero|
-          #Llena un array con todos los cajeros de la sucursal
-          #(usuarios de la sucursal que pueden hacer una venta, no solo el rol de cajero)
-          #Siempre y cuando no sean auxiliares o almacenistas pues no tienen acceso a punto de venta
-          if cajero.role != "auxiliar" || cajero.role != "almacenista"
-            @cajeros.push(cajero.perfil)
-          end
-        end
-      end
-    end
+
     def set_sucursales
       @sucursales = current_user.negocio.sucursals
+    end
+    def set_clientes
+      @clientes = current_user.negocio.clientes
     end
 
 

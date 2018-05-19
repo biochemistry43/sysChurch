@@ -260,12 +260,12 @@
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
-              Cajero:
+              Cliente:
             </div>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
-              <%= collection_select(nil, :perfil_id, @cajeros, :id, :nombre, {:prompt => 'Elija un cajero'}, { class: "form-control col-md-7 col-xs-12" })%>
+              <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12" })%>
             </div>
           </div>
         </div>
@@ -278,7 +278,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center">
-              <%= select_tag "estado_factura", "<option>Todas</option><option>Cerrada</option><option>Borrador</option><option>Abierta</option><option>Anulada</option>".html_safe,  class: 'form-control' %>
+              <%= select_tag "estado_factura", "<option>Todas</option><option>Activa</option><option>Cancelada</option>".html_safe,  class: 'form-control' %>
             </div>
           </div>
         </div>
