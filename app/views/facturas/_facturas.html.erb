@@ -269,6 +269,19 @@
             </div>
           </div>
         </div>
+        <!--Filtro por monto de venta-->
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Por monto:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= select_tag "monto", "<option>menor que</option><option>mayor que</option><option>menor igual</option><option>mayor igual</option><option>igual</option><option>exepto</option>".html_safe,  class: 'form-control' %>
+            </div>
+          </div>
+        </div>
 
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
