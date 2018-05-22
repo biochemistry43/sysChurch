@@ -42,7 +42,8 @@ body{
 
 body {
   /*padding-top: 50px;*/
-  background: #5B7ECC;
+  /*background: #5B7ECC;*/
+  background: #343aa7;
   font-size: 15px;
   font-weight: 600;
   color: #5B7ECC;
@@ -56,6 +57,32 @@ h1{
   margin-bottom: 20px;
 }
 
+.nav-md ul.nav.child_menu li::after {
+  border-left: 1px solid #ff00ff;
+}
+
+.nav-md ul.nav.child_menu li::before {
+  background:  #ff00ff; 
+}
+
+.nav.child_menu > li > a {
+  color: white;  
+}
+
+.nav.child_menu > li > a:hover{
+  background: #ff00ff !important;
+}
+
+.nav li li.current-page a{
+  color: white;
+  background: #ff00ff;  
+}
+
+
+
+/*.site_title {
+  color:  #33cccc !important; 
+}*/
 
 
 /*

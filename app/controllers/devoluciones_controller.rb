@@ -563,9 +563,9 @@ class DevolucionesController < ApplicationController
       #Se disminuye la cantidad devuelta, respecto del item de venta.
       #@itemVenta.cantidad -= @cantidad_devuelta.to_f
 
-      #################################################################################################################
-      #################  creando los registros por concepto de gastos por devolucion de productos #####################
-      #################################################################################################################
+      #####################################################################################################
+      #############  creando los registros por concepto de gastos por devolucion de productos #############
+      #####################################################################################################
 
       @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Devoluciones").take
 
@@ -576,8 +576,9 @@ class DevolucionesController < ApplicationController
       #almacena el importe monetario que será devuelto al cliente.
       importe_devolucion = params[:importe_devolucion]
 
-      #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas 
-      #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
+      #Si se cumple esta condición, significa que el recurso para la devolución, 
+      #provendrá de alguna de las cajas de venta que tiene la sucursal. 
+      #La cadena contiene el id de la caja de venta seleccionada.
       if origen.include? "caja_venta"
         tamano_cadena_origen = origen.length
 
@@ -672,25 +673,30 @@ class DevolucionesController < ApplicationController
           end
         end
       end
-
-
-
+      #debugger
+      #Se devuelve la cantidad devuelta a la existencia.
+      #@itemVenta.articulo.existencia += @devolucion.cantidad_devuelta
+      #debugger
       respond_to do |format|
 	    if @devolucion.valid?
-	      if @devolucion.save && @itemVenta.save && @venta.save 
+        ActiveRecord::Base.transaction do
+  	      if @devolucion.save && @itemVenta.save && @venta.save  && @itemVenta.articulo.save
+            
 
-          if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
-	          flash[:notice] = "La devolución se realizó con éxito"
-	          format.html { redirect_to action: "devolucion" }
-          elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save
-            flash[:notice] = "La devolución se realizó con éxito"
-            format.html { redirect_to action: "devolucion" }
-          end
 
-	      else
-	        format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
+            if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
+	            flash[:notice] = "La devolución se realizó con éxito"
+	            format.html { redirect_to action: "devolucion" }
+            elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save
+              flash[:notice] = "La devolución se realizó con éxito"
+              format.html { redirect_to action: "devolucion" }
+            end
 
-	      end
+	        else
+	          format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
+	        end
+        end
+
 	    else
 	      format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
 	    end
