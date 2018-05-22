@@ -240,29 +240,31 @@ class ArticulosController < ApplicationController
     
     respond_to do |format|
       if @articulo.valid?
-        if @articulo.save
+        ActiveRecord::Base.transaction do
+          if @articulo.save
 
           
-          unless existenciaInicial
-            existenciaInicial = 0
+            unless existenciaInicial
+              existenciaInicial = 0
+            end
+
+            #añado una primera instancia de entrada de almacén, aunque la existencia inicial sea cero.
+            entradaAlmacen = EntradaAlmacen.new(:cantidad=>existenciaInicial, :fecha=>Time.now, :isEntradaInicial=>true)
+            entradaAlmacen.save
+
+            #añado esta entrada a almacén a la lista de entradas de almacén relacionadas con el
+            #artículo.
+            @articulo.entrada_almacens << entradaAlmacen          
+            #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
+            #format.json { render :show, status: :created, location: @articulo }
+            format.json { head :no_content}
+            format.js
+          else
+            #format.html { render :new }
+            #format.json { render json: @articulo.errors, status: :unprocessable_entity }
+            format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
+            format.js {render :new} 
           end
-
-          #añado una primera instancia de entrada de almacén, aunque la existencia inicial sea cero.
-          entradaAlmacen = EntradaAlmacen.new(:cantidad=>existenciaInicial, :fecha=>Time.now, :isEntradaInicial=>true)
-          entradaAlmacen.save
-
-          #añado esta entrada a almacén a la lista de entradas de almacén relacionadas con el
-          #artículo.
-          @articulo.entrada_almacens << entradaAlmacen          
-          #format.html { redirect_to @articulo, notice: 'El producto fue creado existosamente' }
-          #format.json { render :show, status: :created, location: @articulo }
-          format.json { head :no_content}
-          format.js
-        else
-          #format.html { render :new }
-          #format.json { render json: @articulo.errors, status: :unprocessable_entity }
-          format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
-          format.js {render :new} 
         end
       else
         format.js { render :new }
