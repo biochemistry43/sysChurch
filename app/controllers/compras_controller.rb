@@ -392,53 +392,55 @@ class ComprasController < ApplicationController
               current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
 
               if @compra.valid?
-                if @compra.save && @cajaVenta.save && @gasto.save && @pagoProveedor.save && @movimientoCaja.save
-                  articulos = compra_params[:articulos]
-                  fecha = DateTime.parse(compra_params[:fecha]).to_date
-                  hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+                ActiveRecord::Base.transaction do
+                  if @compra.save && @cajaVenta.save && @gasto.save && @pagoProveedor.save && @movimientoCaja.save
+                    articulos = compra_params[:articulos]
+                    fecha = DateTime.parse(compra_params[:fecha]).to_date
+                    hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+  
+                    codigo = ""
+                    cantidad = 0
+                    precio = 0
+                    importe = 0
+                    existencia = 0
+                    nuevaExistencia = 0
 
-                  codigo = ""
-                  cantidad = 0
-                  precio = 0
-                  importe = 0
-                  existencia = 0
-                  nuevaExistencia = 0
-
-                  hashArticulos.collect { |articulo|
-
-                    codigo = articulo["codigo"]
-                    precio = articulo["precio"]
-                    cantidad = articulo["cantidad"]
-                    importe = articulo["importe"]
+                    hashArticulos.collect { |articulo|
+  
+                      codigo = articulo["codigo"]
+                      precio = articulo["precio"]
+                      cantidad = articulo["cantidad"]
+                      importe = articulo["importe"]
                     
-                    detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-                    entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-                    bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-                    bd_articulo.detalle_compras << detalleCompra
-                    bd_articulo.entrada_almacens << entradaAlmacen
+                      detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+                      entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+                      bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+                      bd_articulo.detalle_compras << detalleCompra
+                      bd_articulo.entrada_almacens << entradaAlmacen
 
-                    existencia = bd_articulo.existencia
+                      existencia = bd_articulo.existencia
 
-                    nuevaExistencia = existencia + entradaAlmacen.cantidad
+                      nuevaExistencia = existencia + entradaAlmacen.cantidad
 
-                    bd_articulo.existencia = nuevaExistencia
+                      bd_articulo.existencia = nuevaExistencia
 
-                    bd_articulo.save
+                      bd_articulo.save
 
 
-                  }
+                    }
 
-                  current_user.compras << @compra
-                  current_user.negocio.compras << @compra
-                  current_user.sucursal.compras << @compra
-                  format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
-                  format.json { render :new, status: :created, location: @compra }
-                  #format.json { head :no_content}
-                  #format.js
-                else
-                  format.html { render :new }
-                  format.json { render json: @compra.errors, status: :unprocessable_entity }
-                  flash[:notice] = "Hubo un error al momento de guardar la compra"
+                    current_user.compras << @compra
+                    current_user.negocio.compras << @compra
+                    current_user.sucursal.compras << @compra
+                    format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
+                    format.json { render :new, status: :created, location: @compra }
+                    #format.json { head :no_content}
+                    #format.js
+                  else
+                    format.html { render :new }
+                    format.json { render json: @compra.errors, status: :unprocessable_entity }
+                    flash[:notice] = "Hubo un error al momento de guardar la compra"
+                  end
                 end
               else
                 format.html { render :new }
@@ -489,54 +491,56 @@ class ComprasController < ApplicationController
                 current_user.negocio.caja_chicas << @cajaChica
 
                 if @compra.valid?
-                  if @compra.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
-                    articulos = compra_params[:articulos]
-                    fecha = DateTime.parse(compra_params[:fecha]).to_date
-                    tipo_pago = compra_params[:tipo_pago]
-                    hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
-
-                    codigo = ""
-                    cantidad = 0
-                    precio = 0
-                    importe = 0
-                    existencia = 0
-                    nuevaExistencia = 0
-
-                    hashArticulos.collect { |articulo|
-
-                      codigo = articulo["codigo"]
-                      precio = articulo["precio"]
-                      cantidad = articulo["cantidad"]
-                      importe = articulo["importe"]
+                  ActiveRecord::Base.transaction do
+                    if @compra.save && @cajaChica.save && @gasto.save && @pagoProveedor.save
+                      articulos = compra_params[:articulos]
+                      fecha = DateTime.parse(compra_params[:fecha]).to_date
+                      tipo_pago = compra_params[:tipo_pago]
+                      hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+ 
+                      codigo = ""
+                      cantidad = 0
+                      precio = 0
+                      importe = 0
+                      existencia = 0
+                      nuevaExistencia = 0
+ 
+                      hashArticulos.collect { |articulo|
+ 
+                        codigo = articulo["codigo"]
+                        precio = articulo["precio"]
+                        cantidad = articulo["cantidad"]
+                        importe = articulo["importe"]
                       
-                      detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-                      entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-                      bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-                      bd_articulo.detalle_compras << detalleCompra
-                      bd_articulo.entrada_almacens << entradaAlmacen
+                        detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+                        entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+                        bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+                        bd_articulo.detalle_compras << detalleCompra
+                        bd_articulo.entrada_almacens << entradaAlmacen
+ 
+                        existencia = bd_articulo.existencia
+  
+                        nuevaExistencia = existencia + entradaAlmacen.cantidad
 
-                      existencia = bd_articulo.existencia
+                        bd_articulo.existencia = nuevaExistencia
 
-                      nuevaExistencia = existencia + entradaAlmacen.cantidad
-
-                      bd_articulo.existencia = nuevaExistencia
-
-                      bd_articulo.save
+                        bd_articulo.save
 
 
-                    }
+                      }
 
-                    current_user.compras << @compra
-                    current_user.negocio.compras << @compra
-                    current_user.sucursal.compras << @compra
-                    format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
-                    format.json { render :new, status: :created, location: @compra }
-                    #format.json { head :no_content}
-                    #format.js
-                  else
-                    format.html { render :new }
-                    format.json { render json: @compra.errors, status: :unprocessable_entity }
-                    flash[:notice] = "Hubo un error al momento de guardar la compra"
+                      current_user.compras << @compra
+                      current_user.negocio.compras << @compra
+                      current_user.sucursal.compras << @compra
+                      format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
+                      format.json { render :new, status: :created, location: @compra }
+                      #format.json { head :no_content}
+                      #format.js
+                    else
+                      format.html { render :new }
+                      format.json { render json: @compra.errors, status: :unprocessable_entity }
+                      flash[:notice] = "Hubo un error al momento de guardar la compra"
+                    end
                   end
                 else
                   format.html { render :new }
@@ -557,53 +561,55 @@ class ComprasController < ApplicationController
           fecha_limite = DateTime.parse(compra_params[:fecha_limite_pago]).to_date
           @pagoPendiente = PagoPendiente.new(:fecha_vencimiento=>fecha_limite, :saldo=>monto_compra, :compra=>@compra, :proveedor=>@compra.proveedor, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio)
           if @compra.valid?
-            if @compra.save && @pagoPendiente.save
-              articulos = compra_params[:articulos]
-              fecha = DateTime.parse(compra_params[:fecha]).to_date
-              tipo_pago = compra_params[:tipo_pago]
-              hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+            ActiveRecord::Base.transaction do
+              if @compra.save && @pagoPendiente.save
+                articulos = compra_params[:articulos]
+                fecha = DateTime.parse(compra_params[:fecha]).to_date
+                tipo_pago = compra_params[:tipo_pago]
+                hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
 
-              codigo = ""
-              cantidad = 0
-              precio = 0
-              importe = 0
-              existencia = 0
-              nuevaExistencia = 0
+                codigo = ""
+                cantidad = 0
+                precio = 0
+                importe = 0
+                existencia = 0
+                nuevaExistencia = 0
 
-              hashArticulos.collect { |articulo|
+                hashArticulos.collect { |articulo|
 
-                codigo = articulo["codigo"]
-                precio = articulo["precio"]
-                cantidad = articulo["cantidad"]
-                importe = articulo["importe"]
+                  codigo = articulo["codigo"]
+                  precio = articulo["precio"]
+                  cantidad = articulo["cantidad"]
+                  importe = articulo["importe"]
                 
-                detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-                entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-                bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
-                bd_articulo.detalle_compras << detalleCompra
-                bd_articulo.entrada_almacens << entradaAlmacen
+                  detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+                  entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+                  bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+                  bd_articulo.detalle_compras << detalleCompra
+                  bd_articulo.entrada_almacens << entradaAlmacen
 
-                existencia = bd_articulo.existencia
+                  existencia = bd_articulo.existencia
 
-                nuevaExistencia = existencia + entradaAlmacen.cantidad
+                  nuevaExistencia = existencia + entradaAlmacen.cantidad
 
-                bd_articulo.existencia = nuevaExistencia
+                  bd_articulo.existencia = nuevaExistencia
 
-                bd_articulo.save
+                  bd_articulo.save!
 
 
-              }
+                }
 
-              current_user.compras << @compra
-              current_user.negocio.compras << @compra
-              current_user.sucursal.compras << @compra
-              format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
-              format.json { render :new, status: :created, location: @compra }
-              #format.json { head :no_content}
-              #format.js
-            else
-              format.html { render :new }
-              format.json { render json: @compra.errors, status: :unprocessable_entity }
+                current_user.compras << @compra
+                current_user.negocio.compras << @compra
+                current_user.sucursal.compras << @compra
+                format.html { redirect_to compras_new_path, notice: 'La compra se registró existosamente' }
+                format.json { render :new, status: :created, location: @compra }
+                #format.json { head :no_content}
+                #format.js
+              else
+                format.html { render :new }
+                format.json { render json: @compra.errors, status: :unprocessable_entity }
+              end
             end
           else
             format.html { render :new }
@@ -633,94 +639,96 @@ class ComprasController < ApplicationController
     if request.patch?
       @monto_anterior = @compra.monto_compra
       respond_to do |format|
-        if @compra.update(compra_params)
-          #Se borran los destalles de compra y entradas de almacen relacionados con la compra.
-          @compra.detalle_compras.each do |detalle|
-            #antes de borrar el detalle de compra, se obtiene la cantidad que fue comprada para descontarla del
-            #inventario del articulo
-            cantidadComprada = detalle.cantidad_comprada
-            existenciaActual = detalle.articulo.existencia
-            nuevaExistenciaArticulo = existenciaActual - cantidadComprada
+        ActiveRecord::Base.transaction do
+          if @compra.update(compra_params)
+            #Se borran los destalles de compra y entradas de almacen relacionados con la compra.
+            @compra.detalle_compras.each do |detalle|
+              #antes de borrar el detalle de compra, se obtiene la cantidad que fue comprada para descontarla del
+              #inventario del articulo
+              cantidadComprada = detalle.cantidad_comprada
+              existenciaActual = detalle.articulo.existencia
+              nuevaExistenciaArticulo = existenciaActual - cantidadComprada
+  
+              #Se eliminan todas las existencias del articulo que estén relacionadas con la compra.
+              #Más adelante se actualizará la existencia del articulo en base a los datos editados.
+              detalle.articulo.existencia = nuevaExistenciaArticulo
 
-            #Se eliminan todas las existencias del articulo que estén relacionadas con la compra.
-            #Más adelante se actualizará la existencia del articulo en base a los datos editados.
-            detalle.articulo.existencia = nuevaExistenciaArticulo
+              detalle.save!
 
-            detalle.save
+              #Una vez obtenidos los datos necesarios, se destruye el detalle de compra.
+              #Posteriormente se añadiran los nuevos detalles en base a la edición del usuario.
+              detalle.destroy!
 
-            #Una vez obtenidos los datos necesarios, se destruye el detalle de compra.
-            #Posteriormente se añadiran los nuevos detalles en base a la edición del usuario.
-            detalle.destroy
-
-          end
-
-          #Así mismo, este bucle destruye todas las entradas de almacén de esta compra.
-          @compra.entrada_almacens.each do |entrada_almacen|
-            entrada_almacen.destroy
-          end
-
-          
-          articulos = compra_params[:articulos]
-          fecha = DateTime.parse(compra_params[:fecha]).to_date
-          razon_edicion = params[:compra_razon]
-
-          #Ahora se crea un registro en el historia de ediciones de compra
-          historial = HistorialEdicionesCompra.create(:monto_anterior=>@monto_anterior, :razon_edicion=>razon_edicion[:edicion])
-          @compra.historial_ediciones_compras << historial
-          current_user.negocio.historial_ediciones_compras << historial
-          current_user.sucursal.historial_ediciones_compras << historial
-          current_user.historial_ediciones_compras << historial
+            end
+ 
+            #Así mismo, este bucle destruye todas las entradas de almacén de esta compra.
+            @compra.entrada_almacens.each do |entrada_almacen|
+              entrada_almacen.destroy!
+            end
 
           
+            articulos = compra_params[:articulos]
+            fecha = DateTime.parse(compra_params[:fecha]).to_date
+            razon_edicion = params[:compra_razon]
 
-          hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+            #Ahora se crea un registro en el historia de ediciones de compra
+            historial = HistorialEdicionesCompra.create(:monto_anterior=>@monto_anterior, :razon_edicion=>razon_edicion[:edicion])
+            @compra.historial_ediciones_compras << historial
+            current_user.negocio.historial_ediciones_compras << historial
+            current_user.sucursal.historial_ediciones_compras << historial
+            current_user.historial_ediciones_compras << historial
 
-          codigo = ""
-          cantidad = 0
-          precio = 0
-          importe = 0
-          existencia = 0
-          nuevaExistencia = 0
+          
+
+            hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
+
+            codigo = ""
+            cantidad = 0
+            precio = 0
+            importe = 0
+            existencia = 0
+            nuevaExistencia = 0
 
 
-          hashArticulos.collect { |articulo|  
+            hashArticulos.collect { |articulo|  
 
-            codigo = articulo["codigo"]
-            precio = articulo["precio"]
-            cantidad = articulo["cantidad"]
-            importe = articulo["importe"]
+              codigo = articulo["codigo"]
+              precio = articulo["precio"]
+              cantidad = articulo["cantidad"]
+              importe = articulo["importe"]
                 
-            detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
-            entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
-            bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
+              detalleCompra = @compra.detalle_compras.build(:cantidad_comprada=>cantidad, :precio_compra=>precio, :importe=>importe, :status=>"Activa")
+              entradaAlmacen = @compra.entrada_almacens.build(:cantidad=>cantidad, :fecha=>fecha, :isEntradaInicial=>false)
+              bd_articulo = Articulo.where("clave=? and sucursal_id=?" , codigo, current_user.sucursal.id).take
 
-            #Se relaciona el artículo comprado con la compra
-            bd_articulo.detalle_compras << detalleCompra
+              #Se relaciona el artículo comprado con la compra
+              bd_articulo.detalle_compras << detalleCompra
 
-            #Se relaciona una entrada al almacén con un artículo 
-            bd_articulo.entrada_almacens << entradaAlmacen
+              #Se relaciona una entrada al almacén con un artículo 
+              bd_articulo.entrada_almacens << entradaAlmacen
 
-            #obtiene la existencia actual del artículo para actualizarla posteriormente añadiendole las nuevas
-            #compras
-            existencia_actual = bd_articulo.existencia
+              #obtiene la existencia actual del artículo para actualizarla posteriormente añadiendole las nuevas
+              #compras
+              existencia_actual = bd_articulo.existencia
 
-            #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de 
-            #esta compra.
-            nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
+              #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de 
+              #esta compra.
+              nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
 
-            #Se actualiza también el precio de compra del artículo. TODO hacer un historial de precios de compra por artículo.
-            bd_articulo.precioCompra = detalleCompra.precio_compra
+              #Se actualiza también el precio de compra del artículo. TODO hacer un historial de precios de compra por artículo.
+              bd_articulo.precioCompra = detalleCompra.precio_compra
 
-            #Se actualiza la nueva existencia y se guarda el artículo 
-            bd_articulo.existencia = nuevaExistencia
-            bd_articulo.save
-          }
+              #Se actualiza la nueva existencia y se guarda el artículo 
+              bd_articulo.existencia = nuevaExistencia
+              bd_articulo.save!
+            }
             
-          format.html { redirect_to compras_path, notice: 'Compra actualizada' }
-          format.json { render :index, status: :created, location: @compra }
-        else
-          format.html { render :index }
-          format.json { render json: @compra.errors, status: :unprocessable_entity }
+            format.html { redirect_to compras_path, notice: 'Compra actualizada' }
+            format.json { render :index, status: :created, location: @compra }
+          else
+            format.html { render :index }
+            format.json { render json: @compra.errors, status: :unprocessable_entity }
+          end
         end
       end
 
