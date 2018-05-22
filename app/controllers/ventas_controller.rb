@@ -54,38 +54,48 @@ class VentasController < ApplicationController
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
       
-      
-      if @venta.update(:observaciones => observaciones, :status => "Cancelada")
+      ActiveRecord::Base.transaction do
+        if @venta.update!(:observaciones => observaciones, :status => "Cancelada")
         
-        #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
-        movimiento_caja = @venta.movimiento_caja_sucursal
+          #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
+          movimiento_caja = @venta.movimiento_caja_sucursal
 
-        #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
-        if movimiento_caja.tipo_pago.eql?("efectivo")
-          caja_sucursal = @venta.caja_sucursal
-          saldo = caja_sucursal.saldo
-          saldoActualizado = saldo - @venta.montoVenta
-          caja_sucursal.saldo = saldoActualizado 
-          caja_sucursal.save
+          #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
+          if movimiento_caja.tipo_pago.eql?("efectivo")
+            caja_sucursal = @venta.caja_sucursal
+            saldo = caja_sucursal.saldo
+            saldoActualizado = saldo - @venta.montoVenta
+            caja_sucursal.saldo = saldoActualizado 
+            caja_sucursal.save!
+          end
+
+          #Se elimina el movimiento de caja relacionado con la venta
+          movimiento_caja.destroy!
+
+          #Por cada item de venta, se crea un registro de venta cancelada.
+          @venta.item_ventas.each do |itemVenta|
+            ventaCancelada = VentaCancelada.create(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
+            itemVenta.status = "Con devoluciones"
+            
+            
+            
+            #Se devuelve al inventario, los productos de la venta cancelada.
+            itemVenta.articulo.existencia = itemVenta.cantidad + itemVenta.articulo.existencia
+            itemVenta.articulo.save!
+            itemVenta.save!
+          end
+
+          
+
+
+          format.json { head :no_content}
+          format.js
+        else
+          format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
+          format.js {render :edit}
         end
 
-        #Se elimina el movimiento de caja relacionado con la venta
-        movimiento_caja.destroy
-
-        #Por cada item de venta, se crea un registro de venta cancelada.
-        @venta.item_ventas.each do |itemVenta|
-          ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
-          ventaCancelada.save
-          itemVenta.status = "Con devoluciones"
-          itemVenta.save
-        end
-
-        format.json { head :no_content}
-        format.js
-      else
-        format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
-        format.js {render :edit}
-      end
+      end#Fin de la transacción
     end
   end
 
