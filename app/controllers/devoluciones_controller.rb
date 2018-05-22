@@ -516,11 +516,19 @@ class DevolucionesController < ApplicationController
   	@consulta = false
   	if request.post?
   	  @consulta = true
-      @venta = Venta.find_by :folio=>params[:folio]
+      #@venta = Venta.find_by :folio=>params[:folio]
+      
+      if can? :create, Negocio
+        @venta = current_user.negocio.ventas.select{|venta| venta.folio == params[:folio].to_s}.first
+      else
+        @venta = current_user.sucursal.ventas.select{|venta| venta.folio == params[:folio].to_s}.first
+      end
+
       if @venta
         @itemsVenta  = @venta.item_ventas
       else
         @folio = params[:folio]
+        flash[:notice] = "La venta con folio #{params[:folio]} no está registrada en el negocio"
       end
   	end
   end
