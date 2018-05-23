@@ -10,6 +10,6 @@
   <td style="text-align: center;"> <%= link_to 'Detalles', pago_pendiente_path(pago_pendiente), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-eye"></i> 
   </td>
 
-  <td style="text-align: center;"> <%= link_to 'Aplicar pago', edit_pago_pendiente_path(pago_pendiente), html_options = {class: "btn btn-primary btn-xs", remote: true} %><i class="fa fa-pencil"></i> 
+  <td style="text-align: center;"> <%= link_to 'Aplicar pago', edit_pago_pendiente_path(pago_pendiente), html_options = {class: "btn btn-primary btn-xs", remote: true, 'data-confirm' => 'Después de aplicar un pago a esta compra, no podrá editar ¿Desea continuar?' } %><i class="fa fa-pencil"></i> 
   </td>
 </tr>
