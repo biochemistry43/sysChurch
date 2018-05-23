@@ -339,7 +339,8 @@ class ComprasController < ApplicationController
     @movimientoCaja = nil
     @cajaChica = nil
 
-    #TODO discriminar la forma de pago. En la caja solo debe ser cargadas las compras en efectivo
+    #TODO discriminar la forma de pago. 
+    #En la caja solo debe ser cargadas las compras en efectivo
 
 
     respond_to do |format|
@@ -373,10 +374,11 @@ class ComprasController < ApplicationController
               
               #creación y relación del registro de pago de la compra al proveedor indicado
               @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
-
+              
               #relaciones del registro de gasto
               @categoriaGasto.gastos << @gasto
               @cajaVenta.gastos << @gasto
+              @gasto.compra = @compra
               current_user.gastos << @gasto
               current_user.sucursal.gastos << @gasto
               current_user.negocio.gastos << @gasto
@@ -390,6 +392,8 @@ class ComprasController < ApplicationController
               current_user.movimiento_caja_sucursals << @movimientoCaja
               current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
               current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
+              @gasto.movimiento_caja_sucursal = @movimientoCaja
+              @gasto.save!
 
               if @compra.valid?
                 ActiveRecord::Base.transaction do
@@ -424,7 +428,7 @@ class ComprasController < ApplicationController
 
                       bd_articulo.existencia = nuevaExistencia
 
-                      bd_articulo.save
+                      bd_articulo.save!
 
 
                     }
@@ -471,6 +475,8 @@ class ComprasController < ApplicationController
                 saldo_en_caja_chica = @saldoCajaChica
 
                 @gasto = Gasto.new(:monto=>monto_compra, :concepto=>"Compra de mercancía", :tipo=>"compra")
+
+                @gasto.compra = @compra
 
                 #creación y relación del registro de pago de la compra al proveedor indicado
                 @pagoProveedor = PagoProveedor.new(:monto=>monto_compra, :compra=>@compra, :gasto=>@gasto, :proveedor=>@compra.proveedor, :user=>current_user, :sucursal=>current_user.sucursal, :negocio=>current_user.negocio, :statusPago=>"Liquidación de compra")
@@ -524,10 +530,11 @@ class ComprasController < ApplicationController
 
                         bd_articulo.existencia = nuevaExistencia
 
-                        bd_articulo.save
+                        bd_articulo.save!
 
 
                       }
+
 
                       current_user.compras << @compra
                       current_user.negocio.compras << @compra
@@ -606,9 +613,12 @@ class ComprasController < ApplicationController
                 format.json { render :new, status: :created, location: @compra }
                 #format.json { head :no_content}
                 #format.js
+
               else
+
                 format.html { render :new }
                 format.json { render json: @compra.errors, status: :unprocessable_entity }
+
               end
             end
           else
@@ -630,21 +640,24 @@ class ComprasController < ApplicationController
     @items = @compra.detalle_compras
   end
 
+  #método para edición de compra (no mas de tres ediciones por compra)
   def actualizar
     #if request.get?
     #  @compra = Compra.find(params[:compra])
     #end
     
-    #Si la petición ha venido por el método post, entonces se procede a la actualización de la compra.
+    # Si la petición ha venido por el método post, 
+    # entonces se procede a la actualización de la compra.
     if request.patch?
       @monto_anterior = @compra.monto_compra
       respond_to do |format|
         ActiveRecord::Base.transaction do
           if @compra.update(compra_params)
-            #Se borran los destalles de compra y entradas de almacen relacionados con la compra.
+            #Se borran los destalles de compra y entradas de almacen 
+            #relacionados con la compra.
             @compra.detalle_compras.each do |detalle|
-              #antes de borrar el detalle de compra, se obtiene la cantidad que fue comprada para descontarla del
-              #inventario del articulo
+              #antes de borrar el detalle de compra, se obtiene la cantidad 
+              #que fue comprada para descontarla del inventario del articulo
               cantidadComprada = detalle.cantidad_comprada
               existenciaActual = detalle.articulo.existencia
               nuevaExistenciaArticulo = existenciaActual - cantidadComprada
@@ -678,7 +691,24 @@ class ComprasController < ApplicationController
             current_user.sucursal.historial_ediciones_compras << historial
             current_user.historial_ediciones_compras << historial
 
-          
+            #Actualización del monto de gasto
+            if @compra.gasto
+              @compra.gasto.monto = @compra.monto_compra
+              @compra.gasto.save!  
+            end
+
+            #actualización de datos del registro pago_proveedor
+            #el pago a proveedores genera un solo registro cuando las compras
+            #son de contado.
+            if @compra.pago_proveedores
+              pago_proveedor = @compra.pago_proveedores.take
+
+              pago_proveedor.monto = @compra.monto_compra
+              pago_proveedor.proveedor = @compra.proveedor
+              pago_proveedor.user = current_user
+
+              pago_proveedor.save!              
+            end
 
             hashArticulos = JSON.parse(articulos.gsub('\"', '"'))
 
@@ -715,13 +745,39 @@ class ComprasController < ApplicationController
               #esta compra.
               nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
 
-              #Se actualiza también el precio de compra del artículo. TODO hacer un historial de precios de compra por artículo.
+              #Se actualiza también el precio de compra del artículo. 
+              #TODO hacer un historial de precios de compra por artículo.
               bd_articulo.precioCompra = detalleCompra.precio_compra
 
               #Se actualiza la nueva existencia y se guarda el artículo 
               bd_articulo.existencia = nuevaExistencia
               bd_articulo.save!
             }
+
+            if @compra.gasto
+              gasto = @compra.gasto
+              gasto.monto = @compra.monto_compra
+              gasto.save!
+
+              if gasto.caja_chica
+                caja_chica = gasto.caja_chica
+                caja_chica.salida = gasto.monto
+                caja_chica.save!
+              elsif gasto.caja_sucursal
+                debugger
+                if gasto.movimiento_caja_sucursal
+                  gasto.movimiento_caja_sucursal.salida = gasto.monto  
+                  caja_sucursal = gasto.caja_sucursal
+                  saldo_caja_actualizado = caja_sucursal.saldo.to_f + @monto_anterior - gasto.monto.to_f
+                  caja_sucursal.saldo = saldo_caja_actualizado
+                  caja_sucursal.save!
+                  gasto.movimiento_caja_sucursal.save!
+                  debugger
+                end
+                debugger
+              end
+            end
+
             
             format.html { redirect_to compras_path, notice: 'Compra actualizada' }
             format.json { render :index, status: :created, location: @compra }
@@ -743,51 +799,53 @@ class ComprasController < ApplicationController
       compra = params[:compra]
       observaciones = compra[:observaciones]
       @items = @compra.detalle_compras
-      
-      if @compra.update(:observaciones => observaciones, :status => "Cancelada")
-        
-        CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>current_user.negocio, :sucursal=>current_user.sucursal)
-        @compra.detalle_compras.each do |itemCompra|
-          CompraArticulosDevuelto.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
-          articulo = itemCompra.articulo
-          articulo.existencia = articulo.existencia - itemCompra.cantidad_comprada
-          articulo.save
+      ActiveRecord::Base.transaction do      
+        if @compra.update(:observaciones => observaciones, :status => "Cancelada")
+          CompraCancelada.create(:compra=>@compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>current_user.negocio, :sucursal=>current_user.sucursal)
+          @compra.detalle_compras.each do |itemCompra|
+            CompraArticulosDevuelto.create(:articulo => itemCompra.articulo, :detalle_compra => itemCompra, :compra => @compra, :cat_compra_cancelada=>cat_compra_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@compra.negocio, :sucursal=>@compra.sucursal, :cantidad_devuelta=>itemCompra.cantidad_comprada)
+            articulo = itemCompra.articulo
+            articulo.existencia = articulo.existencia - itemCompra.cantidad_comprada
+            articulo.save!
+  
+            itemCompra.status = "Cancelada"
+            itemCompra.save!
 
-          itemCompra.status = "Cancelada"
-          itemCompra.save
-
-          entradasAlmacen = EntradaAlmacen.where(:compra=>@compra)
+            entradasAlmacen = EntradaAlmacen.where(:compra=>@compra)
           
-          entradasAlmacen.each do |entradaAlmacen|
-            entradaAlmacen.destroy
-          end
-
-          #Se eliminan todos los pagos y egresos que hayan sido registrados para esta compra.
-          if @compra.pago_proveedores
-            caja_chica = nil
-            caja_sucursal = nil
-            @compra.pago_proveedores.each do |pago|
-              gasto = pago.gasto
-              if gasto.caja_chica
-                caja_chica = gasto.caja_chica
-                caja_chica.destroy
-              end
-              if gasto.movimiento_caja_sucursals
-                movimiento_caja_sucursal = gasto.movimiento_caja_sucursals
-                movimiento_caja_sucursal.destroy
-              end
-              gasto.destroy
-              pago.destroy
+            entradasAlmacen.each do |entradaAlmacen|
+              entradaAlmacen.destroy!
             end
+
+            #Se eliminan todos los pagos y egresos que hayan sido registrados para esta compra.
+            if @compra.pago_proveedores
+              caja_chica = nil
+              caja_sucursal = nil
+              @compra.pago_proveedores.each do |pago|
+                gasto = pago.gasto
+                if gasto.caja_chica
+                  caja_chica = gasto.caja_chica
+                  caja_chica.destroy!
+                end
+                if gasto.movimiento_caja_sucursal
+                  movimiento_caja_sucursal = gasto.movimiento_caja_sucursal
+                  movimiento_caja_sucursal.caja_sucursal.saldo += movimiento_caja_sucursal.salida
+                  movimiento_caja_sucursal.caja_sucursal.save!
+                  movimiento_caja_sucursal.destroy!
+                end
+                gasto.destroy!
+                pago.destroy!
+              end
+            end
+
           end
 
+          format.json { head :no_content}
+          format.js
+        else
+          format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
+          format.js {render :edit}
         end
-
-        format.json { head :no_content}
-        format.js
-      else
-        format.json {render json: @venta.errors.full_messages, status: :unprocessable_entity}
-        format.js {render :edit}
       end
     end
   end

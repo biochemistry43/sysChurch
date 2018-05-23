@@ -3,6 +3,7 @@ class Gasto < ActiveRecord::Base
 	has_one :pago_proveedor
 	has_one :gasto_general
 	has_one :movimiento_caja_sucursal
+	has_one :compra
 
 	#En caso de que el pago se haya hecho con la caja chica, el registro de gasto se relacionará
 	#con el registro de movimiento de la caja chica.

@@ -48,7 +48,7 @@ class CategoriaGastosController < ApplicationController
   def update
     respond_to do |format|
       if @categoria_gasto.update(categoria_gasto_params)
-        format.json { head :no_content}
+        format.json { head :no_content }
         format.js
       else
         format.json{render json: @categoria_gasto.errors.full_messages, status: :unprocessable_entity}
