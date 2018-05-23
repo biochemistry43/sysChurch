@@ -336,7 +336,7 @@
 
           <tbody>
             <% @compras.each do |compra| %>
-	            <tr>
+	            <tr class="<%= 'compra-con-adeudo' if compra.try(:pago_pendiente).try(:saldo){|saldo| saldo > 0} %>">
       				  <td style="text-align: center;"><%= compra.fecha.strftime("%d/%m/%Y") %></td>
       				  <td style="text-align: center;"><%= compra.folio_compra %> / <%= compra.ticket_compra %></td>
       				  <td style="text-align: center;"><%= compra.proveedor.nombre %></td>
@@ -345,7 +345,7 @@
       				  <td style="text-align: center;"><%= compra.monto_compra %></td>
                  <td style="text-align: center;">
                   <% if compra.status.eql?("Activa") %>
-                    <span class="btn btn-success"> Activa </span>
+                    <span class="btn btn-success"> Activa<%= ' / Con adeudos' if compra.try(:pago_pendiente).try(:saldo){|saldo| saldo > 0} %> </span>
                   <% elsif compra.status.eql?("Cancelada") %>
                     <span class="btn btn-danger"> Cancelada </span>
                   <% end %>    
