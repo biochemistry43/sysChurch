@@ -362,10 +362,17 @@
                     
                     <% if can? :update, compra %>
                       <% @historial = compra.historial_ediciones_compras.size %>
-                   
                       <% if @historial <= 3 && compra.status.eql?("Activa")%>
-                        <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: compra.status.eql?("Activa") ? 'Editar compra' : '', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
-                          <i class="fa fa-pencil"></i>
+                        <% if compra.tipo_pago.eql?("Credito") %>
+                          <% if compra.pago_pendiente.pago_proveedores.size >= 1 %>
+
+                            <button class="btn btn-warning" title="Esta compra a crédito ya tiene pagos aplicados. No es posible editarla" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>
+
+                          <% else %>
+                            <%= link_to url = {:controller=>"compras", :action=>"actualizar", :id=>compra},  html_options = {class: "btn btn-warning", title: compra.status.eql?("Activa") ? 'Editar compra' : '', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'data-confirm' => '¿Desea editar esta compra?'} do %>
+                              <i class="fa fa-pencil"></i>
+                            <% end %>                        
+                          <% end %>
                         <% end %>
                       <% else %>
                         <button class="btn btn-warning" title="Sólo se permiten tres ediciones" data-toggle="tooltip" data-placement="top" disabled><i class="fa fa-pencil"></i></button>

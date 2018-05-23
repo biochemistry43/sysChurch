@@ -649,6 +649,12 @@ class ComprasController < ApplicationController
     # Si la petición ha venido por el método post, 
     # entonces se procede a la actualización de la compra.
     if request.patch?
+      if @compra.historial_ediciones_compras || @compra.pago_pendiente.pago_proveedores
+        if @compra.historial_ediciones_compras.size >= 3 || @compra.pago_pendiente.pago_proveedores.size >= 1
+          flash[:notice] = 'Esta compra tiene pagos aplicados o ha llegado al límite de ediciones posibles'
+          return 
+        end
+      end
       @monto_anterior = @compra.monto_compra
       respond_to do |format|
         ActiveRecord::Base.transaction do
@@ -777,7 +783,6 @@ class ComprasController < ApplicationController
                 debugger
               end
             end
-
             
             format.html { redirect_to compras_path, notice: 'Compra actualizada' }
             format.json { render :index, status: :created, location: @compra }
