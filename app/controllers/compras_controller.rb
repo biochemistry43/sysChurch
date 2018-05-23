@@ -822,7 +822,8 @@ class ComprasController < ApplicationController
               entradaAlmacen.destroy!
             end
 
-            #Se eliminan todos los pagos y egresos que hayan sido registrados para esta compra.
+            #Se eliminan todos los pagos y egresos que hayan sido 
+            #registrados para esta compra.
             if @compra.pago_proveedores
               caja_chica = nil
               caja_sucursal = nil
@@ -842,6 +843,8 @@ class ComprasController < ApplicationController
                 pago.destroy!
               end
             end
+
+            @compra.pago_pendiente.destroy! if @compra.pago_pendiente
 
           end
 
