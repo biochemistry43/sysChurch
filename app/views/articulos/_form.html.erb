@@ -115,19 +115,27 @@
     </div>
     <% end %>
 
-    <%if @articulo.new_record?%>
+    
     <div class="item form-group<%= @articulo.errors[:precioCompra].any? ? ' has-error has-feedback' : '' %>">
-      <%= f.label :precioCompra, "Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <% if @articulo.new_record? %>
+        <%= f.label :precioCompra, "Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %> 
+      <% else %>
+        <%= f.label :precioCompra, "Último Precio de compra: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %> 
+      <% end %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-money"></i></span>
-        <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"Precio de compra al dar de alta el producto (opcional)..."} do%>
-        <%end%>
+        <%if @articulo.new_record?%>
+          <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"Precio de compra al dar de alta el producto (opcional)..."} do%>
+          <%end%>
+        <% else %>
+          <%= f.text_field :precioCompra, {class: "col-md-7 col-xs-12 text_field form-control", :placeholder=>"Precio de compra al dar de alta el producto (opcional)...", :disabled=>"disabled"} do%>
+          <%end%>
+        <% end %>
         <%if @articulo.errors[:precioCompra].any? %>
           <p class="bg-danger"><%= @articulo.errors[:precioCompra].to_s[/\w([^"]*)/] %></p>
         <% end %>
       </div>
     </div>
-    <% end %>
 
     <div class="item form-group<%= @articulo.errors[:precioVenta].any? ? ' has-error has-feedback' : '' %>">
       <%= f.label :precioVenta, "Precio de venta:", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
