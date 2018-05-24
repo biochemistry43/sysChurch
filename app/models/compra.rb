@@ -16,5 +16,15 @@ class Compra < ActiveRecord::Base
 
 	validates :fecha, :monto_compra, :proveedor_id, :tipo_pago, :folio_compra, :ticket_compra, :presence => { message: "Dato necesario para la compra" }
     validates :monto_compra, numericality: { greater_than: 0, message: "El monto de compra no puede ser cero" }
-	
+
+    def borrar_datos_compra
+       self.detalle_compras.each do |detalle|
+         detalle.destroy!
+       end
+       
+       self.entrada_almacens.each do |entrada_almacen|
+          entrada_almacens.destroy!
+       end
+
+    end
 end

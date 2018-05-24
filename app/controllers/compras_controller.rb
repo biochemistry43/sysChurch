@@ -424,14 +424,13 @@ class ComprasController < ApplicationController
 
                       existencia = bd_articulo.existencia
 
-                      nuevaExistencia = existencia + entradaAlmacen.cantidad
+                      nuevaExistencia = existencia.to_f + entradaAlmacen.cantidad.to_f
 
                       bd_articulo.existencia = nuevaExistencia
 
                       bd_articulo.precioCompra = precio
 
                       bd_articulo.save!
-
 
                     }
 
@@ -528,7 +527,7 @@ class ComprasController < ApplicationController
  
                         existencia = bd_articulo.existencia
   
-                        nuevaExistencia = existencia + entradaAlmacen.cantidad
+                        nuevaExistencia = existencia.to_f + entradaAlmacen.cantidad.to_f
 
                         bd_articulo.existencia = nuevaExistencia
 
@@ -601,7 +600,7 @@ class ComprasController < ApplicationController
 
                   existencia = bd_articulo.existencia
 
-                  nuevaExistencia = existencia + entradaAlmacen.cantidad
+                  nuevaExistencia = existencia.to_f + entradaAlmacen.cantidad.to_f
 
                   bd_articulo.existencia = nuevaExistencia
 
@@ -662,8 +661,10 @@ class ComprasController < ApplicationController
         end
       end
       @monto_anterior = @compra.monto_compra
+
       respond_to do |format|
         ActiveRecord::Base.transaction do
+          
           if @compra.update(compra_params)
             #Se borran los destalles de compra y entradas de almacen 
             #relacionados con la compra.
@@ -672,13 +673,13 @@ class ComprasController < ApplicationController
               #que fue comprada para descontarla del inventario del articulo
               cantidadComprada = detalle.cantidad_comprada
               existenciaActual = detalle.articulo.existencia
-              nuevaExistenciaArticulo = existenciaActual - cantidadComprada
+              nuevaExistenciaArticulo = existenciaActual.to_f - cantidadComprada.to_f
   
               #Se eliminan todas las existencias del articulo que estén relacionadas con la compra.
               #Más adelante se actualizará la existencia del articulo en base a los datos editados.
               detalle.articulo.existencia = nuevaExistenciaArticulo
 
-              detalle.save!
+              detalle.articulo.save!
 
               #Una vez obtenidos los datos necesarios, se destruye el detalle de compra.
               #Posteriormente se añadiran los nuevos detalles en base a la edición del usuario.
@@ -730,7 +731,6 @@ class ComprasController < ApplicationController
             existencia = 0
             nuevaExistencia = 0
 
-
             hashArticulos.collect { |articulo|  
 
               codigo = articulo["codigo"]
@@ -751,11 +751,10 @@ class ComprasController < ApplicationController
               #obtiene la existencia actual del artículo para actualizarla posteriormente añadiendole las nuevas
               #compras
               existencia_actual = bd_articulo.existencia
-
               #La nueva existencia se calcula en base a la existencia actual y lo encontrado en la entrada de almacén de 
               #esta compra.
-              nuevaExistencia = existencia_actual + entradaAlmacen.cantidad
-
+              nuevaExistencia = existencia_actual.to_f + entradaAlmacen.cantidad.to_f
+ 
               #Se actualiza también el precio de compra del artículo. 
               #TODO hacer un historial de precios de compra por artículo.
               bd_articulo.precioCompra = detalleCompra.precio_compra
@@ -764,6 +763,8 @@ class ComprasController < ApplicationController
               bd_articulo.existencia = nuevaExistencia
               bd_articulo.save!
             }
+
+            1124 - 5 + 6 
 
             if @compra.gasto
               gasto = @compra.gasto
