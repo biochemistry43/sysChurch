@@ -764,8 +764,6 @@ class ComprasController < ApplicationController
               bd_articulo.save!
             }
 
-            1124 - 5 + 6 
-
             if @compra.gasto
               gasto = @compra.gasto
               gasto.monto = @compra.monto_compra
