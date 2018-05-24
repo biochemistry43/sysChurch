@@ -15,11 +15,12 @@
       <%if @ventaCancelada%>
           <!--Validar si tiene alguna nota de crédito si es q tiene factura relacionada-->
         <div class="row">
-          <div class="col-md-12" style="color: gray;">
+          <div class="alert alert-warning alert-dismissable content">
+            <button type="button" class="close" data-dismiss="alert" >&times;</button>
             La venta fue cancelada.
           </div>
         </div>
-        <hr>
+
       <%elsif @ventaFacturadaNoSi%>
         <div class="row">
           <div class="col-md-12" style="color: gray;">
@@ -30,27 +31,21 @@
         <hr>
       <%else%>
       <div class="row">
-        <div class="col-md-12" style="color: gray;">
+
+        <div class="alert alert-warning alert-dismissable content">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
           La venta ya fue facturada el día <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaVentaFacturada %></span>
           con folio: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folioVentaFacturada %></span>
         </div>
       </div>
-      <hr>
       <%end%>
     <% else %>
       <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          No hay ventas registradas con este folio
+        <div class="alert alert-warning alert-dismissable content">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+          No hay ventas registradas con el folio: <span style="font-size: 16px;"> <%= @folio %></span>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          <div class="col-md-12">
-            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
-          </div>
-        </div>
-      </div>
-      <hr>
     <% end %>
   <%end%>
 
@@ -164,21 +159,64 @@
             </div>
             <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
               <div class="panel-body">
+<!--
+                        <div class="col-md-12 col-sm-12 col-xs-12 datos-cliente">
+                          <div class="well profile_view">
+                            <div class="col-sm-12">
+                              <h4 class="brief"><i><strong>Datos del cliente:</strong></i></h4>
+                              <div class="left col-md-12 col-xs-7">
+                                <input type="hidden" id="id_cliente">
+                                <h2 id="nom_cliente_venta">General</h2>
+                                <ul class="list-unstyled">
+                                  <li id="email_cliente"><i class="fa fa-envelope"></i> Email: n/a</li>
+                                  <li id="telefono_cliente"><i class="fa fa-phone"></i> Teléfono: n/a</li>
+                                </ul>
+                              </div>
+                              <div class="right col-xs-5 text-center"></div>
+                            </div>
+                            <div class="col-xs-12 bottom text-left">
+                              <div class="col-xs-12 col-sm-6 emphasis">
+                                <button type="button" class="btn btn-round btn-default btn-xs" id="cambiarClienteBtn">
+                                  <i class="fa fa-user"> </i> Cambiar cliente
+                                </button>
+                                <%=link_to url = {controller: "clientes", action: "new"}, html_options = {class: "btn btn-round btn-default btn-xs", remote: true} do %>
+                                  <i class="fa fa-plus"> </i> Nuevo cliente
+                                <% end %>
+                              </div>
+                            </div>
 
+                          </div>
+                        </div>
+-->
                 <div class="col-md-12 col-sm-12 col-xs-12">
 
-                    <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-4 col-sm-4 col-xs-12">
                       <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
                         Editar cliente original. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
                       <% end %>
 
                     </div>
 
-                    <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                    <button type="button" class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="cambiarClienteBtn">
+                      <i class="fa fa-user"> </i> Cambiar cliente
+                    </button>
+                    </div>
+
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                    <% if can? :create, Cliente %>
+                      <%= link_to new_cliente_path, {remote: true, class: "btn btn-success col-md-12 col-sm-12 col-xs-12"}  do %>
+                         Nuevo cliente.
+                      <%end%>
+                    <% end %>
+                    </div>
+
+                    <!--
+                    <div class="col-md-4 col-sm-4 col-xs-12">
                       <button class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="btn_datos_manualmente" type="button">
                          Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
                       </button>
-                    </div>
+                    </div>-->
 
                 </div>
 
@@ -191,30 +229,20 @@
                   <div class="col-md-2 col-sm-2 col-xs-3">
                     <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
                   </div>
-                  <%if @rfc_emisor_present%>
+
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
                     </div>
-                  <%else%>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field', :placeholder=>"Ingrese el R.F.C."}%>
-                    </div>
-                  <%end%>
                 </div>
 
                 <div class="col-md-6 col-sm-6 col-xs-12">
                   <div class="col-md-2 col-sm-2 col-xs-12">
                     <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
                   </div>
-                  <%if @nombre_fiscal_receptor_present%>
+
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
                     </div>
-                  <%else %>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field', :placeholder=>"Ingrese el nombre fiscal o razón social."}%>
-                    </div>
-                  <%end %>
                 </div>
               </div>
 
@@ -236,14 +264,14 @@
 
                   <div class="col-md-6 col-sm-6 col-xs-12">
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= label_tag :no_Interior,'No. Interior:', class:"control-label"%>
+                        <%= label_tag :no_interior_receptor_vf,'No. Interior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
                         <%= number_field_tag("no_Interior_vf", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
                       </div>
 
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= label_tag :no_Exteior,'No. Exterior:', class:"control-label"%>
+                        <%= label_tag :no_exterior_receptor_vf,'No. Exterior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
                         <%= number_field_tag("no_Exterior_vf", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
@@ -448,11 +476,45 @@
     <%end%> <!--La venta fue cancelada-->
     <%end%>
     <%end%>
+
+    <div class="modal" id="modalClie">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="modal-title">Selecciona un cliente</h4>
+          </div>
+          <div class="modal-body" id="modal-body-clientes">
+            <div class="form-group">
+              <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
+                <thead>
+                  <tr class='headings'>
+                    <th class='column-title'>Nombre Cliente </th>
+                    <th class='column-title'>Teléfono </th>
+                    <th class='column-title'>Email </th>
+                    <th class='column-title'>Elegir </th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer" id="modal-footer-clientes">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
   <!-- javascript_include_tag "cancelaciones" -->
       <%= render 'modalClientes'%>
 </div>
 
 <script type="text/javascript">
+/*
 jQuery("#btn_datos_manualmente").click(function () {
   //Datos generales
   jQuery("#rfc_input").removeAttr("disabled").focus().val("");
@@ -467,8 +529,16 @@ jQuery("#btn_datos_manualmente").click(function () {
   jQuery("#estado_receptor_vf").removeAttr("disabled").val("");
   jQuery("#referencia_receptor_vf").removeAttr("disabled").val("");
   jQuery("#cp_receptor_vf").removeAttr("disabled").val("");
-});
+});*/
+
+  $(document).ready(function() {
+    setTimeout(function() {
+        $(".content").fadeOut(1500);
+    },10000);
+  });
+
 </script>
 
 <%= stylesheet_link_tag "facturas" %>
 <%= javascript_include_tag "validador_RFC_Obligatorio" %>
+<%= javascript_include_tag "mostrarDetallesVenta" %>

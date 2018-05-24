@@ -31,7 +31,7 @@ $(document).ready(function(){
    * que el módulo de punto de venta va a tener.
    */
   $('#div_pos').bind('keydown', function(event) {
-    
+
 
     switch(event.keyCode){
 
@@ -52,22 +52,22 @@ $(document).ready(function(){
   });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
   $('#campo-paga-con').bind('keyup', function(event) {
-    
+
     if(($("#importe").text().length >= 1) && ($("#campo-paga-con").val().length >= 1))  {
-      
+
       value = parseFloat($("#importe").text());
       pagoCli = parseFloat($("#campo-paga-con").val());
 
-      
+
       var cambio = pagoCli - value;
       cambio = cambio.toFixed(2);
 
       if (cambio > 0){
-        $("#cambio_cliente").text(cambio);  
+        $("#cambio_cliente").text(cambio);
       }
-      
+
     }
-    
+
 
   });//Terminan los eventos de teclado dentro de el módulo punto de venta.
 
@@ -98,7 +98,7 @@ $(document).ready(function(){
       }
   });
 
-  
+
   /**
    * Codigo para cambiar cantidad de producto vendido.
    * Al dar doble clic sobre algún producto de la lista de ventas, se abre un modal
@@ -119,7 +119,7 @@ $(document).ready(function(){
     dataType: "JSON",
     timeout: 10000,
     beforeSend: function(){
-    
+
     },
     error: function(){
       alert("Error al cargar la lista de clientes.");
@@ -133,7 +133,7 @@ $(document).ready(function(){
         var element = res[i];
 
         /* lista_clientes es la tabla que está dentro del modal con la lista de los clientes.
-         * por cada cliente que se agrega a la tabla, se añade un botón con el método onclick 
+         * por cada cliente que se agrega a la tabla, se añade un botón con el método onclick
          * para cambiar los datos
          * del cliente dentro de la pantalla de venta**/
         $("#lista_clientes").append(""+
@@ -148,7 +148,7 @@ $(document).ready(function(){
       }
 
       /* Una vez que se han cargado los datos en la tabla, convertimos nuestra tabla en una tabla DataTable.
-       * El plugin Datatable fue instalado mediante la gema 'jquery-datatables-rails'. 
+       * El plugin Datatable fue instalado mediante la gema 'jquery-datatables-rails'.
        * Para más información:  https://github.com/rweng/jquery-datatables-rails
        * La funcionalidad de ser responsiva fue añadida a la tabla.
        */
@@ -170,7 +170,7 @@ $(document).ready(function(){
       });
 
 
-         
+
     }//Termina success de la petición ajax
 
   }); //Termina petición ajax de la lista de clientes.
@@ -182,7 +182,7 @@ $(document).ready(function(){
 
   });
 
-    
+
   /**
    * Esta función cambia la cantidad de un producto que se a agregado previamente a la venta.
    * Cada vez que un producto se agrega a la venta, se agrega con una sola unidad. Mediante esta
@@ -201,13 +201,13 @@ $(document).ready(function(){
       '</div>');
     //Se añade un botón en el footer del modal que permite actualizar la cantidad.
     $('#modal-footer').html('<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="actualizarCantidad('+indice+', '+existencia+')">Aceptar</button>')
-    
-    //Se muestra el modal.  
+
+    //Se muestra el modal.
     $('#actualizarCantidad').modal('show');
-    
-    //Se selecciona el texto que está en el textfield para facilitar la edición de la cantidad.    
+
+    //Se selecciona el texto que está en el textfield para facilitar la edición de la cantidad.
     $('#nuevaCantidad'+indice).select();
-      
+
   }//Termina el método cambiarCantidadProducto
 
 
@@ -229,7 +229,7 @@ $(document).ready(function(){
 
   //Acción para guardar la venta en un objeto JSON.
   $("#cobrarVenta").on("click", function() {
-    
+
     //Se añade la caja a la que pertenece esta venta.
     caja = { };
     caja["caja"] = $("#_caja").val();
@@ -257,12 +257,12 @@ $(document).ready(function(){
         method: "POST",
         timeout: 10000,
         beforeSend: function(){
-        
+
         },
         error: function(){
           alert("Error al cargar los campos de formas de pago.");
         },
-        
+
         success: function(res){
 
           /*El resultado de esta petición, será una estructura ajax con los datos
@@ -275,7 +275,7 @@ $(document).ready(function(){
 
             resultado = res[i]; //Se obtiene el campo.
 
-            
+
 
             nom = resultado.nombrecampo; //obtenemos el nombre del campo
 
@@ -293,21 +293,21 @@ $(document).ready(function(){
             // en lugar de los espacios.
             // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
             // Espacios incluidos.
-            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();   
+            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();
 
           }
 
           //Se guardan los datos de la forma de pago en el arreglo JSON
-          
-             
+
+
         },//Termina success de la petición ajax
 
         complete: function(jqXHR, settings){
-          
+
           if(jqXHR.status == 200){
             completarVenta();
 
-            
+
           }
 
         }
@@ -333,12 +333,12 @@ $(document).ready(function(){
     else{
       return;
     }
-    
+
 
   });
 
   $("#search-product").select();
-  
+
 });//Fin de JQuery
 
 /*window.onload = function() {
@@ -362,7 +362,7 @@ $(document).ready(function(){
 
 
 /**
- * 
+ *
  */
 function completarVenta(){
 
@@ -371,8 +371,8 @@ function completarVenta(){
 
   //Se guardan los datos de forma de pago en el arreglo de datos de la venta
   datosVenta.push(datosFormaPago);
-  copiaFormaPago = JSON.parse(JSON.stringify(formaPagoJSON));        
-  
+  copiaFormaPago = JSON.parse(JSON.stringify(formaPagoJSON));
+
   /**
    * Ahora se recorren cada uno de los items de la venta y llena el arreglo
    * con los datos respectivos.
@@ -380,7 +380,7 @@ function completarVenta(){
   $('#table_sales tr').each(function (i, el) {
     //Se discrimina la primer fila (que corresponde al encabezado)
     if(i!=0){
-    //El código del producto se encuentra en la primer columna de 
+    //El código del producto se encuentra en la primer columna de
     //de la tabla de venta actual.
       var codigoProd = $(this).find("td").eq(0).text();
       //La cantidad vendida del producto se encuentra en la tercera
@@ -400,18 +400,18 @@ function completarVenta(){
       //itemsVenta guarda la totalidad de los items de la venta.
       //itemVenta es el item en particular.
       itemsVenta.push(itemVenta);
-      
+
     }
   }); //Termina recorrido de la tabla de venta actual
   //Ahora se guardan los items de la venta en el objeto datosVenta
   datosVenta.push(itemsVenta);
-  
+
   //dataVenta es un campo oculto dentro del form ventaForm
   //este forma es el encargado de mandar toda la información relativa a la venta
   //en un objeto JSON.
   $("#dataVenta").val(JSON.stringify(datosVenta));
-  
-  
+
+
 
   if($("#isPrintTicket").attr("checked")){
     var form = $("#ventaForm");
@@ -423,8 +423,8 @@ function completarVenta(){
     form.submit(); //Se submite el form con los datos de la venta.
   }
 
-     
-  //Se vacían los arreglos previamente creados para evitar posibles datos 
+
+  //Se vacían los arreglos previamente creados para evitar posibles datos
   //incorrectos.
   itemsVenta = [];
   datosVenta = [];
@@ -443,26 +443,26 @@ function setFormaPago(forma){
 
 function enterActualizar(event, indice, existencia){
   if (event.keyCode == 13) {
-    
+
     cantidad = $("#nuevaCantidad"+indice).val();
-    
+
     if(cantidad <= existencia){
       actualizarCantidad(indice, existencia);
-      $('#actualizarCantidad').modal('hide');  
+      $('#actualizarCantidad').modal('hide');
     }
     else{
       alert("No hay suficiente existencia para vender esta cantidad de producto.\n La existencia del producto es: "+existencia);
       return;
     }
-    
-    
+
+
   }
 }
 
 function actualizarCantidad(indice, existencia){
 
   cantidad = $("#nuevaCantidad"+indice).val();
-  
+
   //Si la cantidad no sobrepasa la existencia
   if(cantidad <= existencia){
 
@@ -484,7 +484,7 @@ function actualizarCantidad(indice, existencia){
     alert("No hay suficiente existencia para vender esta cantidad de producto.\n La existencia del producto es: "+existencia);
   }
 
-  
+
 
 }
 
@@ -499,7 +499,7 @@ function addProduct(elem){
     error: function(){
       alert("error" + elem);
       //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
-             
+
     },
     success: function(res){
       //alert(res.nombre);
@@ -507,7 +507,7 @@ function addProduct(elem){
         //var resLength = res.length;
         //for(i=0; i < resLength; i++){
 
-          var element = res;   
+          var element = res;
           if(element.existencia == 0){
             alert("Este producto no tiene existencias");
           }
@@ -527,9 +527,9 @@ function addProduct(elem){
 
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
         document.getElementById("search-product").parentNode.removeChild(nodoResultado);
-              
+
       }else{
-        
+
       }
     }
   })
@@ -566,7 +566,7 @@ jQuery.fn.contentChange = function(callback){
   /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
    * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
    * agrega un producto o se cambia una cantidad de venta de producto). */
-  
+
   /* Código para actualizar la etiqueta de sumatoria total. El código se va a ejecutar
    * cada que vez que haya un cambio en los valores de la tabla (lo cual sólo ocurre cuando se
    * agrega un producto o se cambia una cantidad de venta de producto). */
@@ -580,7 +580,7 @@ jQuery.fn.contentChange = function(callback){
       if(i!=0){
         //el td 4 equivale al campo con la cantidad.
         var val = $(this).find("td").eq(4).html();
-        
+
         //Convierto el valor del importe en un valor float
         var importe = parseFloat(val);
 
@@ -588,10 +588,10 @@ jQuery.fn.contentChange = function(callback){
         sumatoria += importe;
       }
     });
-    
+
     //una vez obtenido el valor de la venta, se limita a dos decimales.
     sumatoria.toFixed(2);
-    
+
     //el valor de la sumatoria se asigna a la etiqueta importe que muestra la sumatoria total.
     $("#importe").text(sumatoria);
   });

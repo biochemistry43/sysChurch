@@ -61,9 +61,9 @@ class FacturasController < ApplicationController
       end
       #RECEPTOR
       @rfc_emisor_present=@venta.cliente.rfc.present?
-      @rfc_receptor_f=@venta.cliente.rfc
+      @rfc_receptor_f=@venta.cliente.datos_fiscales_cliente.rfc
       @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
-      @nombre_fiscal_receptor_f=@venta.cliente.nombreFiscal
+      @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente.nombreFiscal
       @email_receptor = @venta.cliente.email
 
       @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : " "
