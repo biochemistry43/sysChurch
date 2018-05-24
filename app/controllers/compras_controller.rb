@@ -428,6 +428,8 @@ class ComprasController < ApplicationController
 
                       bd_articulo.existencia = nuevaExistencia
 
+                      bd_articulo.precioCompra = precio
+
                       bd_articulo.save!
 
 
@@ -530,6 +532,8 @@ class ComprasController < ApplicationController
 
                         bd_articulo.existencia = nuevaExistencia
 
+                        bd_articulo.precioCompra = precio
+
                         bd_articulo.save!
 
 
@@ -600,6 +604,8 @@ class ComprasController < ApplicationController
                   nuevaExistencia = existencia + entradaAlmacen.cantidad
 
                   bd_articulo.existencia = nuevaExistencia
+
+                  bd_articulo.precioCompra = precio
 
                   bd_articulo.save!
 
