@@ -649,8 +649,8 @@ class ComprasController < ApplicationController
     # Si la petición ha venido por el método post, 
     # entonces se procede a la actualización de la compra.
     if request.patch?
-      if @compra.historial_ediciones_compras || @compra.pago_pendiente.pago_proveedores
-        if @compra.historial_ediciones_compras.size >= 3 || @compra.pago_pendiente.pago_proveedores.size >= 1
+      if @compra.historial_ediciones_compras || @compra.try(:pago_pendiente).try(:pago_proveedores)
+        if @compra.historial_ediciones_compras.size >= 3 || @compra.try(:pago_pendiente).try(:pago_proveedores).try(:size){|size| size >= 1}
           flash[:notice] = 'Esta compra tiene pagos aplicados o ha llegado al límite de ediciones posibles'
           return 
         end
@@ -706,9 +706,8 @@ class ComprasController < ApplicationController
             #actualización de datos del registro pago_proveedor
             #el pago a proveedores genera un solo registro cuando las compras
             #son de contado.
-            if @compra.pago_proveedores
-              pago_proveedor = @compra.pago_proveedores.take
-
+            if @compra.pago_proveedores.size > 0
+              pago_proveedor = @compra.pago_proveedores.first
               pago_proveedor.monto = @compra.monto_compra
               pago_proveedor.proveedor = @compra.proveedor
               pago_proveedor.user = current_user
@@ -770,7 +769,6 @@ class ComprasController < ApplicationController
                 caja_chica.salida = gasto.monto
                 caja_chica.save!
               elsif gasto.caja_sucursal
-                debugger
                 if gasto.movimiento_caja_sucursal
                   gasto.movimiento_caja_sucursal.salida = gasto.monto  
                   caja_sucursal = gasto.caja_sucursal
@@ -778,9 +776,7 @@ class ComprasController < ApplicationController
                   caja_sucursal.saldo = saldo_caja_actualizado
                   caja_sucursal.save!
                   gasto.movimiento_caja_sucursal.save!
-                  debugger
                 end
-                debugger
               end
             end
             
