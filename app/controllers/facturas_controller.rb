@@ -1072,7 +1072,8 @@ class FacturasController < ApplicationController
 
     if request.post?
       @rfc = params[:rfc]
-      cliente=Cliente.find_by rfc: @rfc
+      datos_fiscales_cliente = DatosFiscalesCliente.find_by rfc: @rfc
+      cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
       if can? :create, Negocio
         @facturas = current_user.negocio.facturas.where(cliente_id: cliente)
       else
@@ -1109,46 +1110,126 @@ class FacturasController < ApplicationController
         @sucursal = Sucursal.find(@suc)
       end
 
+      @condicion_monto_factura = params[:condicion_monto_factura]
+      #Se convierte la descripción al operador equivalente
+      if @condicion_monto_factura
+        operador_monto = case @condicion_monto_factura
+           when "menor que" then "<"
+           when "mayor que" then ">"
+           when "menor o igual que" then "<="
+           when "mayor o igual que" then ">="
+           when "igual que" then "="
+           when "diferente que" then "!=" #o también <> Distinto de
+           when "rango desde" then ".." #o también <> Distinto de
+        end
+      end
+
       if can? :create, Negocio
         unless @suc.empty?
           #valida si se eligió un cliente específico para esta consulta
           if @cliente
-            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
-            unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
+            #Filtra por monto de la venta facurada.
+            if operador_monto
+              @monto_factura = params[:monto_factura]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+              else
+                @monto_factura2 = params[:monto_factura2]
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+              end
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
+              else
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
+              end
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
+              else
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
+              end
             end
-
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
+          # Si no se eligió cliente, entonces no filtra las ventas por el cliente al que se expidió la factura.
           else
-            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
-            unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura, sucursal: @sucursal)
+            #Filtra por monto de la venta facurada.
+            if operador_monto
+              @monto_factura = params[:monto_factura]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+              else
+                @monto_factura2 = params[:monto_factura2]
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+              end
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura, sucursal: @sucursal)
+              else
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+              end
+              #Si el usuario no seleccionó el una condición para filtrar por el monto de la factura de la venta.
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura, sucursal: @sucursal)
+              else
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+              end
             end
           end
-
         #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
         else
-          #valida si se eligió un cajero específico para esta consulta
+          #valida si se eligió un cliente
           if @cliente
-            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
-            unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+            #Filtra por monto de la venta facurada.
+            if operador_monto
+              @monto_factura = params[:monto_factura]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+              else
+                @monto_factura2 = params[:monto_factura2]
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+              end
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+              else
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
+              end
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+              else
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
+              end
             end
-
           # Si no se eligió cliente, entonces no filtra las ventas por el cliente
           else
-            #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
-            unless @estado_factura.eql?("Todas")
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
+            if operador_monto
+              @monto_factura = params[:monto_factura]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+              else
+                @monto_factura2 = params[:monto_factura2]
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+              end
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
+              else
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+              end
             else
-              @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+              #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
+              unless @estado_factura.eql?("Todas")
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
+              else
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+              end
             end
+
           end
         end
 

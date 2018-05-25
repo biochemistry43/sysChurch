@@ -228,7 +228,7 @@
 
     <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
     <div id="opciones_filtros_avanzados" class="opciones_filtros row">
-      <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
         <div class="item form-group">
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div style="text-align: left; color: black;">
@@ -278,7 +278,17 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
-              <%= select_tag "monto", "<option>menor que</option><option>mayor que</option><option>menor igual</option><option>mayor igual</option><option>igual</option><option>exepto</option>".html_safe,  class: 'form-control' %>
+              <%= select_tag :condicion_monto_factura, "<option>menor que</option><option>mayor que</option><option>menor o igual que</option><option>mayor o igual que</option><option>igual que</option><option>diferente que</option><option id='rangoMonto'>rango desde</option>".html_safe, :prompt => 'Elija una condición.',  class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= number_field_tag(:monto_factura , nil, {class: "form-control text_field", style: "display: none;"})%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= number_field_tag(:monto_factura2 , nil, {class: "form-control text_field", style: "display: none;"})%>
             </div>
           </div>
         </div>
@@ -319,7 +329,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-left">
-              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
+              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info",id: "validarFiltrosAvanzados"} %>
             </div>
           </div>
         </div>
@@ -457,10 +467,45 @@
         }
       });
     });
+
+    $(document).ready(function(){
+      $('select#condicion_monto_factura').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "rango desde"){
+            $('#monto_factura').show().val("");
+            $('#monto_factura2').show().val("");
+          }else{
+            $('#monto_factura').show().val("");
+            $('#monto_factura2').hide().val("");
+          }
+          //Ocultar cuando no este seleccionado ninguno
+      });
+
+      $("#formFiltrosAvanzados").submit(function(e){
+
+          if (condicion == "rango desde"){
+            var monto_factura =  $("#monto_factura").val();
+            var monto_factura2 = $("#monto_factura2").val();
+            if (monto_factura2.length == 0 || monto_factura.length == 0){
+            alert("valor"+ monto_factura+ "valor 2"+ monto_factura2);
+              e.preventDefault();
+            }
+
+          }else{
+            var monto_factura =  $("#monto_factura").val();
+
+            if (monto_factura.length == 0){
+            alert("valor"+ monto_factura);
+              e.preventDefault();
+            }
+          }
+      });
+
+    });
+
+
+
   </script>
-
-
-</script>
   <%= javascript_include_tag "ventas" %>
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
