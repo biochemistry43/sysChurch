@@ -264,9 +264,11 @@ $(document).ready(function(){
   $("#actualizar_compra_btn").on("click", function(evt){
 
     if (parseFloat($("#importe").text()) > 0){
-      $("#table_sales tbody").empty();
-      $("#importe").text("0.0")
-      $("#search-product").focus();
+      if($("#razon_edicion").val()!=''){
+        $("#table_sales tbody").empty();
+        $("#importe").text("0.0");
+        $("#search-product").focus();
+      }
     }
     else{
       alert("El importe de compra debe ser mayor que cero")
@@ -281,7 +283,7 @@ $(document).ready(function(){
 
     if (parseFloat($("#importe").text()) > 0){
       $("#table_sales tbody").empty();
-      $("#importe").text("0.0")
+      $("#importe").text("0.0");
       $("#search-product").focus();
     }
     else{

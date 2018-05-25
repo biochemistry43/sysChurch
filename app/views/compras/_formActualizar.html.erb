@@ -1,5 +1,4 @@
-<%= form_for @compra, url: {action: "actualizar"}, :html => {:class=>'form-horizontal form-label-left', :role=>"form", onsubmit: "if($('#razon_edicion').val()==''){alert('Debe ponerse la razón por la cual se está editando la compra'); return false;}" } do |f| %>
-  
+<%= form_for @compra, url: {action: "actualizar"}, :html => {:class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
   <div class="item form-group<%= @compra.errors[:folio_compra].any? ? ' has-error has-feedback' : '' %>">
     <%= f.label :folio_compra, "Factura de compra*: ", {class: "control-label"} %>
     <div class="input-group">
@@ -49,7 +48,7 @@
 
   <div class="item form-group<%= @compra.errors[:articulos].any? ? ' has-error has-feedback' : '' %>">
     <div class="input-group">
-      <%= hidden_field :compra_razon, "edicion"%>
+      <%= hidden_field :compra_razon, "edicion", { required: :true }%>
       <%= f.hidden_field :articulos %>
       <%if @compra.errors[:articulos].any? %>
         <p class="bg-danger"><%= @compra.errors[:articulos].to_s[/\w([^"]*)/] %></p>
@@ -65,3 +64,13 @@
   </div>
 
 <% end %>
+<script>
+    $("#edit_compra_<%= @compra.id %>").on('submit', function(evt){
+      if($("#razon_edicion").val()==''){
+        alert("Debe ponerse la razón por la cual se está editando la compra");
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+    });
+  </script>
