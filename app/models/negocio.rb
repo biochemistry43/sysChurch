@@ -30,5 +30,5 @@ class Negocio < ActiveRecord::Base
 	has_many :proveedores
 	has_many :caja_sucursals
 	has_many :mermas
-	has_many :cat_mermas
+	has_many :categoria_mermas
 end

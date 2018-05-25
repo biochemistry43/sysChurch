@@ -1,17 +1,37 @@
-<%= form_for(@categoria_merma) do |f| %>
-  <% if @categoria_merma.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@categoria_merma.errors.count, "error") %> prohibited this cat_merma from being saved:</h2>
+<div class="x_content">
+  <%= form_for @categoria_merma, remote: true, :html=>{ :class=>'form-horizontal form-label-left', :role=>"form" } do |f| %>
 
-      <ul>
-      <% @categoria_merma.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+    <div class="item form-group">
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de la categoría:</h2>
     </div>
-  <% end %>
 
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-<% end %>
+    <div class="item form-group<%= @categoria_merma.errors[:categoria].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :categoria, "Nombre de Categoría: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+        <%= f.text_field :categoria, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"Introduzca el nombre de la categoría..."} do%>
+        <%end%>
+        <%if @categoria_merma.errors[:categoria].any? %>
+          <p class="bg-danger"><%= @categoria_merma.errors[:categoria].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="item form-group<%= @categoria_merma.errors[:descripcion].any? ? ' has-error has-feedback' : '' %>">
+      <%= f.label :descripcion, "Descripción de la categoría: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+        <%= f.text_area :descripcion, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Introduzca la descripción de la categoría..."} do%>
+        <%end%>
+        <%if @categoria_merma.errors[:descripcion].any? %>
+          <p class="bg-danger"><%= @categoria_merma.errors[:descripcion].to_s[/\w([^"]*)/] %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <%= f.submit @categoria_merma.new_record? ? "Crear Categoría" : "Actualizar Categoría", :class => "btn btn-success"%>
+    </div>  
+  <% end %>
+    
+</div>
