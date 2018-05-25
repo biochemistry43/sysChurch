@@ -655,7 +655,7 @@ class ComprasController < ApplicationController
     # entonces se procede a la actualización de la compra.
     if request.patch?
       if @compra.historial_ediciones_compras || @compra.try(:pago_pendiente).try(:pago_proveedores)
-        if @compra.historial_ediciones_compras.size >= 3 || @compra.try(:pago_pendiente).try(:pago_proveedores).try(:size){|size| size >= 1}
+        if @compra.historial_ediciones_compras.size == 2 || @compra.try(:pago_pendiente).try(:pago_proveedores).try(:size){|size| size >= 1}
           flash[:notice] = 'Esta compra tiene pagos aplicados o ha llegado al límite de ediciones posibles'
           return 
         end
