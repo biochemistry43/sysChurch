@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Cat Mermas</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @categorias_merma.each do |cat_merma| %>
+      <tr>
+        <td><%= link_to 'Show', cat_merma %></td>
+        <td><%= link_to 'Edit', edit_categoria_merma_path(cat_merma) %></td>
+        <td><%= link_to 'Destroy', cat_merma, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Cat merma', new_categoria_merma_path %>

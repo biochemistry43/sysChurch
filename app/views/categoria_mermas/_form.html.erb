@@ -1,0 +1,17 @@
+<%= form_for(@categoria_merma) do |f| %>
+  <% if @categoria_merma.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@categoria_merma.errors.count, "error") %> prohibited this cat_merma from being saved:</h2>
+
+      <ul>
+      <% @categoria_merma.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

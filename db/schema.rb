@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180525013123) do
+ActiveRecord::Schema.define(version: 20180525015703) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 20180525013123) do
     t.string   "descripcion"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "negocio_id"
   end
 
   create_table "cat_venta_canceladas", force: :cascade do |t|

@@ -171,6 +171,8 @@ Rails.application.routes.draw do
   end
 
   resources :perfils
+
+  resources :categoria_mermas
   #devise_scope :user do
   #  root :to => 'devise/sessions#new'
   #end
