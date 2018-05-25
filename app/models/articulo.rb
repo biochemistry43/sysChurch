@@ -9,6 +9,7 @@ class Articulo < ActiveRecord::Base
 	has_many :detalle_compras
 	has_many :venta_canceladas
 	has_many :compra_articulos_devueltos
+	has_many :mermas
 
 
 	validates :clave, :nombre, :precioCompra, :precioVenta, :presence => { message: "No puede dejarse vacío este campo" }

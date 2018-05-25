@@ -1,0 +1,2 @@
+class CategoriaMermasController < ApplicationController
+end

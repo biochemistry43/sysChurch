@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  motivo_baja: MyString
+  cantidad_merma: 
+  fecha_hora: 2018-05-24 20:31:23
+  articulo_id: 1
+  cat_merma_id: 1
+  user_id: 1
+  sucursal_id: 1
+  negocio_id: 1
+
+two:
+  motivo_baja: MyString
+  cantidad_merma: 
+  fecha_hora: 2018-05-24 20:31:23
+  articulo_id: 1
+  cat_merma_id: 1
+  user_id: 1
+  sucursal_id: 1
+  negocio_id: 1

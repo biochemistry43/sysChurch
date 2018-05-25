@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180522200448) do
+ActiveRecord::Schema.define(version: 20180525013123) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -96,6 +96,13 @@ ActiveRecord::Schema.define(version: 20180522200448) do
     t.string   "clave"
     t.string   "descripcion"
     t.integer  "negocio_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "cat_mermas", force: :cascade do |t|
+    t.string   "categoria"
+    t.string   "descripcion"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
@@ -356,6 +363,19 @@ ActiveRecord::Schema.define(version: 20180522200448) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "negocio_id"
+  end
+
+  create_table "mermas", force: :cascade do |t|
+    t.string   "motivo_baja"
+    t.decimal  "cantidad_merma"
+    t.datetime "fecha_hora"
+    t.integer  "articulo_id"
+    t.integer  "cat_merma_id"
+    t.integer  "user_id"
+    t.integer  "sucursal_id"
+    t.integer  "negocio_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "movimiento_caja_sucursals", force: :cascade do |t|

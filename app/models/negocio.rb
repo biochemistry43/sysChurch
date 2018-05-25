@@ -29,4 +29,5 @@ class Negocio < ActiveRecord::Base
 	has_many :pago_pendientes
 	has_many :proveedores
 	has_many :caja_sucursals
+	has_many :mermas
 end

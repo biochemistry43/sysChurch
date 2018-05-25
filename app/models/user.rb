@@ -44,4 +44,7 @@ class User < ActiveRecord::Base
 
   has_one :caja_sucursal
 
+  has_many :mermas
+  
+
 end
