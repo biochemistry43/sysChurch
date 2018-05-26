@@ -25,9 +25,20 @@
 
   <td class="center-td" width="10%">
     <% if can? :update, articulo %>
-      <%= link_to 'Editar', edit_articulo_path(articulo), html_options = {class: "btn btn-info btn-xs", remote: true} %><i class="fa fa-pencil"></i>
+      <%= link_to edit_articulo_path(articulo), html_options =  {remote: true, class: "btn btn-primary btn-lg", title: "Editar Artículo"} do %>  
+        <span class="fa fa-pencil"></span>
+      <% end %>
     <% end %>
   </td>
+
+  <td class="center-td" width="10%">
+    <% if can? :create, Merma %>
+      <%= link_to url = {controller:"mermas", action:"new", id:articulo.id}, html_options =  {remote: true, class: "btn btn-warning btn-lg", title: "Registrar Merma"} do %>  
+        <span class="fa fa-bug"></span>
+      <% end %>
+    <% end %>
+  </td>
+
 
   <!--
   <td class="center-td" width="10%">

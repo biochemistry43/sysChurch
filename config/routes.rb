@@ -1,5 +1,19 @@
 Rails.application.routes.draw do
   
+  get 'mermas/index'
+
+  get 'mermas/show'
+
+  get 'mermas/new'
+
+  get 'mermas/create'
+
+  get 'mermas/edit'
+
+  get 'mermas/update'
+
+  get 'mermas/destroy'
+
   get 'corte_cajas/show'
 
   post 'corte_cajas/show'
@@ -173,6 +187,7 @@ Rails.application.routes.draw do
   resources :perfils
 
   resources :categoria_mermas
+  resources :mermas
   #devise_scope :user do
   #  root :to => 'devise/sessions#new'
   #end

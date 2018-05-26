@@ -1,0 +1,54 @@
+  <%= form_for @merma, remote: true, :html=> {:class=>'form-horizontal form-label-left', :role=>"form"} do |f| %>
+
+    <div style="background: #ffcc00; color:black">
+      <h4>Advertencia:</h4>
+      <h4>Este módulo permite dar de baja productos por desperfectos, cortesías o alguna otra razón especial.</h4>
+      <h4>La cantidad de baja especificada será descontada del inventario de este producto.</h4>  
+      <h4>La operación es irreversible.</h4>
+    </div>
+    
+    <hr>
+
+    <div class="item form-group">
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">
+        Producto: 
+      </label>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-question"></i></span>
+        <input type="text" class="form-control-col-md-7 col-xs-12 text_field" disabled="disabled" value="<%= @articulo.nombre.capitalize  %> clave: <%= @articulo.clave %>"/>
+        <%= f.hidden_field :articulo_id, :value=> @articulo.id %>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <%= f.label :motivo_baja, "Motivo de baja del producto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-question"></i></span>
+        <%= f.text_area :motivo_baja, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"¿Cuál es el motivo por el que realiza la baja de este producto? Escríbalo aquí..."} do%>
+        <%end%>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <%= f.label :cantidad_merma, "Cantidad de baja: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-thumbs-down"></i></span>
+        <%= f.number_field :cantidad_merma, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba la cantidad de producto que dará de baja"} do%>
+        <%end%>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <%= f.label :categoria_merma, "Categoria de merma: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-tags"></i></span>
+        <%= collection_select(:merma, :categoria_merma_id, @categorias, :id, :categoria, {:prompt => 'Seleccione una categoria'}, { class: "form-control col-md-7 col-xs-12" })%>
+      </div>
+    </div>
+
+    <div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <%= f.submit @merma.new_record? ? "Registrar merma" : "Actualizar merma", :class => "btn btn-success"%>
+    </div>
+  <% end %>
+
+

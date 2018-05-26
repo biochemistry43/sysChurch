@@ -3,4 +3,5 @@ class Usuario < ActiveRecord::Base
 	has_one :persona
 	has_many :ventas
 	has_many :bancos
+	has_many :mermas
 end

@@ -23,4 +23,5 @@ class Sucursal < ActiveRecord::Base
 	has_many :caja_chicas
 
 	has_many :movimiento_caja_sucursals
+	has_many :mermas
 end
