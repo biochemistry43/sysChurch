@@ -65,8 +65,26 @@
                         <li><%= link_to "Presentaciones", presentacion_productos_path %>
                         </li>
                       <%end%>
+                      <li>
+                        <a><i class="fa fa-bug"></i>Mermas 
+                          <span class="fa fa-chevron-down"></span>
+                        </a>
+                        <ul class="nav child_menu" style="display: none;">
+                          <% if can? :create, CategoriaMerma %>
+                            <li>
+                              <%= link_to "Categorías", categoria_mermas_path %>
+                            </li>
+                          <% end %>
+                          <% if can? :create, Merma %>
+                            <li>
+                              <%= link_to "Mermas", mermas_path %>
+                            </li>
+                          <% end %>
+                        </ul>
+                      </li>
                     </ul>
                   </li>
+                  
                 <% end %> <!-- Fin if can create Articulo -->
 
                 <li>

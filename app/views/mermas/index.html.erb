@@ -1,2 +1,135 @@
-<h1>Mermas#index</h1>
-<p>Find me in app/views/mermas/index.html.erb</p>
+<div class="right_col" role="main">
+  <% flash.each do |key, value| %>
+    <script>
+      $(document).ready(function(){
+        new PNotify({
+          title: 'Mensaje de la aplicación',
+          text: '<%= value %>!',
+          type: 'success'
+        });
+      });
+    </script>
+  <%end%>
+
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Registro de bajas por merma</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div> 
+  <div class="col-md-12 col-sm-12 col-xs-12 ">
+
+    <hr style="border-style: solid; border-width: 2px;" >
+
+    <div class="row">
+
+      <div>
+        <table class="table table-striped responsive-utilities jambo_table" id="tabla_productos" >
+          <thead>
+            <tr>
+              <th class="column-title" style="text-align: center;" >Artículo</th>
+              <th class="column-title" style="text-align: center;">Motivo baja</th>
+              <th class="column-title" style="text-align: center;">Cantidad baja</th>
+              <th class="column-title" style="text-align: center;">Autorizó</th>
+              <th class="column-title" style="text-align: center;">Fecha</th>
+            </tr>
+          </thead>
+
+          <tbody id="tb_mermas">
+             <%  @mermas.each do |merma| %>
+               <tr>
+                <td align="center" width="10%"><%= merma.try(:articulo).try(:nombre) %></td>
+                <td align="center" width="20%"><%= merma.motivo_baja %></td>
+                <td class="center-td" width="10%"><%= merma.cantidad_merma %></td>
+                <td class="center-td" width="15%"><%= merma.user.try(:perfil).try(:nombre_completo) %></td>
+                <td class="center-td" width="10%"><%= merma.created_at.strftime("%d/%m/%Y") %></td>
+              </tr>
+             <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+
+    $(document).ready(function(){
+
+      /*$("#filtros_avanzados").click(function(e){
+        if( $("#opciones_filtros_avanzados").is(":visible") ){
+           $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
+        }
+        else{
+          $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
+        }
+        
+        $("#opciones_filtros_avanzados").slideToggle("fast");
+
+      });*/
+  
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        },
+        scrollY: "480px",
+        scrollCollapse: true,
+        //dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+      });
+
+    });
+
+    function fnExcelReport() {
+        
+      var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+      tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+      tab_text = tab_text + '<x:Name>Productos</x:Name>';
+
+      tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+      tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+      tab_text = tab_text + "<table border='1px'>";
+      tab_text = tab_text + $('#tabla_productos').html();
+      tab_text = tab_text + '</table></body></html>';
+
+      var data_type = 'data:application/vnd.ms-excel';
+        
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+        
+      if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+          if (window.navigator.msSaveBlob) {
+              var blob = new Blob([tab_text], {
+                  type: "application/csv;charset=utf-8;"
+              });
+             navigator.msSaveBlob(blob, 'Productos.xls');
+          }
+      } else {
+          $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+          $('#test').attr('download', 'Productos.xls');
+      }
+
+    }
+
+    /*$(document).on('DOMNodeInserted', 'tr.rowsearch', function (event) {
+      if ( document.readyState != 'complete') return;
+      window.location.reload(true);
+    });*/
+
+    
+  </script>
+  <%= javascript_include_tag "articulos" %>
+</div>
