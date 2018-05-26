@@ -21,25 +21,36 @@
     </div>
 
     <div class="item form-group">
-      <%= f.label :motivo_baja, "Motivo de baja del producto: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">
+        Existencia actual: 
+      </label>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-question"></i></span>
-        <%= f.text_area :motivo_baja, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"¿Cuál es el motivo por el que realiza la baja de este producto? Escríbalo aquí..."} do%>
+        <input type="text" class="form-control-col-md-7 col-xs-12 text_field" disabled="disabled" value="<%= @articulo.existencia %>"/>
+        <%= f.hidden_field :articulo_id, :value=> @articulo.id %>
+      </div>
+    </div>
+
+    <div class="item form-group">
+      <%= f.label :motivo_baja, "Motivo de baja del producto*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+        <span class="input-group-addon"><i class="fa fa-question"></i></span>
+        <%= f.text_area :motivo_baja, {class: "form-control col-md-7 col-xs-12 text_field first_input", :placeholder=>"¿Cuál es el motivo por el que realiza la baja de este producto? Escríbalo aquí...", :required=>"true"} do%>
         <%end%>
       </div>
     </div>
 
     <div class="item form-group">
-      <%= f.label :cantidad_merma, "Cantidad de baja: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <%= f.label :cantidad_merma, "Cantidad de baja*: ",{class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-thumbs-down"></i></span>
-        <%= f.number_field :cantidad_merma, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba la cantidad de producto que dará de baja"} do%>
+        <%= f.number_field :cantidad_merma, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Escriba la cantidad de producto que dará de baja", :max => @articulo.existencia} do%>
         <%end%>
       </div>
     </div>
 
     <div class="item form-group">
-      <%= f.label :categoria_merma, "Categoria de merma: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+      <%= f.label :categoria_merma, "Categoria de merma*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
       <div class="col-md-6 col-sm-6 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-tags"></i></span>
         <%= collection_select(:merma, :categoria_merma_id, @categorias, :id, :categoria, {:prompt => 'Seleccione una categoria'}, { class: "form-control col-md-7 col-xs-12" })%>

@@ -19,9 +19,10 @@ class MermasController < ApplicationController
     @merma = Merma.new(merma_params)
     merma = params[:merma]
     @articulo = Articulo.find(merma[:articulo_id])
+    @articulo.existencia -= @merma.cantidad_merma
     respond_to do |format|
       ActiveRecord::Base.transaction do
-        if @merma.save
+        if @merma.save && @articulo.save
           current_user.negocio.mermas << @merma
           current_user.sucursal.mermas << @merma
           current_user.mermas << @merma
