@@ -14,25 +14,38 @@
 
 
   <div class="row">
-    <div class="form-group">
-      <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
-      <div class="input-group col-md-7 col-sm-7 col-xs-12">
+    <div class="col-md-9 col-sm-9 col-xs-12">
+      <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
+      <div class="input-group col-md-10 col-sm-10 col-xs-12">
         <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
         <%= f.text_field :asunto_email, class:'form-control text_field'%>
       </div>
+
+
+    </div>
+    <div class="col-md-2 col-sm-2 col-xs-12">
+      <%= select_tag :lista_texto_variable, "<optgroup label='Cliente'><option value='nombreCliente'>Nombre del cliente</option></optgroup>
+                                                <optgroup label='Venta'><option value='fechaVenta'>Fecha de venta</option><option value='numeroVenta'>Número de venta</option><option value='folioVenta'>Folio de venta</option></optgroup>
+                                                <optgroup label='Factura'><option value='fechaFactura'>Fecha de factura</option><option value='numeroFactura'>Número de factura</option><option value='folioFactura'>Folio de factura</option><option value='totalFactura'>Total</option></optgroup>
+                                                <optgroup label='Negocio'><option value='negocio'>Nombre del negocio</option><option value='sucursal'>Sucursal</option><option value='email'>Email</option><option value='telefono'>Teléfono</option></optgroup>".html_safe, :prompt => 'Texto variable.',  class: 'form-control' %>
     </div>
   </div>
   <div class="row">
-    <div class="form-group">
-      <div class="control-label col-md-2 col-sm-2 col-xs-12">
-        <%= f.label :msg_email, "Su mensaje: ", class:"control-label"%>
-      </div>
-      <div class="input-group col-md-7 col-sm-7 col-xs-12">
+    <div class="col-md-9 col-sm-9 col-xs-12">
+        <%= f.label :msg_email, "Su mensaje: ", class:"control-label col-md-2 col-sm-2 col-xs-12",  style:"text-align:right;"%>
+      <div class="input-group col-md-10 col-sm-10 col-xs-12">
          <!--textarea id="summernote" name="summernote"></textarea-->
         <%= f.text_area :msg_email, class:'form-control text_field', id: "summernote"%>
       </div>
   </div>
+  <div class="col-md-3 col-sm-3 col-xs-12" style="color:black;  font-weight: normal; text-align: justify; font-size: 12px;">
+    <p>
+        El texto que aparece dentro de dobles corchetes no debe de ser modificado porque será reemplazado automáticamente por el sistema con los datos reales de las operaciones.
+    </p>
+    <p> Por esa razón <b>{{nombreCliente}}</b> será reemplazado por <b>"Fulano Martínez"</b>, suponiendo que ese es el nombre de la persona a quien fue expedida la factura.</p>
+  </div>
+
   </div>
 
   <!--
@@ -79,7 +92,20 @@
       minHeight: 170,
       maxHeight: 170,
       lang: 'es-ES', // default: 'en-US'
-      focus: true,
+      //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+      hint: {
+        mentions: ['nombreCliente','fechaVenta','numeroVenta','folioVenta','fechaFactura','numeroFactura','folioFactura','totalFactura','negocio','sucursal','email','telefono'],
+        match: /\B@(\w*)$/,
+        search: function (keyword, callback) {
+          callback($.grep(this.mentions, function (item) {
+            return item.indexOf(keyword) == 0;
+          }));
+        },
+        content: function (item) {
+          return '{{' + item + '}}';
+        }
+      },
+
       toolbar: [
       // [groupName, [list of button]]
       ['fontname',['fontname']],
@@ -95,5 +121,29 @@
     ]
 
   });
+
+  //Agrega una variable encerrado en doble corchetes por medio de un select que será reemplazado por el valor real de la BD.
+  //var editor = $("#summernote");
+
+var editor = $("#summernote");
+
+function getSelected()
+{
+  var u     = editor.val();
+  var start = editor.get(0).selectionStart;
+  var end   = editor.get(0).selectionEnd;
+
+  return [u.substring(0, start), u.substring(end), u.substring(start, end)];
+}
+$(document).ready(function() {
+  $('select#lista_texto_variable').on('change',function(){
+    var valor = $(this).val();
+    var select = getSelected();
+    editor.html(select[0] + '{{'+valor+'}}' + select[1]);
+  });
+});
+
+
+
 
 </script>

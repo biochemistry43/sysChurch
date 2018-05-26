@@ -880,9 +880,27 @@ class FacturasController < ApplicationController
   def enviar_email_post
     #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
     if request.post?
-      @destinatario = params[:destinatario]
-      @mensaje = params[:summernote]
-      @tema = params[:tema]
+      destinatario = params[:destinatario]
+      #SE ENVIAN LOS COMPROBANTES(pdf y/o xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
+      #Se asignan los valores del texto variable de la configuración de las plantillas de email.
+      txtVariable_nombCliente = @factura.venta.cliente.nombre_completo # =>nombreCliente
+      txtVariable_fechaVenta =  @factura.venta.fechaVenta # => fechaVenta
+      txtVariable_consecutivoVenta = @factura.venta.consecutivo # => númeroVenta
+      txtVariable_montoVenta = @factura.venta.montoVenta # => totalVenta
+      txtVariable_folioVenta = @factura.venta.folio # => folioVenta
+      txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
+      #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
+      mensaje = current_user.negocio.config_comprobante.msg_email
+      #msg = "Hola sr. {{nombreCliente}} le hago llegar por este medio la factura de su compra del día {{fechaVenta}}"
+      mensaje_email = mensaje.gsub(/(\{\{nombreCliente\}\})/, "#{txtVariable_nombCliente}")
+      mensaje_email = mensaje_email.gsub(/(\{\{fechaVenta\}\})/, "#{txtVariable_fechaVenta}")
+      mensaje_email = mensaje_email.gsub(/(\{\{numeroVenta\}\})/, "#{txtVariable_consecutivoVenta}")
+      mensaje_email = mensaje_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_folioVenta}")
+      mensaje_email = mensaje_email.gsub(/(\{\{nombreNegocio\}\})/, "#{txtVariable_nombNegocio}")
+      #mensage_email = mensage_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_emailNegocio}")
+
+      #@tema = params[:tema]
+      tema = current_user.negocio.config_comprobante.asunto_email
 
       ruta_storage = @factura.ruta_storage
 
@@ -908,11 +926,11 @@ class FacturasController < ApplicationController
       end
 
       #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-      FacturasEmail.factura_email(@destinatario, @mensaje, @tema, comprobantes).deliver_now
+      FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
 
       respond_to do |format|
         format.html { redirect_to action: "index"}
-        flash[:notice] = "Los comprobantes se han enviado a #{@destinatario}!"
+        flash[:notice] = "Los comprobantes se han enviado a #{destinatario}!"
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
 
