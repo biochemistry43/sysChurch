@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $("#filtro_por_cliente").click(function(e){
+      $('.rfc_input').hide().val("");
       if( $("#opciones_filtros_por_cliente").is(":visible") ){
          $(this).html('Filtros por cliente <i class="fa fa-sort-down"></i>');
       }
