@@ -211,11 +211,11 @@
             </div>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="text-center">
+            <div class="text-center" id="errorRFC">
 
               <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
 
-              <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input", :placeholder=>"RFC del cliente..."} do%>
+              <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input",id:"rfc_input", :placeholder=>"RFC del cliente..."} do%>
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
               <%end%>
             </div>
@@ -223,7 +223,7 @@
 
           <div class="col-md-1 col-sm-5 col-xs-12">
             <div class="text-center">
-              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info"} %>
+              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Opcional"} %>
             </div>
           </div>
         </div>
@@ -522,14 +522,17 @@
 
       $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
           if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+            $('#errorRFC').removeClass(" has-error has-feedback");
             $('.rfc_input').hide().val("");
             $('#nombreFiscalCliente').show();
             $('#leyenda_filtro_cliente').html("Nombre:");
           }
           else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+
             $('#nombreFiscalCliente').hide().val("");
             $('.rfc_input').show();
             $('#leyenda_filtro_cliente').html("R.F.C.:");
+
           }
 
       });
@@ -538,6 +541,7 @@
     });
 
   </script>
+  <%= javascript_include_tag "validador_RFC" %>
   <%= javascript_include_tag "ventas" %>
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
