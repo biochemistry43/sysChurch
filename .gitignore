@@ -26,3 +26,4 @@
 
 *.keep
 app/assets/images/.keep
+/config/secrets.yml

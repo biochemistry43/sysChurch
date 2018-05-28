@@ -7,5 +7,5 @@ config.fog_credentials = {
 
     }
 
-    config.fog_directory = 'nubepacifica'
+    config.fog_directory = 'omilos'
 end
