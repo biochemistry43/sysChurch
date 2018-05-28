@@ -134,6 +134,7 @@ class PuntoVentaController < ApplicationController
 
 	      end
 	      
+        ActiveRecord::Base.transaction do
 	      if item[0].has_key?("importe")
 
           montoVenta = 0
@@ -220,7 +221,7 @@ class PuntoVentaController < ApplicationController
             #de pago elegida en la venta.
             campo.venta_forma_pago_campos << ventaFormaPagoCampo
 
-
+            
             #hashPago contiene la información capturada de la forma de pago
             #elegida.
             hashPago.each do |llave, valor|
@@ -230,7 +231,7 @@ class PuntoVentaController < ApplicationController
                  
                 #Se evalua que los valores de los campos de la forma de pago
                 #elegida hayan sido guardados adecuadamente.
-                if ventaFormaPagoCampo.save
+                if ventaFormaPagoCampo.save!
                   ventaFPCSaved && true
                 else
               	  ventaFPCSaved && false
@@ -255,7 +256,7 @@ class PuntoVentaController < ApplicationController
             @venta.item_ventas << itemV
             itemV.articulo.existencia = itemV.articulo.existencia - itemV.cantidad
 
-            itemV.articulo.save
+            itemV.articulo.save!
 
           end
 
@@ -288,13 +289,13 @@ class PuntoVentaController < ApplicationController
               cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.ventas << @venta
 
-              movimiento_caja_suc.save
+              movimiento_caja_suc.save!
 
               saldoActualCaja = cajaBD.saldo
 
               saldoActualizado = saldoActualCaja + @venta.montoVenta
               cajaBD.saldo = saldoActualizado
-              cajaBD.save
+              cajaBD.save!
               
             #Si el tipo de pago no es efectivo, se registra el movimiento en la caja con el nombre de tipo de pago
             #pero no se añade al saldo de la caja de venta
@@ -312,11 +313,11 @@ class PuntoVentaController < ApplicationController
               cajaBD.movimiento_caja_sucursals << movimiento_caja_suc
               cajaBD.ventas << @venta
 
-              movimiento_caja_suc.save
+              movimiento_caja_suc.save!
             end
 
             #Si los campos fueron guardados correctamente, procede a guardar la venta
-            if @venta.save && recordVentaFormaPago.save
+            if @venta.save! && recordVentaFormaPago.save!
               if itemSaved
               flash[:notice] = "La venta se guardó exitosamente!"
               redirect_to action: "index", venta: @venta
@@ -337,6 +338,7 @@ class PuntoVentaController < ApplicationController
           end #Termina guardado de la venta
 
 		    end #Termina la evaluación de la llave importe
+        end #termina transacción
 
 	    end #Termina la evaluación de si es array
 

@@ -28,9 +28,9 @@ class ProveedoresController < ApplicationController
 
     respond_to do |format|
       if @proveedor.valid?
+        current_user.sucursal.proveedores << @proveedor
+        current_user.negocio.proveedores<< @proveedor
         if @proveedor.save
-          current_user.sucursal.proveedores << @proveedor
-          current_user.negocio.proveedores<< @proveedor
           #format.html { redirect_to @proveedor, notice: 'Proveedor was successfully created.' }
           #format.json { render :show, status: :created, location: @proveedor }
           format.json { head :no_content}

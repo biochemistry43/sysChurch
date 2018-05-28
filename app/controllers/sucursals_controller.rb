@@ -27,8 +27,8 @@ class SucursalsController < ApplicationController
     @sucursal = Sucursal.new(sucursal_params)  
     respond_to do |format|
       if @sucursal.valid?
+        current_user.negocio.sucursals << @sucursal
         if @sucursal.save
-          current_user.negocio.sucursals << @sucursal
           format.js
           format.html { redirect_to @sucursal, notice: 'La sucursal fue creada.' }
           format.json { render :show, status: :created, location: @sucursal }

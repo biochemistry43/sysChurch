@@ -28,8 +28,8 @@ class PresentacionProductosController < ApplicationController
 
     respond_to do |format|
       if @presentacion_producto.valid?
+        current_user.negocio.presentacion_productos << @presentacion_producto
         if @presentacion_producto.save
-          current_user.negocio.presentacion_productos << @presentacion_producto
           #format.html { redirect_to @presentacion_producto, notice: 'Presentacion producto was successfully created.' }
           #format.json { render :show, status: :created, location: @presentacion_producto }
           format.json { head :no_content}

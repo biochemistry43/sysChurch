@@ -28,8 +28,8 @@ class MarcaProductosController < ApplicationController
 
     respond_to do |format|
       if @marca_producto.valid?
+        current_user.negocio.marca_productos << @marca_producto
         if @marca_producto.save
-          current_user.negocio.marca_productos << @marca_producto
           #format.html { redirect_to @marca_producto, notice: 'Marca producto was successfully created.' }
           #format.json { render :show, status: :created, location: @marca_producto }
           format.json { head :no_content }

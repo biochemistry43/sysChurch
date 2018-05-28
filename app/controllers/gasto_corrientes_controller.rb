@@ -55,6 +55,7 @@ class GastoCorrientesController < ApplicationController
     #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas 
     #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
     if origen.include? "caja_venta"
+      ActiveRecord::Base.transaction do
       tamano_cadena_origen = origen.length
 
       #aquí extraigo el id de la caja de venta contenido en la cadena de texto
@@ -95,11 +96,12 @@ class GastoCorrientesController < ApplicationController
       else
         flash[:notice] = "No hay saldo suficiente en esta caja para hacer la devolución"
       end
-
+    end
     end #Termina la condición caja venta
 
     #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
     if origen.include? "caja_chica"
+      ActiveRecord::Base.transaction do
       #Verifica si existen registros de caja chica para esta sucursal
       if current_user.sucursal.caja_chicas
         #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
@@ -145,10 +147,11 @@ class GastoCorrientesController < ApplicationController
           flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la devolución"
         end
       end
+      end
     end
     
     respond_to do |format|
-          
+      ActiveRecord::Base.transaction do
       if  @movimientoCaja && @cajaVenta
         if @gasto_corriente.save && @gasto.save && @movimientoCaja.save && @cajaVenta.save && @categoriaGasto.save
           format.json { head :no_content}
@@ -168,6 +171,7 @@ class GastoCorrientesController < ApplicationController
           
         end
       end
+    end
     end
 
   end
