@@ -7,7 +7,7 @@ var copiaFormaPago = {};
 var ultimoFolio = "";
 
 /*Guarda los ids de los productos que están en la tabla de ventas*/
-var itemsEnTabla = [];
+var itemsEnTabla = new Set();
 
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
@@ -550,7 +550,11 @@ function addProduct(elem){
 
 $(document).on('click', '.borrar_item_venta', function (event) {
     event.preventDefault();
-    $(this).closest('tr').remove();
+    var fila = $(this).closest('tr');
+    var id_fila = fila.attr('id');
+    var id_producto = id_fila.substr(9);
+    itemsEnTabla.delete(parseInt(id_producto));
+    fila.remove();
 });
 
 jQuery.fn.contentChange = function(callback){
@@ -631,7 +635,8 @@ function cambiarCliente(id, nombre, telefono, email){
  * a la tabla de ventas
  */
 function guardarIdAgregado(producto){
-  if (itemsEnTabla.includes(producto.id)) { 
+
+  if (itemsEnTabla.has(producto.id)) { 
     var cantidad = $("#tr-venta-"+producto.id).children('td')[3].innerHTML;
     var nuevaCantidad = parseFloat(cantidad) + 1;
     $("#tr-venta-"+producto.id).children('td')[3].innerHTML = nuevaCantidad;
@@ -645,7 +650,7 @@ function guardarIdAgregado(producto){
     return false;
   }
   else{
-     itemsEnTabla.push(producto.id);  
+     itemsEnTabla.add(producto.id);  
      return true;
   }
 }
