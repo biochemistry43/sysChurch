@@ -5,6 +5,8 @@ var referenciaOxxo;
 var referenciaPaypal
 var copiaFormaPago = {};
 
+var itemsEnTabla = new Set();
+
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
 
@@ -364,12 +366,18 @@ function addProduct(elem){
         //de la fila de un producto.
       //  for(i=0; i < resLength; i++){
            var element = res;
-           $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
+
+           var esAgregado = guardarIdAgregado(element);
+
+           if (esAgregado) {
+             $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td id='precioProducto' >0</td><td id='cantidadProducto'>1</td>"+
                                     "<td>0</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td></tr>");
+           }
+
 
       //  } //Terminan de añadirse los datos a la fila
 
@@ -389,7 +397,11 @@ function addProduct(elem){
 
 $(document).on('click', '.borrar_item_venta', function (event) {
     event.preventDefault();
-    $(this).closest('tr').remove();
+    var fila = $(this).closest('tr');
+    var id_fila = fila.attr('id');
+    var id_producto = id_fila.substr(9);
+    itemsEnTabla.delete(parseInt(id_producto));
+    fila.remove();
 });
 
 jQuery.fn.contentChange = function(callback){
@@ -497,4 +509,25 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#email_cliente").html("Email: <strong>"+email+"</strong>");
   $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
   $("#modalClientes").modal("hide");
+}
+
+function guardarIdAgregado(producto){
+
+  if (itemsEnTabla.has(producto.id)) { 
+    var cantidad = $("#tr-venta-"+producto.id).children('td')[3].innerHTML;
+    var nuevaCantidad = parseFloat(cantidad) + 1;
+    $("#tr-venta-"+producto.id).children('td')[3].innerHTML = nuevaCantidad;
+
+    precioVenta = $("#tr-venta-"+producto.id).children('td')[2].innerHTML;
+
+    nuevoImporte = nuevaCantidad * parseFloat(precioVenta);
+
+    $("#tr-venta-"+producto.id).children('td')[4].innerHTML = nuevoImporte;
+
+    return false;
+  }
+  else{
+     itemsEnTabla.add(producto.id);  
+     return true;
+  }
 }
