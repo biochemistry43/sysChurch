@@ -6,6 +6,9 @@ var referenciaPaypal
 var copiaFormaPago = {};
 var ultimoFolio = "";
 
+/*Guarda los ids de los productos que están en la tabla de ventas*/
+var itemsEnTabla = [];
+
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
 
@@ -99,6 +102,7 @@ $(document).ready(function(){
   });
 
   
+
   /**
    * Codigo para cambiar cantidad de producto vendido.
    * Al dar doble clic sobre algún producto de la lista de ventas, se abre un modal
@@ -138,7 +142,8 @@ $(document).ready(function(){
          * del cliente dentro de la pantalla de venta**/
         $("#lista_clientes").append(""+
 
-            "<tr class='even pointer'><td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
+            "<tr class='even pointer'><td style='display:none;'>"+element.id+"</td>"+
+            "<td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
             "<td>"+element.telefono1+"</td>"+
             "<td>"+element.email+"</td>"+
             "<td><button class='btn btn-success btn-xs' "+
@@ -512,7 +517,11 @@ function addProduct(elem){
             alert("Este producto no tiene existencias");
           }
           else{
-            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
+
+            var agregado = guardarIdAgregado(element);
+
+            if (agregado){
+              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
@@ -520,6 +529,8 @@ function addProduct(elem){
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td>"+
                                     "</tr>");
+            }
+
           }
 
         //}
@@ -611,4 +622,28 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#email_cliente").html("Email: <strong>"+email+"</strong>");
   $("#telefono_cliente").html("Teléfono: <strong>"+telefono+"</strong>");
   $("#modalClie").modal("hide");
+}
+
+/*
+ * Este método llena un arreglo con los ids de los productos que se van agregando
+ * a la tabla de ventas
+ */
+function guardarIdAgregado(producto){
+  if (itemsEnTabla.includes(producto.id)) { 
+    var cantidad = $("#tr-venta-"+producto.id).children('td')[3].innerHTML;
+    var nuevaCantidad = parseFloat(cantidad) + 1;
+    $("#tr-venta-"+producto.id).children('td')[3].innerHTML = nuevaCantidad;
+
+    precioVenta = $("#tr-venta-"+producto.id).children('td')[2].innerHTML;
+
+    nuevoImporte = nuevaCantidad * parseFloat(precioVenta);
+
+    $("#tr-venta-"+producto.id).children('td')[4].innerHTML = nuevoImporte;
+
+    return false;
+  }
+  else{
+     itemsEnTabla.push(producto.id);  
+     return true;
+  }
 }
