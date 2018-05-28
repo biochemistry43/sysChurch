@@ -223,7 +223,7 @@
 
           <div class="col-md-1 col-sm-5 col-xs-12">
             <div class="text-center">
-              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Opcional"} %>
+              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
             </div>
           </div>
         </div>
@@ -282,7 +282,15 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div style="text-align: right;">
-              <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12" })%>
+              <%= select_tag :opcion_busqueda_cliente, "<option>Buscar por R.F.C.</option><option>Buscar por nombre fiscal</option>".html_safe, :prompt => 'Elija una opción.',  class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+                <%= collection_select(nil, :cliente_id, @clientes, :id, :nombre_completo, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12 nombre_collection_select", style: "display: none;"})%>
+                <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_text_field", id:"rfc_input", :placeholder=>"RFC del cliente...", style: "display: none;"} do%>
+                  <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <%end%>
             </div>
           </div>
         </div>
@@ -498,6 +506,21 @@
           //Ocultar cuando no este seleccionado ninguno
       });
 
+
+      $('select#opcion_busqueda_cliente').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "Buscar por R.F.C."){
+            $('.nombre_collection_select').hide().val("");
+            $('.rfc_text_field').show().val("");
+          }else if (valor == "Buscar por nombre fiscal") {
+            $('.nombre_collection_select').show().val("");
+            $('.rfc_text_field').hide().val("");
+          }
+          //Ocultar cuando no este seleccionado ninguno
+      });
+
+
+      //Para la búsqueda por monto de
       $("#formFiltrosAvanzados").submit(function(e){
 
           if (condicion == "rango desde"){
@@ -541,7 +564,7 @@
     });
 
   </script>
-  <%= javascript_include_tag "validador_RFC" %>
+  <%= javascript_include_tag "validador_RFC_Obligatorio" %>
   <%= javascript_include_tag "ventas" %>
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>

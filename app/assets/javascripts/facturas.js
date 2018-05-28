@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $("#filtro_por_cliente").click(function(e){
-      
+
       if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
         $('#errorRFC').removeClass(" has-error has-feedback");
         $('.rfc_input').hide().val("");
@@ -8,6 +8,8 @@ $(document).ready(function(){
         $('#leyenda_filtro_cliente').html("Nombre:");
       }
       else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+        $('#errorRFC').removeClass(" has-error has-feedback");
+        $('.rfc_input').hide().val("");
 
         $('#nombreFiscalCliente').hide().val("");
         $('.rfc_input').show();
