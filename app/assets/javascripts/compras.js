@@ -121,9 +121,11 @@ $(document).ready(function(){
    */
   $(document).delegate("tr", "dblclick", function(e) {
 
-    cantidad = $(this).find("#cantidadProducto").html();
-    precio = $(this).find("#precioProducto").html();
-    cambiarCantidadProducto($(this).index(), cantidad, precio);
+    if (!$(this).hasClass("headings")) {
+      cantidad = $(this).find("#cantidadProducto").html();
+      precio = $(this).find("#precioProducto").html();
+      cambiarCantidadProducto($(this).index(), cantidad, precio);
+    }
 
   });
 

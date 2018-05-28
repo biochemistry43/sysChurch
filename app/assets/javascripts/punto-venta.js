@@ -110,9 +110,11 @@ $(document).ready(function(){
    */
   $(document).delegate("tr", "dblclick", function(e) {
 
-    cantidad = $(this).find("#cantidadProducto").html();
-    existencia = $(this).find("#existenciaProducto").html();
-    cambiarCantidadProducto($(this).index(), cantidad, existencia);
+    if (!$(this).hasClass("headings")) {
+      cantidad = $(this).find("#cantidadProducto").html();
+      existencia = $(this).find("#existenciaProducto").html();
+      cambiarCantidadProducto($(this).index(), cantidad, existencia);
+    }
 
   });
 
@@ -518,9 +520,9 @@ function addProduct(elem){
           }
           else{
 
-            var agregado = guardarIdAgregado(element);
+            var esAgregado = guardarIdAgregado(element);
 
-            if (agregado){
+            if (esAgregado){
               $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
