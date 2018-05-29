@@ -18,4 +18,8 @@ class Venta < ActiveRecord::Base
         end
       end
 	end
+
+	def self.filtrar_por_forma_pago(ventas, forma_pago)
+		ventas.select{|venta| venta.try(:movimiento_caja_sucursal).try(:tipo_pago).eql?(forma_pago.to_s)}
+	end
 end

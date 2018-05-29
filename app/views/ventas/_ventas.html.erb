@@ -8,10 +8,15 @@
   <hr>
   <div class="row">
     <div class="col-md-12" style="color: gray;">
-        Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @ventas.size %></span>  ventas con este criterio.
+      <% if @ventas.size >= 1 %>
+        Se <%= @ventas.size > 1 ? "Encontraron " : "Encontró " %> <span style="color:#5B7ECC; font-size: 20px;"><%= @ventas.size %></span> <%= @ventas.size > 1 ? "Ventas " : "Venta " %> con este criterio.
+      <% else %>
+        No se encontró ninguna venta con estos criterios de búsqueda :( 
+      <% end %>
     </div>
     
   </div>
+  <hr>
   
   <% if @consulta %>
     <div class="row">
@@ -30,6 +35,9 @@
           </div>
           <div class="col-md-12">
             Status: <span style="color:#5B7ECC; font-size: 16px;"> <%= @status %></span>
+          </div>
+          <div class="col-md-12">
+            Forma de pago: <span style="color:#5B7ECC; font-size: 16px;"> <%= @forma_pago.capitalize %></span>
           </div>
           <% if can? :create, Negocio %>
             <div class="col-md-12">
@@ -176,6 +184,19 @@
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
             <%= select_tag "status", "<option>Todas</option><option>Cancelada</option><option>Activa</option>".html_safe,  class: 'form-control' %>  
+          </div>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            Forma de pago:
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div style="text-align: right;">
+            <%= collection_select(nil, :forma_pago, FormaPago.all, :nombre, :nombre, {:prompt => 'Elije una forma de pago'}, { class: "form-control col-md-7 col-xs-12" })%>
           </div>
         </div>
       </div>

@@ -138,6 +138,10 @@ class VentasController < ApplicationController
       @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
       perfil_id = params[:perfil_id]
       @cajero = nil
+      @forma_pago = params[:forma_pago]
+
+      #movimiento_caja.tipo_pago.eql?("efectivo")
+
       unless perfil_id.empty?
         @cajero = Perfil.find(perfil_id).user
       end
@@ -152,75 +156,171 @@ class VentasController < ApplicationController
       
       #Resultados para usuario administrador o subadministrador
       if can? :create, Negocio
-        unless @suc.empty?
-          #valida si se eligió un cajero específico para esta consulta
-          if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)  
-            end
-
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-          else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status, sucursal: @sucursal)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)  
-            end
+        #Usuario elige todos los criterios
+        if @cajero && @sucursal
+          unless @forma_pago.empty? && @status.eql?("Todas")
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
+            #@ventas = ventas.select{|venta| venta.try(:movimiento_caja_sucursal).try(:tipo_pago).eql?(@forma_pago.to_s)}
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
           end
+        end
 
-        #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
-        else
-          #valida si se eligió un cajero específico para esta consulta
-          if @cajero
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
-            end
+        #usuario elige los criterios cajero, status, sucursal
+        if @cajero && @sucursal
+          unless @status.eql?("Todas")
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status, sucursal: @sucursal)
+          end
+        end
 
-          # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-          else
-            #Si el status elegido es todas, entonces no filtra las ventas por el status
-            unless @status.eql?("Todas")
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
-            else
-              @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
-            end
+        #usuario elige los criterios cajero, sucursal y forma de pago
+        if @cajero && @sucursal
+          unless @forma_pago.empty?
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, sucursal: @sucursal)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #usuario elige los criterios cajero, status y forma de pago
+        if @cajero
+          unless @status.eql?("Todas") && @forma_pago.empty?
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #usuario elige los criterios status, sucursal y forma de pago
+        if @sucursal
+          unless @status.eql?("Todas") && @forma_pago.empty?
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal, status: @status)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #usuario elige los criterios cajero y status
+        if @cajero
+          unless @status.eql?("Todas")
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status, user: @cajero)
+          end
+        end
+
+        #usuario elige los criterios cajero y sucursal
+        if @sucursal && @cajero
+          @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal, user: @cajero)          
+        end
+
+        #usuario elige los criterios cajero y forma de pago
+        if @cajero
+          unless @forma_pago.empty?
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #usuario elige los criterios status y sucursal
+        if @sucursal
+          unless @status.eql?("Todas")
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status:@status, sucursal:@sucursal)
           end
         end
         
+        #Usuario elige los criterios status y forma de pago
+        unless @status.eql?("Todas") && @forma_pago.empty?
+          ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
+          @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+        end
+
+        #Usuario elige los criterios sucursal y forma de pago
+        if @sucursal
+          unless @forma_pago.empty?
+            ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #Usuario elige cajero
+        if @cajero && @status.eql?("Todas") && @forma_pago.empty?
+          unless @sucursal
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)            
+          end
+        end
+
+        #usuario elige status
+        if @forma_pago.empty?
+          unless @cajero && @sucursal & @status.eql?("Todas")
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)            
+          end
+        end
+
+        #Usuario elige sucursal
+        if @forma_pago.empty? && @sucursal && @status.eql?("Todas")
+          unless @cajero
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+          end
+        end
+
+        #Usuario elige forma de pago
+        if @status.eql?("Todas")
+          unless @sucursal && @cajero && @forma_pago.empty?
+             ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
+             @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+
       #Si el usuario no es un administrador o subadministrador
       else
-        
-        #valida si se eligió un cajero específico para esta consulta
+
+        #usuario elige todas las opciones: cajero, status y forma de pago.
         if @cajero
-          
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
+          unless @status.eql?("Todas") && @forma_pago.empty?
+            ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #Usuario elige las opciones cajero y status
+        if @cajero
           unless @status.eql?("Todas")
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)
-          else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)  
-          end #Termina unless @status.eql?("Todas")
+            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero, status: @status)            
+          end
+        end
 
-        # Si no se eligió cajero, entonces no filtra las ventas por el cajero vendedor
-        else
+        #usuario elige las opciones cajero y forma de pago
+        if @cajero && @status.eql?("Todas")
+          unless @forma_pago.empty?
+            ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
 
-          #Si el status elegido es todas, entonces no filtra las ventas por el status
-          unless @status.eql?("Todas")
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
-          else
-            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)  
-          end #Termina unless @status.eql?("Todas")
+        #Usuario elige las opciones status y forma de pago
+        unless @status.eql?("Todas") && @forma_pago.empty?
+          ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)
+          @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+        end
 
-        end #Termina if @cajero
+        #Usuario elige la opción cajero
+        if @cajero && @status.eql("Todas") && @forma_pago.empty?
+          @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, user: @cajero)
+        end
+
+        #usuario elige status
+        if @forma_pago.empty
+          unless @cajero && @status.eql?("Todas")
+            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status) 
+          end
+        end
+
+        #usuario elige forma de pago
+        if @status.eql?("Todas")
+          unless @cajero && @forma_pago.empty?
+            ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
+            @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
 
       end
-
+ 
       respond_to do |format|
         format.html
         format.json
