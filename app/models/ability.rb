@@ -49,6 +49,8 @@ class Ability
          
        elsif user.role == "administrador"
 
+         can :crud, CategoriaMerma
+         can :crud, Merma
          can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -121,7 +123,9 @@ class Ability
          
 
        elsif user.role == "subadministrador"
-
+         
+         can :crud, CategoriaMerma
+         can :crud, Merma
          can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -195,6 +199,7 @@ class Ability
 
        elsif user.role == "gerente"
 
+         can :crud, Merma
          can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -267,6 +272,7 @@ class Ability
 
        elsif user.role == "auxiliar"
 
+         
          can :read, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo
@@ -328,6 +334,7 @@ class Ability
 
        elsif user.role == "almacenista"
 
+         can :crud, Merma
          can :crud, Articulo
          can :getById, Articulo
          can :showByCriteria, Articulo

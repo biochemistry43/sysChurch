@@ -38,6 +38,27 @@ body{
 	padding-left: 10px;*/
 }
 
+.btn-success{
+  background: #21ab68;
+  border: 1px solid #21ab68;
+}
+
+.btn-primary{
+  background: #335FB7;
+}
+
+.btn-warning{
+  background-color: #EFA41E;
+}
+
+.btn-info{
+  background-color: #2bacd4;
+}
+
+.btn-danger{
+  background-color: #EA1D1D;
+}
+
 @import "bootstrap-sprockets";
 
 
@@ -47,7 +68,9 @@ body {
   background: #343aa7;
   font-size: 15px;
   font-weight: 600;
-  color: #5B7ECC;
+  /*color: #5B7ECC;*/
+  /*color: #30529c;*/
+  color: #00264d;
 }
 
 h1{
@@ -186,7 +209,7 @@ table{
 
 
 thead > tr {
-  background: #6A9916;
+  background: #1C61C9;
   style: bold;
 }
 
