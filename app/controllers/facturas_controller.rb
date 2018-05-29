@@ -1147,12 +1147,34 @@ class FacturasController < ApplicationController
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
-      cliente_id = params[:cliente_id]
+      #cliente_id = params[:cliente_id]
       #@cajero = nil
-      @cliente = nil
+      #@cliente = nil
 
-      unless cliente_id.empty?
-        @cliente = Cliente.find(cliente_id).id #id, nombre_completo
+      #unless cliente_id.empty?
+      #  @cliente = Cliente.find(cliente_id).id #id, nombre_completo
+      #end
+      clientes_ids = []
+      if params[:opcion_busqueda_cliente] == "Buscar por R.F.C."
+        #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
+        #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
+        @rfc = params[:rfc]
+        datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
+
+        datos_fiscales_cliente.each do |dfc|
+          clientes_ids << dfc.cliente_id
+        end
+        puts "RFC DEL CLIENTE"
+        #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
+        #@facturas = current_user.negocio.facturas.where(cliente_id: clientes_ids)
+        #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+      elsif params[:opcion_busqueda_cliente] == "Buscar por nombre fiscal"
+        #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
+        datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
+        @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+        clientes_ids << datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+        #@facturas = current_user.negocio.facturas.where(cliente_id: cliente)
+        puts "NOMBRE FISCAL DEL CLIENTE"
       end
 
       @estado_factura = params[:estado_factura]
@@ -1180,7 +1202,7 @@ class FacturasController < ApplicationController
       if can? :create, Negocio
         unless @suc.empty?
           #valida si se eligió un cliente específico para esta consulta
-          if @cliente
+          if @rfc || @nombreFiscal#@cliente
             #Filtra por monto de la venta facurada.
             if operador_monto
               @monto_factura = params[:monto_factura]
@@ -1192,16 +1214,16 @@ class FacturasController < ApplicationController
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
-                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura, sucursal: @sucursal)
               else
-                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, sucursal: @sucursal)
               end
             else
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
-                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura, sucursal: @sucursal)
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura, sucursal: @sucursal)
               else
-                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, sucursal: @sucursal)
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, sucursal: @sucursal)
               end
             end
           # Si no se eligió cliente, entonces no filtra las ventas por el cliente al que se expidió la factura.
@@ -1221,7 +1243,7 @@ class FacturasController < ApplicationController
               else
                 @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
               end
-              #Si el usuario no seleccionó el una condición para filtrar por el monto de la factura de la venta.
+              #Si el usuario no seleccionó una condición para filtrar por el monto de la factura de la venta.
             else
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1234,7 +1256,7 @@ class FacturasController < ApplicationController
         #Si el usuario no eligió ninguna sucursal específica, no filtra las ventas por sucursal
         else
           #valida si se eligió un cliente
-          if @cliente
+          if @rfc || @nombreFiscal#@cliente
             #Filtra por monto de la venta facurada.
             if operador_monto
               @monto_factura = params[:monto_factura]
@@ -1246,16 +1268,16 @@ class FacturasController < ApplicationController
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
-                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura)
               else
-                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
+                @facturas = @facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
               end
             else
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
-                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura)
               else
-                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: @cliente)
+                @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
               end
             end
           # Si no se eligió cliente, entonces no filtra las ventas por el cliente
@@ -1290,13 +1312,13 @@ class FacturasController < ApplicationController
       else
 
         #valida si se eligió un cliente específico para esta consulta
-        if @cliente
+        if @rfc || @nombreFiscal#@cliente
 
           #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
           unless @estado_factura.eql?("Todas")
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: @cliente, estado_factura: @estado_factura)
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura)
           else
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: @cliente)
+            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: clientes_ids)
           end #Termina unless @estado_factura.eql?("Todas")
 
         # Si no se eligió cliente, entonces no filtra las ventas por el cliente

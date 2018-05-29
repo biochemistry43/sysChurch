@@ -586,9 +586,11 @@
             $('.rfc_text_field').show().val("");
 
           }else if (valor == "Buscar por nombre fiscal") {
+            $('#errorRFC2').removeClass(" has-error has-feedback");
             $('.nombre_collection_select').show().val("");
             $('.rfc_text_field').hide().val("");
           }
+
           //Ocultar cuando no este seleccionado ninguno
       });
 
@@ -656,6 +658,6 @@
     });
 
   </script>
-  <%= javascript_include_tag "ventas" %>
+  <!--%= javascript_include_tag "ventas" %-->
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
