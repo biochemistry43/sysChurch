@@ -1316,9 +1316,9 @@ class FacturasController < ApplicationController
 
           #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
           unless @estado_factura.eql?("Todas")
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura)
+            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_factura: @estado_factura)
           else
-            @facturas = current_user.sucursal.facturas.where(fechaVenta: @fechaInicial..@fechaFinal, cliente: clientes_ids)
+            @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
           end #Termina unless @estado_factura.eql?("Todas")
 
         # Si no se eligió cliente, entonces no filtra las ventas por el cliente
