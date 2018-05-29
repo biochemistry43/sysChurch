@@ -353,7 +353,7 @@
                       <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= collection_select(nil, :uso_cfdi_id, @uso_cfdi_receptor_f, :id, :descripcion, {:prompt => 'Elija el uso que le dará al CFDI.'}, { class: "form-control col-md-7 col-xs-12" })%>
+                      <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
                     </div>
                   </div>
 

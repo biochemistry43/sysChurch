@@ -1164,7 +1164,6 @@ class FacturasController < ApplicationController
         datos_fiscales_cliente.each do |dfc|
           clientes_ids << dfc.cliente_id
         end
-        puts "RFC DEL CLIENTE"
         #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
         #@facturas = current_user.negocio.facturas.where(cliente_id: clientes_ids)
         #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
@@ -1174,7 +1173,6 @@ class FacturasController < ApplicationController
         @nombreFiscal = datos_fiscales_cliente.nombreFiscal
         clientes_ids << datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
         #@facturas = current_user.negocio.facturas.where(cliente_id: cliente)
-        puts "NOMBRE FISCAL DEL CLIENTE"
       end
 
       @estado_factura = params[:estado_factura]
