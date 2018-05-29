@@ -11,8 +11,9 @@
       <div class="col-ms-12">
         <div class="div-add-button">
           <% if can? :create, CategoriaMerma %>
-            <%= link_to new_categoria_merma_path, {remote: true, class: "btn btn-default", id: "anadir-categoria-btn"}  do %>
+            <%= link_to new_categoria_merma_path, {remote: true, class: "btn btn-default btn-info btn-lg", id: "anadir-categoria-btn"}  do %>
              <span class="fa fa-plus-square" style=""></span>
+             Añadir
             <%end%>
           <% end %>
            
