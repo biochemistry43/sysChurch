@@ -75,16 +75,30 @@
             Nombre fiscal del cliente: <span style="color:#5B7ECC; font-size: 16px;"> <%=@nombreFiscal%></span>
           </div>
           <%end%>
+        <%else%>
+            <div class="col-md-12">
+            Cliente: <span style="color:#5B7ECC; font-size: 16px;"> Todos </span>
+            </div>
         <%end%>
         <% if @avanzada %>
           <div class="col-md-12">
             Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
           </div>
           <div class="col-md-12">
-          <% if @cajero %>
-            Cajero: <span style="color:#5B7ECC; font-size: 16px;"> <%= @cajero.perfil.nombre %></span>
+          <% if @montoFactura %>
+            <%if @condicion_monto_factura%>
+                <%if @monto_factura%>
+                  Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
+                  </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
+                  <%end%>
+                <%if @monto_factura && @monto_factura2%>
+                  a <span style="color:#5B7ECC; font-size: 16px;"> $ <%= @monto_factura2.to_f %></span>
+                <% end %>
+            <%end%>
+          <!--% else %>
+            Monto: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span-->
           <% else %>
-            Cajero: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span>
+              Monto:<span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
           <% end %>
           </div>
           <div class="col-md-12"> <!--poner condiciones de status-->

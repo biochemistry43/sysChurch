@@ -1159,6 +1159,7 @@ class FacturasController < ApplicationController
         #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
         #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
         @rfc = params[:rfc]
+        @por_cliente = true if @rfc
         datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
 
         datos_fiscales_cliente.each do |dfc|
@@ -1168,8 +1169,10 @@ class FacturasController < ApplicationController
         #@facturas = current_user.negocio.facturas.where(cliente_id: clientes_ids)
         #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
       elsif params[:opcion_busqueda_cliente] == "Buscar por nombre fiscal"
+
         #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
         datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
+        @por_cliente = true
         @nombreFiscal = datos_fiscales_cliente.nombreFiscal
         clientes_ids << datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
         #@facturas = current_user.negocio.facturas.where(cliente_id: cliente)
@@ -1182,10 +1185,12 @@ class FacturasController < ApplicationController
       unless @suc.empty?
         @sucursal = Sucursal.find(@suc)
       end
-
+      @montoFactura = false
       @condicion_monto_factura = params[:condicion_monto_factura]
+
       #Se convierte la descripción al operador equivalente
-      if @condicion_monto_factura
+      unless @condicion_monto_factura.empty?
+        @montoFactura = true
         operador_monto = case @condicion_monto_factura
            when "menor que" then "<"
            when "mayor que" then ">"
@@ -1194,6 +1199,7 @@ class FacturasController < ApplicationController
            when "igual que" then "="
            when "diferente que" then "!=" #o también <> Distinto de
            when "rango desde" then ".." #o también <> Distinto de
+
         end
       end
 
