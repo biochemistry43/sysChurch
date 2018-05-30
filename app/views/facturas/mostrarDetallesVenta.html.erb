@@ -123,7 +123,7 @@
           <hr style="border-style: solid; border-width: 2px;">
         <div class="panel panel-default" >
           <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
-            <h3 class="panel-title">CFDI DE INGRESO 3.3</h3>
+            <h3 class="panel-title">Factura electrónica 3.3</h3>
           </div>
 
           <div class="panel-body">
@@ -151,11 +151,39 @@
                   < new_f.text_field :folio, class: "form-control",value:@rfc_emisor>
                 </div>-->
               </div>
+
             </div>
+            <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
+              <h3 class="panel-title">Forma y método de pago</h3>
+            </div>
+            <div class="panel panel-default" >
+              <div class="panel-body">
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    <%= label_tag :metodo_pago,'Método de pago.', class:"control-label"%>
+                  </div>
+                  <div class="col-md-8 col-sm-8 col-xs-12">
+                    <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                      <%= label_tag :forma_pago,'Forma de pago.', class:"control-label"%>
+                  </div>
+                  <div class="col-md-8 col-sm-8 col-xs-12">
+                    <%= collection_select(nil, :uso_cfdi_id, FacturaFormaPago.all, :id, :nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+
 
             <!--Panel para los datos de RECEPTOR-->
             <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
-              <h3 class="panel-title">DATOS DEL RECEPTOR.</h3>
+              <h3 class="panel-title">Datos del receptor</h3>
             </div>
             <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
               <div class="panel-body">
@@ -247,7 +275,7 @@
               </div>
 
               <div class="row" style="text-align:center;">
-                <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección fiscal del cliente:</h2>
+                <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección de facturación:</h2>
               </div>
                 <!--Se muestra la dirección del cliente -->
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -344,7 +372,7 @@
 
               </div>
               <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
-                <h3 class="panel-title">USO DE CFDI.</h3>
+                <h3 class="panel-title">Uso del C.F.D.I.</h3>
               </div>
               <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
                 <div class="panel-body">
