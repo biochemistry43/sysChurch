@@ -178,6 +178,7 @@ class FacturasController < ApplicationController
 
       fecha_expedicion_f = Time.now
       forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
+      metodo_pago_f = params[:metodo_pago] == "PUE - Pago en una sola exhibición" ? "PUE" : "PPD"
       #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       factura = CFDI::Comprobante.new({
         serie: serie,
@@ -188,7 +189,7 @@ class FacturasController < ApplicationController
         #formaDePago: @venta.venta_forma_pago.forma_pago.clave
         FormaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
         condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-        metodoDePago: 'PUE', #CATALOGO
+        metodoDePago: metodo_pago_f, #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
         total: '%.2f' % @venta.montoVenta.round(2)
@@ -384,8 +385,9 @@ class FacturasController < ApplicationController
       logo=current_user.negocio.logo
       uso_cfdi_descripcion=@usoCfdi.descripcion
       cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
+      cve_nombre_metodo_pago = params[:metodo_pago]
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago}
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago}
       hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
       hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
 

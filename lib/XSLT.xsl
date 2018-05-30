@@ -163,7 +163,7 @@
                  <th align="right">SubTotal:</th><td align="right">$ <xsl:value-of select="@SubTotal"/></td>
              </tr>
              <tr>
-                 <td colspan="5" align="left"><b>MÉTODO DE PAGO: </b></td>
+                 <td colspan="5" align="left"><b>MÉTODO DE PAGO: </b><xsl:value-of select="cfdi:RepresentacionImpresa/@CveNombreMetodoPago"/></td>
                  <th align="right">Descuento:</th>
                  <td align="right">$ <xsl:value-of select="@Descuento"/></td>
              </tr>

@@ -672,7 +672,7 @@ module CFDI
       TotalLetras: total_to_words(),
       NombRegimenFiscal:"E",
       CveNombreFormaPago: hash_info.fetch(:cve_nombre_forma_pago),
-      NombMetodoPago:"G",
+      CveNombreMetodoPago: hash_info.fetch(:cve_nombre_metodo_pago),
       UsoCfdiDescripcion: hash_info.fetch(:uso_cfdi_descripcion)
       }
       datos_receptor={}
