@@ -171,7 +171,7 @@
                       <%= label_tag :forma_pago,'Forma de pago.', class:"control-label"%>
                   </div>
                   <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= collection_select(nil, :uso_cfdi_id, FacturaFormaPago.all, :id, :nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
+                    <%= collection_select(nil, :uso_cfdi_id, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
                   </div>
                 </div>
 
@@ -245,7 +245,6 @@
                          Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
                       </button>
                     </div>-->
-
                 </div>
 
                 <div class="row" style="text-align:center;">
@@ -381,7 +380,7 @@
                       <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
+                      <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :clave_descripcion_uso_cfdi, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
                     </div>
                   </div>
 
