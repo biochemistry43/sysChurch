@@ -671,7 +671,7 @@ module CFDI
       Logo: hash_info.fetch(:logo),
       TotalLetras: total_to_words(),
       NombRegimenFiscal:"E",
-      NombFormaPago:"F",
+      CveNombreFormaPago: hash_info.fetch(:cve_nombre_forma_pago),
       NombMetodoPago:"G",
       UsoCfdiDescripcion: hash_info.fetch(:uso_cfdi_descripcion)
       }

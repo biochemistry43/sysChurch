@@ -171,7 +171,7 @@
                       <%= label_tag :forma_pago,'Forma de pago.', class:"control-label"%>
                   </div>
                   <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= collection_select(nil, :uso_cfdi_id, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
+                    <%= collection_select(nil, :forma_pago_id, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
                   </div>
                 </div>
 

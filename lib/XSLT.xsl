@@ -109,7 +109,7 @@
                 <xsl:when test="cfdi:Receptor/@Nombre">
                   <tr>
                     <th align="right">R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
-                    <th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+                    <th align="right">Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
                   </tr>
                   <tr>
                     <th align="right">Dirección: </th>
@@ -158,18 +158,20 @@
 
              <xsl:apply-templates select="//cfdi:Concepto"/>
              <tr>
-                 <td colspan="5"></td>
+                 <td colspan="5" align="left"> <b>FORMA DE PAGO: </b><xsl:value-of select="cfdi:RepresentacionImpresa/@CveNombreFormaPago"/></td>
+                 <!--td colspan="5"></td-->
                  <th align="right">SubTotal:</th><td align="right">$ <xsl:value-of select="@SubTotal"/></td>
              </tr>
              <tr>
-                 <td colspan="5" align="center"> <xsl:value-of select="cfdi:RepresentacionImpresa/@TotalLetras"/> </td>
+                 <td colspan="5" align="left"><b>MÉTODO DE PAGO: </b></td>
                  <th align="right">Descuento:</th>
                  <td align="right">$ <xsl:value-of select="@Descuento"/></td>
              </tr>
 
              <tr>
              <td colspan="5" align="right">TRASLADOS: </td>
-             <th ></th>
+
+             <td ></td>
              <td ></td>
              </tr>
 
@@ -185,7 +187,9 @@
                     <td align="right">$ <xsl:value-of select="@Importe"/></td>
                   </tr>
             </xsl:for-each>
-             <tr id="total"><td colspan="5"></td>
+             <tr id="total">
+               <!--td colspan="5"></td-->
+               <td colspan="5" align="center" style="font-size:12px;"><xsl:value-of select="cfdi:RepresentacionImpresa/@TotalLetras"/></td>
                  <th align="right"><b>Total:</b></th><td align="right" ><b>$ <xsl:value-of select="@Total"/></b></td>
              </tr>
             </table>

@@ -177,6 +177,7 @@ class FacturasController < ApplicationController
         end
 
       fecha_expedicion_f = Time.now
+      forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
       #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       factura = CFDI::Comprobante.new({
         serie: serie,
@@ -185,7 +186,7 @@ class FacturasController < ApplicationController
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #La moneda por default es MXN
         #formaDePago: @venta.venta_forma_pago.forma_pago.clave
-        FormaPago:'01',#CATALOGO Es de tipo string
+        FormaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
         condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
         metodoDePago: 'PUE', #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
@@ -382,15 +383,15 @@ class FacturasController < ApplicationController
       cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
       logo=current_user.negocio.logo
       uso_cfdi_descripcion=@usoCfdi.descripcion
-
+      cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago}
       hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
       hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
-      template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
+      template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
@@ -462,7 +463,7 @@ class FacturasController < ApplicationController
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
-
+=begin
 
         #8.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
@@ -484,7 +485,7 @@ class FacturasController < ApplicationController
           venta_id=@venta.id
           Venta.find(venta_id).factura = @factura #relación uno a uno
           end
-
+=end
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
