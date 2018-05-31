@@ -83,7 +83,7 @@ module CFDI
       @conceptos.each do |c|
         subtotal += c.Importe
       end
-      subtotal # @ return [Float] El subtotal del comprobante
+      subtotal = '%.2f' % subtotal.round(2) # @ return [Float] El subtotal del comprobante
     end
 
     #Expresa el total en letras de forma estatica se usa la moneda nacional.

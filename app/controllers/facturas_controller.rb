@@ -1496,28 +1496,26 @@ class FacturasController < ApplicationController
       Descuento (si existiera)
 =end
 
-    #Según la periodicidad en la que se expedirán facturas simplificadas(tomada de la configuración de facturación)
+    #Según la periodicidad en la que se expedirán facturas simplificadas
     hoy = Time.now.strftime("%Y-%m-%d")
-    #inicio_semana
-    #fin_semana
-    #inicio_mes
-    #fin_mes
-
-    #begin
-    #No usar rescue Exception => e. En su lugar, usar rescue => e o mejor aún, identificar la excepción que queremos capturar, como rescue ActiveRecord::RecordNotSaved.
     @ventas_del_dia = current_user.negocio.ventas.where(fechaVenta: hoy )
     #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
+    #@no_facturadas = @ventas_del_dia.where(_not_exists(current_user.negocio.facturas.where("facturas.venta_id = ventas.id")))
 
     unless @ventas_del_dia.empty?
-
+      #Se obtienen todas las ventas que no han sido facturadas
       @ventas=[]
+      #ventasNoFacturadas_ids = []
       @ventas_del_dia.each do |v|
         if v.factura.blank?
+            #ventasNoFacturadas_ids << v.id
             @ventas.push(v)
         end
       end
-      #Se obtiene el nombre de la forma de pago (Que no es el nombre correcto pero bueno...)
-      folio =  @ventas.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
+
+      #Se obtiene el nombre de la forma de pago de las ventas no facturadas (Que no es el nombre correcto pero bueno...)
+      forma_pago_mayor_fg =  @ventas.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
+      #@ventas.each {|v|  if v.venta_forma_pago.forma_pago.nombre == forma_pago_mayor_fg}
 
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       fecha_expedicion_f = Time.now
@@ -1534,12 +1532,7 @@ class FacturasController < ApplicationController
         metodoDePago: 'PUE',
         #El código postal de la matriz o sucursal
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-        #total: 27.84#Como que ya es hora de pasarle el monto total de la venta más los impustos jaja para no usar calculadora
-        #total:55.68
-        #total: 83.52
-        #total: 124.4 #Las tres ventas del día
-        #total: 40.88
-        total:96.56
+        total: '%.2f' % (@ventas.map(&:montoVenta).reduce(:+)).round(2)#96.56
         #Descuento:0 #DESCUENTO RAPPEL
       })
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
@@ -1611,7 +1604,7 @@ class FacturasController < ApplicationController
 
       cont = 0 #Para marcar los impuestos que le pertenecen a una venta
       @ventas.each do |v|
-        factura.conceptos << CFDI::Concepto.new({
+        hash_conceptos={
           #Clave de Producto o Servicio: 01010101 (Por Definir)
           ClaveProdServ: "01010101", #CATALOGO
           #En un CFDI normal es la clave interna que se le asigna a los productos pero que ni la ocupo por el momento...
@@ -1626,10 +1619,10 @@ class FacturasController < ApplicationController
           Descripcion: "Venta",
           #Valor unitario: El precio sin impuestos del concepto a facturar.()
           #En este campo se debe de registrarel subtotal del comprobante de operaciones con el público en gral.
-          ValorUnitario: v.montoVenta,
+          #ValorUnitario: v.montoVenta,
           #El importe siempre será la tabla del 1 jaja 1x1=1 1x2=2...
           #Descuento: 0 #Expresado en porcentaje
-        })
+        }
         #Impuestos Trasladados (IVA o IEPS)
         #Impuestos trasladados: Deben indicar:
           #la base
@@ -1638,20 +1631,37 @@ class FacturasController < ApplicationController
           #el valor de esta de la tasa o cuota
           #el impuesto que trasladan por cada comprobante simplificado.
         @itemsVenta = v.item_ventas
-
+        valor_unitario_fg = 0.0
         @itemsVenta.each do |c|
+          importe_concepto = (c.precio_venta * c.cantidad) #Incluye impuestos(si esq), descuentos(si esq)...
+          if c.articulo.impuesto.present? #Impuestos a la inversa
+            tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
+            #Se calcula el precio bruto de cada concepto
+            base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
+            importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f
 
-          if c.articulo.impuesto.present? && c.articulo.impuesto.tipo == "Federal"
-            if c.articulo.impuesto.nombre == "IVA"
-              clave_impuesto = "002"
-            elsif c.articulo.impuesto.nombre == "IEPS"
-              clave_impuesto =  "003"
+            valorUnitario = base_gravable / c.cantidad
+
+            if c.articulo.impuesto.tipo == "Federal"
+              if c.articulo.impuesto.nombre == "IVA"
+                clave_impuesto = "002"
+              elsif c.articulo.impuesto.nombre == "IEPS"
+                clave_impuesto =  "003"
+              end
+              factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
+            #end
+            #elsif c.articulo.impuesto.tipo == "Local"
+              #Para el complemento de impuestos locales.
             end
-            factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: c.precio_venta * c.cantidad,
-              tax: clave_impuesto, type_factor: "Tasa", rate: format('%.6f',(c.articulo.impuesto.porcentaje/100)).to_f, concepto_id: cont)
+            valor_unitario_fg = valor_unitario_fg + base_gravable
+          else
+            valor_unitario_fg  = valor_unitario_fg + c.precioVenta
           end
-          #Los montos del IVA e IEPS deberán estar desglosados en forma expresa y por separado en cada uno de los CFDI globales.
         end
+        hash_conceptos[:ValorUnitario] = valor_unitario_fg
+        hash_conceptos[:Importe] = valor_unitario_fg.round(2) #Todo multiplicado por uno es lo mismo, eso lo aprendí en la primaria jaja.
+        factura.conceptos << CFDI::Concepto.new(hash_conceptos)
         cont += 1
       end
 
@@ -1701,10 +1711,10 @@ class FacturasController < ApplicationController
       codigoQR=factura.qr_code xml_timbrado
       cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
       logo=current_user.negocio.logo
-      #uso_cfdi_descripcion=@usoCfdi.descripcion
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: "Por definir"}
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: "Por definir",
+                  cve_nombre_metodo_pago:"PUE - Pago en una sola exhibición", cve_nombre_forma_pago: "01 - Efectivo"}
       #hash_info[:Telefono1Receptor]= @@venta.cliente.telefono1 if @@venta.cliente.telefono1
       #hash_info[:EmailReceptor]= @@venta.cliente.email if @@venta.cliente.email
 
@@ -1776,6 +1786,7 @@ class FacturasController < ApplicationController
 
           @factura.folio_fiscal = folio_fiscal_xml
           @factura.ruta_storage =  ruta_storage
+
 =begin
           if @factura.save
           current_user.facturas<<@factura
