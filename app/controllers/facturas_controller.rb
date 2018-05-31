@@ -1516,6 +1516,19 @@ class FacturasController < ApplicationController
       #Se obtiene el nombre de la forma de pago de las ventas no facturadas (Que no es el nombre correcto pero bueno...)
       forma_pago_mayor_fg =  @ventas.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
       #@ventas.each {|v|  if v.venta_forma_pago.forma_pago.nombre == forma_pago_mayor_fg}
+      if forma_pago_mayor_fg == "efectivo"
+        cve_nombre_forma_pagoSAT = "01 - Efectivo"
+        cve_forma_pagoSAT = "01"
+      elsif forma_pago_mayor_fg == "tarjeta credito"
+        cve_nombre_forma_pagoSAT = "04 - Tarjeta de crédito"
+        cve_forma_pagoSAT = "04"
+      elsif forma_pago_mayor_fg == "tarjeta debito"
+        cve_nombre_forma_pagoSAT = "28 - Tarjeta de débito"
+        cve_forma_pagoSAT = "28"
+      elsif forma_pago_mayor_fg == "oxxo" || forma_pago_mayor_fg == "paypal" || forma_pago_mayor_fg == "Deposito" || forma_pago_mayor_fg == "Trasferencia"
+        cve_nombre_forma_pagoSAT = "03 - Transferencia electrónica de fondos"
+        cve_forma_pagoSAT = "03"
+      end
 
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       fecha_expedicion_f = Time.now
@@ -1526,7 +1539,7 @@ class FacturasController < ApplicationController
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #Moneda: MXN Peso Mexicano, USD Dólar Americano, Etc…
         #La moneda por default es MXN
-        FormaPago:'01',
+        FormaPago: cve_forma_pagoSAT,
         #El campo Condiciones de pago no debe de existir
         #Método de pago: SIEMPRE debe ser la clave “PUE” (Pago en una sola exhibición); en el caso de que se venda a parcialidades o diferido, se deberá proceder a emitir el CFDI con complemento de pagos, detallando los datos del cliente que los realiza; en pocas palabras, no esta permitido emitir un CFDI global con ventas a parcialidades o diferidas.
         metodoDePago: 'PUE',
@@ -1714,14 +1727,14 @@ class FacturasController < ApplicationController
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: "Por definir",
-                  cve_nombre_metodo_pago:"PUE - Pago en una sola exhibición", cve_nombre_forma_pago: "01 - Efectivo"}
+                  cve_nombre_metodo_pago:"PUE - Pago en una sola exhibición", cve_nombre_forma_pago: cve_nombre_forma_pagoSAT}
       #hash_info[:Telefono1Receptor]= @@venta.cliente.telefono1 if @@venta.cliente.telefono1
       #hash_info[:EmailReceptor]= @@venta.cliente.email if @@venta.cliente.email
 
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
-      template = Nokogiri::XSLT(File.read('/home/daniel/Documentos/sysChurch/lib/XSLT.xsl'))
+      template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
