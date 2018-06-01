@@ -473,7 +473,7 @@ class FacturasController < ApplicationController
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
 
-
+=begin
         #8.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
@@ -496,7 +496,7 @@ class FacturasController < ApplicationController
           venta_id=@venta.id
           Venta.find(venta_id).factura = @factura #relación uno a uno
           end
-
+=end
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
@@ -1810,25 +1810,27 @@ class FacturasController < ApplicationController
         #8.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa")
+          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: "PUE")
 
           @factura.folio_fiscal = folio_fiscal_xml
           @factura.ruta_storage =  ruta_storage
 
-=begin
           if @factura.save
           current_user.facturas<<@factura
           current_user.negocio.facturas<<@factura
           current_user.sucursal.facturas<<@factura
+          #Se relaciona con su forma de pago
+          forma_pago = FacturaFormaPago.find_by(cve_forma_pagoSAT: cve_forma_pagoSAT) #Recibir como parametro si hay dos operaciones con montos iguales pero diferente forma de pago
+          forma_pago.facturas << @factura
 
           #Se factura a nombre del cliente que realizó la compra en el negocio.
-          cliente_id=@@venta.cliente.id
-          Cliente.find(cliente_id).facturas << @factura
+          #cliente_id=@@venta.cliente.id
+          #Cliente.find(cliente_id).facturas << @factura
 
-          venta_id=@@venta.id
-          Venta.find(venta_id).factura = @factura #relación uno a uno
+          #venta_id=@@venta.id
+          #Venta.find(venta_id).factura = @factura #relación uno a uno
           end
-=end
+
           #fecha_expedicion=@factura.fecha_expedicion
           #file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           #file=File.open( "public/#{file_name}")
