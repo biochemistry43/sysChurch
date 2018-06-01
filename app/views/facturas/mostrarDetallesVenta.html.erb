@@ -163,7 +163,7 @@
                     <%= label_tag :lbl_metodo_pago,'Método de pago.', class:"control-label"%>
                   </div>
                   <div class="col-md-8 col-sm-8 col-xs-12">
-                      <%= select_tag :metodo_pago, "<option>PUE - Pago en una sola exhibición</option><option>PPD - Pago en parcialidades o diferido</option>".html_safe,   class: 'form-control' %>
+                      <%= select_tag :metodo_pago, "<option value='PUE'>PUE - Pago en una sola exhibición</option><option value= 'PPD'>PPD - Pago en parcialidades o diferido</option>".html_safe,   class: 'form-control' %>
                     <!--%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%-->
                   </div>
                 </div>
