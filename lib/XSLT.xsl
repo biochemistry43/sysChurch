@@ -48,7 +48,7 @@
                  <xsl:value-of select="cfdi:Emisor/@Rfc"/>
                </th><td class="h1"></td></tr>
                <tr><th class="h1"  colspan="2">Régimen fiscal:
-                 <xsl:value-of select="cfdi:Emisor/@RegimenFiscal"/>
+                 <xsl:value-of select="//cfdi:DatosEmisor/@CveNombreRegimenFiscalSAT"/>
                </th><td class="h1"></td></tr>
           </table>
         </td>

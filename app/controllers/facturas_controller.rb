@@ -236,7 +236,7 @@ class FacturasController < ApplicationController
         #rfc: 'AAA010101AAA',
         rfc: current_user.negocio.datos_fiscales_negocio.rfc,
         nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
-        regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal, #CATALOGO
+        regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
         domicilioFiscal: domicilioEmisor,
         expedidoEn: expedidoEn
       })
@@ -386,8 +386,13 @@ class FacturasController < ApplicationController
       uso_cfdi_descripcion=@usoCfdi.descripcion
       cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
       cve_nombre_metodo_pago = params[:metodo_pago]
+
+      cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
+      nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
+      cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
+
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago}
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT}
       hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
       hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
 
@@ -618,7 +623,7 @@ class FacturasController < ApplicationController
       factura.emisor = CFDI::Emisor.new({
         rfc: current_user.negocio.datos_fiscales_negocio.rfc,
         nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
-        regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal, #CATALOGO
+        regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
         domicilioFiscal: domicilioEmisor,
         expedidoEn: expedidoEn
       })
@@ -730,6 +735,7 @@ class FacturasController < ApplicationController
       cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
       logo=current_user.negocio.logo
       uso_cfdi_descripcion=@usoCfdi.descripcion
+
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion}

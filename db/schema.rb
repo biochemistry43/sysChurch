@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180601050425) do
+ActiveRecord::Schema.define(version: 20180601072813) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -262,7 +262,6 @@ ActiveRecord::Schema.define(version: 20180601050425) do
     t.string   "delegacion"
     t.string   "estado"
     t.string   "email"
-    t.string   "regimen_fiscal"
     t.string   "path_cer"
     t.string   "path_key"
     t.string   "password"
