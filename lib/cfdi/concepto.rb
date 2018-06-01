@@ -17,7 +17,7 @@ module CFDI
       return [
         @ClaveProdServ,
         @NoIdentificacion,
-        @Cantidad.to_f,
+        @Cantidad,
         @ClaveUnidad,
         @Unidad,
         @Descripcion,
@@ -45,7 +45,7 @@ module CFDI
     #
     # @return [Float] El valor unitario como Float
     def ValorUnitario= dineros
-      @ValorUnitario = dineros.to_f
+      @ValorUnitario = dineros
       @ValorUnitario
     end
     # El importe de este concepto
@@ -53,7 +53,7 @@ module CFDI
     # @return [Float] El valor unitario multiplicado por la Cantidad
     def Importe= importe
       #@Importe = '%.2f' % importe.round(2)
-      @Importe = importe.to_f
+      @Importe = importe
       @Importe
     end
 
@@ -63,7 +63,7 @@ module CFDI
     #
     # @return [Integer] La Cantidad
     def Cantidad= qty
-      @Cantidad = qty.to_f
+      @Cantidad = qty
       #@Cantidad = '%.6f' % qty.round(6)
       @Cantidad
     end

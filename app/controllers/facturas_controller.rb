@@ -293,12 +293,12 @@ class FacturasController < ApplicationController
                         Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
                         Descripcion: c.articulo.nombre
                         }
-        importe_concepto = (c.precio_venta * c.cantidad).to_f #Incluye impuestos(si esq), descuentos(si esq)...
+        importe_concepto = (c.precio_venta * c.cantidad)#Incluye impuestos(si esq), descuentos(si esq)...
         if c.articulo.impuesto.present? #Impuestos a la inversa
-          tasaOCuota = (c.articulo.impuesto.porcentaje / 100).to_f #Se obtiene la tasa o cuota por ej. 16% => 0.160000
+          tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
           #Se calcula el precio bruto de cada concepto
-          base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
-          importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f
+          base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+          importe_impuesto_concepto = (base_gravable * tasaOCuota)
 
           valorUnitario = base_gravable / c.cantidad
 
@@ -1658,8 +1658,8 @@ class FacturasController < ApplicationController
           if c.articulo.impuesto.present? #Impuestos a la inversa
             tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
             #Se calcula el precio bruto de cada concepto
-            base_gravable = (importe_concepto / (tasaOCuota + 1)).to_f #Se obtiene el precio bruto por item de venta
-            importe_impuesto_concepto = (base_gravable * tasaOCuota).to_f
+            base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+            importe_impuesto_concepto = (base_gravable * tasaOCuota)
 
             valorUnitario = base_gravable / c.cantidad
 
@@ -1670,7 +1670,7 @@ class FacturasController < ApplicationController
                 clave_impuesto =  "003"
               end
               factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
+                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto, concepto_id: cont)
             #end
             #elsif c.articulo.impuesto.tipo == "Local"
               #Para el complemento de impuestos locales.
