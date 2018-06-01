@@ -23,16 +23,19 @@ class NegociosController < ApplicationController
       @datosFiscales.municipio = @negocio.municipio if @negocio.municipio
       @datosFiscales.delegacion = @negocio.delegacion if @negocio.delegacion
       @datosFiscales.estado = @negocio.estado if @negocio.estado
-      @datosFiscales.email = @negocio.email if @negocio.email    
+      @datosFiscales.email = @negocio.email if @negocio.email
       @datosFiscales.save
       @negocio.datos_fiscales_negocio = @datosFiscales
     else
       @datosFiscales = @negocio.datos_fiscales_negocio
+      #El RFC debe tener exactamente 12 o 13 carácteres (12 para personas morales y 13 para personas físicas).
+      @regimenes_fisica_o_moral = (current_user.negocio.datos_fiscales_negocio.rfc).length == 12 ? RegimenFiscal.where(personaMoral: "true") : RegimenFiscal.where(personaFisica: "true")
+      @regimen_fiscal_id = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.id 
     end
   end
 
   def updateDatosFiscales
-    
+
   end
 
   # GET /negocios/new

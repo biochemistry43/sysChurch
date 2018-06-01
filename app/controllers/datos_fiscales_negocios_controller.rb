@@ -14,6 +14,7 @@ class DatosFiscalesNegociosController < ApplicationController
   end
 
   def update
+
     respond_to do |format|
       if @datosFiscales.update(datos_fiscales_negocio_params)
         format.html { redirect_to negocio_path(@datosFiscales.negocio), notice: 'Los datos fiscales del negocio fueron actualizados' }
@@ -34,7 +35,7 @@ class DatosFiscalesNegociosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def datos_fiscales_negocio_params
-      params.require(:datos_fiscales_negocio).permit(:nombreFiscal, :rfc, :regimen_fiscal, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email, :path_key, :path_cer, :password)
+      params.require(:datos_fiscales_negocio).permit(:nombreFiscal, :rfc, :regimen_fiscal_id, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email, :path_key, :path_cer, :password)
     end
 
 end
