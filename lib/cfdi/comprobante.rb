@@ -684,7 +684,7 @@ module CFDI
         xml.DatosReceptor(datos_receptor){
           xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
         }
-        xml.DatosEmisor({CveNombreRegimenFiscalSAT: hash_info.fetch(:cve_nomb_regimen_fiscalSAT)}){
+        xml.DatosEmisor({CveNombreRegimenFiscalSAT: hash_info.fetch(:cve_nomb_regimen_fiscalSAT), NombreNegocio: hash_info.fetch(:nombre_negocio)}){
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
           xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
         }

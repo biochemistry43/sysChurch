@@ -32,7 +32,7 @@
         <!--Estos datos  -->
         <td colspan="2" align="right" >
           <table id="negocio">
-               <tr><th class="h1" colspan="2"><b>Pacifica coaching</b></th><td></td></tr>
+               <tr><th class="h1" colspan="2" style="font-size:18px;"><xsl:value-of select="//cfdi:DatosEmisor/@NombreNegocio"/></th><td></td></tr>
                <tr><th class="h1"  colspan="2">  <xsl:value-of select="//cfdi:DomicilioEmisor/@calle"/> #
                  <xsl:value-of select="//cfdi:DomicilioEmisor/@noExterior"/> Int.
                  <xsl:value-of select="//cfdi:DomicilioEmisor/@noInterior"/>
