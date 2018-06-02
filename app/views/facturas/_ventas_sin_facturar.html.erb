@@ -8,20 +8,31 @@
   <hr>
   <%if @consulta%>
     <% if @ventas_sin_facturar%>
-      <!-- Despliega los resultados encontrados en la búsqueda -->
-      <div class="row">
+    <!-- Despliega los resultados encontrados en la búsqueda -->
+    <div class="row">
 
-        <div class="alert alert-warning alert-dismissable content">
-          <button type="button" class="close" data-dismiss="alert" >&times;</button>
-          <% if  @ventas_sin_facturar.length > 1%>
-              Se agregarán:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global.
-          <% else %>
-              <!--Ni yo me la creo que llegue el caso de que durante el día solo realicen una venta pero bueno jaja -->
-              Solo existe:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> venta.
-          <% end %>
-        </div>
-        <hr>
+      <div class="alert alert-warning alert-dismissable content">
+        <button type="button" class="close" data-dismiss="alert" >&times;</button>
+        <% if  @ventas_sin_facturar.length > 1%>
+            Se agregarán:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global.
+        <% else %>
+            <!--Ni yo me la creo que llegue el caso de que durante el día solo realicen una venta pero bueno jaja -->
+            Solo existe:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> venta.
+        <% end %>
       </div>
+      <hr>
+    </div>
+
+      <!--Se muestra el botón para generar la factura global con las operaciones simplificadas-->
+      <div class="row">
+        <div class="div-add-button">
+            <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-primary active btn-lg btn-add"} do%>
+              <i class="fa fa-file-text-o"></i> Generar factura global
+            <%end%>
+
+        </div>
+      </div> <!--Fin de botón -->
+
 
     <% else %>
       <div class="row">
@@ -36,6 +47,21 @@
     <div class="row" style="margin-bottom: 30px;">
         <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
         <%= form_tag({ controller: "facturas", action: "mostrarVentas_FacturaGlobal" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="item form-group">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div style="text-align: left; color: black;">
+              Elija una sucursal.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-12 col-xs-12">
+          <div class="col-md-12 col-sm-3 col-xs-12">
+            <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+
+
+          </div>
+        </div>
+
           <div class="item form-group">
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div style="text-align: left; color: black;">

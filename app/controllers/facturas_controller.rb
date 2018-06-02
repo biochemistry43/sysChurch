@@ -2,7 +2,7 @@ class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi]
   #before_action :set_facturaDeVentas, only: [:show]
   #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
-  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
+  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal ]
   before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
@@ -1871,35 +1871,51 @@ class FacturasController < ApplicationController
   def mostrarVentas_FacturaGlobal
     @consulta = true
 
+    @suc = params[:suc_elegida]
+
+    unless @suc.empty?
+      @sucursal = Sucursal.find(@suc)
+    end
+
     if request.post?
       @fechaOne = DateTime.parse(params[:fecha_one]).to_date
       @fechaTwo = DateTime.parse(params[:fecha_two]).to_date
+
       if can? :create, Negocio
-        @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne..@fechaTwo)
-        #Las ventas no deben de estar facturadas
-        unless @ventas.empty?
-          @ventas_sin_facturar=[]
-          @ventas.each do |v|
-            if v.factura.blank?
-                @ventas_sin_facturar.push(v)
+        #Si quieren generar facturas globales por sucursal
+        unless @suc.empty?
+          if params[:opcion_global] == "Facturar ventas por periodo"
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne..@fechaTwo, sucursal: @sucursal)
+          else
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne, sucursal: @sucursal)
+          end
+          #Las ventas no deben de estar facturadas
+          unless @ventas.empty?
+            @ventas_sin_facturar=[]
+            @ventas.each do |v|
+              if v.factura.blank?
+                  @ventas_sin_facturar.push(v)
+              end
             end
           end
-        end
-
-      else
-        @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaOne..@fechaTwo)
-        #Las ventas no deben de estar facturadas
-        unless @ventas_sin_facturar.empty?
-          @ventas_sin_facturar=[]
-          @ventas.each do |v|
-            if v.factura.blank?
-                @ventas_sin_facturar.push(v)
+        else
+          if params[:opcion_global] == "Facturar ventas por periodo"
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne..@fechaTwo)
+          else
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne)
+          end
+          #Las ventas no deben de estar facturadas
+          unless @ventas.empty?
+            @ventas_sin_facturar=[]
+            @ventas.each do |v|
+              if v.factura.blank?
+                  @ventas_sin_facturar.push(v)
+              end
             end
           end
         end
       end
     end
-
   end
 
 
