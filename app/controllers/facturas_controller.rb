@@ -1865,7 +1865,41 @@ class FacturasController < ApplicationController
   end
 
   def generarFacturaGlobal
-    
+
+  end
+
+  def mostrarVentas_FacturaGlobal
+    @consulta = true
+
+    if request.post?
+      @fechaOne = DateTime.parse(params[:fecha_one]).to_date
+      @fechaTwo = DateTime.parse(params[:fecha_two]).to_date
+      if can? :create, Negocio
+        @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne..@fechaTwo)
+        #Las ventas no deben de estar facturadas
+        unless @ventas.empty?
+          @ventas_sin_facturar=[]
+          @ventas.each do |v|
+            if v.factura.blank?
+                @ventas_sin_facturar.push(v)
+            end
+          end
+        end
+
+      else
+        @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaOne..@fechaTwo)
+        #Las ventas no deben de estar facturadas
+        unless @ventas_sin_facturar.empty?
+          @ventas_sin_facturar=[]
+          @ventas.each do |v|
+            if v.factura.blank?
+                @ventas_sin_facturar.push(v)
+            end
+          end
+        end
+      end
+    end
+
   end
 
 

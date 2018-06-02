@@ -1,0 +1,153 @@
+<div class="right_col" role="main" style="height: 900px;">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Factura global de ventas</h1>
+    </div>
+  </div> <!-- Fin de titulo-->
+  <div class="clearfix"></div>
+  <hr>
+  <%if @consulta%>
+    <% if @ventas_sin_facturar%>
+      <!-- Despliega los resultados encontrados en la búsqueda -->
+      <div class="row">
+
+        <div class="alert alert-warning alert-dismissable content">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+          <% if  @ventas_sin_facturar.length > 1%>
+              Se agregarán:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global.
+          <% else %>
+              <!--Ni yo me la creo que llegue el caso de que durante el día solo realicen una venta pero bueno jaja -->
+              Solo existe:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> venta.
+          <% end %>
+        </div>
+        <hr>
+      </div>
+
+    <% else %>
+      <div class="row">
+        <div class="alert alert-warning alert-dismissable content">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+          No hay ventas registradas con el folio: <span style="font-size: 16px;"> <%= @folio %></span>
+        </div>
+      </div>
+    <% end %>
+  <%end%>
+
+    <div class="row" style="margin-bottom: 30px;">
+        <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
+        <%= form_tag({ controller: "facturas", action: "mostrarVentas_FacturaGlobal" }, {:class=> "form-horizontal", :method => :post}) do %>
+          <div class="item form-group">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div style="text-align: left; color: black;">
+                Indique la fecha que desea generar una factura global.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12">
+
+            <div class="col-md-12 col-sm-3 col-xs-12">
+              <%= select_tag :opcion_global, "<option>Facturar ventas por día</option><option>Facturar ventas por periodo</option>".html_safe,   class: 'form-control' %>
+              <!--%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%-->
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12" id = "div_fecha_one">
+            <div class="col-md-2 col-sm-1 col-xs-2">
+              <div class="text-center" style="color: black;">
+                <%=label_tag :lbl_fecha_one, "Del:", class: "control-label" %>
+              </div>
+            </div>
+            <div class="col-md-10 col-sm-3 col-xs-10">
+                <%= date_picker_tag("fecha_one", nil, {class: "form-control text-center", id:"fecha_one", selectMonths: :true}, {})%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12" id="div_fecha_two" style="display:none;">
+            <div class="col-md-2 col-sm-1 col-xs-2">
+              <div class="text-center" style="color: black;">
+              <%=label_tag :lbl_fecha_two, "Al:", class: "control-label"%>
+              </div>
+            </div>
+            <div class="col-md-10 col-sm-3 col-xs-10">
+                <%= date_picker_tag("fecha_two", nil, {class: "form-control text-center", id: "fecha_two", selectMonths: :true}, {})%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-12 col-xs-12">
+            <div class="col-md-12 col-sm-1 col-xs-12">
+                <div class="text-left" >
+                  <%= submit_tag 'Mostrar ventas', {:class=>"btn btn-info col-md-12 col-sm-12 col-xs-12"} %>
+                </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+   <% if @consulta && @ventas_sin_facturar%>
+    <hr style="border-style: solid; border-width: 2px;">
+   <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+      <div>
+        <div class="tab-pane" id="detalles">
+          <table id ="table_sales" class="table table-striped responsive-utilities jambo_table data-table">
+            <thead>
+              <tr class="headings">
+                <th class="column-title">Folio </th>
+                <th class="column-title">Fecha </th>
+                <th class="column-title">Cliente</th>
+
+                <th class="column-title">Importe </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @ventas_sin_facturar.each do |venta_fg| %>
+                <tr>
+                  <td> <%= venta_fg.folio %> </td>
+                  <td> <%= venta_fg.fechaVenta%> </td>
+                  <td> <%= venta_fg.cliente.nombre_completo %> </td>
+                  <td> $ <%= venta_fg.montoVenta %> </td>
+
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+    </div>
+    <% end %>
+
+  <script>
+    $(document).ready(function(){
+
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+
+      //La fecha final solo se muestra si esta seleccionada la opción para facturar por periodo
+      $('select#opcion_global').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "Facturar ventas por día"){
+            $('#div_fecha_two').hide();
+          }else if (valor == "Facturar ventas por periodo") {
+            $('#div_fecha_two').show();
+
+          }
+      });
+
+    });
+
+
+  </script>
+</div>

@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   #resources :facturas
 
   get 'facturas/generarFacturaGlobal'
+  post 'facturas/mostrarVentas_FacturaGlobal'
+
 
 
   get 'corte_cajas/show'
