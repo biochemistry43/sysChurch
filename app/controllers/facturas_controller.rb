@@ -1893,8 +1893,16 @@ class FacturasController < ApplicationController
           unless @ventas.empty?
             @ventas_sin_facturar=[]
             @ventas.each do |v|
+              #Existen 3 statos de las ventas: Activa, Cancelada, y con devoluciones.
               if v.factura.blank?
+                if v.status == "Activa"
                   @ventas_sin_facturar.push(v)
+                  #Tambien se agragan las ventas con status 'Con devoluciones' siempre y cuando exista por lo menos un producto.
+                elsif v.status == "Con devoluciones"
+                  itemsVenta_Activos = v.item_ventas.where(status: "Activa").count
+                  @ventas_sin_facturar.push(v) if itemsVenta_Activos >= 1
+                end
+                #Las ventas con status 'Cancelada' se mandan a volar jaja
               end
             end
           end
@@ -1908,8 +1916,16 @@ class FacturasController < ApplicationController
           unless @ventas.empty?
             @ventas_sin_facturar=[]
             @ventas.each do |v|
+              #Existen 3 statos de las ventas: Activa, Cancelada, y con devoluciones.
               if v.factura.blank?
+                if v.status == "Activa"
                   @ventas_sin_facturar.push(v)
+                  #Tambien se agragan las ventas con status 'Con devoluciones' siempre y cuando exista por lo menos un producto.
+                elsif v.status == "Con devoluciones"
+                  itemsVenta_Activos = v.item_ventas.where(status: "Activa").count
+                  @ventas_sin_facturar.push(v) if itemsVenta_Activos >= 1
+                end
+                #Las ventas con status 'Cancelada' se mandan a volar jaja
               end
             end
           end
