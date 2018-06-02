@@ -1883,6 +1883,7 @@ class FacturasController < ApplicationController
 
       if can? :create, Negocio
         #Si quieren generar facturas globales por sucursal
+        @opcion_global = params[:opcion_global]
         unless @suc.empty?
           if params[:opcion_global] == "Facturar ventas por periodo"
             @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaOne..@fechaTwo, sucursal: @sucursal)

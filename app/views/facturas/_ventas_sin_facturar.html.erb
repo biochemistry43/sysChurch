@@ -14,10 +14,18 @@
       <div class="alert alert-warning alert-dismissable content">
         <button type="button" class="close" data-dismiss="alert" >&times;</button>
         <% if  @ventas_sin_facturar.length > 1%>
-            Se agregarán:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global.
+            Se agregarán: <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global
+            del <span style="color:black; font-size: 16px;"> <%= @fechaOne %></span>
+            <%if @opcion_global == "Facturar ventas por periodo"%>
+              al <span style="color:black; font-size: 16px;"> <%= @fechaTwo %></span>
+            <% end %>.
         <% else %>
             <!--Ni yo me la creo que llegue el caso de que durante el día solo realicen una venta pero bueno jaja -->
-            Solo existe:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> venta.
+            Solo existe:   <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> venta
+            del <span style="color:black; font-size: 16px;"> <%= @fechaOne %></span>
+            <%if @opcion_global == "Facturar ventas por periodo"%>
+              al <span style="color:black; font-size: 16px;"> <%= @fechaTwo %></span>
+            <% end %>.
         <% end %>
       </div>
       <hr>
@@ -33,12 +41,15 @@
         </div>
       </div> <!--Fin de botón -->
 
-
     <% else %>
       <div class="row">
         <div class="alert alert-warning alert-dismissable content">
           <button type="button" class="close" data-dismiss="alert" >&times;</button>
-          No hay ventas registradas con el folio: <span style="font-size: 16px;"> <%= @folio %></span>
+          No se encontraron ventas
+          del <span style="color:black; font-size: 16px;"> <%= @fechaOne %></span>
+          <%if @opcion_global == "Facturar ventas por periodo"%>
+            al <span style="color:black; font-size: 16px;"> <%= @fechaTwo %></span>
+          <% end %>.
         </div>
       </div>
     <% end %>
@@ -50,14 +61,13 @@
         <div class="item form-group">
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div style="text-align: left; color: black;">
-              Elija una sucursal.
+              Puede generar una factura global por cada sucursal o una de todas ellas.
             </div>
           </div>
         </div>
         <div class="col-md-3 col-sm-12 col-xs-12">
           <div class="col-md-12 col-sm-3 col-xs-12">
-            <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
-
+            <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Todas'}, { class: "form-control col-md-7 col-xs-12" })%>
 
           </div>
         </div>
@@ -65,7 +75,7 @@
           <div class="item form-group">
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div style="text-align: left; color: black;">
-                Indique la fecha que desea generar una factura global.
+                Indique la fecha que desea generar la factura global.
               </div>
             </div>
           </div>
