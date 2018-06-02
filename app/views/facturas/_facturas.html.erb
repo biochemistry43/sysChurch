@@ -29,12 +29,12 @@
   <hr>
   <div class="row">
     <div class="div-add-button">
-        <%= link_to url={controller: "facturas", action: "buscarVentaFacturar"}, html_options={class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn"} do%>
+        <%= link_to url={controller: "facturas", action: "buscarVentaFacturar"}, html_options={class: "btn btn-primary active btn-lg btn-add",id: "anadir-factura-btn"} do%>
           <i class="fa fa-file-text-o"></i> Facturar una venta
         <%end%>
     </div>
     <div class="div-add-button">
-        <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-warning btn-lg btn-add"} do%>
+        <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-info btn-lg btn-add"} do%>
           <i class="fa fa-file-text-o"></i> Generar factura global
         <%end%>
 
