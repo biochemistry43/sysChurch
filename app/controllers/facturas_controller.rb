@@ -309,7 +309,7 @@ class FacturasController < ApplicationController
               clave_impuesto =  "003"
             end
             factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-              tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto, concepto_id: cont)
+              tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
           #end
           #elsif c.articulo.impuesto.tipo == "Local"
             #Para el complemento de impuestos locales.
@@ -1672,7 +1672,7 @@ class FacturasController < ApplicationController
                 clave_impuesto =  "003"
               end
               factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto, concepto_id: cont)
+                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
             #end
             #elsif c.articulo.impuesto.tipo == "Local"
               #Para el complemento de impuestos locales.

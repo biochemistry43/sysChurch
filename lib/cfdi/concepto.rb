@@ -45,7 +45,7 @@ module CFDI
     #
     # @return [Float] El valor unitario como Float
     def ValorUnitario= dineros
-      @ValorUnitario = dineros
+      @ValorUnitario = dineros.round(2)
       @ValorUnitario
     end
     # El importe de este concepto
@@ -53,7 +53,7 @@ module CFDI
     # @return [Float] El valor unitario multiplicado por la Cantidad
     def Importe= importe
       #@Importe = '%.2f' % importe.round(2)
-      @Importe = importe
+      @Importe = importe.round(2)
       @Importe
     end
 

@@ -83,7 +83,7 @@ module CFDI
       @conceptos.each do |c|
         subtotal += c.Importe
       end
-      subtotal = '%.2f' % subtotal.round(2) # @ return [Float] El subtotal del comprobante
+      subtotal = '%.2f' % subtotal#.round(2) # @ return [Float] El subtotal del comprobante
     end
 
     #Expresa el total en letras de forma estatica se usa la moneda nacional.
@@ -297,7 +297,7 @@ module CFDI
               # select porque luego se pone roñoso el xml si incluyo noIdentificacion y es empty
               cc = concepto.to_h.select {|k,v| v!=nil && v != ''}
               cc = cc.map {|k,v|
-                v = '%.2f' % v.round(2) if v.is_a? Float
+                v = '%.2f' % v if v.is_a? BigDecimal
                 [k,v]
               }.to_h
               xml.Concepto(cc) {
@@ -319,7 +319,7 @@ module CFDI
                               TipoFactor: @impuestos.traslados[i].type_factor,
                               TasaOCuota: '%.6f' % (@impuestos.traslados[i].rate).round(6),
                               #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
-                              Importe: '%.2f' % (@impuestos.traslados[i].import).round(2))
+                              Importe: '%.2f' % (@impuestos.traslados[i].import)#.round(2))
                             #cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
                             #impuestos_aplicables = true
                           end
@@ -348,7 +348,7 @@ module CFDI
           #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
           if @impuestos.traslados.count > 0
             tax_options = {}
-            total_trans = '%.2f' % (@impuestos.total_traslados).round(2)
+            total_trans = '%.2f' % (@impuestos.total_traslados))#.round(2)
             #total_trans = format('%.6f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
             tax_options[:TotalImpuestosTrasladados] = total_trans if total_trans.to_i > 0
