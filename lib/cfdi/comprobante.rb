@@ -319,7 +319,7 @@ module CFDI
                               TipoFactor: @impuestos.traslados[i].type_factor,
                               TasaOCuota: '%.6f' % (@impuestos.traslados[i].rate).round(6),
                               #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
-                              Importe: '%.2f' % (@impuestos.traslados[i].import)#.round(2))
+                              Importe: '%.2f' % (@impuestos.traslados[i].import) )#.round(2))
                             #cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
                             #impuestos_aplicables = true
                           end
@@ -348,7 +348,7 @@ module CFDI
           #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
           if @impuestos.traslados.count > 0
             tax_options = {}
-            total_trans = '%.2f' % (@impuestos.total_traslados))#.round(2)
+            total_trans = '%.2f' % (@impuestos.total_traslados)#.round(2)
             #total_trans = format('%.6f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
             tax_options[:TotalImpuestosTrasladados] = total_trans if total_trans.to_i > 0

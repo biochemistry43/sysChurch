@@ -473,7 +473,7 @@ class FacturasController < ApplicationController
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
 
-=begin
+
         #8.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
@@ -496,7 +496,7 @@ class FacturasController < ApplicationController
           venta_id=@venta.id
           Venta.find(venta_id).factura = @factura #relación uno a uno
           end
-=end
+
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
