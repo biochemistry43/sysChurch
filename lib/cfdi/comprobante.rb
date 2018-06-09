@@ -346,20 +346,19 @@ module CFDI
           }
 
           #Cuando todos los conceptos no tengan ningun mugroso impuesto, no tiene por que mostrar el resumen total de los impuestos. suena lógico jaja
+          #if @impuestos.count_impuestos > 0
           if @impuestos.traslados.count > 0
             tax_options = {}
             total_trans = '%.2f' % (@impuestos.total_traslados)#.round(2)
-            #total_trans = format('%.6f', @impuestos.total_traslados)
             #total_detained = format('%.2f', @impuestos.total_detained)
             tax_options[:TotalImpuestosTrasladados] = total_trans if total_trans.to_i > 0
             #tax_options[:totalImpuestosRetenidos] = total_detained if
               #total_detained.to_i > 0
             #cant_it = @impuestos.traslados.count
             xml.Impuestos(tax_options) do
-              if @impuestos.traslados.count > 0
                 xml.Traslados{
-                #if @impuestos.count_impuestos > 0
                 resumen_traslados=[] #Para guardar todos los diferentes impuestos trasladados.
+
                 #Se obtienen los valores del primer impuesto traslado y se almacenan.
                 primer_impuesto_traslado = @impuestos.traslados.first
                 impuesto_it = primer_impuesto_traslado.tax #Impuesto => tax
@@ -368,48 +367,46 @@ module CFDI
                 importe_it = primer_impuesto_traslado.import #Importe => import
                 resumen_traslados << [impuesto_it, tipoFactor_it, tasaOCuota_it, importe_it]
 
-                detectaCambio = false
+                #incluido = nil
+                contador_impuestos = 0
                 indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
                 it = 0 #Es un apuntador (No siempre incremente de uno en uno)
                 while it < c_it #Itera todos los impuestos de los conceptos(Excluidos los impuestos vacios)
                 indice_cambio = 0
-                  #puts "ENNTRÉ: #{it}"
-                  bandera_cambio = true #Solo aplica para el primer cambio y omite el rest(si es que existen)
-                  #Para comparar los atributos de  impuesto seleccionado a impuesto.
+                bandera_cambio = true
                   val = 0
                   while val < @impuestos.traslados.count
                     #Se identifican los valores iguales
                     if @impuestos.traslados[it].tax == @impuestos.traslados[val].tax && @impuestos.traslados[it].rate == @impuestos.traslados[val].rate
                       #Se suman los importes de los impuestos iguales
                       #El indice 3 pertenece a los importes de los impuestos
-                      if it != val #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
+                      #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
+                      if it != val
                         resumen_traslados[indice][3] = resumen_traslados[indice][3] + @impuestos.traslados[val].import
+                        p "Igual [#{it},#{val}]"
                       end
 
-                      if detectaCambio == true && it == val # && val == arrayTrasladados.length - 1
-                        #El último impuesto diferente y huerfanito se agrega al arreglo.
-                        resumen_traslados << [@impuestos.traslados[val].tax,
-                                              @impuestos.traslados[val].type_factor,
-                                              @impuestos.traslados[val].rate,
-                                              @impuestos.traslados[val].import]
-                      end
                     else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
-                      #Detecta el primer cambio y de aquí partimos señores!
-                      detectaCambio = true
+
                       if bandera_cambio
                         if val > it
                           ite = 0
                           #Se comprueba que no se haya tomado en cuenta el mismo impuesto antes.
                           while ite < resumen_traslados.length
-                            if resumen_traslados[ite][0] != @impuestos.traslados[val].tax && resumen_traslados[ite][2] != @impuestos.traslados[val].rate
-                              #indice_cambio = val if indice_cambio > it
-                              bandera_cambio = false #Esto asegura que sea el indice proximo y no el proximo del proximo
-                              indice_cambio = val
+
+                            if resumen_traslados[ite][0] == @impuestos.traslados[val].tax && resumen_traslados[ite][2] == @impuestos.traslados[val].rate
+                              incluido = true
                             end
                             ite += 1
                           end
+
+                          if incluido != true
+                            incluido = false
+                            indice_cambio = val
+                          end
                         end
                       end
+
                     end
                     val += 1
                   end #Fin de bucle anidado
@@ -421,17 +418,19 @@ module CFDI
                   #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
                   Importe: '%.2f' % resumen_traslados[indice][3].round(2) #Esto es el importe por cada impuesto diferente
                   )
-
-                  if bandera_cambio == false
-                    #if it == arrayTrasladados.length - 1
-                    #  it = arrayTrasladados.length
-                    #else
-                    #  it = indice_cambio
-                    #end
+                  if incluido == false
+                    p "entré #{it}"
                     it += 1  #Si hay un cambio y que éste no se haya tomado en cuanta, se incrementa
                     indice += 1 #Solo si hay cambio seguirá entrando
+
+                    #SE AGREGA EL NUEVO IMPUESTO DETECTADO
+                    p "Diferente [#{it},#{val}]"
+                    #Se agrega, pero como está dentro del ciclo el indeice hará referencia al anterior hasta que incremente it
+                    resumen_traslados << [@impuestos.traslados[indice_cambio].tax,
+                                          @impuestos.traslados[indice_cambio].type_factor,
+                                          @impuestos.traslados[indice_cambio].rate,
+                                          @impuestos.traslados[indice_cambio].import]
                   else #Si no se detecto cambio quiere decir que todos los impuestos traslados son identicos
-                    #it = arrayTrasladados.length #Solo un novato entra en un ciclo infinito jaja cual -1 ni que nada
                     break
                   end
                 end
@@ -444,7 +443,6 @@ module CFDI
                 #    end
                 #  end
                 #end
-              end
             end
           end
 
