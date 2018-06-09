@@ -1406,14 +1406,22 @@ class FacturasController < ApplicationController
   # GET /facturas/1
   # GET /facturas/1.json
   def show
-    @items  = @factura.venta.item_ventas
-    @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
-    @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
-    cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
-    nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
-    @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
-    nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
-    @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
+    ventas = @factura.ventas
+    if ventas.length == 1 #Cuando se trate de una sola venta facturada
+      venta = ventas.first
+      @items  = venta.item_ventas
+      @montoFactura = venta.montoVenta
+      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
+      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
+      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
+      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
+      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
+      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
+      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
+    elsif ventas.length > 1 #Si es una factura global contiene varias ventas
+
+    end
+
   end
 
   # GET /facturas/new
