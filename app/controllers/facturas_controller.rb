@@ -1058,6 +1058,7 @@ class FacturasController < ApplicationController
     @fechas=true
     @por_folio=false
     @avanzada = false
+    @por_cliente= false
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
@@ -1081,7 +1082,7 @@ class FacturasController < ApplicationController
     @fechas = false
     @por_folio = true
     @avanzada = false
-
+    @por_cliente= false
 
     if request.post?
       @folio_fact = params[:folio_fact]
