@@ -7,6 +7,7 @@
   <div class="clearfix"></div>
   <hr>
   <%if @consulta%>
+  <div class="col-md-12 col-sm-12 col-xs-12">
     <% if @ventas_sin_facturar%>
     <!-- Despliega los resultados encontrados en la búsqueda -->
     <div class="row">
@@ -31,15 +32,6 @@
       <hr>
     </div>
 
-      <!--Se muestra el botón para generar la factura global con las operaciones simplificadas-->
-      <div class="row">
-        <div class="div-add-button">
-            <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-primary active btn-lg btn-add"} do%>
-              <i class="fa fa-file-text-o"></i> Generar factura global
-            <%end%>
-
-        </div>
-      </div> <!--Fin de botón -->
 
     <% else %>
       <div class="row">
@@ -53,6 +45,8 @@
         </div>
       </div>
     <% end %>
+
+    </div>
   <%end%>
 
     <div class="row" style="margin-bottom: 30px;">
@@ -117,14 +111,21 @@
       </div>
 
    <% if @consulta && @ventas_sin_facturar%>
-    <hr style="border-style: solid; border-width: 2px;">
+   <!--Se muestra el botón para generar la factura global con las operaciones simplificadas-->
+<%= form_tag({ controller: "facturas", action: "factura_global_publico_gral" }, {:class=> "form-horizontal", :method => :post}) do %>
+  <hr style="border-style: solid; border-width: 2px;">
    <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="row">
+
+      <div class="div-add-button">
+          <%= submit_tag 'Generar factura global', {:class=>"btn btn-primary btn-lg active"}%>
+      </div>
       <div>
         <div class="tab-pane" id="detalles">
           <table id ="table_sales" class="table table-striped responsive-utilities jambo_table data-table">
             <thead>
               <tr class="headings">
+                <th class="column-title"> </th>
                 <th class="column-title">Folio </th>
                 <th class="column-title">Fecha </th>
                 <th class="column-title">Subtotal</th>
@@ -174,6 +175,9 @@
               <%end%>
 
                 <tr>
+                  <td>
+                    <input type="checkbox" value="<%= venta_fg.id %>" name="ventas[]" id="venta_<%= venta_fg.id %>">
+                  </td>
                   <td> <%= venta_fg.folio %> </td>
                   <td> <%= venta_fg.fechaVenta%> </td>
                   <td> $ <%= '%.2f' % valor_unitario_fg.round(2) %> </td>
@@ -191,6 +195,7 @@
       </div>
     </div>
     </div>
+    <%end%>
     <% end %>
 
   <script>

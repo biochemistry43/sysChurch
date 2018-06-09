@@ -1540,22 +1540,10 @@ class FacturasController < ApplicationController
       Descuento (si existiera)
 =end
 
-    #Según la periodicidad en la que se expedirán facturas simplificadas
-    hoy = Time.now.strftime("%Y-%m-%d")
-    @ventas_del_dia = current_user.negocio.ventas.where(fechaVenta: hoy )
-    #Se guardan en un arreglo solo las ventas que no están amparadas por un CFDI ( del dia, de la semana...)
-    #@no_facturadas = @ventas_del_dia.where(_not_exists(current_user.negocio.facturas.where("facturas.venta_id = ventas.id")))
-
-    unless @ventas_del_dia.empty?
-      #Se obtienen todas las ventas que no han sido facturadas
-      @ventas=[]
-      #ventasNoFacturadas_ids = []
-      @ventas_del_dia.each do |v|
-        if v.factura.blank?
-            #ventasNoFacturadas_ids << v.id
-            @ventas.push(v)
-        end
-      end
+      ventas = []
+      #Se reciben los id de las ventas con las casillas marcadas en un arreglo de string y se convierten a enteros. Luego se buscan todas las ventas con los id del arreglo.
+      params[:ventas].each {|id| ventas << id.to_i }
+      @ventas = Venta.where(id: ventas)
 
       #Se obtiene el nombre de la forma de pago de las ventas no facturadas (Que no es el nombre correcto pero bueno...)
       forma_pago_mayor_fg =  @ventas.max_by(&:montoVenta).venta_forma_pago.forma_pago.nombre
@@ -1573,6 +1561,8 @@ class FacturasController < ApplicationController
         cve_nombre_forma_pagoSAT = "03 - Transferencia electrónica de fondos"
         cve_forma_pagoSAT = "03"
       end
+
+
 
       #LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
       fecha_expedicion_f = Time.now
@@ -1881,10 +1871,6 @@ class FacturasController < ApplicationController
               #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
             end
           end
-      else
-          redirect_to :back
-          flash[:notice] = "No existe ninguna venta del día de hoy!"
-      end
       #puts folio
     #rescue => e
       #puts "FECHA: #{hoy}"
