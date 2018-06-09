@@ -1,5 +1,5 @@
 class Factura < ActiveRecord::Base
-  belongs_to :venta
+  has_many :ventas
   belongs_to :user
   belongs_to :negocio
   belongs_to :sucursal

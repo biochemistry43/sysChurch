@@ -422,7 +422,7 @@
               <td style="text-align: center;"><%= factura.folio %></td>
               <td style="text-align: center;"><%= factura.cliente.nombre_completo %></td>
               <td style="text-align: center;"><%=factura.fecha_expedicion %></td>
-              <td style="text-align: center;"><%=factura.venta.montoVenta %></td>
+              <td style="text-align: center;"><!--factura.venta.montoVenta --></td>
 
               <!--if factura.forma_pago.nombre.eql?("efectivo")-->
               <!--<td style="text-align: center;"><factura.venta.montoVenta%></td>
@@ -468,7 +468,8 @@
 
                   <% if factura.estado_factura.eql?("Activa") %>
                     <!--Se le manda su id :)-->
-                    <%= link_to edit_venta_path(factura.venta.id),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                    <%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %>
+                    <%= link_to edit_venta_path(venta_id),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
                      <i class="fa fa-close"></i>
                     <% end %>
                   <%else%>

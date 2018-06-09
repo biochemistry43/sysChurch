@@ -493,8 +493,8 @@ class FacturasController < ApplicationController
           cliente_id=@venta.cliente.id
           Cliente.find(cliente_id).facturas << @factura
 
-          venta_id=@venta.id
-          Venta.find(venta_id).factura = @factura #relación uno a uno
+          @factura.ventas <<  @venta
+
           end
 
           #fecha_expedicion=@factura.fecha_expedicion
