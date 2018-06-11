@@ -962,6 +962,11 @@ class FacturasController < ApplicationController
         file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
         file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
       end
+      if params[:xml_Ac] == "yes"
+        comprobantes[:xml_Ac] = "public/#{file_name}_AcuseDeCancelación.xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}_AcuseDeCancelación.xml"
+        file_download_storage_xml.download "public/#{file_name}_AcuseDeCancelación.xml"
+      end
 
       #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
       FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
