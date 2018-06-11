@@ -62,48 +62,50 @@ class VentasController < ApplicationController
 
         if @venta.factura.present?
           if @venta.factura.estado_factura == "Activa"
+              # Parametros para la conexión al Webservice
+              wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+              usuario = "AAA010101000"
+              contrasena = "h6584D56fVdBbSmmnB"
 
-            #Se obtiene el xml de de la nube nublada :3 y se guarda en la carpeta publica
-            gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-            storage=gcloud.storage
-            bucket = storage.bucket "cfdis"
+              # Parametros para la cancelación del CFDI
+              uuid = @venta.factura.folio_fiscal
+              rfc = "AAA010101AAA"
+              pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
+              bin_file = File.binread(pfx_path)
+              pfx_base64 = Base64.strict_encode64(bin_file)
+              pfx_password = "12345678a"
+              #Se cancela
+              xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+              #se extrae el acuse de cancelación del xml cancelado
+              acuse = xml_cancelado.xpath("//acuse_cancelacion").text
 
-            fecha_expedicion=@venta.factura.fecha_expedicion
-            consecutivo =@venta.factura.consecutivo
+              gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+              storage=gcloud.storage
+              bucket = storage.bucket "cfdis"
+              #Consultas
+              ruta_storage = @venta.factura.ruta_storage
+              fecha_expedicion=@venta.factura.fecha_expedicion
+              consecutivo =@venta.factura.consecutivo
+              file_name = "#{consecutivo}_#{fecha_expedicion}"
+              #Se guarda el Acuse en la nube
+              file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelación.xml"
 
-            ruta_storage = @venta.factura.ruta_storage
-            file_name = "#{consecutivo}_#{fecha_expedicion}_CFDI.xml"
-            file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
-            file_download_storage_xml.download "public/#{file_name}"
+              #Si una venta tiene una factura asociada se cancela como consecuencia.
+              @venta.factura.update( estado_factura: "Cancelada") #Pasa de activa a cancelada
 
-            xml=File.open( "public/#{file_name}")
+              acuse = Nokogiri::XML(acuse)
 
-            xml_a_cancelar = Nokogiri::XML(xml)
+              a = File.open("public/#{file_name}_AcuseDeCancelación", "w")
+              a.write (acuse)
+              a.close
 
-            # Parametros para la conexión al Webservice
-            wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-            usuario = "AAA010101000"
-            contrasena = "h6584D56fVdBbSmmnB"
-
-            # Parametros para la cancelación del CFDI
-            uuid = xml_a_cancelar.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-            uuid = uuid.to_s
-            rfc = "AAA010101AAA"
-            pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
-            bin_file = File.binread(pfx_path)
-            pfx_base64 = Base64.strict_encode64(bin_file)
-            pfx_password = "12345678a"
-
-            #puts documento
-
-            xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
-            #sello=document.xpath('//@Sello')
-            a = File.open("public/xml_CANCELADO.xml", "w")
-            a.write (xml_cancelado)
-            a.close
-
-            estado_factura="Cancelada"
-            @venta.factura.update(:estado_factura=>estado_factura) #Pasa de activa a cancelada
+              #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
+              destinatario = params[:destinatario]
+              #Aquí el mensaje de la configuración...
+              mensaje = "HOLA cara de bola"
+              tema = "Acuse de cancelación"
+              comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
+              FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
           end
         end
 

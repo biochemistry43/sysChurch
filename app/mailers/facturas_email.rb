@@ -9,6 +9,8 @@ class FacturasEmail < ApplicationMailer
 
     attachments['NotaCrédito.pdf'] =  open( comprobantes.fetch(:pdf_nc) ).read if comprobantes.key?(:pdf_nc)
     attachments['NotaCrédito.xml'] =  open( comprobantes.fetch(:xml_nc) ).read if comprobantes.key?(:xml_nc)
+
+    attachments['AcuseCancelación.xml'] =  open( comprobantes.fetch(:xml_Ac) ).read if comprobantes.key?(:xml_Ac)
 =begin
     mail(headers = {}, &block) public
     :subject - The subject of the message, if this is omitted, Action Mailer will ask the Rails I18n class for a translated :subject in the scope of [mailer_scope, action_name] or if this is missing, will translate the humanized version of the action_name
