@@ -266,6 +266,13 @@ class VentasController < ApplicationController
           end
         end
 
+        #Usuario no elige nada
+        if @status.eql?("Todas") && @forma_pago.empty?
+          unless @sucursal && @cajero
+            @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
+          end
+        end
+
 
       #Si el usuario no es un administrador o subadministrador
       else
@@ -316,6 +323,13 @@ class VentasController < ApplicationController
           unless @cajero && @forma_pago.empty?
             ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
             @ventas = Venta.filtrar_por_forma_pago(ventas, @forma_pago)
+          end
+        end
+
+        #Usuario no elige nada
+        if @status.eql?("Todas") && @forma_pago.empty?
+          unless @sucursal && @cajero
+            @ventas = current_user.sucursal.ventas.where(fechaVenta: @fechaInicial..@fechaFinal)
           end
         end
 
