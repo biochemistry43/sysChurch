@@ -273,7 +273,7 @@
               <td style="text-align: center;"><%= venta.fechaVenta.strftime("%d-%m-%Y") %></td>
               <td style="text-align: center;">$ <%= venta.montoVenta %></td>
               <td style="text-align: center;">$ <%= @monto_devolucion %></td>     
-              <td style="text-align: center;"><%= venta.caja_sucursal.nombre %></td>
+              <td style="text-align: center;"><%= venta.try(:caja_sucursal).try(:nombre) %></td>
 
               <% if can? :create, Negocio %>
                 <td style="text-align: center;">
