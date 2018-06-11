@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi, :cancelaFacturaVenta, :cancelaFacturaVenta2]
   #before_action :set_facturaDeVentas, only: [:show]
   #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal ]
@@ -523,6 +523,13 @@ class FacturasController < ApplicationController
       end #fin de else que permiten facturar
     end #Fin del méodo post
   end #Fin del controlador
+
+  def cancelaFacturaVenta
+
+  end
+  def cancelaFacturaVenta2
+
+  end
 
   #NOTAS DE CRÉDITO
   def nota_credito

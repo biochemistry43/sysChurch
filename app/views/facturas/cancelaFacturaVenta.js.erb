@@ -1,0 +1,12 @@
+$('#modal-cancelaFacturaVenta-title').html("<i class='glyphicon glyphicon-envelope'></i> Cancelar factura");
+
+// Render the new form
+$('.modal-body-cancelaFacturaVenta').html('<%= j render("cancelaFacturaVenta") %>');
+
+// Show the dynamic dialog
+$('#modalCancelaFacturaVenta').modal("show");
+
+// Set focus to the first element
+$('#modalCancelaFacturaVenta').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

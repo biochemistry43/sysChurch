@@ -1,0 +1,75 @@
+<%= form_tag({ controller: "facturas", action: "cancelaFacturaVenta2", id: @factura.id }, { :method => :post}) do %>
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <!--Los campos de envio del acuse de cancelación solo se muestra si la venta tine una factura relacionada-->
+    <!--%if @venta.factura.present? && @venta.factura.estado_factura == "Activa"%-->
+    <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
+      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Envío del Acuse:</h2>
+    </div>
+    <!--Campos para el envio del Acuse de cancelación-->
+    <div class="item form-group">
+      <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+      <div class="input-group col-md-6 col-sm-6 col-xs-12">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+        <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
+        <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
+      </div>
+    </div>
+    <!--El asunto y el mensaje... la que se indique en la configuración del negocio  -->
+    <div class="item form-group">
+      <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+      <div class="input-group col-md-6 col-sm-6 col-xs-12">
+        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+        <%= text_field_tag :asunto, nil,{class:'form-control text_field'} %>
+      </div>
+    </div>
+    <div class="form-group">
+      <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+
+      <div class="input-group col-md-6 col-sm-6 col-xs-12">
+         <!--textarea id="summernote" name="summernote"></textarea-->
+        <%= text_area_tag  :summernote, nil,{class:'form-control text_field', id: "summernote"}%>
+      </div>
+    </div>
+    <div class="actions">
+      <!--div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3"-->
+        <!--p class="purple">El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo) </p-->
+        <%= submit_tag 'Cancelar factura y enviar Acuse', {:class=>"btn btn btn-success"} %>
+      <!--/div-->
+    </div>
+
+  </div>
+<%end %>
+<!--% end %-->
+<script type="text/javascript">
+
+  //$(document).ready(function() {
+  //  $('#summernote').summernote();
+  //});
+
+    $('#summernote').summernote({
+      tabsize: 2,
+      height: 240,
+      minHeight: 240,
+      maxHeight: 240,
+      lang: 'es-ES', // default: 'en-US'
+      focus: true,
+      toolbar: [
+      // [groupName, [list of button]]
+      ['fontname',['fontname']],
+      ['fontsize', ['fontsize']],
+      ['style', ['bold', 'italic', 'underline', 'clear']],
+      ['font', ['strikethrough', 'superscript', 'subscript']],
+      ['color', ['color']],
+      //['para', ['ul', 'ol', 'paragraph']],
+      ['height', ['height']],
+      ['insert',['link','table','hr']],
+      ['misc',['undo','redo']]
+
+    ]
+
+  });
+
+
+</script>

@@ -462,8 +462,9 @@
 
                   <% if factura.estado_factura.eql?("Activa") %>
                     <!--Se le manda su id :)-->
-                    <%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %>
-                    <%= link_to edit_venta_path(venta_id),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar venta"}, data: { confirm: "¿Desea cancelar esta venta?"} do %>
+                    <!--%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %-->
+                    <%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <!--%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura},  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar"}, data: { confirm: "¿Desea cancelar esta venta?"} do %-->
                      <i class="fa fa-close"></i>
                     <% end %>
                   <%else%>
@@ -494,6 +495,7 @@
     <%= render 'modalFacturas'%>
     <%= render 'modalEmails'%>
     <%= render 'modalVentas'%>
+    <%= render 'modalCancelaFacturaVenta'%>
   </div>
 
   <script>

@@ -41,6 +41,9 @@ Rails.application.routes.draw do
   get 'facturas/cancelar_cfdi'
   get 'facturas/factura_global_publico_gral'
   post 'facturas/factura_global_publico_gral'
+
+  get 'facturas/cancelaFacturaVenta'
+  post 'facturas/cancelaFacturaVenta2'
   #resources :facturas
 
   get 'facturas/generarFacturaGlobal'
