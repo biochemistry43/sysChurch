@@ -10,7 +10,7 @@ class FacturasController < ApplicationController
     @consulta = false
     if request.post?
       #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
-      @venta = Venta.find_by :folio=>params[:folio]
+      @venta = current_user.negocio.ventas.find_by :folio=>params[:folio]
       if @venta
         venta_id = @venta.id
         redirect_to action: "mostrarDetallesVenta", id: venta_id
@@ -21,22 +21,19 @@ class FacturasController < ApplicationController
   end
 
   def mostrarDetallesVenta
-    @venta = Venta.find(params[:id]) if params.key?(:id)
+
+    @venta = current_user.negocio.ventas.find(params[:id]) if params.key?(:id)
 
     @@venta = @venta
     @consulta = true #determina si se realizó una consulta
-    #EMISOR
+
     #La venta debe de ser del mismo negocio o mostrará que no hay ventas registradas con X folio de venta
     if @venta && current_user.negocio.id == @venta.negocio.id
-      #blank lo contrario de presentar
-      #Una venta solo se puede facturar una vez
-      @ventaFacturadaNoSi=@venta.factura.blank?
-      @ventaCancelada=@venta.status.eql?("Cancelada")
 
-      #Por si a alguien se le ocurre querer facturar una venta cancelada jajaja
-      #if @ventaCancelada
-       #@fechaVentaCancelada=current_user.negocio.venta_canceladas.where("venta"=>@venta).fecha
-      #end
+      #Una venta solo se puede facturar una vez, pero si la factura fue cancelada se puede volver a facturar la misma venta.
+      @ventaFacturadaNoSi = true if @venta.factura.blank? || @venta.factura.estado_factura == "Cancelada"
+      @ventaCancelada = @venta.status.eql?("Cancelada")
+
       unless @ventaFacturadaNoSi
         @fechaVentaFacturada = @venta.factura.fecha_expedicion
         @folioVentaFacturada = @venta.factura.folio #Folio de la factura de la venta
@@ -60,7 +57,8 @@ class FacturasController < ApplicationController
         @serie = folio_default
       end
       #RECEPTOR
-      @rfc_emisor_present=@venta.cliente.rfc.present?
+      #@rfc_emisor_present=@venta.cliente.rfc.present?
+
       @rfc_receptor_f=@venta.cliente.datos_fiscales_cliente.rfc
       @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
       @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente.nombreFiscal
@@ -77,12 +75,11 @@ class FacturasController < ApplicationController
       @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
 
 
-      #@nombre_receptor_f=@venta.cliente.nombre_completo
-      #@correo_electonico_f=@venta.cliente.enviar_al_correo
-      @uso_cfdi_receptor_f=UsoCfdi.all #@venta.cliente.uso_cfdi
+
+      @uso_cfdi_receptor_f=UsoCfdi.all
 
       #COMPROBANTE
-      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.clave
+      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.cla
 
       #para mostrar el subtotal.
       @subtotal = 0.00
