@@ -524,11 +524,16 @@ class FacturasController < ApplicationController
     end #Fin del méodo post
   end #Fin del controlador
 
+  #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
   def cancelaFacturaVenta
-
+    @categorias_devolucion = current_user.negocio.cat_venta_canceladas
   end
   def cancelaFacturaVenta2
-
+    categoria = params[:cat_cancelacion]
+    cat_venta_cancelada = CatVentaCancelada.find(categoria)
+    venta = params[:venta]
+    observaciones = venta[:observaciones]
+    #@items = @factura.venta.item_ventas
   end
 
   #NOTAS DE CRÉDITO
