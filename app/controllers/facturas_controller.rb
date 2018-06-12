@@ -528,12 +528,100 @@ class FacturasController < ApplicationController
   def cancelaFacturaVenta
     @categorias_devolucion = current_user.negocio.cat_venta_canceladas
   end
+
   def cancelaFacturaVenta2
-    categoria = params[:cat_cancelacion]
-    cat_venta_cancelada = CatVentaCancelada.find(categoria)
-    venta = params[:venta]
-    observaciones = venta[:observaciones]
-    #@items = @factura.venta.item_ventas
+    #Primero se procede a cancelar y enviar el acuse de cancelación
+    # Parametros para la conexión al Webservice
+    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+    usuario = "AAA010101000"
+    contrasena = "h6584D56fVdBbSmmnB"
+
+    # Parametros para la cancelación del CFDI
+    uuid = @factura.folio_fiscal
+    rfc = "AAA010101AAA"
+    pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
+    bin_file = File.binread(pfx_path)
+    pfx_base64 = Base64.strict_encode64(bin_file)
+    pfx_password = "12345678a"
+    #Se cancela
+    xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+    #se extrae el acuse de cancelación del xml cancelado
+    acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+    bucket = storage.bucket "cfdis"
+    #Consultas
+    ruta_storage = @factura.ruta_storage
+    fecha_expedicion=@factura.fecha_expedicion
+    consecutivo =@factura.consecutivo
+    file_name = "#{consecutivo}_#{fecha_expedicion}"
+    #Se guarda el Acuse en la nube
+    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelación.xml"
+    #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
+    @factura.update( estado_factura: "Cancelada") #Pasa de activa a cancelada
+    acuse = Nokogiri::XML(acuse)
+    a = File.open("public/#{file_name}_AcuseDeCancelación", "w")
+    a.write (acuse)
+    a.close
+
+    #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
+    destinatario = params[:destinatario]
+    #Aquí el mensaje de la configuración...
+    mensaje = "HOLA cara de bola"
+    tema = "Acuse de cancelación"
+    comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
+
+    FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
+
+    @venta = Venta.find_by(factura: @factura.id)
+    #respond_to do |format|
+      #Por si quieren tambien afectar el inventario.
+      if params[:rbtn] == "rbtn_factura_venta"
+        categoria = params[:cat_cancelacion]
+        cat_venta_cancelada = CatVentaCancelada.find(categoria)
+        #venta = params[:venta]
+        observaciones = params[:observaciones]
+        @items = @venta.item_ventas
+        #Changos que hacen estas cosas aquí? jajaja
+        require 'timbrado'
+        require 'nokogiri'
+        require 'byebug'
+
+        if @venta.update(:observaciones => observaciones, :status => "Cancelada")
+          #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
+          movimiento_caja = @venta.movimiento_caja_sucursal
+
+          #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
+          if movimiento_caja.tipo_pago.eql?("efectivo")
+            caja_sucursal = @venta.caja_sucursal
+            saldo = caja_sucursal.saldo
+            saldoActualizado = saldo - @venta.montoVenta
+            caja_sucursal.saldo = saldoActualizado
+            caja_sucursal.save
+          end
+
+          #Se elimina el movimiento de caja relacionado con la venta
+          movimiento_caja.destroy
+
+          #Por cada item de venta, se crea un registro de venta cancelada.
+          @venta.item_ventas.each do |itemVenta|
+            ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
+            ventaCancelada.save
+            itemVenta.status = "Con devoluciones"
+            itemVenta.save
+          end
+        end
+        #format.json { head :no_content}
+        #format.js
+      #else
+        #Agregar extenciones...y transacciones.
+        #format.html { redirect_to facturas_index_path, notice: 'No se pudo cancelar la venta de la factura, intente cancelarla desde el módulo de ventas..' }
+      #end
+    end
+    respond_to do |format| # Agregar mensajes después de las transacciones
+      format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
+    end
   end
 
   #NOTAS DE CRÉDITO
