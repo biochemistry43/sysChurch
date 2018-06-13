@@ -8,7 +8,7 @@
   <hr>
   <%if @consulta%>
   <div class="col-md-12 col-sm-12 col-xs-12">
-    <% if @ventas_sin_facturar%>
+    <% if @ventas_sin_facturar.length > 1 %>
     <!-- Despliega los resultados encontrados en la búsqueda -->
     <div class="row">
 
@@ -110,7 +110,7 @@
         <% end %>
       </div>
 
-   <% if @consulta && @ventas_sin_facturar%>
+   <% if @consulta && @ventas_sin_facturar.length > 0%>
    <!--Se muestra el botón para generar la factura global con las operaciones simplificadas-->
 <%= form_tag({ controller: "facturas", action: "factura_global_publico_gral" }, {:class=> "form-horizontal", :method => :post}) do %>
   <hr style="border-style: solid; border-width: 2px;">
