@@ -447,13 +447,22 @@ class FacturasController < ApplicationController
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         txtVariable_nombCliente = @factura.cliente.nombre_completo # =>nombreCliente
-        p "NOMBRE FISCAL"
-        p txtVariable_nombCliente
 
         txtVariable_fechaVenta =  @venta.fechaVenta # => fechaVenta
         txtVariable_consecutivoVenta = @venta.consecutivo # => númeroVenta
-        txtVariable_montoVenta = @venta.montoVenta # => totalVenta
+        #txtVariable_montoVenta = @venta.montoVenta # => totalVenta
         txtVariable_folioVenta = @venta.folio # => folioVenta
+        #texto variable para las facturas
+        txtVariable_fechaFactura = @factura.fecha_expedicion
+        txtVariable_numeroFactura = @factura.consecutivo
+        txtVariable_folioFactura = @factura.folio
+
+        #Datos de la dirección de la empresa
+        txtVariable_negocio= @factura.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
+        #En cuanto a los datos de la sucursal
+        txtVariable_sucursal = @factura.sucursal.nombre
+        txtVariable_email = @factura.sucursal.email
+        txtVariable_telefono = @factura.sucursal.telefono
 
         txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
         #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
@@ -463,8 +472,18 @@ class FacturasController < ApplicationController
         mensaje_email = mensaje_email.gsub(/(\{\{fechaVenta\}\})/, "#{txtVariable_fechaVenta}")
         mensaje_email = mensaje_email.gsub(/(\{\{numeroVenta\}\})/, "#{txtVariable_consecutivoVenta}")
         mensaje_email = mensaje_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_folioVenta}")
-        mensaje_email = mensaje_email.gsub(/(\{\{nombreNegocio\}\})/, "#{txtVariable_nombNegocio}")
-        #mensage_email = mensage_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_emailNegocio}")
+        #Datos de la factura.
+        mensaje_email = mensaje_email.gsub(/(\{\{fechaFactura\}\})/, "#{txtVariable_fechaFactura}")
+        mensaje_email = mensaje_email.gsub(/(\{\{numeroFactura\}\})/, "#{txtVariable_numeroFactura}")
+        mensaje_email = mensaje_email.gsub(/(\{\{folioFactura\}\})/, "#{txtVariable_folioFactura}")
+        #Dirección y dtos de contacto del changarro
+        mensaje_email = mensaje_email.gsub(/(\{\{negocio\}\})/, "#{txtVariable_negocio}")
+        mensaje_email = mensaje_email.gsub(/(\{\{sucursal\}\})/, "#{txtVariable_sucursal}")
+        mensaje_email = mensaje_email.gsub(/(\{\{email\}\})/, "#{txtVariable_email}")
+        mensaje_email = mensaje_email.gsub(/(\{\{telefono\}\})/, "#{txtVariable_telefono}")
+
+        mensaje = current_user.negocio.config_comprobante.msg_email
+
 
         destinatario = params[:destinatario]
         tema = current_user.negocio.config_comprobante.asunto_email
@@ -984,7 +1003,7 @@ class FacturasController < ApplicationController
       #texti variable para las ventas
       txtVariable_fechaVenta =  venta.fechaVenta # => fechaVenta
       txtVariable_consecutivoVenta = venta.consecutivo # => númeroVenta
-      txtVariable_montoVenta = venta.montoVenta # => totalVenta
+      #txtVariable_montoVenta = venta.montoVenta # => totalVenta
       txtVariable_folioVenta = venta.folio # => folioVenta
 
       #texto variable para las facturas
