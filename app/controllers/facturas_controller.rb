@@ -57,24 +57,20 @@ class FacturasController < ApplicationController
         @serie = folio_default
       end
       #RECEPTOR
-      #@rfc_emisor_present=@venta.cliente.rfc.present?
+      @email_receptor = @venta.cliente.email #Dirección para el envío de los comprobantes
+      #Datos requeridos por el SAT por eso son de ley para la factura, pero cuando se trata de facturar una venta echa al publico en genera resulta que no existen datos fiscales.
+      @rfc_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.rfc : ""
+      @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.nombreFiscal : ""
 
-      @rfc_receptor_f=@venta.cliente.datos_fiscales_cliente.rfc
-      @nombre_fiscal_receptor_present=@venta.cliente.nombreFiscal.present?
-      @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente.nombreFiscal
-      @email_receptor = @venta.cliente.email
-
-      @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : " "
-      @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : " "
-      @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : " "
-      @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : " "
-      @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : " "
-      @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : " "
-      @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : " "
+      @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : ""
+      @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : ""
+      @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : ""
+      @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : ""
+      @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : ""
+      @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : ""
+      @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : ""
       #@referencia_referencia_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
-      @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
-
-
+      @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : ""
 
       @uso_cfdi_receptor_f=UsoCfdi.all
 
@@ -237,46 +233,28 @@ class FacturasController < ApplicationController
         domicilioFiscal: domicilioEmisor,
         expedidoEn: expedidoEn
       })
+
+      #Datos del receptor
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
-      hash_domicilioReceptor = {}
-      if @venta.cliente.datos_fiscales_cliente
-        hash_domicilioReceptor[:calle] = @venta.cliente.datos_fiscales_cliente.calle ? @venta.cliente.datos_fiscales_cliente.calle : " "
-        hash_domicilioReceptor[:noExterior] = @venta.cliente.datos_fiscales_cliente.numExterior ? @venta.cliente.datos_fiscales_cliente.numExterior : " "
-        hash_domicilioReceptor[:noInterior] = @venta.cliente.datos_fiscales_cliente.numInterior ? @venta.cliente.datos_fiscales_cliente.numInterior :  " "
-        hash_domicilioReceptor[:colonia] = @venta.cliente.datos_fiscales_cliente.colonia ? @venta.cliente.datos_fiscales_cliente.numInterior : " "
-        hash_domicilioReceptor[:localidad] = @venta.cliente.datos_fiscales_cliente.localidad ? @venta.cliente.datos_fiscales_cliente.localidad : " "
-        #referencia: current_user.negocio.datos_fiscales_negocio.,
-        hash_domicilioReceptor[:municipio] = @venta.cliente.datos_fiscales_cliente.municipio ? @venta.cliente.datos_fiscales_cliente.municipio  : " "
-        hash_domicilioReceptor[:estado] = @venta.cliente.datos_fiscales_cliente.estado ? @venta.cliente.datos_fiscales_cliente.estado : " "     #pais: current_user.negocio.datos_fiscales_negocio.,
-        hash_domicilioReceptor[:codigoPostal] = @venta.cliente.datos_fiscales_cliente.codigo_postal ? @venta.cliente.datos_fiscales_cliente.codigo_postal : " "
-      end
-      domicilioReceptor = CFDI::DatosComunes::Domicilio.new(hash_domicilioReceptor)
+      #Los datos de facturación del receptor son recibidos como paramatros porque puede ser facturado a otro fulano distino al que hizo la compra o haber sido hecha al público en general.
 
-      #Atributos deel receptor
+      domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
+        calle: params[:calle_receptor_vf],
+        noExterior: params[:no_Exterior_vf],
+        noInterior:params[:no_Interior_vf],
+        colonia: params[:colonia_receptor_vf],
+        localidad: params[:localidad_receptor_vf],
+        municipio: params[:municipio_receptor_vf],
+        estado: params[:estado_receptor_vf],
+        codigoPostal: params[:cp_receptor_vf],
+        referencia: params[:referencia_receptor_vf]
+        })
+
       @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
-      if @venta.cliente.datos_fiscales_cliente.rfc.present?
-        rfc_receptor_f=@venta.cliente.datos_fiscales_cliente.rfc
-      else
-        #Si no está registrado el R.F.C del cliente, se registra asi de facil jaja
-        rfc_receptor_f=params[:rfc_input]
-        cliente_id=@venta.cliente.id
-        @cliente=Cliente.find(cliente_id)
-        @cliente.update(:rfc=>params[:rfc_input])
-
-      end
-      #El mismo show q  el rfc, si el sistema detecta que el cliente no está registrado con su nombre fiscal, le pedirá al usuario que lo ingrese.
-      if @venta.cliente.datos_fiscales_cliente.nombreFiscal.present?
-        nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente.nombreFiscal
-      else
-        nombre_fiscal_receptor_f=params[:nombre_fiscal_receptor_f]
-        cliente_id=@venta.cliente.id
-        @cliente=Cliente.find(cliente_id)
-        @cliente.update(:nombreFiscal=>nombre_fiscal_receptor_f)
-
-      end
       factura.receptor = CFDI::Receptor.new({
-        rfc: rfc_receptor_f,
-         nombre: nombre_fiscal_receptor_f,
+        #Datos requeridos si o si son: el rfc, nombre fiscal y el uso del CFDI.
+         rfc: params[:rfc_input],
+         nombre: params[:nombre_fiscal_receptor_vf],
          UsoCFDI:@usoCfdi.clave, #CATALOGO
          domicilioFiscal: domicilioReceptor
         })
@@ -290,6 +268,7 @@ class FacturasController < ApplicationController
                         Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
                         Descripcion: c.articulo.nombre
                         }
+
         importe_concepto = (c.precio_venta * c.cantidad)#Incluye impuestos(si esq), descuentos(si esq)...
         if c.articulo.impuesto.present? #Impuestos a la inversa
           tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
@@ -380,7 +359,7 @@ class FacturasController < ApplicationController
       codigoQR=factura.qr_code xml_timbrado
       cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
       logo=current_user.negocio.logo
-      uso_cfdi_descripcion=@usoCfdi.descripcion
+      uso_cfdi_descripcion = @usoCfdi.descripcion
       cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
       cve_nombre_metodo_pago = params[:metodo_pago]
       #Para la clave y nombre del regimen fiscal
@@ -392,8 +371,9 @@ class FacturasController < ApplicationController
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio}
-      hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
-      hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
+
+      #hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
+      #hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
@@ -405,7 +385,7 @@ class FacturasController < ApplicationController
       #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
       #Directorios
       dir_negocio = current_user.negocio.nombre
-      dir_cliente = nombre_fiscal_receptor_f
+      dir_cliente = params[:nombre_fiscal_receptor_vf]
 
       #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
       #fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
@@ -441,13 +421,40 @@ class FacturasController < ApplicationController
         archivo.write (xml)
         archivo.close
 
-        #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
+        #7.- SE SALVA EN LA BASE DE DATOS
+          #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
+          folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
+          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])
+
+          @factura.folio_fiscal = folio_fiscal_xml
+          @factura.ruta_storage =  ruta_storage
+
+          if @factura.save
+          current_user.facturas<<@factura
+          current_user.negocio.facturas<<@factura
+          current_user.sucursal.facturas<<@factura
+          forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
+          forma_pago.facturas << @factura
+
+          #Se factura a nombre del cliente que realizó la compra en el negocio.
+          cliente_id=@venta.cliente.id
+          Cliente.find(cliente_id).facturas << @factura
+
+          @factura.ventas <<  @venta
+
+          end
+
+        #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        txtVariable_nombCliente = @venta.cliente.nombre_completo # =>nombreCliente
+        txtVariable_nombCliente = @factura.cliente.nombre_completo # =>nombreCliente
+        p "NOMBRE FISCAL"
+        p txtVariable_nombCliente
+
         txtVariable_fechaVenta =  @venta.fechaVenta # => fechaVenta
         txtVariable_consecutivoVenta = @venta.consecutivo # => númeroVenta
         txtVariable_montoVenta = @venta.montoVenta # => totalVenta
         txtVariable_folioVenta = @venta.folio # => folioVenta
+
         txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
         #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
         mensaje = current_user.negocio.config_comprobante.msg_email
@@ -471,28 +478,7 @@ class FacturasController < ApplicationController
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
 
 
-        #8.- SE SALVA EN LA BASE DE DATOS
-          #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
-          folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])
 
-          @factura.folio_fiscal = folio_fiscal_xml
-          @factura.ruta_storage =  ruta_storage
-
-          if @factura.save
-          current_user.facturas<<@factura
-          current_user.negocio.facturas<<@factura
-          current_user.sucursal.facturas<<@factura
-          forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
-          forma_pago.facturas << @factura
-
-          #Se factura a nombre del cliente que realizó la compra en el negocio.
-          cliente_id=@venta.cliente.id
-          Cliente.find(cliente_id).facturas << @factura
-
-          @factura.ventas <<  @venta
-
-          end
 
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"

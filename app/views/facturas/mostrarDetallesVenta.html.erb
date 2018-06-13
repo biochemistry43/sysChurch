@@ -259,7 +259,7 @@
                   </div>
 
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, disabled:true }%>
+                      <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, readonly: true }%>
                     </div>
                 </div>
 
@@ -269,7 +269,7 @@
                   </div>
 
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, disabled:true }%>
+                      <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, readonly: true  }%>
                     </div>
                 </div>
               </div>
@@ -286,7 +286,7 @@
                     </div>
 
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field',value:@calle_receptor_f, disabled:true }%>
+                      <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field',value:@calle_receptor_f, readonly: true }%>
                     </div>
                   </div>
 
@@ -295,14 +295,14 @@
                         <%= label_tag :no_interior_receptor_vf,'No. Interior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Interior_vf", nil, {class: "form-control text_field", value: @noInterior_receptor_f })%>
+                        <%= number_field_tag(:no_Interior_vf, nil, {class: "form-control text_field", value: @noInterior_receptor_f, readonly: true })%>
                       </div>
 
                       <div class="col-md-3 col-sm-3 col-xs-12">
                         <%= label_tag :no_exterior_receptor_vf,'No. Exterior:', class:"control-label"%>
                       </div>
                       <div class="col-md-3 col-sm-3 col-xs-12">
-                        <%= number_field_tag("no_Exterior_vf", nil, {class: "form-control text_field", value: @noExterior_receptor_f })%>
+                        <%= number_field_tag(:no_Exterior_vf, nil, {class: "form-control text_field", value: @noExterior_receptor_f, readonly: true  })%>
                       </div>
                   </div>
                 </div>
@@ -313,7 +313,7 @@
                       <%= label_tag :colonia,'Colonia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, disabled:true }%>
+                      <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, readonly: true  }%>
                     </div>
                   </div>
 
@@ -322,7 +322,7 @@
                       <%= label_tag :localidad,'Localidad:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, disabled:true }%>
+                      <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, readonly: true }%>
                     </div>
                   </div>
                 </div>
@@ -334,7 +334,7 @@
                       <%= label_tag :municipio,'Municipio:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, disabled:true }%>
+                      <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, readonly: true  }%>
                     </div>
                   </div>
 
@@ -343,7 +343,7 @@
                       <%= label_tag :estado,'Estado:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, disabled:true }%>
+                      <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, readonly: true }%>
                     </div>
                   </div>
                 </div>
@@ -354,7 +354,7 @@
                       <%= label_tag :referencia,'Referencia:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :referencia_receptor_vf, nil,{class:'form-control text_field',value:@referencia_receptor_f, disabled:true }%>
+                      <%= text_field_tag :referencia_receptor_vf, nil,{class:'form-control text_field',value:@referencia_receptor_f, readonly: true }%>
                     </div>
                   </div>
 
@@ -363,7 +363,7 @@
                       <%= label_tag :cp,'C.P.:', class:"control-label"%>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, disabled:true }%>
+                      <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, readonly: true  }%>
                     </div>
                   </div>
                 </div>
