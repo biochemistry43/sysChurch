@@ -100,6 +100,7 @@
       <table id="tabla_items_encontrados" class="table table-striped responsive-utilities jambo_table data-table">
         <thead>
           <tr>
+            <th style='text-align:center;'></th>
             <th style='text-align:center;'>Clave producto</th>
             <th style='text-align:center;'>Producto</th>
             <th style='text-align:center;'>Cantidad</th>
@@ -121,7 +122,9 @@
           <% else %>
             <tr>
           <% end %>
-
+            <td>
+              <input type="checkbox" value="<%= item.id %>" name="devoluciones[]" id="devolcion_<%= item.id %>">
+            </td>
             <td style='text-align:center;'><%= item.articulo.clave %></td>
             <td style='text-align:center;'><%=item.articulo.nombre%></td>
             <td style='text-align:center;'><%= item.cantidad %></td>
