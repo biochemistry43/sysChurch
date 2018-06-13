@@ -484,6 +484,7 @@ class FacturasController < ApplicationController
 
         mensaje = current_user.negocio.config_comprobante.msg_email
 
+
         destinatario = params[:destinatario]
         tema = current_user.negocio.config_comprobante.asunto_email
         #file_name = "#{consecutivo}_#{fecha_file}"
