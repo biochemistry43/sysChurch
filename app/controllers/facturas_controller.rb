@@ -21,109 +21,140 @@ class FacturasController < ApplicationController
   end
 
   def mostrarDetallesVenta
-
     @venta = current_user.negocio.ventas.find(params[:id]) if params.key?(:id)
-
     @@venta = @venta
     @consulta = true #determina si se realizó una consulta
-
     #La venta debe de ser del mismo negocio o mostrará que no hay ventas registradas con X folio de venta
     if @venta && current_user.negocio.id == @venta.negocio.id
-
-      #Una venta solo se puede facturar una vez, pero si la factura fue cancelada se puede volver a facturar la misma venta.
-      @ventaFacturadaNoSi = true if @venta.factura.blank? || @venta.factura.estado_factura == "Cancelada"
-      @ventaCancelada = @venta.status.eql?("Cancelada")
-
-      unless @ventaFacturadaNoSi
-        @fechaVentaFacturada = @venta.factura.fecha_expedicion
-        @folioVentaFacturada = @venta.factura.folio #Folio de la factura de la venta
-      end
-
-      @consecutivo = 0
-      if current_user.sucursal.facturas.last
-        @consecutivo = current_user.sucursal.facturas.last.consecutivo
-        if @consecutivo
-          @consecutivo += 1
-        end
-      else
-        @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
-      end
-      #Temporalmente...
-      if current_user.sucursal.clave.present?
-        claveSucursal = current_user.sucursal.clave
-        @serie = claveSucursal + "F"
-      else
-        folio_default="F"
-        @serie = folio_default
-      end
-      #RECEPTOR
-      @email_receptor = @venta.cliente.email #Dirección para el envío de los comprobantes
-      #Datos requeridos por el SAT por eso son de ley para la factura, pero cuando se trata de facturar una venta echa al publico en genera resulta que no existen datos fiscales.
-      @rfc_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.rfc : ""
-      @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.nombreFiscal : ""
-
-      @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : ""
-      @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : ""
-      @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : ""
-      @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : ""
-      @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : ""
-      @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : ""
-      @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : ""
-      #@referencia_referencia_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
-      @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : ""
-
-      @uso_cfdi_receptor_f=UsoCfdi.all
-
-      #COMPROBANTE
-      #@c_unidadMedida_f=current_user.negocio.unidad_medidas.cla
-
-      #para mostrar el subtotal.
-      @subtotal = 0.00
-      @iva =0.00
-      @ieps = 0.00
-      @itemsVenta = @venta.item_ventas
-      @itemsVenta.each do |c|
-        importe_concepto = (c.precio_venta * c.cantidad) #Incluye impuestos(si esq), descuentos(si esq)...
-        if c.articulo.impuesto.present? #No imposta de que tipo de impuestos sean
-          tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
-          #Se calcula el precio bruto de cada concepto
-          base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
-          importe_impuesto_concepto = (base_gravable * tasaOCuota)
-          #valorUnitario = base_gravable / c.cantidad
-          @subtotal += base_gravable
-
-          if c.articulo.impuesto.tipo == "Federal"
-            if c.articulo.impuesto.nombre == "IVA"
-              @iva = @iva += importe_impuesto_concepto
-            elsif c.articulo.impuesto.nombre == "IEPS"
-              @ieps = importe_impuesto_concepto
-            end
-            #Los locales que show? luego luego jaja
+      unless @venta.status.eql?("Cancelada") #Quiere decir que puede estar Activa o con devoluciones
+        p "VENTA ACTIVA O CON DEVOLUCIONES"
+        @ventaCancelada = false
+        @monto_devolucion = 0
+        #Puede ser el caso que una venta tenga devoluciones, si tiene devoluciones de monto menor al de la venta si se puede facturar.
+        if @venta.status.eql?("Con devoluciones")#@venta.venta_canceladas.size > 0
+          @monto_devolucion = 0
+          @venta.venta_canceladas.each do |devolucion|
+            @monto_devolucion += devolucion.monto
           end
         else
-          @subtotal += importe_concepto
+          @monto_devolucion = 0
+        end # Fin de devoluciones
+
+        #Solo si el monto de la suma de todas las devoluciones es inferior al monto de la venta
+        unless @monto_devolucion == @venta.montoVenta
+          p "EL MONTO ES EL MISMO DE LA VENTA ORIGINAL"
+          @ventaConDevolucionTotal = false
+          #@devoluciones = false
+          @ventaFacturada = false
+          @ventaParaFacturar = false
+          if @venta.factura.present?
+            @ventaFacturada = true
+            if @venta.factura.estado_factura == "Activa"
+              @ventaFacturaActiva = true
+              #Las fechas solo para mostrar descripción de que la venta ya está facturada...
+              @fechaVentaFacturada = @venta.factura.fecha_expedicion
+              @folioVentaFacturada = @venta.factura.folio
+            else
+              @ventaFacturaActiva = false
+            end #Fin de comprobación de venta con factura en estado activa
+          end
+          #Pudo haberse facturado anteriormente pero se canceló la factura sin cancelar la venta.
+          #puede presentar devoluciones siempre y cuando el monto de las devoluciones no sea igual al al monto de la venta
+          #Es una venta que no ha sido facturada ninguna vez.
+          if (@ventaFacturaActiva == false && @ventaFacturada ) || @ventaFacturada == false
+            p "SIN FACTURA"
+            @ventaParaFacturar = true
+            @consecutivo = 0
+            if current_user.sucursal.facturas.last
+              @consecutivo = current_user.sucursal.facturas.last.consecutivo
+              if @consecutivo
+                @consecutivo += 1
+              end
+            else
+              @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+            end
+            #Temporalmente...
+            if current_user.sucursal.clave.present?
+              claveSucursal = current_user.sucursal.clave
+              @serie = claveSucursal + "F"
+            else
+              folio_default="F"
+              @serie = folio_default
+            end
+            #RECEPTOR
+            @email_receptor = @venta.cliente.email #Dirección para el envío de los comprobantes
+            #Datos requeridos por el SAT por eso son de ley para la factura, pero cuando se trata de facturar una venta echa al publico en genera resulta que no existen datos fiscales.
+            @rfc_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.rfc : ""
+            @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.nombreFiscal : ""
+
+            @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : ""
+            @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : ""
+            @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : ""
+            @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : ""
+            @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : ""
+            @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : ""
+            @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : ""
+            #@referencia_referencia_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
+            @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : ""
+
+            @uso_cfdi_receptor_f=UsoCfdi.all
+
+            #COMPROBANTE
+            #@c_unidadMedida_f=current_user.negocio.unidad_medidas.cla
+            #para mostrar el subtotal.
+            @subtotal = 0.00
+            @iva =0.00
+            @ieps = 0.00
+            @itemsVenta = @venta.item_ventas
+            @itemsVenta.each do |c|
+              importe_concepto = (c.precio_venta * c.cantidad) #Incluye impuestos(si esq), descuentos(si esq)...
+              if c.articulo.impuesto.present? #No imposta de que tipo de impuestos sean
+                tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
+                #Se calcula el precio bruto de cada concepto
+                base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+                importe_impuesto_concepto = (base_gravable * tasaOCuota)
+                #valorUnitario = base_gravable / c.cantidad
+                @subtotal += base_gravable
+
+                if c.articulo.impuesto.tipo == "Federal"
+                  if c.articulo.impuesto.nombre == "IVA"
+                    @iva = @iva += importe_impuesto_concepto
+                  elsif c.articulo.impuesto.nombre == "IEPS"
+                    @ieps = importe_impuesto_concepto
+                  end
+                  #Los locales que show? luego luego jaja
+                end
+              else
+                @subtotal += importe_concepto
+              end
+            end
+            #@iva = '%.2f' % @iva.round(2)
+            #@ieps = '%.2f' % @ieps.round(2)
+            @subtotal = '%.2f' % @subtotal.round(2)
+            #@descuento_string = '%.2f' % descuento.round(2)
+            #por el momento el descuento es:
+            descuento = 0.00
+            @descuento_string = '%.2f' % descuento.round(2)
+            @total_string = '%.2f' % @venta.montoVenta.round(2)
+
+            #decimal = format('%.2f', @venta.montoVenta).split('.')
+            decimal = '%.2f' %  @venta.montoVenta.round(2)
+            @total_en_letras="( #{@venta.montoVenta.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
+            @fechaVenta=  @venta.fechaVenta
+            #@itemsVenta  = @venta.item_ventas
+            @@itemsVenta=@itemsVenta
+          end
+          #::::::::::::::::
+        else
+          p "LA VENTA FUE COMPLETAMENTE DEVUELTA"
+          @ventaConDevolucionTotal = true
         end
+      else
+        p "VENTA CANCELADA"
+        @ventaCancelada = true
       end
-      #@iva = '%.2f' % @iva.round(2)
-      #@ieps = '%.2f' % @ieps.round(2)
-      @subtotal = '%.2f' % @subtotal.round(2)
-      #@descuento_string = '%.2f' % descuento.round(2)
-      #por el momento el descuento es:
-      descuento = 0.00
-      @descuento_string = '%.2f' % descuento.round(2)
-      @total_string = '%.2f' % @venta.montoVenta.round(2)
-
-      #decimal = format('%.2f', @venta.montoVenta).split('.')
-      decimal = '%.2f' %  @venta.montoVenta.round(2)
-      @total_en_letras="( #{@venta.montoVenta.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
-      @fechaVenta=  @venta.fechaVenta
-
-      #@itemsVenta  = @venta.item_ventas
-      @@itemsVenta=@itemsVenta
-    else
-      @folio = @venta.folio
-    end
-  end
+    end #Fin de la comprobación de existencia del folio de la venta del negocio
+  end #Fin de  la acción delcontrolador
 
   def facturarVenta
     #POST
