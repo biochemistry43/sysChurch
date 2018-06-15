@@ -13,10 +13,10 @@
     <!-- Despliega los resultados encontrados en la búsqueda -->
     <div class="row">
 
-      <div class="alert alert-warning alert-dismissable content">
+      <div class="alert alert-warning alert-dismissable" id="msj_fg">
         <button type="button" class="close" data-dismiss="alert" >&times;</button>
         <% if  @ventas_sin_facturar.length > 1%>
-            Se agregarán: <span style="color:black; font-size: 30px;"> <%= @ventas_sin_facturar.length %></span> ventas a la factura global
+            Se agregarán: <span style="color:black; font-size: 30px;" > <%= @ventas_sin_facturar.length %></span> ventas a la factura global
             del <span style="color:black; font-size: 16px;"> <%= @fechaOne %></span>
             <%if @opcion_global == "Facturar ventas por periodo"%>
               al <span style="color:black; font-size: 16px;"> <%= @fechaTwo %></span>
@@ -30,7 +30,7 @@
             <% end %>.
         <% end %>
       </div>
-      <hr>
+
     </div>
 
     <% else %>
@@ -116,10 +116,30 @@
 <%= form_tag({ controller: "facturas", action: "factura_global_publico_gral" }, {:class=> "form-horizontal", :method => :post}) do %>
   <hr style="border-style: solid; border-width: 2px;">
    <div class="col-md-12 col-sm-12 col-xs-12">
+     <div class="row">
+       <div class="col-md-12" style="color: gray;">
+          Se agregarán: <span style="color:#5B7ECC; font-size: 16px;" id="cantidad_ventas"> <%= @ventas_sin_facturar.length %> </span>
+         <div class="col-md-12">
+          Subtotal: <span style="color:#5B7ECC; font-size: 16px;" id="subtotal_fg"> </span>
+         </div>
+         <div class="col-md-12">
+          Total IVA: <span style="color:#5B7ECC; font-size: 16px;" id="total_iva_fg"> </span>
+         </div>
+         <div class="col-md-12">
+          Total IEPS: <span style="color:#5B7ECC; font-size: 16px;" id="total_ieps_fg"> </span>
+         </div>
+         <div class="col-md-12">
+          Total Traslados: <span style="color:#5B7ECC; font-size: 16px;" id="total_traslados_fg"> </span>
+         </div>
+         <div class="col-md-12">
+          TOTAL: <span style="color:#5B7ECC; font-size: 16px;" id="monto_ventas_fg"> </span>
+         </div>
+       </div>
+     </div>
     <div class="row">
 
       <div class="div-add-button">
-          <%= submit_tag 'Generar factura global', {:class=>"btn btn-primary btn-lg active"}%>
+          <%= submit_tag 'Generar factura global', {:class=>"btn btn-primary btn-lg active", id: "boton_generar_fg"}%>
       </div>
       <div>
         <div class="tab-pane" id="detalles">
@@ -177,7 +197,8 @@
 
                 <tr>
                   <td>
-                    <input type="checkbox" value="<%= venta_fg.id %>" name="ventas[]" id="venta_<%= venta_fg.id %>">
+                    <!--Concateno todos los valores de las etiquetas <td> para mostrar el total por todas las ventas seleccionadas de..-->
+                    <input type="checkbox" value="<%=venta_fg.id%>_<%=valor_unitario_fg.round(2)%>_<%=total_iva.round(2)%>_<%=total_ieps.round(2)%>_<%=total_impuestos_traslados.round(2)%>_<%=(venta_fg.montoVenta).round(2)%>" name="ventas[]" checked="checked" id="venta_<%= venta_fg.id %>">
                   </td>
                   <td> <%= venta_fg.folio %> </td>
                   <td> <%= venta_fg.fechaVenta%> </td>
@@ -231,8 +252,108 @@
           }
       });
 
+      var valor_unitario = 0.0
+      var subtotal = 0.0
+
+      var iva = 0.0
+      var total_iva = 0.0
+
+      var ieps = 0.0
+      var total_ieps = 0.0
+
+      var traslados = 0.0
+      var total_traslados = 0.0
+
+      var monto_venta = 0.0
+      var monto_ventas = 0.0
+
+      $("input:checkbox").each(function() {
+        var cadena_valores = $(this).val();
+        if($(this).is(':checked')){
+          //Para mostrar el subtotal de todas las ventas seleccionadas
+          valor_unitario = parseFloat(cadena_valores.split('_')[1]);
+          subtotal = subtotal + valor_unitario
+          //Para mostrar el total de IVA de todas las ventas seleccionadas
+          iva = parseFloat(cadena_valores.split('_')[2]);
+          total_iva = total_iva + iva
+          //Para mostrar el total de IEPS de todas...
+          ieps = parseFloat(cadena_valores.split('_')[3]);
+          total_ieps = total_ieps + ieps
+          //Para mostrar el total de traslados...
+          traslados = parseFloat(cadena_valores.split('_')[4]);
+          total_traslados = total_traslados + traslados
+          //Para mostrar el total de la factura global...
+          monto_venta = parseFloat(cadena_valores.split('_')[5]);
+          monto_ventas = monto_ventas + monto_venta
+        }
+      })
+      //Se muestra los totales iniciales al cargar...
+      //alert(subtotal);
+      $('#subtotal_fg').text(subtotal);
+      $('#total_iva_fg').text(total_iva);
+      $('#total_ieps_fg').text(total_ieps);
+      $('#total_traslados_fg').text(total_traslados);
+      $('#monto_ventas_fg').text(monto_ventas);
+
+      $('input:checkbox').on('click',function(){
+        var cadena_valores = $(this).val();
+          //Para mostrar el subtotal de todas las ventas seleccionadas
+          valor_unitario = parseFloat(cadena_valores.split('_')[1]);
+          //Para mostrar el total de IVA de todas las ventas seleccionadas
+          iva = parseFloat(cadena_valores.split('_')[2]);
+          //Para mostrar el total de IEPS de todas...
+          ieps = parseFloat(cadena_valores.split('_')[3]);
+          //Para mostrar el total de traslados...
+          traslados = parseFloat(cadena_valores.split('_')[4]);
+          //Para mostrar el total de la factura global...
+          monto_venta = parseFloat(cadena_valores.split('_')[5]);
+
+          if ($(this).is(':checked')){
+            subtotal = subtotal + valor_unitario
+            total_iva = total_iva + iva
+            total_ieps = total_ieps + ieps
+            total_traslados = total_traslados + traslados
+            monto_ventas = monto_ventas + monto_venta
+            //alert(subtotal);
+
+          }else{
+            subtotal = subtotal - valor_unitario
+            total_iva = total_iva - iva
+            total_ieps = total_ieps - ieps
+            total_traslados = total_traslados - traslados
+            monto_ventas = monto_ventas - monto_venta
+            //alert(subtotal);
+          }
+          //Se reemplazan los valores en pantalla
+          $('#subtotal_fg').text(subtotal);
+          $('#total_iva_fg').text(total_iva);
+          $('#total_ieps_fg').text(total_ieps);
+          $('#total_traslados_fg').text(total_traslados);
+          $('#monto_ventas_fg').text(monto_ventas);
+      });
+
+      //Para mostrar el número de ventas que se incluirán en la factura global
+      $('input:checkbox').on('click',function(){
+
+        var ventas_seleccionadas = 0
+        cadena_valores = $(this).val();
+
+        $("input:checkbox").each(function() {
+          if($(this).is(':checked')){
+
+            ventas_seleccionadas += 1
+          }
+        })
+        $('#cantidad_ventas').text(ventas_seleccionadas);
+      });
+
+
+      $(document).ready(function() {
+        setTimeout(function() {
+            $("#msj_fg").fadeOut(1500);
+        },10000);
+      });
+
     });
-
-
   </script>
 </div>
