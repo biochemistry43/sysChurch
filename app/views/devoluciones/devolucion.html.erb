@@ -10,45 +10,47 @@
 
   <!-- Esta sección solamente se muestra si se encontró una venta y si se determina que se está
   haciendo una consulta -->
-  <% if @venta %>
-    <% if @consulta && @itemsVenta%>
+  <div class="row">
+  <% if@consulta %>
+    <% if @venta %><!--&& @itemsVenta%-->
       <!-- Despliega los resultados encontrados en la búsqueda -->
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          <div class="col-md-12">
-            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+      <% if @ventaCancelada == false %>
+        <% if @ventaConDevolucionTotal  == false %>
+          <div class="row">
+            <div class="col-md-12" style="color: gray;">
+              Se encontraron <span style="color:#5B7ECC; font-size: 20px;"><%= @itemsVenta.size %></span> productos en esta venta.
+            </div>
           </div>
-        </div>
-      </div>
-
-      <hr>
-    <% else %>
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          No hay ventas registradas con este folio
-        </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col-md-12" style="color: gray;">
-          <div class="col-md-12">
-            Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @folio %></span>
+          <div class="row">
+            <div class="col-md-12" style="color: gray;">
+              <div class="col-md-12">
+                Folio Venta: <span style="color:#5B7ECC; font-size: 16px;"> <%= @venta.folio %></span>
+              </div>
+            </div>
           </div>
+          <hr>
+          <% else %>
+          <div class="alert alert-warning alert-dismissable msj">
+            <button type="button" class="close" data-dismiss="alert" >&times;</button>
+              La venta con folio: <span style="color:black; font-size: 16px;"> <%= @venta.folio %></span>  ya fue devuelta en su totalidad.
+          </div>
+          <% end %>
+      <!--Venta cancelada -->
+      <% else%>
+        <div class="alert alert-warning alert-dismissable msj">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+            No se pueden hacer devoluciones de la venta con folio:<span style="color:black; font-size: 16px;"> <%= @venta.folio %></span>  porque la venta fue cancelada.
         </div>
-      </div>
+      <% end %>
+  <% else %>
 
-      <hr>
-    <% end %>
+    <div class="alert alert-warning alert-dismissable msj">
+      <button type="button" class="close" data-dismiss="alert" >&times;</button>
+      No hay ventas registradas con el folio: <span style="color:black; font-size: 16px;"> <%= @folio%></span>.
+    </div>
   <% end %>
-
+  <% end %>
+</div>
 
 
   <div class="row" style="margin-bottom: 30px;">
@@ -94,7 +96,9 @@
 
   <!-- La tabla de resultados sólo es visible si se está esperando el resultado de una
        consulta  -->
+  <!--% if @consulta && @venta%-->
   <% if @consulta && @venta%>
+  <% if @itemsVenta %>
   <div class="row">
     <div id="items_encontrados">
       <table id="tabla_items_encontrados" class="table table-striped responsive-utilities jambo_table data-table">
@@ -174,7 +178,7 @@
   </div>
   <%= render ("modalDevolver") %>
   <% end %>
-
+  <% end %>
   <script>
     $(document).ready(function(){
 
@@ -193,6 +197,11 @@
             "first" : "primero"
           }
         }
+      });
+      $(document).ready(function() {
+        setTimeout(function() {
+            $(".msj").fadeOut(1500);
+        },10000);
       });
 
     });

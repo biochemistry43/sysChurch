@@ -516,12 +516,41 @@ class DevolucionesController < ApplicationController
   	@consulta = false
   	if request.post?
   	  @consulta = true
-      @venta = Venta.find_by :folio=>params[:folio]
+      #@venta = Venta.find_by :folio=>params[:folio]
+      @venta = current_user.negocio.ventas.find_by :folio=>params[:folio]
       if @venta
-        @itemsVenta  = @venta.item_ventas
+        if current_user.negocio.id == @venta.negocio.id
+          unless @venta.status.eql?("Cancelada") #Quiere decir que puede estar Activa o con devoluciones
+            #p "NO ESTÁ CANCELADA"
+            @ventaCancelada = false
+            #En caso que la venta tenga devoluciones... se comprueba que aun haya algún producto sin devolver de la venta original
+            if @venta.status.eql?("Con devoluciones")#@venta.venta_canceladas.size > 0
+              @monto_devolucion = 0
+              @venta.venta_canceladas.each do |devolucion|
+                @monto_devolucion += devolucion.monto
+              end
+            else
+              @monto_devolucion = 0
+            end # Fin de devoluciones
+
+            #Solo si el monto de la suma de todas las devoluciones es inferior al monto de la venta
+            unless @monto_devolucion == @venta.montoVenta
+              #p "SE PUEDE DEVOLVER"
+              @itemsVenta  = @venta.item_ventas
+              @ventaConDevolucionTotal = false
+            else
+              #p "LA VENTA FUE COMPLETAMENTE DEVUELTA"
+              @ventaConDevolucionTotal = true
+            end
+
+          else
+            @ventaCancelada = true
+          end
+        end
       else
         @folio = params[:folio]
       end
+
   	end
   end
 
