@@ -417,64 +417,43 @@
                     </div>
                 </div>
               </div>
-              <!--Panel para para la homologación, cálculos y redondeos -->
-              <div class="panel panel-default col-md-4 col-sm-4 col-xs-12">
-                <div class="panel-body" align="right">
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                      <%= label_tag :subtotal,'Subtotal:', class:"control-label"%>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                        <%= label_tag :subtotal ,"$ " + @subtotal, class:"control-label"%>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                      <%= label_tag :descuento, 'Descuento:', class:"control-label"%>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                        <%= label_tag :descuento ,"$ " + @descuento_string, class:"control-label"%>
-                    </div>
-                  </div>
+              <!--Panel para los totales de la factura global -->
+              <div class="col-md-offset-8 col-sm-offset-8 ">
+                <table id ="table_sales" class="table table-striped responsive-utilities jambo_table data" style="margin: 20px 0; font-size: 16px;">
+                  <thead>
+                    <tr class="headings">
+                      <th colspan="2" class="column-title"> Calculos y redondeos </th>
+                    </tr>
+                  </thead>
+                  <tbody style="text-align: right;">
+                      <tr>
+                        <td> Subtotal: </td>
+                        <td > $ <%= @subtotal%> </td>
+                      </tr>
+                      <tr>
+                        <td> Descuento:  </td>
+                        <td >$ <%= @descuento_string%> </td>
+                      </tr>
+                      <tr>
+                        <td> IVA: </td>
+                        <td >  $ <%='%.2f' % @iva.round(2)%></td>
+                      </tr>
+                      <tr>
+                        <td> IEPS: </td>
+                        <td >$ <%=  '%.2f' % @ieps.round(2)%> </td>
+                      </tr>
+                      <tr>
+                        <td> TOTAL </td>
+                        <td >$ <%=  @total_string%> </td>
+                      </tr>
+                  </tbody>
+                </table>
 
-                  <%if @iva > 0%>
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                      <div class="col-md-6 col-sm-6 col-xs-6">
-                        <%= label_tag :impuesto_iva,'I.V.A.:', class:"control-label"%>
-                      </div>
-                      <div class="col-md-6 col-sm-6 col-xs-6">
-                          <%= label_tag :impuesto_iva,"$ " + '%.2f' % @iva.round(2),  class:"control-label"%>
-                      </div>
-                    </div>
-                  <%end%>
-
-                  <%if @ieps > 0%>
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                      <div class="col-md-6 col-sm-6 col-xs-6">
-                        <%= label_tag :impuesto_ieps,'I.E.P.S.:', class:"control-label"%>
-                      </div>
-                      <div class="col-md-6 col-sm-6 col-xs-6">
-                          <%= label_tag :impuesto_ieps, "$ " + '%.2f' % @ieps.round(2),  class:"control-label"%>
-                      </div>
-                    </div>
-                  <%end%>
-
-                  <div class="clearfix"></div>
-                  <hr>
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="col-md-6 col-sm-6 col-xs-6">
-                      <big><big><big><%= label_tag :total,'Total:', class:"control-label"%></big></big></big>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-6" >
-                      <big><big><big><%= label_tag :total,"$ " + @total_string, class:"control-label"%></big></big></big>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
 
             </div>
 
+            </div>
 
           <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
             <div class="text-center" id="ListPage">
