@@ -1116,8 +1116,53 @@ class FacturasController < ApplicationController
   def enviar_email #get
     #Solo se muestran los datos
     @destinatario = @factura.cliente.email
-    @mensaje = current_user.negocio.config_comprobante.msg_email
+    #@mensaje = current_user.negocio.config_comprobante.msg_email
+
     @tema = current_user.negocio.config_comprobante.asunto_email
+    #@tema.html_safe
+    venta = @factura.ventas.first
+    txtVariable_nombCliente = @factura.cliente.nombre_completo # =>No se toma de la venta por que se puede facturar a nombre de otro cuate
+    #texti variable para las ventas
+    txtVariable_fechaVenta =  venta.fechaVenta # => fechaVenta
+    txtVariable_consecutivoVenta = venta.consecutivo # => númeroVenta
+    #txtVariable_montoVenta = venta.montoVenta # => totalVenta
+    txtVariable_folioVenta = venta.folio # => folioVenta
+
+    #texto variable para las facturas
+    txtVariable_fechaFactura = @factura.fecha_expedicion # => folioVenta
+    txtVariable_numeroFactura = @factura.consecutivo # => folioVenta
+    txtVariable_folioFactura = @factura.folio# => folioVenta
+
+    #Datos de la dirección de la empresa
+    txtVariable_negocio= @factura.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
+    #En cuanto a los datos de la sucursal
+    txtVariable_sucursal = @factura.sucursal.nombre
+    txtVariable_email = @factura.sucursal.email
+    txtVariable_telefono = @factura.sucursal.telefono
+
+
+    txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
+    #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
+    mensaje = current_user.negocio.config_comprobante.msg_email
+    #msg = "Hola sr. {{nombreCliente}} le hago llegar por este medio la factura de su compra del día {{fechaVenta}}"
+    mensaje_email = mensaje.gsub(/(\{\{nombreCliente\}\})/, "#{txtVariable_nombCliente}")
+    mensaje_email = mensaje_email.gsub(/(\{\{fechaVenta\}\})/, "#{txtVariable_fechaVenta}")
+    mensaje_email = mensaje_email.gsub(/(\{\{numeroVenta\}\})/, "#{txtVariable_consecutivoVenta}")
+    mensaje_email = mensaje_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_folioVenta}")
+    #mensaje_email = mensaje_email.gsub(/(\{\{nombreNegocio\}\})/, "#{txtVariable_nombNegocio}")
+    #mensage_email = mensage_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_emailNegocio}")
+
+    mensaje_email = mensaje_email.gsub(/(\{\{fechaFactura\}\})/, "#{txtVariable_fechaFactura}")
+    mensaje_email = mensaje_email.gsub(/(\{\{numeroFactura\}\})/, "#{txtVariable_numeroFactura}")
+    mensaje_email = mensaje_email.gsub(/(\{\{folioFactura\}\})/, "#{txtVariable_folioFactura}")
+
+    #Dirección y dtos de contacto del changarro
+    mensaje_email = mensaje_email.gsub(/(\{\{negocio\}\})/, "#{txtVariable_negocio}")
+    mensaje_email = mensaje_email.gsub(/(\{\{sucursal\}\})/, "#{txtVariable_sucursal}")
+    mensaje_email = mensaje_email.gsub(/(\{\{email\}\})/, "#{txtVariable_email}")
+    mensaje_email = mensaje_email.gsub(/(\{\{telefono\}\})/, "#{txtVariable_telefono}")
+
+    @mensaje= mensaje_email
 
   end
 
