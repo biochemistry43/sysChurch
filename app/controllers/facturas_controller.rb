@@ -444,7 +444,7 @@ class FacturasController < ApplicationController
         archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
         archivo.write (xml)
         archivo.close
-=begin
+
         #7.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
@@ -467,7 +467,7 @@ class FacturasController < ApplicationController
           @factura.ventas <<  @venta
 
           end
-=end
+
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         txtVariable_nombCliente = @factura.cliente.nombre_completo # =>nombreCliente

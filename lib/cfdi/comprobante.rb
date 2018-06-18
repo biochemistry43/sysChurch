@@ -270,7 +270,7 @@ module CFDI
           #indicar cuales son los folios fiscales que incluiran en el nuevo comprobante.
           if ns[:TipoDeComprobante]=="E"
           xml.CfdiRelacionados(TipoRelacion: @cfdisrelacionados.tipoRelacion){
-            if @uuidsrelacionados.cout > 0
+            if @uuidsrelacionados.count > 0
               cont=0
               @uuidsrelacionados.each do |ff|
               xml.CfdiRelacionado(
@@ -358,7 +358,6 @@ module CFDI
             xml.Impuestos(tax_options) do
                 xml.Traslados{
                 resumen_traslados=[] #Para guardar todos los diferentes impuestos trasladados.
-
                 #Se obtienen los valores del primer impuesto traslado y se almacenan.
                 primer_impuesto_traslado = @impuestos.traslados.first
                 impuesto_it = primer_impuesto_traslado.tax #Impuesto => tax
@@ -396,6 +395,7 @@ module CFDI
 
                             if resumen_traslados[ite][0] == @impuestos.traslados[val].tax && resumen_traslados[ite][2] == @impuestos.traslados[val].rate
                               incluido = true
+                              bandera_cambio = false
                             end
                             ite += 1
                           end
