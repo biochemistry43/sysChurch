@@ -98,6 +98,25 @@ class NotaCreditosController < ApplicationController
     end
   end
 
+  def consulta_por_folio
+    @consulta = true
+    @fechas = false
+    @por_folio = true
+    @avanzada = false
+    @por_cliente= false
+
+    if request.post?
+      @folio_nc = params[:folio_nc]
+      #@facturas = Factura.find_by folio: @folio_nc
+      if can? :create, Negocio
+        @nota_creditos = current_user.negocio.nota_creditos.where(folio: @folio_nc)
+      else
+        @nota_creditos = current_user.sucursal.nota_creditos.where(folio: @folio_nc)
+      end
+    end
+  end
+
+
 
 
   #Acción para imprimir la nota de crédito

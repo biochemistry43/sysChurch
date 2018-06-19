@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'nota_creditos/show'
   get 'nota_creditos/imprimirpdf'
   post 'nota_creditos/consulta_por_fecha'
+    post 'nota_creditos/consulta_por_folio'
 
   resources :unidad_medidas
   resources :uso_cfdis

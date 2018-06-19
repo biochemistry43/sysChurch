@@ -54,7 +54,7 @@
 
         <div class="col-md-1 col-sm-5 col-xs-12">
           <div class="text-center">
-            <%= submit_tag 'Consultar facturas', {:class=>"btn btn-info"} %>
+            <%= submit_tag 'Consultar notas de crédito', {:class=>"btn btn-info"} %>
           </div>
         </div>
       <% end %>
@@ -66,11 +66,12 @@
     </button>
     <!-- Este form permite buscar las facturas de acuerdo al folio ingresado-->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_folio">
-      <%= form_tag({ controller: "facturas", action: "consulta_por_folio" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "nota_creditos", action: "consulta_por_folio" }, {:class=> "form-horizontal", :method => :post}) do %>
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
-                Filtro por folio de factura:
+
+                Filtro por folio de notas de crédito:
           </div>
         </div>
 
@@ -82,7 +83,7 @@
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= text_field_tag :folio_fact, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de factura..."} do%>
+            <%= text_field_tag :folio_nc, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de la nota..."} do%>
               <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
             <%end%>
           </div>
