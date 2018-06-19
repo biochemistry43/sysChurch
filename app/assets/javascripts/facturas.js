@@ -1,7 +1,6 @@
 $(document).ready(function(){
     $("#filtros_avanzados").click(function(e){
 
-
       if( $("#opciones_filtros_avanzados").is(":visible") ){
         $('#errorRFC2').removeClass(" has-error has-feedback");
 

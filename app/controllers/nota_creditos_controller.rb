@@ -1,6 +1,6 @@
 class NotaCreditosController < ApplicationController
   before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf]
-
+  #before_action :set_sucursales, only: [:index, :consulta_avanzada]
 
 
   # GET /nota_creditos
@@ -72,6 +72,34 @@ class NotaCreditosController < ApplicationController
     end
   end
 
+  #CONSULTAS
+
+  def consulta_por_fecha
+    @consulta = true
+    @fechas=true
+    @por_folio=false
+    @avanzada = false
+    @por_cliente= false
+
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      else
+        @nota_creditos = current_user.sucursal.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+
+
   #Acción para imprimir la nota de crédito
   def imprimirpdf
 
@@ -111,7 +139,9 @@ class NotaCreditosController < ApplicationController
     def set_nota_credito
       @nota_credito = NotaCredito.find(params[:id])
     end
-
+    def set_sucursales
+      @sucursales = current_user.negocio.sucursals
+    end
     # Never trust parameters from the scary internet, only allow the white list through.
     def nota_credito_params
       params.require(:nota_credito).permit(:folio, :fecha_expedicion, :monto_devolucion, :motivo, :user_id, :cliente_id, :sucursal_id, :negocio_id)
