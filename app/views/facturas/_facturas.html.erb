@@ -425,12 +425,12 @@
               <td style="text-align: center;"><%= %></td-->
 
               <td style="text-align: center;">
-                <% if factura.estado_factura.eql?("Cerrada") %>
-                  <span class="btn btn-success"> Cerrada </span>
+                <% if factura.estado_factura.eql?("Activa") %>
+                  <span class="btn btn-success"> Activa </span>
                 <%elsif factura.estado_factura.eql?("Borrador")%>
                   <span class="btn btn-info"> Borrador </span>
-                <%elsif factura.estado_factura.eql?("Activa")%>
-                  <span class="btn btn-warning"> Activa</span>
+                <%elsif factura.estado_factura.eql?("Cerrada")%>
+                  <span class="btn btn-warning"> Cerrada </span>
                 <%elsif factura.estado_factura.eql?("Cancelada")%>
                   <span class="btn btn-danger"> Cancelada</span>
                 <%end%>

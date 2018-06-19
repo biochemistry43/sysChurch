@@ -1,23 +1,21 @@
 class NotaCreditosController < ApplicationController
-  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy]
+  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf]
+
+
 
   # GET /nota_creditos
   # GET /nota_creditos.json
   def index
-=begin
-        factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-          uuid:"123456789"
-          })
-        factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-          uuid:"987654321"
-        })
+    @consulta = false
+    @avanzada = false
 
-        factura.cfdisrelacionados = CFDI::CfdiRelacionados.new({
-          tipoRelacion: "NOTA DE CRÉDITO"#,
-          #uuids: folis
-        })
-=end
-
+    if request.get?
+      if can? :create, Negocio
+        @nota_creditos = current_user.negocio.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else
+        @nota_creditos = current_user.sucursal.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      end
+    end
   end
 
   # GET /nota_creditos/1
@@ -71,6 +69,40 @@ class NotaCreditosController < ApplicationController
     respond_to do |format|
       format.html { redirect_to nota_creditos_url, notice: 'Nota credito was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  #Acción para imprimir la nota de crédito
+  def imprimirpdf
+
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+
+    bucket = storage.bucket "cfdis"
+
+    fecha_expedicion= @nota_credito.fecha_expedicion
+    consecutivo = @nota_credito.consecutivo
+
+    ruta_storage = @nota_credito.ruta_storage
+
+    #Se descarga el pdf de la nube y se guarda en el disco
+    file_name="#{consecutivo}_#{fecha_expedicion}_NotaCrédito.pdf"
+
+    file_download_storage = bucket.file "#{ruta_storage}_NotaCrédito.pdf"
+    file_download_storage.download "public/#{file_name}"
+
+
+    #Se comprueba que el archivo exista en la carpeta publica de la aplicación
+    if File::exists?( "public/#{file_name}")
+      file=File.open( "public/#{file_name}")
+      send_file( file, :disposition => "inline", :type => "application/pdf")
+      #File.delete("public/#{file_name}")
+    else
+      respond_to do |format|
+        format.html { redirect_to action: "index" }
+        flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+      end
     end
   end
 

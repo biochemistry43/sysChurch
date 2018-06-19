@@ -9,7 +9,7 @@
   <hr>
   <div class="row">
     <div class="div-add-button">
-        <%= link_to 'Nueva nota de crédito', new_nota_credito_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" %>
+        <!-- link_to 'Nueva nota de crédito', new_nota_credito_path, class: "btn btn-info btn-lg btn-add",id: "anadir-factura-btn" -->
     </div>
   </div> <!--Fin de botón -->
 
@@ -97,10 +97,6 @@
       <% end %>
     </div>
     <!-- Termina buscador por folio de notas de crédito -->
-
-
-
-
 
    <!-- Este botón despliega el div con las opciones para filtros avanzados -->
    <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
@@ -211,22 +207,32 @@
             </thead>
 
             <tbody>
-              <!-- @facturas.each do |factura| -->
+              <% @nota_creditos.each do |nc| %>
                 <tr>
+                  <td style="text-align: center;"><%= nc.folio %></td>
+                  <td style="text-align: center;"><%= nc.cliente.nombre_completo%></td>
+                  <td style="text-align: center;"><%= nc.fecha_expedicion%></td>
                   <td style="text-align: center;"><%= %></td>
-                  <td style="text-align: center;"><%= %></td>
-                  <td style="text-align: center;"><%= %></td>
-                  <td style="text-align: center;"><%= %></td>
-
+                  <!--Por el momento solo dos estados -->
                   <td style="text-align: center;">
-
+                    <% if nc.estado_nc.eql?("Activa") %>
+                      <span class="btn btn-success"> Activa </span>
+                    <%elsif nc.estado_nc.eql?("Cancelada")%>
+                      <span class="btn btn-danger"> Cancelada</span>
+                    <%end%>
                   </td>
                   <td style="text-align: center;" >
+                    <!--Imprimir factura-->
+
+                      <%= link_to url={action: "imprimirpdf", controller: "nota_creditos", id: nc}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
+                        <i class="fa fa-print"></i>
+                      <% end %>
 
 
                   </td>
+
                 </tr>
-              <!-- end -->
+              <% end %>
             </tbody>
           </table>
 

@@ -57,10 +57,17 @@
           <table class="serieFolio">
             <xsl:choose>
                <xsl:when test="cfdi:Receptor/@Nombre">
-                 <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. de Ingreso 3.3</b></big></big></th><td></td></tr>
+                 <xsl:choose>
+                   <xsl:when test="@TipoDeComprobante = 'E'">
+                     <tr><th class="h1" colspan="2"><big><big><b>Nota de crédito 3.3</b></big></big></th><td></td></tr>
+                   </xsl:when>
+                   <xsl:otherwise test="@TipoDeComprobante = 'I'">
+                     <tr><th class="h1" colspan="2"><big><big><b>Factura 3.3</b></big></big></th><td></td></tr>
+                   </xsl:otherwise>
+                 </xsl:choose>
                </xsl:when>
                <xsl:otherwise>
-                 <tr><th class="h1" colspan="2"><big><big><b>C.F.D.I. global 3.3</b></big></big></th><td></td></tr>
+                 <tr><th class="h1" colspan="2"><big><big><b>Factura global 3.3</b></big></big></th><td></td></tr>
                </xsl:otherwise>
             </xsl:choose>
             <tr><th class="h1">Serie:</th><td class="h1"><xsl:value-of select="@Serie"/></td></tr>

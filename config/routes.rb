@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   resources :config_comprobantes
   resources :impuestos
-  resources :nota_creditos
+  #resources :nota_creditos
+  get 'nota_creditos/index'
+  get 'nota_creditos/show'
+  get 'nota_creditos/imprimirpdf'
+
   resources :unidad_medidas
   resources :uso_cfdis
   resources :clave_prod_servs
