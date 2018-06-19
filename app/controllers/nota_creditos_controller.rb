@@ -1,7 +1,7 @@
 class NotaCreditosController < ApplicationController
   before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf]
   #before_action :set_sucursales, only: [:index, :consulta_avanzada]
-
+  before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente]
 
   # GET /nota_creditos
   # GET /nota_creditos.json
@@ -116,7 +116,59 @@ class NotaCreditosController < ApplicationController
     end
   end
 
+  def consulta_por_cliente
+    @consulta = true
+    @fechas = false
+    @por_folio = false
+    @avanzada = false
+    @por_cliente= true
 
+    if request.post?
+
+      if can? :create, Negocio
+        #@facturas = current_user.negocio.facturas.where(cliente_id: current_user.negocio.clientes.where(id:(DatosFiscalesCliente.find_by rfc: @rfc).cliente_id))
+        if params[:rbtn] == "rbtn_rfc"
+          #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
+          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
+          @rfc = params[:rfc]
+          datos_fiscales_cliente = current_user.negocio.clientes.datos_fiscales_cliente.where rfc: @rfc
+          clientes_ids = []
+          datos_fiscales_cliente.each do |dfc|
+            clientes_ids << dfc.cliente_id
+          end
+          #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
+          @nota_creditos = current_user.negocio.nota_creditos.where(cliente_id: clientes_ids)
+          #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+        elsif params[:rbtn] == "rbtn_nombreFiscal"
+          #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
+          datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
+          @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+          cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+          @nota_creditos = current_user.negocio.nota_creditos.where(cliente_id: cliente)
+        end
+
+      else
+        if params[:rbtn] == "rbtn_rfc"
+          #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
+          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
+          @rfc = params[:rfc]
+          datos_fiscales_cliente = current_user.sucursal.clientes.datos_fiscales_cliente.where rfc: @rfc
+          clientes_ids = []
+          datos_fiscales_cliente.each do |dfc|
+            clientes_ids << dfc.cliente_id
+          end
+          @nota_creditos = current_user.sucursal.nota_creditos.where(cliente_id: clientes_ids)
+          #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+        elsif params[:rbtn] == "rbtn_nombreFiscal"
+          #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
+          datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
+          @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+          cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+          @nota_creditos = current_user.sucursal.nota_creditos.where(cliente_id: cliente)
+        end
+      end
+    end
+  end
 
 
   #Acción para imprimir la nota de crédito
@@ -160,6 +212,11 @@ class NotaCreditosController < ApplicationController
     end
     def set_sucursales
       @sucursales = current_user.negocio.sucursals
+    end
+    def set_clientes
+      #
+      @nombreFiscalClientes = DatosFiscalesCliente.where(cliente_id: current_user.negocio.clientes.where(negocio_id: current_user.negocio.id))
+      #@clientes = current_user.negocio.clientes
     end
     # Never trust parameters from the scary internet, only allow the white list through.
     def nota_credito_params

@@ -99,6 +99,58 @@
     </div>
     <!-- Termina buscador por folio de notas de crédito -->
 
+    <button id="filtro_por_cliente" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por cliente<i class="fa fa-sort-down"></i>
+    </button>
+    <!-- Permite realizar una busqueda de la facturas de un cliente en específico -->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cliente">
+      <%= form_tag({ controller: "nota_creditos", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="form_row" style="margin-bottom: 30px;">
+          <div class="btn-group" data-toggle="buttons">
+            <%= label_tag "lbl2", "lbl_rfc", class: "btn btn-primary btn-xs form-check-label" do %>
+              <%= radio_button_tag 'rbtn', "rbtn_rfc",  class:"form-check-input"%> Buscar por R.F.C
+              <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+            <%end%>
+            <%= label_tag "lbl", "lbl_nombreFiscal", class: "btn btn-primary btn-xs active form-check-label" do %>
+              <%= radio_button_tag 'rbtn', "rbtn_nombreFiscal", class:"form-check-input"%>Buscar por nombre fiscal
+              <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+            <%end%>
+
+        </div>
+        </div>
+        <div class="item form-group">
+          <div class="col-md-2 col-sm-6 col-xs-12">
+            <div class="text-center">
+              Filtro por cliente:
+            </div>
+          </div>
+          <div class="col-md-1 col-sm-1 col-xs-1">
+            <div style="text-align: right; color: black;">
+              <%= label_tag "lbl", "Nombre:", class: "control-label", id: "leyenda_filtro_cliente"%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center" id="errorRFC">
+
+              <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
+
+              <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input",id:"rfc_input", :placeholder=>"RFC del cliente..."} do%>
+                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+              <%end%>
+            </div>
+          </div>
+
+          <div class="col-md-1 col-sm-5 col-xs-12">
+            <div class="text-center">
+              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <!-- Termina buscador por atributos del cliente-->
+
+
    <!-- Este botón despliega el div con las opciones para filtros avanzados -->
    <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
      Filtros Avanzados <i class="fa fa-sort-down"></i>
@@ -252,6 +304,76 @@
         });
 
         $(document).ready(function(){
+          //Función para validar un RFC
+          // Devuelve el RFC sin espacios ni guiones si es correcto
+          // Devuelve false si es inválido
+          // (debe estar en mayúsculas, guiones y espacios intermedios opcionales)
+          function rfcValido(rfc, aceptarGenerico = true) {
+            const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+            var   validado = rfc.match(re);
+
+            if (!validado)  //Coincide con el formato general del regex?
+                return false;
+
+            //Separar el dígito verificador del resto del RFC
+            const digitoVerificador = validado.pop(),
+                  rfcSinDigito = validado.slice(1).join(''),
+                  len = rfcSinDigito.length,
+
+              //Obtener el digito esperado
+                  diccionario = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ",
+                  indice = len + 1;
+            var   suma,
+                  digitoEsperado;
+
+            if (len == 12) suma = 0
+            else suma = 481; //Ajuste para persona moral
+
+            for(var i=0; i<len; i++)
+                suma += diccionario.indexOf(rfcSinDigito.charAt(i)) * (indice - i);
+            digitoEsperado = 11 - suma % 11;
+            if (digitoEsperado == 11) digitoEsperado = 0;
+            else if (digitoEsperado == 10) digitoEsperado = "A";
+
+            //El dígito verificador coincide con el esperado?
+            // o es un RFC Genérico (ventas a público general)?
+            if ((digitoVerificador != digitoEsperado)
+             && (!aceptarGenerico || rfcSinDigito + digitoVerificador != "XAXX010101000"))
+                return false;
+            else if (!aceptarGenerico && rfcSinDigito + digitoVerificador == "XEXX010101000")
+                return false;
+            return rfcSinDigito + digitoVerificador;
+          }
+          $("#filtro_por_cliente").click(function(e){
+
+            if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+              $('#errorRFC').removeClass(" has-error has-feedback");
+              $('.rfc_input').hide().val("");
+              $('#nombreFiscalCliente').show();
+              $('#leyenda_filtro_cliente').html("Nombre:");
+            }
+            else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+              $('#errorRFC').removeClass(" has-error has-feedback");
+              $('.rfc_input').hide().val("");
+
+              $('#nombreFiscalCliente').hide().val("");
+              $('.rfc_input').show();
+              $('#leyenda_filtro_cliente').html("R.F.C.:");
+
+            }
+
+
+            if( $("#opciones_filtros_por_cliente").is(":visible") ){
+               $(this).html('Filtros por cliente <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros por cliente <i class="fa fa-sort-up"></i>');
+            }
+
+            $("#opciones_filtros_por_cliente").slideToggle("fast");
+
+          });
+          
             $("#filtros_avanzados").click(function(e){
               if( $("#opciones_filtros_avanzados").is(":visible") ){
                 $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
@@ -286,6 +408,43 @@
 
             });
 
+            //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
+            $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
+                if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+                  $('#errorRFC').removeClass(" has-error has-feedback");
+                  $('.rfc_input').hide().val("");
+                  $('#nombreFiscalCliente').show();
+                  $('#leyenda_filtro_cliente').html("Nombre:");
+                }
+                else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+                    //Handler para el evento cuando cambia el input
+                    // -Lleva la RFC a mayúsculas para validarlo
+                    // -Elimina los espacios que pueda tener antes o después
+                  var validador_RFC_Obligatorio = function(e){
+                    var input = document.getElementById("rfc_input");
+                    var rfc = input.value.trim().toUpperCase()
+                    var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+                    var colorearRojo=document.getElementById("errorRFC");
+
+                    if (!rfcCorrecto) {
+
+                      colorearRojo.className+=" has-error has-feedback";
+
+                      e.preventDefault();
+
+                    }
+
+                  };
+                    //Se pone a la escucha el sumit del formulario
+                    var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
+                    facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
+
+                  $('#nombreFiscalCliente').hide().val("");
+                  $('.rfc_input').show();
+                  $('#leyenda_filtro_cliente').html("R.F.C.:");
+
+                }
+            });
 
 
         });
