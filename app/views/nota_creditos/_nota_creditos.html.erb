@@ -268,6 +268,12 @@
                       <%= link_to url={action: "imprimirpdf", controller: "nota_creditos", id: nc}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                         <i class="fa fa-print"></i>
                       <% end %>
+                      <!--Para enviarle el xml y/o el pdf de la nota de crédito -->
+
+                        <%= link_to url={action: "mostrar_email_nota_credito", controller: "nota_creditos", id: nc}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                        <i class="fa fa-envelope"></i>
+                        <% end %>
+
                       <!--Para descargar el xml de la nóta de crédito. -->
                       <%= link_to url={action: "descargar_nota_credito", controller: "nota_creditos",id: nc}, html_options={ class: "btn btn-success",  title: 'Descargar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                         <i class="fa fa-cloud-download"></i>
@@ -283,7 +289,7 @@
 
           </div>
         </div>
-        <!-- render 'modalFacturas'-->
+        <%= render 'modalEmails'%>
       </div>
 
       <script>

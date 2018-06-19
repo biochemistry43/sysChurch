@@ -1,0 +1,94 @@
+<%= form_tag({ controller: "nota_creditos", action: "enviar_nota_credito", id: @nota_credito.id }, { :method => :post}) do %>
+<div class="col-md-12 col-sm-12 col-xs-12">
+<div class="col-md-10 col-sm-10 col-xs-12">
+  <div class="row">
+    <div class="form-group">
+      <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
+      <div class="input-group col-md-9 col-sm-9 col-xs-12">
+        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <%=email_field_tag :destinatario, @destinatario, class: 'form-control text_field'%>
+        <!-- text_field_tag :destinatario, nil, {class:'form-control text_field', value: @destinatario}-->
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group">
+      <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
+      <div class="input-group col-md-9 col-sm-9 col-xs-12">
+        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+        <%= text_field_tag :asunto, nil,{class:'form-control text_field', value: @tema}%>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group">
+      <div class="control-label col-md-2 col-sm-2 col-xs-12">
+        <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label"%>
+      </div>
+      <div class="input-group col-md-9 col-sm-9 col-xs-12">
+         <!--textarea id="summernote" name="summernote"></textarea-->
+        <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernote"}%>
+      </div>
+  </div>
+  </div>
+</div>
+  <div class="col-md-2 col-sm-2 col-xs-12">
+    <div class="row">
+      <div class="control-label col-md-12 col-sm-12 col-xs-12">
+        <%= label_tag :lbl_adjuntar, "Adjuntar archivo: ", class:"control-label"%>
+      </div>
+    </div>
+    <div class="row">
+      <div class="control-label col-md-10 col-sm-10 col-xs-10">
+        <%= label_tag :lbl_pdf, "Factura (.pdf)", class:"control-label"%>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-2">
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="control-label col-md-10 col-sm-10 col-xs-10">
+        <%= label_tag :lbl_xml, "CFDI (.xml)", class:"control-label"%>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-2">
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+      <%= submit_tag 'Enviar comprobantes', {:class=>"btn btn btn-success"} %>
+  </div>
+  <%end%>
+  <script type="text/javascript">
+
+    //$(document).ready(function() {
+    //  $('#summernote').summernote();
+    //});
+
+      $('#summernote').summernote({
+        tabsize: 2,
+        height: 240,
+        minHeight: 240,
+        maxHeight: 240,
+        lang: 'es-ES', // default: 'en-US'
+        focus: true,
+        toolbar: [
+        // [groupName, [list of button]]
+        ['fontname',['fontname']],
+        ['fontsize', ['fontsize']],
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['color', ['color']],
+        //['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert',['link','table','hr']],
+        ['misc',['undo','redo']]
+
+      ]
+
+    });
+
+  </script>
