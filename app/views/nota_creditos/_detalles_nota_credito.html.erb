@@ -1,0 +1,99 @@
+<form action="">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="col-xs-9">
+      <!-- Tab panes -->
+      <div class="tab-content">
+
+        <div class="tab-pane active" id="generales">
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Folio:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @nota_credito.folio %>" >
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @nota_credito.fecha_expedicion %>" >
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Forma de pago:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= %>" >
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Método de pago:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                <!--La gentecita del SAT dice que debe de ser PUE -->
+                <input type="text"  class="form-control col-md-5 col-xs-12 text_field" value= "PUE - Pago en una sola exhibición">
+              </div>
+            </div>
+            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Total:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-usd"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%=  %>">
+              </div>
+            </div>
+        </div> <!-- fin de generales-->
+        <% if can? :read, DatosFiscalesCliente%>
+        <div class="tab-pane" id="receptor">
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Nombre Fiscal</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= @nota_credito.cliente.datos_fiscales_cliente.nombreFiscal%>">
+            </div>
+          </div>
+          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">RFC:</label>
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
+              <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= @nota_credito.cliente.datos_fiscales_cliente.rfc %>">
+            </div>
+          </div>
+        </div>
+        <%end%>
+
+        <div class="tab-pane" id="conceptos">
+          <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr class="headings">
+                <th class="column-title" >Cantidad </th>
+                <th class="column-title" >Unidad </th>
+                <th class="column-title" >Clave </th>
+                <th class="column-title" >Descripción </th>
+                <th class="column-title" >Precio</th>
+                <th class="column-title" >Importe </th>
+              </tr>
+            </thead>
+
+          </table>
+        </div>
+
+
+
+
+      </div>
+    </div>
+
+    <div class="col-xs-3">
+      <!-- required for floating -->
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs tabs-right">
+        <li class="active"><a href="#generales" data-toggle="tab">Datos Comprobante</a></li>
+        <% if can? :read, DatosFiscalesCliente%>
+        <li><a href="#receptor" data-toggle="tab">Datos Receptor</a></li>
+        <%end%>
+        <li><a href="#conceptos" data-toggle="tab">Conceptos</a></li>
+      </ul>
+    </div>
+
+  </div>
+</form>

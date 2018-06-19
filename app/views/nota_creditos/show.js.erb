@@ -1,0 +1,22 @@
+// Add the dialog title
+
+<%if @nota_credito.estado_nc.eql?("Activa")%>
+  $('#modal-facturas-title').parent().css("background-color", "#92c33c");
+  $('#modal-facturas-title').parent().css("color", "white");
+  $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de nota de crédito");
+<%elsif @nota_credito.estado_nc.eql?("Cancelada") %>
+  $('#modal-facturas-title').parent().css("background-color", "#C9302C");
+  $('#modal-facturas-title').parent().css("color", "white");
+  $('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de nota de crédito");
+<%end%>
+
+// Render the new form
+$('.modal-body-facturas').html('<%= j render("detalles_nota_credito") %>');
+
+// Show the dynamic dialog
+$('#modalFacturas').modal("show");
+
+// Set focus to the first element
+$('#modalFacturas').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})
