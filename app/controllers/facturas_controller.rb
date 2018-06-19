@@ -466,6 +466,7 @@ class FacturasController < ApplicationController
 
           @factura.ventas <<  @venta
 
+
           end
 
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p

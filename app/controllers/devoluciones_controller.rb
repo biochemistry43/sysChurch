@@ -994,6 +994,18 @@ class DevolucionesController < ApplicationController
         archivo.write (xml)
         archivo.close
 
+        #SE SALVA EN LA BD
+        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: consecutivo, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage)
+        #@factura = Factura.find(@venta.factura_id)
+
+        if @nota_credito.save
+          current_user.nota_creditos << @nota_credito
+          current_user.negocio.nota_creditos << @nota_credito
+          current_user.sucursal.nota_creditos << @nota_credito
+          Cliente.find_by(@factura.cliente.id).nota_creditos << @nota_credito
+          @factura.nota_creditos <<  @nota_credito
+        end
+
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         txtVariable_nombCliente = @factura.cliente.nombre_completo # =>nombreCliente
