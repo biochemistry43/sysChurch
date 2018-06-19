@@ -1,5 +1,5 @@
 class NotaCreditosController < ApplicationController
-  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf]
+  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf, :descargar_nota_credito]
   #before_action :set_sucursales, only: [:index, :consulta_avanzada]
   before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente]
 
@@ -204,6 +204,33 @@ class NotaCreditosController < ApplicationController
       end
     end
   end
+
+
+    def descargar_nota_credito
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
+
+      bucket = storage.bucket "cfdis"
+
+      fecha_expedicion=@nota_credito.fecha_expedicion
+      consecutivo =@nota_credito.consecutivo
+
+      ruta_storage = @nota_credito.ruta_storage
+
+      #Se descarga el pdf de la nube y se guarda en el disco
+      file_name = "#{consecutivo}_#{fecha_expedicion}_NotaCrédito.xml"
+
+      file_download_storage_xml = bucket.file "#{ruta_storage}_NotaCrédito.xml"
+
+      file_download_storage_xml.download "public/#{file_name}"
+
+      xml = File.open( "public/#{file_name}")
+      send_file(
+        xml,
+        filename: "CFDI.xml",
+        type: "application/xml"
+      )
+    end
 
   private
     # Use callbacks to share common setup or constraints between actions.

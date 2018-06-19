@@ -268,6 +268,10 @@
                       <%= link_to url={action: "imprimirpdf", controller: "nota_creditos", id: nc}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                         <i class="fa fa-print"></i>
                       <% end %>
+                      <!--Para descargar el xml de la nóta de crédito. -->
+                      <%= link_to url={action: "descargar_nota_credito", controller: "nota_creditos",id: nc}, html_options={ class: "btn btn-success",  title: 'Descargar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                        <i class="fa fa-cloud-download"></i>
+                      <% end %>
 
 
                   </td>
@@ -373,7 +377,7 @@
             $("#opciones_filtros_por_cliente").slideToggle("fast");
 
           });
-          
+
             $("#filtros_avanzados").click(function(e){
               if( $("#opciones_filtros_avanzados").is(":visible") ){
                 $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
