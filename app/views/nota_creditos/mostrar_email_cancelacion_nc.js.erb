@@ -1,0 +1,12 @@
+$('#modal-cancelaNotaCredito-title').html("<i class='glyphicon glyphicon-envelope'></i> Cancelar nota de crédito");
+
+// Render the new form
+$('.modal-body-cancelaNotaCredito').html('<%= j render("cancelaNotaCredito") %>');
+
+// Show the dynamic dialog
+$('#modalCancelaNotaCredito').modal("show");
+
+// Set focus to the first element
+$('#modalCancelaNotaCredito').on('shown.bs.modal', function () {
+	  $('.first_input').focus();
+})

@@ -283,6 +283,11 @@
                       <i class="fa fa-info-circle"></i>
                       <% end %>
 
+                      <%= link_to url={action: "mostrar_email_cancelacion_nc", controller: "nota_creditos", id: nc}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                      <!--%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura},  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar"}, data: { confirm: "¿Desea cancelar esta venta?"} do %-->
+                       <i class="fa fa-close"></i>
+                      <% end %>
+
 
                   </td>
 
@@ -294,6 +299,7 @@
           </div>
         </div>
         <%= render 'modalEmails'%>
+        <%= render 'modalCancelaNotaCredito'%>
         <%= render 'modalFacturas'%>
       </div>
 

@@ -531,6 +531,8 @@ ActiveRecord::Schema.define(version: 20180618222750) do
     t.string   "estado_nc"
     t.string   "ruta_storage"
     t.integer  "consecutivo"
+    t.string   "folio_fiscal"
+    t.decimal  "monto"
     t.integer  "factura_forma_pago_id"
   end
 

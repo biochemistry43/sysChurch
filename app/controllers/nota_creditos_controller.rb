@@ -1,5 +1,5 @@
 class NotaCreditosController < ApplicationController
-  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf, :descargar_nota_credito, :mostrar_email_nota_credito, :enviar_nota_credito]
+  before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf, :descargar_nota_credito, :mostrar_email_nota_credito, :enviar_nota_credito, :mostrar_email_cancelacion_nc, :cancelar_nota_credito]
   #before_action :set_sucursales, only: [:index, :consulta_avanzada]
   before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente]
 
@@ -374,6 +374,62 @@ class NotaCreditosController < ApplicationController
       @mensaje= mensaje_email
 
     end
+
+    #Para cancelar una nota de crédito de una perteneciente a una factura.
+    def mostrar_email_cancelacion_nc
+      #@categorias_devolucion = current_user.negocio.cat_venta_canceladas
+    end
+
+    def cancelar_nota_credito
+      #Primero se procede a cancelar y enviar el acuse de cancelación
+      # Parametros para la conexión al Webservice
+      wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+      usuario = "AAA010101000"
+      contrasena = "h6584D56fVdBbSmmnB"
+
+      # Parametros para la cancelación del CFDI
+      uuid = @nota_credito.folio_fiscal
+      rfc = "AAA010101AAA"
+      pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
+      bin_file = File.binread(pfx_path)
+      pfx_base64 = Base64.strict_encode64(bin_file)
+      pfx_password = "12345678a"
+      #Se cancela
+      xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+      #se extrae el acuse de cancelación del xml cancelado
+      acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
+      bucket = storage.bucket "cfdis"
+      #Consultas
+      ruta_storage = @nota_credito.ruta_storage
+      fecha_expedicion=@nota_credito.fecha_expedicion
+      consecutivo =@nota_credito.consecutivo
+      file_name = "#{consecutivo}_#{fecha_expedicion}"
+      #Se guarda el Acuse en la nube
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelaciónNotaCrédito.xml"
+      #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
+      @nota_credito.update( estado_nc: "Cancelada") #Pasa de activa a cancelada
+      acuse = Nokogiri::XML(acuse)
+      a = File.open("public/#{file_name}_AcuseDeCancelaciónNotaCrédito", "w")
+      a.write (acuse)
+      a.close
+
+      #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
+      destinatario = params[:destinatario]
+      #Aquí el mensaje de la configuración...
+      mensaje = "HOLA cara de bola"
+      tema = "Acuse de cancelación"
+      comprobantes = {xml_Ac_nc: "public/#{file_name}_AcuseDeCancelaciónNotaCrédito"}
+
+      FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
+
+      respond_to do |format| # Agregar mensajes después de las transacciones
+        format.html { redirect_to nota_creditos_index_path, notice: "La nota de crédito con folio: #{@nota_credito.folio} ha sido cancelada y se ha enviado el acuse por email exitosamente!" }
+      end
+    end
+
 
 
   private

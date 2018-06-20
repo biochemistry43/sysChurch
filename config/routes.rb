@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'nota_creditos/descargar_nota_credito'
   get 'nota_creditos/mostrar_email_nota_credito'
   post 'nota_creditos/enviar_nota_credito'
+  get 'nota_creditos/mostrar_email_cancelacion_nc'
+  post 'nota_creditos/cancelar_nota_credito'
 
   resources :unidad_medidas
   resources :uso_cfdis
@@ -25,7 +27,6 @@ Rails.application.routes.draw do
   post 'factura_recurrentes/consulta_avanzada'
   post 'factura_recurrentes/facturaRecurrentes'
   get 'factura_recurrentes/facturaRecurrentes'
-
 
   #resources :facturas
   get 'facturas/index'
