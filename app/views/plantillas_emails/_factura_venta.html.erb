@@ -1,18 +1,15 @@
-<%= form_for @config_comprobante do |f| %>
+<%= form_for @plantillas_email do |f| %>
 
-  <% if @config_comprobante.errors.any? %>
+  <% if @plantillas_email.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@config_comprobante.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
-
+      <h2><%= pluralize(@plantillas_email.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
       <ul>
-      <% @config_comprobante.errors.full_messages.each do |message| %>
+      <% @plantillas_email.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
     </div>
   <% end %>
-
-
   <div class="row">
     <div class="col-md-9 col-sm-9 col-xs-12">
       <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
@@ -21,14 +18,12 @@
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
         <%= f.text_field :asunto_email, class:'form-control text_field'%>
       </div>
-
-
     </div>
     <div class="col-md-2 col-sm-2 col-xs-12">
-      <%= select_tag :lista_texto_variable, "<optgroup label='Cliente'><option value='nombreCliente'>Nombre del cliente</option></optgroup>
+      <!-- select_tag :lista_texto_variable, "<optgroup label='Cliente'><option value='nombreCliente'>Nombre del cliente</option></optgroup>
                                                 <optgroup label='Venta'><option value='fechaVenta'>Fecha de venta</option><option value='numeroVenta'>Número de venta</option><option value='folioVenta'>Folio de venta</option></optgroup>
                                                 <optgroup label='Factura'><option value='fechaFactura'>Fecha de factura</option><option value='numeroFactura'>Número de factura</option><option value='folioFactura'>Folio de factura</option><option value='totalFactura'>Total</option></optgroup>
-                                                <optgroup label='Negocio'><option value='negocio'>Nombre del negocio</option><option value='sucursal'>Sucursal</option><option value='email'>Email</option><option value='telefono'>Teléfono</option></optgroup>".html_safe, :prompt => 'Texto variable.',  class: 'form-control' %>
+                                                <optgroup label='Negocio'><option value='negocio'>Nombre del negocio</option><option value='sucursal'>Sucursal</option><option value='email'>Email</option><option value='telefono'>Teléfono</option></optgroup>".html_safe, :prompt => 'Texto variable.',  class: 'form-control' -->
     </div>
   </div>
   <div class="row">
@@ -47,20 +42,15 @@
   </div>
 
   </div>
-
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
-
   </div>
 <% end %>
-
 <script type="text/javascript">
-
   //$(document).ready(function() {
   //  $('#summernote').summernote();
   //});
-
     $('#summernote').summernote({
       tabsize: 2,
       height: 170,
@@ -117,8 +107,4 @@ $(document).ready(function() {
     editor.html(select[0] + '{{'+valor+'}}' + select[1]);
   });
 });
-
-
-
-
 </script>

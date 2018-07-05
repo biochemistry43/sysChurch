@@ -1,4 +1,5 @@
 class Negocio < ActiveRecord::Base
+	has_many :plantillas_emails
 	has_many :nota_creditos
 	has_one :config_comprobante
 	has_many :impuestos

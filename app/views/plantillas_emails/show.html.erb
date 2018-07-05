@@ -1,0 +1,66 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Plantillas de correos electrónicos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row text-center">
+        <%= link_to url={controller: "plantillas_emails", action: "show", id: current_user.negocio.plantillas_emails.find_by(comprobante: "factura de venta").id }, html_options={class: "btn btn-primary active"} do%>
+          <i class=""></i> Facturas de ventas
+        <%end%>
+        <%= link_to url={controller: "plantillas_emails", action: "show", id: current_user.negocio.plantillas_emails.find_by(comprobante: "cancelación de fv").id }, html_options={class: "btn btn-default active"} do%>
+          <i class=""></i> Acuses de cancelación de facturas de ventas
+        <%end%>
+        <%= link_to url={controller: "plantillas_emails", action: "show", id: current_user.negocio.plantillas_emails.find_by(comprobante: "nota de crédito").id }, html_options={class: "btn btn-primary active"} do%>
+          <i class=""></i> Notas de crédito
+        <%end%>
+        <%= link_to url={controller: "plantillas_emails", action: "show", id: current_user.negocio.plantillas_emails.find_by(comprobante: "cancelación de nc").id }, html_options={class: "btn btn-default active"} do%>
+          <i class=""></i> Acuses de cancelación de notas de créditos
+        <%end%>
+  <hr>
+  </div>
+    <div class="row">
+        <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
+          <h3 class="panel-title">Facturas de Venta</h3>
+        </div>
+        <div class="panel-body">
+          <!--Panel para el encabezado del comprobante-->
+          <div class="panel panel-default" >
+            <div class="panel-body">
+              <%= render "factura_venta"%>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+<!--
+<p id="notice"> notice ></p>
+
+<p>
+  <strong>Asunto email:</strong>
+   @plantillas_email.asunto_email
+</p>
+
+<p>
+  <strong>Msg email:</strong>
+   @plantillas_email.msg_email
+</p>
+
+<p>
+  <strong>Comprobante:</strong>
+   @plantillas_email.comprobante
+</p>
+
+<p>
+  <strong>Negocio:</strong>
+   @plantillas_email.negocio
+</p>
+
+ link_to 'Edit', edit_plantillas_email_path(@plantillas_email)
+ link_to 'Back', plantillas_emails_path
+-->

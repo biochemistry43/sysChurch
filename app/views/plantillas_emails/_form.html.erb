@@ -1,0 +1,33 @@
+<%= form_for(@plantillas_email) do |f| %>
+  <% if @plantillas_email.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@plantillas_email.errors.count, "error") %> prohibited this plantillas_email from being saved:</h2>
+
+      <ul>
+      <% @plantillas_email.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :asunto_email %><br>
+    <%= f.text_field :asunto_email %>
+  </div>
+  <div class="field">
+    <%= f.label :msg_email %><br>
+    <%= f.text_area :msg_email %>
+  </div>
+  <div class="field">
+    <%= f.label :comprobante %><br>
+    <%= f.text_field :comprobante %>
+  </div>
+  <div class="field">
+    <%= f.label :negocio_id %><br>
+    <%= f.text_field :negocio_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
 
+  resources :plantillas_emails
   resources :config_comprobantes
   resources :impuestos
   #resources :nota_creditos

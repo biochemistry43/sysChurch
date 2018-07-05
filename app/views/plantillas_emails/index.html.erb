@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Plantillas Emails</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Asunto email</th>
+      <th>Msg email</th>
+      <th>Comprobante</th>
+      <th>Negocio</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @plantillas_emails.each do |plantillas_email| %>
+      <tr>
+        <td><%= plantillas_email.asunto_email %></td>
+        <td><%= plantillas_email.msg_email %></td>
+        <td><%= plantillas_email.comprobante %></td>
+        <td><%= plantillas_email.negocio %></td>
+        <td><%= link_to 'Show', plantillas_email %></td>
+        <td><%= link_to 'Edit', edit_plantillas_email_path(plantillas_email) %></td>
+        <td><%= link_to 'Destroy', plantillas_email, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Plantillas email', new_plantillas_email_path %>
