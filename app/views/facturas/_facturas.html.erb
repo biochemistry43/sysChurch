@@ -474,17 +474,6 @@
                     <i class="fa fa-close"></i>
                   <% end %>
                 <%end%>
-
-               <% if factura.estado_factura.eql?("Activa") %>
-                 <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-dark", remote: true , title: 'Crear nota de crédito', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
-                    <!-- link_to edit_venta_path(venta),  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar factura"}, data: { confirm: "¿Desea cancelar esta venta?"} do -->
-                    <i class="fa fa-file-text-o"></i>
-                  <% end %>
-                <%else%>
-                  <%= button_tag  class: "btn btn-dark", remote: true , title: 'Crear nota de crédito', 'data-toggle' => 'tooltip', 'data-placement' => 'top', disabled: true do %>
-                    <i class="fa fa-file-text-o"></i>
-                  <% end %>
-               <% end %>
               <% end %>
               </td>
             </tr>

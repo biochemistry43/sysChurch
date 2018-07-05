@@ -131,7 +131,8 @@ class NotaCreditosController < ApplicationController
           #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
           #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
           @rfc = params[:rfc]
-          datos_fiscales_cliente = current_user.negocio.clientes.datos_fiscales_cliente.where rfc: @rfc
+          datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
+          #datos_fiscales_cliente = current_user.negocio.clientes.where(datos_fiscales_clientes rfc: @rfc
           clientes_ids = []
           datos_fiscales_cliente.each do |dfc|
             clientes_ids << dfc.cliente_id
