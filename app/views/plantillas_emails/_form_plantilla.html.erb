@@ -14,16 +14,12 @@
     <div class="col-md-9 col-sm-9 col-xs-12">
       <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
       <div class="input-group col-md-10 col-sm-10 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+        <span class="input-group-addon"><i class="fa fa-pencil"> </i></span>
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
         <%= f.text_field :asunto_email, class:'form-control text_field'%>
       </div>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-12">
-      <!-- select_tag :lista_texto_variable, "<optgroup label='Cliente'><option value='nombreCliente'>Nombre del cliente</option></optgroup>
-                                                <optgroup label='Venta'><option value='fechaVenta'>Fecha de venta</option><option value='numeroVenta'>Número de venta</option><option value='folioVenta'>Folio de venta</option></optgroup>
-                                                <optgroup label='Factura'><option value='fechaFactura'>Fecha de factura</option><option value='numeroFactura'>Número de factura</option><option value='folioFactura'>Folio de factura</option><option value='totalFactura'>Total</option></optgroup>
-                                                <optgroup label='Negocio'><option value='negocio'>Nombre del negocio</option><option value='sucursal'>Sucursal</option><option value='email'>Email</option><option value='telefono'>Teléfono</option></optgroup>".html_safe, :prompt => 'Texto variable.',  class: 'form-control' -->
     </div>
   </div>
   <div class="row">
@@ -47,64 +43,80 @@
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
   </div>
 <% end %>
-<script type="text/javascript">
-  //$(document).ready(function() {
-  //  $('#summernote').summernote();
-  //});
-    $('#summernote').summernote({
-      tabsize: 2,
-      height: 170,
-      minHeight: 170,
-      maxHeight: 170,
-      lang: 'es-ES', // default: 'en-US'
-      //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-      hint: {
-        mentions: ['Nombre del cliente','Fecha de la venta','Número de venta','Folio de la venta','Fecha de la factura','Número de factura','Folio de la factura','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
-        match: /\B@(\w*)$/,
-        search: function (keyword, callback) {
-          callback($.grep(this.mentions, function (item) {
-            return item.indexOf(keyword) == 0;
-          }));
+
+<% if @plantillas_email.comprobante == "fv" || @plantillas_email.comprobante == "ac_fv" %>
+  <script type="text/javascript">
+      $('#summernote').summernote({
+        tabsize: 2,
+        height: 170,
+        minHeight: 170,
+        maxHeight: 170,
+        lang: 'es-ES', // default: 'en-US'
+        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+        hint: {
+          mentions: ['Nombre del cliente','Fecha de la venta','Número de venta','Folio de la venta','Fecha de la factura','Número de factura','Folio de la factura','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
+          match: /\B@(\w*)$/,
+          search: function (keyword, callback) {
+            callback($.grep(this.mentions, function (item) {
+              return item.indexOf(keyword) == 0;
+            }));
+          },
+          content: function (item) {
+            return '{{' + item + '}}';
+          }
         },
-        content: function (item) {
-          return '{{' + item + '}}';
-        }
-      },
 
-      toolbar: [
-      // [groupName, [list of button]]
-      ['fontname',['fontname']],
-      ['fontsize', ['fontsize']],
-      ['style', ['bold', 'italic', 'underline', 'clear']],
-      ['font', ['strikethrough', 'superscript', 'subscript']],
-      ['color', ['color']],
-      //['para', ['ul', 'ol', 'paragraph']],
-      ['height', ['height']],
-      ['insert',['link','table','hr']],
-      ['misc',['undo','redo']]
+        toolbar: [
+        // [groupName, [list of button]]
+        ['fontname',['fontname']],
+        ['fontsize', ['fontsize']],
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['color', ['color']],
+        //['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert',['link','table','hr']],
+        ['misc',['undo','redo']]
 
-    ]
+      ]
+    });
+  </script>
+<% elsif @plantillas_email.comprobante == "nc" || @plantillas_email.comprobante == "ac_nc" %>
+  <script type="text/javascript">
+      $('#summernote').summernote({
+        tabsize: 2,
+        height: 170,
+        minHeight: 170,
+        maxHeight: 170,
+        lang: 'es-ES', // default: 'en-US'
+        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+        hint: {
+          //Para las notas de crédito no hacen falta los datos de la venta, pero si resulta util los datos de la factura asociada.
+          mentions: ['Nombre del cliente','Fecha de la nota de crédito','Número de la nota de  crédito','Folio de la nota de crédito', 'Total de la nota de crédito' ,'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
+          match: /\B@(\w*)$/,
+          search: function (keyword, callback) {
+            callback($.grep(this.mentions, function (item) {
+              return item.indexOf(keyword) == 0;
+            }));
+          },
+          content: function (item) {
+            return '{{' + item + '}}';
+          }
+        },
 
-  });
+        toolbar: [
+        // [groupName, [list of button]]
+        ['fontname',['fontname']],
+        ['fontsize', ['fontsize']],
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['color', ['color']],
+        //['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert',['link','table','hr']],
+        ['misc',['undo','redo']]
 
-  //Agrega una variable encerrado en doble corchetes por medio de un select que será reemplazado por el valor real de la BD.
-  //var editor = $("#summernote");
-
-var editor = $("#summernote");
-
-function getSelected()
-{
-  var u     = editor.val();
-  var start = editor.get(0).selectionStart;
-  var end   = editor.get(0).selectionEnd;
-
-  return [u.substring(0, start), u.substring(end), u.substring(start, end)];
-}
-$(document).ready(function() {
-  $('select#lista_texto_variable').on('change',function(){
-    var valor = $(this).val();
-    var select = getSelected();
-    editor.html(select[0] + '{{'+valor+'}}' + select[1]);
-  });
-});
-</script>
+      ]
+    });
+  </script>
+<% end %>
