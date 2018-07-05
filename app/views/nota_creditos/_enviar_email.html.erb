@@ -39,24 +39,66 @@
         <%= label_tag :lbl_adjuntar, "Adjuntar archivo: ", class:"control-label"%>
       </div>
     </div>
+    <!--Solo se marcara el acuse cuando el estado de la nota de crédito sea Cancelada, pero se podrá enviar tambien los otros comprobantes-->
+    <% if @nota_credito.estado_nc == "Cancelada" %>
+      <div class="row">
+        <div class="control-label col-md-10 col-sm-10 col-xs-10">
+          <%= label_tag :lbl_AC_xml, "Acuse N/C", class:"control-label"%>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <%=check_box_tag(:xml_Ac_nc, "yes", false, {class:" checked check",  checked:"checked"})%>
+        </div>
+      </div>
+    <% end %>
+    <div class="row">
+      <div class="control-label col-md-10 col-sm-10 col-xs-10">
+        <%= label_tag :lbl_pdf_nc, "N/C (.pdf)", class:"control-label"%>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-2">
+        <% if  @nota_credito.estado_nc == "Activa" %>
+          <%=check_box_tag(:pdf_nc, "yes", false, {class:" checked check",  checked:"checked"})%>
+        <% else %>
+          <%=check_box_tag(:pdf_nc, "yes", false, {class:" checked check"})%>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="control-label col-md-10 col-sm-10 col-xs-10">
+        <%= label_tag :lbl_xml_nc, "N/C (.xml)", class:"control-label"%>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-2">
+        <% if  @nota_credito.estado_nc == "Activa" %>
+          <%=check_box_tag(:xml_nc, "yes", false, {class:" checked check",  checked:"checked"})%>
+        <% else %>
+          <%=check_box_tag(:xml_nc, "yes", false, {class:" checked check"})%>
+        <% end %>
+      </div>
+    </div>
     <div class="row">
       <div class="control-label col-md-10 col-sm-10 col-xs-10">
         <%= label_tag :lbl_pdf, "Factura (.pdf)", class:"control-label"%>
       </div>
       <div class="col-md-2 col-sm-2 col-xs-2">
-
+        <% if  @nota_credito.estado_nc == "Activa" %>
+          <%=check_box_tag(:pdf, "yes", false, {class:" checked check",  checked:"checked"})%>
+        <% else %>
+          <%=check_box_tag(:pdf, "yes", false, {class:" checked check"})%>
+        <% end %>
       </div>
     </div>
     <div class="row">
       <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_xml, "CFDI (.xml)", class:"control-label"%>
+        <%= label_tag :lbl_xml, "Factura (.xml)", class:"control-label"%>
       </div>
       <div class="col-md-2 col-sm-2 col-xs-2">
-
+        <% if  @nota_credito.estado_nc == "Activa" %>
+          <%=check_box_tag(:xml, "yes", false, {class:" checked check",  checked:"checked"})%>
+        <% else %>
+          <%=check_box_tag(:xml, "yes", false, {class:" checked check"})%>
+        <% end %>
       </div>
     </div>
-
-
   </div>
 </div>
       <%= submit_tag 'Enviar comprobantes', {:class=>"btn btn btn-success"} %>
