@@ -10,6 +10,16 @@ class PlantillasEmailsController < ApplicationController
   # GET /plantillas_emails/1
   # GET /plantillas_emails/1.json
   def show
+    if @plantillas_email.comprobante == "fv"
+      leyenda = "Facturas de ventas"
+    elsif @plantillas_email.comprobante == "nc"
+      leyenda = "Notas de crédito"
+    elsif @plantillas_email.comprobante == "ac_fv"
+      leyenda = "Acuse de cancelación de facturas de ventas"
+    elsif @plantillas_email.comprobante == "ac_nc"
+      leyenda = "Acuse de cancelación de notas de crédito"
+    end
+    @nombre_plantilla = leyenda
   end
 
   # GET /plantillas_emails/new

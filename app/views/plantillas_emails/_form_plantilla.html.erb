@@ -59,7 +59,7 @@
       lang: 'es-ES', // default: 'en-US'
       //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
       hint: {
-        mentions: ['nombreCliente','fechaVenta','numeroVenta','folioVenta','fechaFactura','numeroFactura','folioFactura','totalFactura','negocio','sucursal','email','telefono'],
+        mentions: ['Nombre del cliente','Fecha de la venta','Número de venta','Folio de la venta','Fecha de la factura','Número de factura','Folio de la factura','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
         match: /\B@(\w*)$/,
         search: function (keyword, callback) {
           callback($.grep(this.mentions, function (item) {
