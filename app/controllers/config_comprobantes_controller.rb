@@ -11,6 +11,14 @@ class ConfigComprobantesController < ApplicationController
   # GET /config_comprobantes/1
   # GET /config_comprobantes/1.json
   def show
+    #Se extraen los valores de la plantilla de impresión
+    @tipo_fuente = @config_comprobante.tipo_fuente
+    @tam_fuente = @config_comprobante.tam_fuente
+    @color_fondo = @config_comprobante.color_fondo
+    @color_titulos = @config_comprobante.color_titulos
+    @tipo_fuente = @config_comprobante.tipo_fuente
+    @color_banda = @config_comprobante.color_banda
+
     if @config_comprobante.comprobante == "fv"
       leyenda = "Facturas de ventas"
     elsif @config_comprobante.comprobante == "nc"
@@ -49,10 +57,18 @@ class ConfigComprobantesController < ApplicationController
   # PATCH/PUT /config_comprobantes/1
   # PATCH/PUT /config_comprobantes/1.json
   def update
+
+    color_fondo = params[:color_fondo]
+    color_banda = params[:color_banda]
+    color_titulos = params[:color_titulos]
+    tipo_fuente = params[:tipo_fuente]
+    tam_fuente = params[:tam_fuente]
+
     #@config_comprobante = ConfigComprobante.find_by(negocio_id: current_user.negocio.id)
     respond_to do |format|
-      if @config_comprobante.update(config_comprobante_params)
-        format.html { redirect_to @config_comprobante, notice: 'La configuración de la factura de venta se registró correctamente.' }
+      #if @config_comprobante.update(config_comprobante_params)
+      if @config_comprobante.update(tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo: color_fondo, color_titulos:color_titulos, color_banda:color_banda )
+        format.html { redirect_to @config_comprobante, notice: 'La configuración de la plantilla de impresión se ha guardado exitosamente.' }
         format.json { render :show, status: :ok, location: @config_comprobante }
       else
         format.html { render :edit }
