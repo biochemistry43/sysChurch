@@ -37,9 +37,9 @@
     </div>
   </div>
   <div class="row">
-        <%= f.label :asunto_email, "Títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= f.label :lbl_color_titulos, "Títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
-        <%= color_field_tag 'color', '#DEF726', style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12"%>
+        <%= color_field_tag 'color_titulos', '#DEF726', style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_titulos"%>
     </div>
   </div>
   <div class="actions" align="center">
@@ -52,29 +52,28 @@
 <div class="col-md-8 col-sm-8 col-xs-12 panel panel-default"  style='overflow-x:scroll;overflow-y:scroll; height:400px;'>
   <table width="100%" id="tablaRaiz">
   <tr>
-  <td><img src="http://kodikas.com.mx/wp-content/uploads/2016/06/logo-versio%CC%81n-2.png" height="100" width="100"></td>
-  <td colspan="2" align="right">
+  <td ><img src="http://kodikas.com.mx/wp-content/uploads/2016/06/logo-versio%CC%81n-2.png" height="120" width="120"></td>
+  <td align="right">
     <table id="negocio">
-      <tr><th  colspan="2" style="font-size:18px;">KODIKAS</th> <td></td></tr>
-      <tr><th  colspan="2">Av. Córdoba No.2</th><td ></td></tr>
-      <tr><th  colspan="2">Fortín de las folores, C.P. 94474,</th><td ></td></tr>
-      <tr><th  colspan="2">Fortín de las flores, Ver. </th><td></td></tr>
-      <tr><th  colspan="2"> R.F.C.: XAXX010101000 </th> <td></td></tr>
-      <tr><th  colspan="2">Regimen fiscal: 601 - General de Ley Personas Morales </th><td></td></tr>
+      <tr><th   style="font-size:18px; text-align:center;">KODIKAS Software & Hardware </th> </tr>
+      <tr ><td> <b>R.F.C.</b> XAXX010101000</td></tr>
+      <tr ><td> <b>Regimen: </b> 601 - General de ley personas morales </td></tr>
+      <tr><td > <b>DIRECCIÓN: </b>  Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td></tr>
+      <tr><td > <b>Teéfono:</b>  (229)272709 <b>Página web: </b>kodikas.com.mx</td></tr>
     </table>
   </td>
   <td colspan="2" align="right">
-    <table class="serieFolio">
-      <tr><th class="h1" colspan="2"><big><big><b>Factura 3.3</b></big></big></th><td></td></tr>
-      <tr><th class="h1">Serie:</th><td class="h1">MTZF</td></tr>
-      <tr><th class="h1">Folio:</th><td class="h1">12</td></tr>
-      <tr><th class="h1">Fecha y hora:</th><td class="h1">2018-07-05T06:06:16</td></tr>
+    <table width="230px"  class="serieFolio">
+      <tr><th class="fondos_titulos" colspan="2"><big><big><b>Factura 3.3</b></big></big></th><td></td></tr>
+      <tr><th class="fondos_titulos">Serie:</th><td class="fondos_titulos">MTZF</td></tr>
+      <tr><th class="fondos_titulos">Folio:</th><td class="fondos_titulos">12</td></tr>
+      <tr><th class="fondos_titulos">Fecha y hora:</th><td class="fondos_titulos">2018-07-05T06:06:16</td></tr>
     </table>
   </td>
   </tr>
-  <tr>
-    <table width="100%" border="1">
-      <thead><tr><th colspan="4" class="fondos">Lugar de expedición:</th></tr></thead>
+  <tr >
+    <table  border="1">
+      <thead><tr><th colspan="4" class="fondos_titulos">Lugar de expedición:</th></tr></thead>
       <tbody class="emisor">
         <tr> <th align="right">Dirección: </th>
           <td colspan="3">Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td>
@@ -86,7 +85,7 @@
   </tr>
   <tr>
     <table width="100%" border="1">
-      <thead><tr><th colspan="4" class="fondos">Receptor</th></tr></thead>
+      <thead><tr><th colspan="4" class="fondos_titulos">Receptor</th></tr></thead>
       <tbody>
         <tr><th align="right">R.F.C.: </th><td>XAXX010101000</td> <th align="right">Nombre:  </th><td>Juan Pérez Martínez</td></tr>
         <tr> <th align="right">Dirección: </th>
@@ -99,13 +98,13 @@
   <tr>
     <table width="100%">
       <thead><tr>
-      <th class="fondos">Cantidad</th>
-      <th class="fondos">Clave Prod</th>
-      <th class="fondos">Unidad</th>
-      <th class="fondos">Descripción</th>
-      <th class="fondos">Precio</th>
-      <th class="fondos">Desc.</th>
-      <th class="fondos">Importe</th>
+      <th class="fondos_titulos">Cantidad</th>
+      <th class="fondos_titulos">Clave Prod</th>
+      <th class="fondos_titulos">Unidad</th>
+      <th class="fondos_titulos">Descripción</th>
+      <th class="fondos_titulos">Precio</th>
+      <th class="fondos_titulos">Desc.</th>
+      <th class="fondos_titulos">Importe</th>
       </tr>
     </thead>
     <tbody>
@@ -157,39 +156,39 @@
     <table width="100%" id="tablaInternaSellos">
       <tr>
       <td rowspan="6"><img src="" height="120" width="120"></td>
-      <th align="right">Folio fiscal: </th>
-      <td align="left" class="folioFiscal fondos">A6D0C9AC-8A19-4E72-84AC-0709C3BB4FFF</td>
+      <th class="certificados_folio">Folio fiscal: </th>
+      <td align="left" class="folioFiscal fondos_titulos">A6D0C9AC-8A19-4E72-84AC-0709C3BB4FFF</td>
       </tr>
       <tr>
-      <th align="right">Fecha y hora de certificación:  </th>
+      <th class="certificados_folio">Fecha y hora de certificación:  </th>
       <td align="left"><small>2018-07-05T06:06:29</small></td>
       </tr>
       <tr>
-      <th align="right">No. de serie del Certificado de Sello Digital: </th>
+      <th class="certificados_folio">No. de serie del Certificado de Sello Digital: </th>
       <td align="left"><small>30001000000300023708</small></td>
       </tr>
       <tr>
-      <th align="right">No. de serie del Certificado de Sello Digital del SAT: </th>
+      <th class="certificados_folio">No. de serie del Certificado de Sello Digital del SAT: </th>
       <td align="left"><small>20001000000300022323</small></td>
       </tr>
     </table>
   </td>
-    <tr colspan="3"><th>Sello Digital del CFDI:</th></tr>
+    <tr colspan="3" ><th class="sellos_cadena">Sello Digital del CFDI:</th></tr>
     <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>fULf/YJ/e70gvlcMcQbXvasYG5b59njzgLx/fVXpyX4IgyBADwexqvqiqBlC6GXWqylcZcp17jwA5FT5eznVKNO2Fe+XvRW/BLpU1EooTWyHkNdOiOVkzwvZKxWmmBKbPSnU4zkNs9AqJu4G
 1ApAnBIqYRE20RtvP/jHtWPqJ0Uo1AWnyvbpsAhXI5maYfhIkG6igsGIaXtA7U+MTqpy2clvFzxB/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vy
 plr9Crri3thGmr6XbxO/ehnVi+tVnH/gCkkNv1uADWXK4ClsZrQQ==</small></td></tr>
-    <tr colspan="3"><th>Sello Digital del SAT:</th></tr>
+    <tr colspan="3"><th class="sellos_cadena">Sello Digital del SAT:</th></tr>
     <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>nO7Krpvb2dHtfFaKRcFZhBgTapXJkW5xHhBPkygHRLvueWhCdOo5A790Vq+kab9bX2DtkqkI+RVGn1unhoDpGuNMMpcQe4zGHYjVj+CUCIqw4NFobiBAp3wYe9BFMKi9zb8uRCGGykUl
 2tpE+flVgpCbXe0ynA9B0VBhQbikAbPdrqzG7KEm0dUjBu5Rr52N7m8vrjZOHrNcqnkWHoYr6u+DxYwPI4SnHPxoPuF2VVmWNdAlWDoc58eo0/sgZMgcspO9jT+zbKuOPP+AJGHM9Jene
 Pm0GIAF5oZnjFUMuggwaQlNbrnxCNSteiSWIFFsISJD6gatlEt3sftv0Mrb0A==</small></td></tr>
-    <tr colspan="3"><th>Cadena original del complemento de certificación digital del SAT:</th></tr>
+    <tr colspan="3"><th class="sellos_cadena">Cadena original del complemento de certificación digital del SAT:</th></tr>
     <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>||1.1|E48F7C30-AC0A-4D8E-9073-E105DF254B45|2018-06-19T20:29:31|IAD121214B34|fULf/YJ/e70gvlcMcQbXvasYG5b59njzgLx/fVXpyX4IgyBADwexqvqiqBlC6GXWqylcZcp17jwA5
 FT5eznVKNO2Fe+XvRW/BLpU1EooTWyHkNdOiOVkzwvZKxWmmBKbPSnU4zkNs9AqJu4G1ApAnBIqYRE20RtvP/jHtWPqJ0Uo1AWnyvbpsAhXI5maYfhIkG6igsGIaXtA7U+MTqpy2clvFzx
 B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3thGmr6XbxO/ehnVi+tVnH/gCkkNv1uADWXK4ClsZrQQ==|2000100000030002232
 3||</small></td></tr>
   </table>
   </table>
-  <div class="leyenda fondos"><center>ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.</center></div>
+  <div class="leyenda fondos_titulos"><center>ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.</center></div>
 
   </div>
 </div>
@@ -204,7 +203,7 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
   .hr{
     border:4px solid #EC971F;
   }
-  .fondos{
+  .fondos_titulos{
     background-color: #204D74;
     color:white;
     text-align: center;
@@ -212,6 +211,7 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
   td {
     border:none;
     font-weight: normal;
+
   }
   table {
       color:#000 ;
@@ -219,6 +219,12 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
       border-collapse:collapse;
       border:1px solid #204D74;
       margin-top: 15px;
+  }
+  .sellos_cadena{
+    text-align: center;
+  }
+  .certificados_folio {
+    text-align: right;
   }
 
 /*
@@ -229,6 +235,7 @@ body{
 th{
   text-transform: uppercase;
   border:none;
+  font-weight: bold;
 }
 
 .leyenda{
@@ -281,6 +288,8 @@ th{
 #negocio{
     border:none;
     margin-top: 0px;
+    word-break: break-all;
+    text-align: center;
 }
 #tablaRaiz{
   border:none;
@@ -300,7 +309,6 @@ th{
   font-size: 10;
   border:none;
   width: 100%;
-  align:left;
   margin: 0px !important;
 }
 .folioFiscal{
@@ -315,12 +323,25 @@ th{
   $(document).ready(function(){
     //Cambia el color de fondo de los comprobantes
     $("#color_fondo").change(function(){
-      $(".fondos").css('background', $(this).val());
+      $(".fondos_titulos").css('background', $(this).val());
+      $(".firma").css('border-top', '1px solid ' + $(this).val());
+      $("table").css('border', '1px solid ' + $(this).val());
+      $(".conceptos").css('border-bottom', '1px solid ' + $(this).val());
+      $("#negocio").css('border', 'none');
+      $("#tablaRaiz").css('border', 'none');
+
+
+
+
+
     });
     //Cambia el color de los títulos
     $("#color_banda").change(function(){
-
       $("#banda").css('border', '3px solid ' + $(this).val());
+    });
+    //Color de Títulos
+    $("#color_titulos").change(function(){
+      $(".fondos_titulos").css('color', $(this).val());
     });
 
    });
