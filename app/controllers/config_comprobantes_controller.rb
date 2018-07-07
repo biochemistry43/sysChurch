@@ -11,7 +11,14 @@ class ConfigComprobantesController < ApplicationController
   # GET /config_comprobantes/1
   # GET /config_comprobantes/1.json
   def show
-    @datosFiscales = current_user.negocio.datos_fiscales_negocio
+    if @config_comprobante.comprobante == "fv"
+      leyenda = "Facturas de ventas"
+    elsif @config_comprobante.comprobante == "nc"
+      leyenda = "Notas de crédito"
+    elsif @config_comprobante.comprobante == "fg"
+      leyenda = "Facturas globales de ventas"
+    end
+    @nombre_plantilla = leyenda
   end
 
   # GET /config_comprobantes/new
@@ -67,12 +74,13 @@ class ConfigComprobantesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_config_comprobante
-      id_negocio = current_user.negocio.id
-      @config_comprobante = ConfigComprobante.find_by(negocio_id: id_negocio)
+      #id_negocio = current_user.negocio.id
+      #@config_comprobante = ConfigComprobante.find_by(negocio_id: id_negocio)
+      @config_comprobante = ConfigComprobante.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def config_comprobante_params
-      params.require(:config_comprobante).permit(:asunto_email, :msg_email, :tipo_fuente, :tam_fuente, :color_fondo, :color_titulos, :color_banda, :negocio_id)
+      params.require(:config_comprobante).permit(:comprobante, :tipo_fuente, :tam_fuente, :color_fondo, :color_titulos, :color_banda, :negocio_id)
     end
 end

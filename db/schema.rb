@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180705035800) do
+ActiveRecord::Schema.define(version: 20180705185019) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -215,8 +215,6 @@ ActiveRecord::Schema.define(version: 20180705035800) do
   end
 
   create_table "config_comprobantes", force: :cascade do |t|
-    t.string   "asunto_email"
-    t.string   "msg_email"
     t.string   "tipo_fuente"
     t.string   "tam_fuente"
     t.string   "color_fondo"
@@ -225,6 +223,7 @@ ActiveRecord::Schema.define(version: 20180705035800) do
     t.integer  "negocio_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.string   "comprobante"
   end
 
   add_index "config_comprobantes", ["negocio_id"], name: "index_config_comprobantes_on_negocio_id"

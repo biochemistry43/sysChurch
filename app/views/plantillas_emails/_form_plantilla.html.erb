@@ -11,6 +11,7 @@
     </div>
   <% end %>
   <div class="row">
+
     <div class="col-md-9 col-sm-9 col-xs-12">
       <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
       <div class="input-group col-md-10 col-sm-10 col-xs-12">
@@ -92,7 +93,7 @@
         //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
         hint: {
           //Para las notas de crédito no hacen falta los datos de la venta, pero si resulta util los datos de la factura asociada.
-          mentions: ['Nombre del cliente','Fecha de la nota de crédito','Número de la nota de  crédito','Folio de la nota de crédito', 'Total de la nota de crédito' ,'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
+          mentions: ['Nombre del cliente','Fecha de la nota de crédito','Número de la nota de crédito','Folio de la nota de crédito', 'Total de la nota de crédito' ,'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
           match: /\B@(\w*)$/,
           search: function (keyword, callback) {
             callback($.grep(this.mentions, function (item) {

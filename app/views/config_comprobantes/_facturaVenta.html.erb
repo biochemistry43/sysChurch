@@ -11,114 +11,318 @@
       </ul>
     </div>
   <% end %>
-
-
+<div class="col-md-4 col-sm-4 col-xs-12" >
   <div class="row">
-    <div class="col-md-9 col-sm-9 col-xs-12">
-      <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-10 col-sm-10 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= f.text_field :asunto_email, class:'form-control text_field'%>
-      </div>
-
-
-    </div>
-    <div class="col-md-2 col-sm-2 col-xs-12">
-      <%= select_tag :lista_texto_variable, "<optgroup label='Cliente'><option value='nombreCliente'>Nombre del cliente</option></optgroup>
-                                                <optgroup label='Venta'><option value='fechaVenta'>Fecha de venta</option><option value='numeroVenta'>Número de venta</option><option value='folioVenta'>Folio de venta</option></optgroup>
-                                                <optgroup label='Factura'><option value='fechaFactura'>Fecha de factura</option><option value='numeroFactura'>Número de factura</option><option value='folioFactura'>Folio de factura</option><option value='totalFactura'>Total</option></optgroup>
-                                                <optgroup label='Negocio'><option value='negocio'>Nombre del negocio</option><option value='sucursal'>Sucursal</option><option value='email'>Email</option><option value='telefono'>Teléfono</option></optgroup>".html_safe, :prompt => 'Texto variable.',  class: 'form-control' %>
-    </div>
+        <%= f.label :tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <%= select_tag :condicion_monto_factura, "<option>Arial</option><option>Open Sans</option>".html_safe,  class: 'form-control' %>
+        </div>
   </div>
   <div class="row">
-    <div class="col-md-9 col-sm-9 col-xs-12">
-        <%= f.label :msg_email, "Su mensaje: ", class:"control-label col-md-2 col-sm-2 col-xs-12",  style:"text-align:right;"%>
-      <div class="input-group col-md-10 col-sm-10 col-xs-12">
-         <!--textarea id="summernote" name="summernote"></textarea-->
-        <%= f.text_area :msg_email, class:'form-control text_field', id: "summernote"%>
-      </div>
+        <%= f.label :tamaño_fuente, "Tamaño de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <%= select_tag :condicion_monto_factura, "<option>Grande</option><option>Normal</option><option>Pequeña</option>".html_safe,  class: 'form-control' %>
+        </div>
   </div>
-  <div class="col-md-3 col-sm-3 col-xs-12" style="color:black;  font-weight: normal; text-align: justify; font-size: 12px;">
-    <p>
-        El texto que aparece dentro de dobles corchetes no debe de ser modificado porque será reemplazado automáticamente por el sistema con los datos reales de las operaciones.
-    </p>
-    <p> Por esa razón <b>{{nombreCliente}}</b> será reemplazado por <b>"Fulano Martínez"</b>, suponiendo que ese es el nombre de la persona a quien fue expedida la factura.</p>
+  <div class="row">
+        <%= f.label :lbl_color_fondo, "Fondo: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+    <div class="col-md-7 col-sm-7 col-xs-12">
+        <%= color_field_tag 'color_fondo', '#DEF726', style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_fondo"%>
+    </div>
   </div>
-
+  <div class="row">
+        <%= f.label :lbl_color_banda, "Línea: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+    <div class="col-md-7 col-sm-7 col-xs-12">
+        <%= color_field_tag 'color_banda', '#DEF726', style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12",id:"color_banda"%>
+    </div>
   </div>
-
+  <div class="row">
+        <%= f.label :asunto_email, "Títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+    <div class="col-md-7 col-sm-7 col-xs-12">
+        <%= color_field_tag 'color', '#DEF726', style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12"%>
+    </div>
+  </div>
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
+  </div>
+</div>
+<div>
+<!--Se previsualiza una representación impresa-->
+<div class="col-md-8 col-sm-8 col-xs-12 panel panel-default"  style='overflow-x:scroll;overflow-y:scroll; height:400px;'>
+  <table width="100%" id="tablaRaiz">
+  <tr>
+  <td><img src="http://kodikas.com.mx/wp-content/uploads/2016/06/logo-versio%CC%81n-2.png" height="100" width="100"></td>
+  <td colspan="2" align="right">
+    <table id="negocio">
+      <tr><th  colspan="2" style="font-size:18px;">KODIKAS</th> <td></td></tr>
+      <tr><th  colspan="2">Av. Córdoba No.2</th><td ></td></tr>
+      <tr><th  colspan="2">Fortín de las folores, C.P. 94474,</th><td ></td></tr>
+      <tr><th  colspan="2">Fortín de las flores, Ver. </th><td></td></tr>
+      <tr><th  colspan="2"> R.F.C.: XAXX010101000 </th> <td></td></tr>
+      <tr><th  colspan="2">Regimen fiscal: 601 - General de Ley Personas Morales </th><td></td></tr>
+    </table>
+  </td>
+  <td colspan="2" align="right">
+    <table class="serieFolio">
+      <tr><th class="h1" colspan="2"><big><big><b>Factura 3.3</b></big></big></th><td></td></tr>
+      <tr><th class="h1">Serie:</th><td class="h1">MTZF</td></tr>
+      <tr><th class="h1">Folio:</th><td class="h1">12</td></tr>
+      <tr><th class="h1">Fecha y hora:</th><td class="h1">2018-07-05T06:06:16</td></tr>
+    </table>
+  </td>
+  </tr>
+  <tr>
+    <table width="100%" border="1">
+      <thead><tr><th colspan="4" class="fondos">Lugar de expedición:</th></tr></thead>
+      <tbody class="emisor">
+        <tr> <th align="right">Dirección: </th>
+          <td colspan="3">Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td>
+        </tr>
+        <tr><th align="right">Teléfono:</th><td>(229)272709</td><th align="right">Email:</th> <td>jvazquez@kodikas.com.mx</td></tr>
+
+      </tbody>
+    </table>
+  </tr>
+  <tr>
+    <table width="100%" border="1">
+      <thead><tr><th colspan="4" class="fondos">Receptor</th></tr></thead>
+      <tbody>
+        <tr><th align="right">R.F.C.: </th><td>XAXX010101000</td> <th align="right">Nombre:  </th><td>Juan Pérez Martínez</td></tr>
+        <tr> <th align="right">Dirección: </th>
+          <td colspan="3">Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td>
+        </tr>
+        <tr><th align="right">Uso CFDI:  </th><td colspan="3">P01 - Por definir</td></tr>
+        <tr><th align="right">Teléfono:</th><td>2321096722</td><th align="right">Email:</th> <td>juanitoperez95@gmail.com</td></tr>
+      </tbody>
+  </table></tr>
+  <tr>
+    <table width="100%">
+      <thead><tr>
+      <th class="fondos">Cantidad</th>
+      <th class="fondos">Clave Prod</th>
+      <th class="fondos">Unidad</th>
+      <th class="fondos">Descripción</th>
+      <th class="fondos">Precio</th>
+      <th class="fondos">Desc.</th>
+      <th class="fondos">Importe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td align="center" class="conceptos">3.00</td>
+        <td align="center" class="conceptos">50161813</td>
+        <td align="center" class="conceptos">Pieza</td>
+        <td align="center" class="conceptos">Chocolate para fresas</td>
+        <td align="right" class="conceptos">$ 7.67</td>
+        <td align="right" class="conceptos">$ 0.00</td>
+        <td align="right" class="conceptos">$ 23.01</td>
+      </tr>
+    </tbody>
+      <tr>
+        <td colspan="5" align="left"><b>Forma de pago: </b></td>
+        <th align="right">SubTotal:</th>
+        <td align="right">$ 23.01</td>
+      </tr>
+      <tr>
+        <td colspan="5" align="left"><b>Método de pago: </b></td>
+        <th align="right">Descuento:</th>
+        <td align="right">$ 0.00</td>
+      </tr>
+      <tr>
+        <td colspan="5" align="right">TRASLADOS: </td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td colspan="5"></td>
+        <th align="right">IEPS 30.4 % </th>
+        <td align="right">$ 6.99</td>
+      </tr>
+      <tr id="total">
+        <td colspan="5" align="center" style="font-size:12px;"></td>
+        <th align="right" style="font-size:18px;"><b>Total:</b></th>
+        <td align="right"><b>$ 30.00</b></td>
+      </tr>
+    </table>
+  </tr>
+  <!-- Banda de color -->
+  <hr style="border:4px solid #EC971F;" id="banda">
+  <p class="condicionesDePago">Sera marcada como pagada en cuanto el receptor haya cubierto el pago.</p>
+  <br>
+  <div class="firma">(FIRMA DE CONFORMIDAD)</div>
+
+  <table id="sellosDig" width="100%">
+  <td>
+    <table width="100%" id="tablaInternaSellos">
+      <tr>
+      <td rowspan="6"><img src="" height="120" width="120"></td>
+      <th align="right">Folio fiscal: </th>
+      <td align="left" class="folioFiscal fondos">A6D0C9AC-8A19-4E72-84AC-0709C3BB4FFF</td>
+      </tr>
+      <tr>
+      <th align="right">Fecha y hora de certificación:  </th>
+      <td align="left"><small>2018-07-05T06:06:29</small></td>
+      </tr>
+      <tr>
+      <th align="right">No. de serie del Certificado de Sello Digital: </th>
+      <td align="left"><small>30001000000300023708</small></td>
+      </tr>
+      <tr>
+      <th align="right">No. de serie del Certificado de Sello Digital del SAT: </th>
+      <td align="left"><small>20001000000300022323</small></td>
+      </tr>
+    </table>
+  </td>
+    <tr colspan="3"><th>Sello Digital del CFDI:</th></tr>
+    <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>fULf/YJ/e70gvlcMcQbXvasYG5b59njzgLx/fVXpyX4IgyBADwexqvqiqBlC6GXWqylcZcp17jwA5FT5eznVKNO2Fe+XvRW/BLpU1EooTWyHkNdOiOVkzwvZKxWmmBKbPSnU4zkNs9AqJu4G
+1ApAnBIqYRE20RtvP/jHtWPqJ0Uo1AWnyvbpsAhXI5maYfhIkG6igsGIaXtA7U+MTqpy2clvFzxB/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vy
+plr9Crri3thGmr6XbxO/ehnVi+tVnH/gCkkNv1uADWXK4ClsZrQQ==</small></td></tr>
+    <tr colspan="3"><th>Sello Digital del SAT:</th></tr>
+    <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>nO7Krpvb2dHtfFaKRcFZhBgTapXJkW5xHhBPkygHRLvueWhCdOo5A790Vq+kab9bX2DtkqkI+RVGn1unhoDpGuNMMpcQe4zGHYjVj+CUCIqw4NFobiBAp3wYe9BFMKi9zb8uRCGGykUl
+2tpE+flVgpCbXe0ynA9B0VBhQbikAbPdrqzG7KEm0dUjBu5Rr52N7m8vrjZOHrNcqnkWHoYr6u+DxYwPI4SnHPxoPuF2VVmWNdAlWDoc58eo0/sgZMgcspO9jT+zbKuOPP+AJGHM9Jene
+Pm0GIAF5oZnjFUMuggwaQlNbrnxCNSteiSWIFFsISJD6gatlEt3sftv0Mrb0A==</small></td></tr>
+    <tr colspan="3"><th>Cadena original del complemento de certificación digital del SAT:</th></tr>
+    <tr colspan="3"><td class="paddingTablas" id="text-transform"><small>||1.1|E48F7C30-AC0A-4D8E-9073-E105DF254B45|2018-06-19T20:29:31|IAD121214B34|fULf/YJ/e70gvlcMcQbXvasYG5b59njzgLx/fVXpyX4IgyBADwexqvqiqBlC6GXWqylcZcp17jwA5
+FT5eznVKNO2Fe+XvRW/BLpU1EooTWyHkNdOiOVkzwvZKxWmmBKbPSnU4zkNs9AqJu4G1ApAnBIqYRE20RtvP/jHtWPqJ0Uo1AWnyvbpsAhXI5maYfhIkG6igsGIaXtA7U+MTqpy2clvFzx
+B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3thGmr6XbxO/ehnVi+tVnH/gCkkNv1uADWXK4ClsZrQQ==|2000100000030002232
+3||</small></td></tr>
+  </table>
+  </table>
+  <div class="leyenda fondos"><center>ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.</center></div>
 
   </div>
+</div>
 <% end %>
+
+<style media="screen">
+  /*Correctos*/
+  .h1 {
+      font-size: 12px;
+      color:white;
+      }
+  .hr{
+    border:4px solid #EC971F;
+  }
+  .fondos{
+    background-color: #204D74;
+    color:white;
+    text-align: center;
+  }
+  td {
+    border:none;
+    font-weight: normal;
+  }
+  table {
+      color:#000 ;
+      font-size: 12px;
+      border-collapse:collapse;
+      border:1px solid #204D74;
+      margin-top: 15px;
+  }
+
+/*
+body{
+     font-family: 'Open Sans', sans-serif;
+}*/
+
+th{
+  text-transform: uppercase;
+  border:none;
+}
+
+.leyenda{
+  line-height: 25px;
+  color:white;
+  font-size: 12px;
+  background-color: #204D74;
+}
+.firma{
+  width: 30%;
+  border-top:1px solid #204D74;
+  font-size: 12px;
+  text-align: center;
+  color: #000;
+  font-weight: normal;
+
+}
+.condicionesDePago{
+  font-size: 10px;
+  color: #000;
+  font-weight: normal;
+}
+.conceptos{
+   border-bottom: solid 1px #204D74 ;
+}
+.serieFolio{
+  margin-top: 0px;
+  background-color: #204D74;
+  color:white;
+}
+.emisor{
+  border:none;
+}
+.concep :nth-child(even){
+  background-color: #A3CC5B;
+  color: black;
+  text-align: center;
+
+}
+.concep :nth-child(odd){
+  background-color:white;
+  color: black;
+  text-align: center;
+}
+.paddingTablas{
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+#negocio{
+    border:none;
+    margin-top: 0px;
+}
+#tablaRaiz{
+  border:none;
+}
+#total{
+  font-size: 18 !important;
+}
+#sellosDig{
+  font-size: 10;
+  word-break: break-all;
+
+}
+#text-transform{
+  text-transform: none !important;
+}
+#tablaInternaSellos{
+  font-size: 10;
+  border:none;
+  width: 100%;
+  align:left;
+  margin: 0px !important;
+}
+.folioFiscal{
+  background-color: #204D74;
+  color: white;
+}
+</style>
 
 <script type="text/javascript">
 
-  //$(document).ready(function() {
-  //  $('#summernote').summernote();
-  //});
 
-    $('#summernote').summernote({
-      tabsize: 2,
-      height: 170,
-      minHeight: 170,
-      maxHeight: 170,
-      lang: 'es-ES', // default: 'en-US'
-      //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-      hint: {
-        mentions: ['nombreCliente','fechaVenta','numeroVenta','folioVenta','fechaFactura','numeroFactura','folioFactura','totalFactura','negocio','sucursal','email','telefono'],
-        match: /\B@(\w*)$/,
-        search: function (keyword, callback) {
-          callback($.grep(this.mentions, function (item) {
-            return item.indexOf(keyword) == 0;
-          }));
-        },
-        content: function (item) {
-          return '{{' + item + '}}';
-        }
-      },
+  $(document).ready(function(){
+    //Cambia el color de fondo de los comprobantes
+    $("#color_fondo").change(function(){
+      $(".fondos").css('background', $(this).val());
+    });
+    //Cambia el color de los títulos
+    $("#color_banda").change(function(){
 
-      toolbar: [
-      // [groupName, [list of button]]
-      ['fontname',['fontname']],
-      ['fontsize', ['fontsize']],
-      ['style', ['bold', 'italic', 'underline', 'clear']],
-      ['font', ['strikethrough', 'superscript', 'subscript']],
-      ['color', ['color']],
-      //['para', ['ul', 'ol', 'paragraph']],
-      ['height', ['height']],
-      ['insert',['link','table','hr']],
-      ['misc',['undo','redo']]
+      $("#banda").css('border', '3px solid ' + $(this).val());
+    });
 
-    ]
-
-  });
-
-  //Agrega una variable encerrado en doble corchetes por medio de un select que será reemplazado por el valor real de la BD.
-  //var editor = $("#summernote");
-
-var editor = $("#summernote");
-
-function getSelected()
-{
-  var u     = editor.val();
-  var start = editor.get(0).selectionStart;
-  var end   = editor.get(0).selectionEnd;
-
-  return [u.substring(0, start), u.substring(end), u.substring(start, end)];
-}
-$(document).ready(function() {
-  $('select#lista_texto_variable').on('change',function(){
-    var valor = $(this).val();
-    var select = getSelected();
-    editor.html(select[0] + '{{'+valor+'}}' + select[1]);
-  });
-});
-
-
-
+   });
 
 </script>

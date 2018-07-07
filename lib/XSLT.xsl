@@ -11,7 +11,6 @@
 
    <title>Factura Electrónica <xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"/>
-
    </head>
    <body>
    <table width="100%" id="tablaRaiz">

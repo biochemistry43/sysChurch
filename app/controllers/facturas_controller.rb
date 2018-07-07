@@ -981,7 +981,7 @@ class FacturasController < ApplicationController
 =end
 
   def readpdf
-
+    
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
 
