@@ -15,7 +15,7 @@
   <div class="row">
         <%= f.label :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
-            <%= select_tag :tipo_fuente, "<option>Arial</option><option>Open Sans</option>".html_safe,  class: 'form-control' %>
+            <%= select_tag :tipo_fuente, "<optgroup label='sans-serif'><option>Arial</option></optgroup><optgroup label='serif'> <option>Times New Roman</option></optgroup><optgroup label='monospace'> <option>Courier New</option></optgroup>".html_safe,  class: 'form-control' %>
         </div>
   </div>
   <div class="row">
@@ -49,7 +49,9 @@
 </div>
 <div>
 <!--Se previsualiza una representación impresa-->
-<div class="col-md-8 col-sm-8 col-xs-12 panel panel-default"  style='overflow-x:scroll;overflow-y:scroll; height:400px;'>
+
+  <div class="col-md-8 col-sm-8 col-xs-12 panel panel-default" id="cat_font" style='overflow-x:scroll;overflow-y:scroll; height:400px; font-family: <%= @tipo_fuente %>, <%= @opc_fuente %>, <%= @categoria_fuente %>;'>
+
   <table width="100%" id="tablaRaiz">
   <tr>
   <td ><img src="http://kodikas.com.mx/wp-content/uploads/2016/06/logo-versio%CC%81n-2.png" height="120" width="120"></td>
@@ -57,9 +59,9 @@
     <table id="negocio">
       <tr><th   style="font-size:18px; text-align:center;">KODIKAS Software & Hardware </th> </tr>
       <tr ><td> <b>R.F.C.</b> XAXX010101000</td></tr>
-      <tr ><td> <b>Regimen: </b> 601 - General de ley personas morales </td></tr>
+      <tr ><td> <b>REGIMEN: </b> 601 - General de ley personas morales </td></tr>
       <tr><td > <b>DIRECCIÓN: </b>  Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td></tr>
-      <tr><td > <b>Teéfono:</b>  (229)272709 <b>Página web: </b>kodikas.com.mx</td></tr>
+      <tr><td > <b>TELÉFONO:</b>  (229)272709 <b>PÁGINA WEB: </b>kodikas.com.mx</td></tr>
     </table>
   </td>
   <td>
@@ -119,12 +121,12 @@
       </tr>
     </tbody>
       <tr>
-        <td colspan="5" align="left"><b>Forma de pago: </b></td>
+        <td colspan="5" align="left"><b>FORMA DE PAGO: </b></td>
         <th align="right">SubTotal:</th>
         <td align="right">$ 23.01</td>
       </tr>
       <tr>
-        <td colspan="5" align="left"><b>Método de pago: </b></td>
+        <td colspan="5" align="left"><b>MÉTODO DE PAGO: </b></td>
         <th align="right">Descuento:</th>
         <td align="right">$ 0.00</td>
       </tr>
@@ -214,6 +216,17 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
 
   }
   table {
+
+
+    /*
+    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Times New Roman", Times, serif;
+    font-family: "Courier New", Courier, monospace;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-family: Geneva, Arial, Helvetica, sans-serif;
+    */
+
       color:#000 ;
       font-size: 12px;
       border-collapse:collapse;
@@ -337,6 +350,21 @@ th{
     //Color de Títulos
     $("#color_titulos").change(function(){
       $(".fondos_titulos").css('color', $(this).val());
+    });
+    $('select#tipo_fuente').on('change',function(){
+        var valor = $(this).val();
+
+        /* document.getElementById("myP").style.fontFamily = "Impact,Charcoal,sans-serif";*/
+        if (valor == "Arial"){
+          document.getElementById("cat_font").style.fontFamily = "Arial, Helvetica, sans-serif";
+        }
+        if (valor == "Times New Roman"){
+          document.getElementById("cat_font").style.fontFamily = "Times New Roman, Times, serif";
+        }
+        if (valor == "Courier New"){
+          document.getElementById("cat_font").style.fontFamily = "Courier New, Courier, monospace";
+        }
+        //Ocultar cuando no este seleccionado ninguno
     });
 
    });

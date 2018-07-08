@@ -11,8 +11,24 @@ class ConfigComprobantesController < ApplicationController
   # GET /config_comprobantes/1
   # GET /config_comprobantes/1.json
   def show
+=begin
+    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Times New Roman", Times, serif;
+    font-family: "Courier New", Courier, monospace;
+=end
     #Se extraen los valores de la plantilla de impresión
     @tipo_fuente = @config_comprobante.tipo_fuente
+    if @tipo_fuente == "Arial"
+      @categoria_fuente = "sans-serif"
+      @opc_fuente = "Helvetica"
+    elsif @tipo_fuente == "Courier New"
+      @categoria_fuente = "monospace"
+      @opc_fuente = "Courier"
+    elsif @tipo_fuente == "Times New Roman"
+      @categoria_fuente = "serif"
+      @opc_fuente = "Times"
+    end
+
     @tam_fuente = @config_comprobante.tam_fuente
     @color_fondo = @config_comprobante.color_fondo
     @color_titulos = @config_comprobante.color_titulos
