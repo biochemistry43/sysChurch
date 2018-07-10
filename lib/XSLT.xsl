@@ -269,16 +269,17 @@
 
 <xsl:template match="//cfdi:Concepto">
   <tbody>
+    <xsl:variable name="color_fondo"><xsl:value-of select="//cfdi:DatosPlantilla/@ColorFondo"/></xsl:variable>
     <xsl:choose>
        <xsl:when test="//cfdi:Receptor/@Nombre">
          <tr>
-             <td align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
-             <td align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
-             <td align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
-             <td align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
-             <td align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
-             <td align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
-             <td align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@Cantidad"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@ClaveProdServ"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
          </tr>
        </xsl:when>
        <xsl:otherwise>
