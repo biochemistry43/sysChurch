@@ -12,32 +12,32 @@
     </div>
   <% end %>
 <div class="col-md-4 col-sm-4 col-xs-12" >
-  <div class="row">
+  <div class="row" style="padding-bottom:10px;">
         <%= f.label :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
             <%= select_tag :tipo_fuente, "<optgroup label='sans-serif'><option>Arial</option></optgroup><optgroup label='serif'> <option>Times New Roman</option></optgroup><optgroup label='monospace'> <option>Courier New</option></optgroup>".html_safe,  class: 'form-control' %>
         </div>
   </div>
-  <div class="row">
+  <div class="row" style="padding-bottom:10px;">
         <%= f.label :lbl_tam_fuente, "Tamaño de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
             <%= select_tag :tam_fuente, "<option>Grande</option><option>Normal</option><option>Pequeña</option>".html_safe,  class: 'form-control' %>
         </div>
   </div>
-  <div class="row">
-        <%= f.label :lbl_color_fondo, "Fondo: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+  <div class="row" style="padding-bottom:10px;">
+        <%= f.label :lbl_color_fondo, "Color de fondo: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_fondo', @color_fondo, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_fondo"%>
     </div>
   </div>
-  <div class="row">
-        <%= f.label :lbl_color_banda, "Línea: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+  <div class="row" style="padding-bottom:10px;">
+        <%= f.label :lbl_color_banda, "Color de línea: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_banda', @color_banda, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12",id:"color_banda"%>
     </div>
   </div>
-  <div class="row">
-        <%= f.label :lbl_color_titulos, "Títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+  <div class="row" style="padding-bottom:10px;">
+        <%= f.label :lbl_color_titulos, "Color de títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_titulos', @color_titulos, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_titulos"%>
     </div>
@@ -272,7 +272,7 @@ th{
   font-weight: normal;
 }
 .conceptos{
-   /*border-bottom: solid 1px #204D74 ;*/
+   border-bottom: solid 1px #204D74 ;
 }
 .serieFolio{
   margin-top: 0px;

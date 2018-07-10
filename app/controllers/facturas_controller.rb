@@ -225,7 +225,7 @@ class FacturasController < ApplicationController
         hash_domicilioEmisor[:municipio] = current_user.negocio.datos_fiscales_negocio.municipio ? current_user.negocio.datos_fiscales_negocio.municipio : " "
         hash_domicilioEmisor[:estado] = current_user.negocio.datos_fiscales_negocio.estado ? current_user.negocio.datos_fiscales_negocio.estado : " "
         #pais: current_user.negocio.datos_fiscales_negocio.,
-        hash_domicilioEmisor[:codigoPostal] = current_user.negocio.datos_fiscales_negocio.codigo_postal ? current_user.negocio.datos_fiscales_negocio.estado : " "
+        hash_domicilioEmisor[:codigoPostal] = current_user.negocio.datos_fiscales_negocio.codigo_postal ? current_user.negocio.datos_fiscales_negocio.codigo_postal : " "
       end
       domicilioEmisor = CFDI::DatosComunes::Domicilio.new(hash_domicilioEmisor)
 
@@ -393,8 +393,16 @@ class FacturasController < ApplicationController
       #Para el nombre del changarro feo jajaja
       nombre_negocio = current_user.negocio.nombre
 
+      #Personalización de la plantilla de impresión de una factura de venta. :P
+      tipo_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").tipo_fuente
+      tam_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").tam_fuente
+      color_fondo = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_fondo
+      color_banda = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_banda
+      color_titulos = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_titulos
+
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio}
+      hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
+        tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos }
 
       #hash_info[:Telefono1Receptor]= @venta.cliente.telefono1 if @venta.cliente.telefono1
       #hash_info[:EmailReceptor]= @venta.cliente.email if @venta.cliente.email
@@ -444,7 +452,7 @@ class FacturasController < ApplicationController
         archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
         archivo.write (xml)
         archivo.close
-
+=begin
         #7.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
@@ -518,7 +526,7 @@ class FacturasController < ApplicationController
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
-
+=end
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
@@ -981,7 +989,7 @@ class FacturasController < ApplicationController
 =end
 
   def readpdf
-    
+
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
 

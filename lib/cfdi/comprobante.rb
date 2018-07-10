@@ -677,6 +677,8 @@ module CFDI
       datos_receptor[:Telefono1Receptor] = hash_info.fetch(:Telefono1Receptor) if hash_info.key?(:Telefono1Receptor)
       datos_receptor[:EmailReceptor] = hash_info.fetch(:EmailReceptor) if hash_info.key?(:EmailReceptor)
 
+      datos_plantilla = {TipoFuente: hash_info.fetch(:tipo_fuente), TamFuente: hash_info.fetch(:tam_fuente), ColorFondo: hash_info.fetch(:color_fondo), ColorBanda: hash_info.fetch(:color_banda), ColorTitulos: hash_info.fetch(:color_titulos)}
+
     builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
       xml.RepresentacionImpresa(ns){
         xml.DatosReceptor(datos_receptor){
@@ -686,7 +688,9 @@ module CFDI
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
           xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
         }
-
+        #Datos de la personalización de la plantilla de impresión de una factura de venta. :P
+        xml.DatosPlantilla(datos_plantilla){
+        }
       }
     end
     xml_info_extra=builder.to_xml
