@@ -43,9 +43,9 @@
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@calle"/>, No.
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@noExterior"/>, No. Int.
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@noInterior"/>, Col.
-                <xsl:value-of select="//cfdi:DomicilioEmisor/@colonia"/>,
-                <!-- referencia -->,
-                <!-- Localidad-->, C.P.
+                <xsl:value-of select="//cfdi:DomicilioEmisor/@colonia"/>, 
+                <xsl:value-of select="//cfdi:DomicilioEmisor/@referencia"/>,
+                <xsl:value-of select="//cfdi:DomicilioEmisor/@localidad"/>, C.P.
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@municipio"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/></td></tr>

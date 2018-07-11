@@ -215,13 +215,14 @@ class FacturasController < ApplicationController
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
       #DATOS DEL EMISOR
       hash_domicilioEmisor = {}
+      #Que locura, es una redundancia
       if current_user.negocio.datos_fiscales_negocio
         hash_domicilioEmisor[:calle] = current_user.negocio.datos_fiscales_negocio.calle ? current_user.negocio.datos_fiscales_negocio.calle : " "
         hash_domicilioEmisor[:noExterior] = current_user.negocio.datos_fiscales_negocio.numExterior ? current_user.negocio.datos_fiscales_negocio.numExterior : " "
         hash_domicilioEmisor[:noInterior] = current_user.negocio.datos_fiscales_negocio.numInterior ? current_user.negocio.datos_fiscales_negocio.numInterior : " "
         hash_domicilioEmisor[:colonia] = current_user.negocio.datos_fiscales_negocio.colonia ? current_user.negocio.datos_fiscales_negocio.colonia : " "
-        #localidad: current_user.negocio.datos_fiscales_negocio.,
-        #referencia: current_user.negocio.datos_fiscales_negocio.,
+        hash_domicilioEmisor[:localidad] = current_user.negocio.datos_fiscales_negocio.localidad ? current_user.negocio.datos_fiscales_negocio.localidad : " "
+        hash_domicilioEmisor[:referencia] = current_user.negocio.datos_fiscales_negocio.referencia ? current_user.negocio.datos_fiscales_negocio.referencia : " "
         hash_domicilioEmisor[:municipio] = current_user.negocio.datos_fiscales_negocio.municipio ? current_user.negocio.datos_fiscales_negocio.municipio : " "
         hash_domicilioEmisor[:estado] = current_user.negocio.datos_fiscales_negocio.estado ? current_user.negocio.datos_fiscales_negocio.estado : " "
         #pais: current_user.negocio.datos_fiscales_negocio.,

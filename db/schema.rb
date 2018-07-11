@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180711021854) do
+ActiveRecord::Schema.define(version: 20180711061203) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -267,6 +267,8 @@ ActiveRecord::Schema.define(version: 20180711021854) do
     t.string   "path_key"
     t.string   "password"
     t.integer  "regimen_fiscal_id"
+    t.string   "localidad"
+    t.text     "referencia"
   end
 
   add_index "datos_fiscales_negocios", ["regimen_fiscal_id"], name: "index_datos_fiscales_negocios_on_regimen_fiscal_id"

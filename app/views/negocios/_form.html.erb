@@ -257,6 +257,14 @@
       </div>
     </div>
     <div class="form-group">
+      <%= d.label :lbl_localidad, "Localidad:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_field :localidad, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
       <%= d.label :codigo_postal, "Código Postal:", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
       <div class="col-lg-8">
@@ -288,6 +296,17 @@
         <%= d.text_field :estado, class: "form-control"%>
       </div>
     </div>
+
+
+    <div class="form-group">
+      <%= d.label :lbl_referencia, "Referencia:", :class=>'col-lg-3 control-label' %>
+      <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= d.text_area :referencia, class: "form-control"%>
+      </div>
+    </div>
+
     <div class="form-group">
       <%= d.label :email, "Email:", :class=>'col-lg-3 control-label' %>
       <!-- <label class="col-lg-3 control-label">Apellido paterno:</label> -->
