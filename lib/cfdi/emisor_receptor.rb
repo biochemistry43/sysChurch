@@ -30,7 +30,7 @@ module CFDI
     end
 
     class Domicilio < ElementoComprobante
-      @cadenaOriginal = [:calle, :noExterior, :noInterior, :colonia, :localidad, :referencia, :municipio, :estado, :pais, :codigoPostal]
+      @cadenaOriginal = [:calle, :noExterior, :noInterior, :colonia, :localidad, :referencia, :municipio, :estado, :codigoPostal, :pais]
       attr_accessor *@cadenaOriginal
     end
   end

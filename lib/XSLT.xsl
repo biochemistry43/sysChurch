@@ -124,9 +124,9 @@
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/>, No. Int.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@noInterior"/>, Col.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
-                        <!-- referencia -->,
+                        <xsl:value-of select="//cfdi:DomicilioReceptor/@referencia"/>,
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@localidad"/>, C.P.
-                        <xsl:value-of select="//cfdi:DomicDomicilioReceptor/@codigoPostal"/>,
+                        <xsl:value-of select="//cfdi:DomicilioReceptor/@codigoPostal"/>,
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>
                       </td>

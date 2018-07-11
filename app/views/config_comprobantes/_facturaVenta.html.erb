@@ -52,7 +52,7 @@
 
   <div class="col-md-8 col-sm-8 col-xs-12 panel panel-default" id="cat_font" style='overflow-x:scroll;overflow-y:scroll; height:400px; font-family: <%= @tipo_fuente %>;'>
 
-  <table width="100%" id="tablaRaiz">
+  <table  min-width="100%" width="100%" id="tablaRaiz">
   <tr>
   <td ><img src="http://kodikas.com.mx/wp-content/uploads/2016/06/logo-versio%CC%81n-2.png" height="120" width="120"></td>
   <td align="right">
@@ -74,14 +74,13 @@
   </td>
   </tr>
   <tr >
-    <table style="border: solid 1px <%= @color_fondo %>;" border="1" with="100%">
+    <table with="100%" style="border: solid 1px <%= @color_fondo %>;" border="1" >
       <thead><tr><th colspan="4" style="color: <%= @color_titulos %>; background-color: <%= @color_fondo %>;" class="fondos_titulos">Lugar de expedición:</th></tr></thead>
       <tbody class="emisor">
         <tr> <th align="right">Dirección: </th>
           <td colspan="3">Av. Córdoba  No. 2, entre Avenida Citlaltepetl y Blvd Fortín de las flores, Fracc. Fortín de las flores, C.P. 94474, Fortín de las fores, Ver.</td>
         </tr>
         <tr><th align="right">Teléfono:</th><td>(229)272709</td><th align="right">Email:</th> <td>jvazquez@kodikas.com.mx</td></tr>
-
       </tbody>
     </table>
   </tr>
@@ -159,7 +158,7 @@
       <tr>
       <td rowspan="6"><img src="" height="120" width="120"></td>
       <th class="certificados_folio">Folio fiscal: </th>
-      <td style="color: <%= @color_titulos %>; background-color: <%= @color_fondo %>;" align="left" class="folioFiscal fondos_titulos">A6D0C9AC-8A19-4E72-84AC-0709C3BB4FFF</td>
+      <td style="color: <%= @color_titulos %>; background-color: <%= @color_fondo %>;" align="left" class="fondos_titulos">A6D0C9AC-8A19-4E72-84AC-0709C3BB4FFF</td>
       </tr>
       <tr>
       <th class="certificados_folio">Fecha y hora de certificación:  </th>
@@ -216,17 +215,6 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
 
   }
   table {
-
-
-    /*
-    font-family: Arial, Helvetica, sans-serif;
-    font-family: "Times New Roman", Times, serif;
-    font-family: "Courier New", Courier, monospace;
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-family: Geneva, Arial, Helvetica, sans-serif;
-    */
-
       color:#000 ;
       font-size: 12px;
       border-collapse:collapse;
@@ -239,11 +227,6 @@ B/MYwaP9rBBLwpn/8n5Pml8hMHCRThzktFGmHleAiNIL/465jnOcC0el5mFLYeBSiN6W2Vyplr9Crri3
   .certificados_folio {
     text-align: right;
   }
-
-/*
-body{
-     font-family: 'Open Sans', sans-serif;
-}*/
 
 th{
   text-transform: uppercase;
@@ -324,10 +307,7 @@ th{
   width: 100%;
   margin: 0px !important;
 }
-.folioFiscal{
-  /*background-color: #204D74;*/
-  color: white;
-}
+
 </style>
 
 <script type="text/javascript">

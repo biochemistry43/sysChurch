@@ -83,9 +83,9 @@ class FacturasController < ApplicationController
               @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : ""
               @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : ""
               @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : ""
-              #@referencia_referencia_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
+              @referencia_receptor_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
               @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : ""
-
+              @pais_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.pais : ""
               @uso_cfdi_receptor_f=UsoCfdi.all
 
               #COMPROBANTE
@@ -270,6 +270,7 @@ class FacturasController < ApplicationController
         municipio: params[:municipio_receptor_vf],
         estado: params[:estado_receptor_vf],
         codigoPostal: params[:cp_receptor_vf],
+        pais: params[:pais_receptor_f],
         referencia: params[:referencia_receptor_vf]
         })
 
