@@ -33,17 +33,20 @@ class ClientesController < ApplicationController
     numInterior_f = params[:numInterior_f]
     colonia_f = params[:colonia_f]
     localidad_f = params[:localidad_f]
-    #referencia_f = params[:referencia_f]
+
     municipio_f = params[:municipio_f]
     estado_f = params[:estado_f]
     codigo_postal_f = params[:codigo_postal_f]
+    pais_f = params[:pais_f]
+    referencia_f = params[:referencia_f]
+
 
     respond_to do |format|
       if @cliente.update(cliente_params)
         if @cliente.datos_fiscales_cliente.present?
-          @cliente.datos_fiscales_cliente.update(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
-        else
-          @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+          @cliente.datos_fiscales_cliente.update(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f, referencia: referencia_f, pais: pais_f)
+        elsif nombreFiscal_f.length > 0 && rfc_f.length > 0
+          @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f, referencia: referencia_f, pais: pais_f)
           @cliente.datos_fiscales_cliente = @datosFiscalesCliente if @datosFiscalesCliente.save && nombreFiscal_f.length > 0 && rfc_f.length > 0
         end
 
@@ -70,12 +73,14 @@ class ClientesController < ApplicationController
     numInterior_f = params[:numInterior_f]
     colonia_f = params[:colonia_f]
     localidad_f = params[:localidad_f]
-    #referencia_f = params[:referencia_f]
+
     municipio_f = params[:municipio_f]
     estado_f = params[:estado_f]
     codigo_postal_f = params[:codigo_postal_f]
+    pais_f = params[:pais_f]
+    referencia_f = params[:referencia_f]
 
-    @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f)
+    @datosFiscalesCliente=DatosFiscalesCliente.new(nombreFiscal:nombreFiscal_f, rfc:rfc_f, calle:calle_f, numExterior: numExterior_f, numInterior: numInterior_f, colonia: colonia_f, localidad:localidad_f, municipio: municipio_f, estado:estado_f, codigo_postal: codigo_postal_f, pais:pais_f, referencia:referencia_f)
 
     respond_to do |format|
       if @cliente.valid?
