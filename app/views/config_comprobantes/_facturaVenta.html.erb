@@ -15,7 +15,7 @@
   <div class="row" style="padding-bottom:10px;">
         <%= f.label :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
-            <%= select_tag :tipo_fuente, "<optgroup label='sans-serif'><option>Arial</option></optgroup><optgroup label='serif'> <option>Times New Roman</option></optgroup><optgroup label='monospace'> <option>Courier New</option></optgroup>".html_safe,  class: 'form-control' %>
+            <%= select_tag :tipo_fuente, '<optgroup label="sans-serif"><option value="Arial, Helvetica, sans-serif">Arial</option></optgroup><optgroup label="serif"> <option value= "Times New Roman, Times, serif">Times New Roman</option></optgroup><optgroup label="monospace"> <option value="Courier New, Courier, monospace">Courier New</option></optgroup>'.html_safe,  class: 'form-control' %>
         </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
@@ -50,7 +50,7 @@
 <div>
 <!--Se previsualiza una representación impresa-->
 
-  <div class="col-md-8 col-sm-8 col-xs-12 panel panel-default" id="cat_font" style='overflow-x:scroll;overflow-y:scroll; height:400px; font-family: <%= @tipo_fuente %>, <%= @opc_fuente %>, <%= @categoria_fuente %>;'>
+  <div class="col-md-8 col-sm-8 col-xs-12 panel panel-default" id="cat_font" style='overflow-x:scroll;overflow-y:scroll; height:400px; font-family: <%= @tipo_fuente %>;'>
 
   <table width="100%" id="tablaRaiz">
   <tr>
@@ -74,7 +74,7 @@
   </td>
   </tr>
   <tr >
-    <table style="border: solid 1px <%= @color_fondo %>;" border="1">
+    <table style="border: solid 1px <%= @color_fondo %>;" border="1" with="100%">
       <thead><tr><th colspan="4" style="color: <%= @color_titulos %>; background-color: <%= @color_fondo %>;" class="fondos_titulos">Lugar de expedición:</th></tr></thead>
       <tbody class="emisor">
         <tr> <th align="right">Dirección: </th>
@@ -354,7 +354,8 @@ th{
     $('select#tipo_fuente').on('change',function(){
         var valor = $(this).val();
 
-        /* document.getElementById("myP").style.fontFamily = "Impact,Charcoal,sans-serif";*/
+        document.getElementById("cat_font").style.fontFamily = valor;
+        /*
         if (valor == "Arial"){
           document.getElementById("cat_font").style.fontFamily = "Arial, Helvetica, sans-serif";
         }
@@ -363,7 +364,7 @@ th{
         }
         if (valor == "Courier New"){
           document.getElementById("cat_font").style.fontFamily = "Courier New, Courier, monospace";
-        }
+        }*/
         //Ocultar cuando no este seleccionado ninguno
     });
 
