@@ -48,7 +48,7 @@
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@localidad"/>, C.P.
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@municipio"/>,
-                <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/></td></tr>
+                <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/>.</td></tr>
               <tr><td> <b>TELÉFONO:</b> <b>PÁGINA WEB: </b> </td></tr>
             </table>
           </td>
@@ -90,11 +90,11 @@
                      <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/>, No. Int.
                      <xsl:value-of select="//cfdi:ExpedidoEn/@noInterior"/>, Col.
                      <xsl:value-of select="//cfdi:ExpedidoEn/@colonia"/>,
-                     <!-- referencia -->,
-                     <!-- Localidad-->, C.P.
+                     <xsl:value-of select="//cfdi:ExpedidoEn/@referencia"/>,
+                     <xsl:value-of select="//cfdi:ExpedidoEn/@localidad"/>, C.P.
                      <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
                      <xsl:value-of select="//cfdi:ExpedidoEn/@municipio"/>,
-                     <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>
+                     <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
                    </td>
                  </tr>
                  <tr>
@@ -128,7 +128,7 @@
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@localidad"/>, C.P.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@codigoPostal"/>,
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
-                        <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>
+                        <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
                       </td>
                     </tr>
                     <tr><th align="right">Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>

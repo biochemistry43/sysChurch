@@ -232,21 +232,19 @@ class FacturasController < ApplicationController
       #III. Sí se tiene más de un local o establecimiento, se deberá señalar el domicilio del local o
       #establecimiento en el que se expidan las Facturas Electrónicas
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
-
-      expedidoEn= CFDI::DatosComunes::Domicilio.new({
-        #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
-        #se debera corregir.
-        calle: current_user.sucursal.calle,
-        noExterior: current_user.sucursal.numExterior,
-        noInterior: current_user.sucursal.numInterior,
-        colonia: current_user.sucursal.colonia,
-        #localidad: current_user.negocio.datos_fiscales_negocio.,
-        #referencia: current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
-        municipio: current_user.sucursal.municipio,
-        estado: current_user.sucursal.estado,
-        #pais: current_user.negocio.datos_fiscales_negocio.,
-        codigoPostal: current_user.sucursal.codigo_postal
-      })
+      if current_user.sucursal #Solo si cuenta con más de un local
+        expedidoEn= CFDI::DatosComunes::Domicilio.new({
+          calle: current_user.sucursal.datos_fiscales_sucursal.calle,
+          noExterior: current_user.sucursal.datos_fiscales_sucursal.numExt,
+          noInterior: current_user.sucursal.datos_fiscales_sucursal.numInt,
+          colonia: current_user.sucursal.datos_fiscales_sucursal.colonia,
+          localidad: current_user.sucursal.datos_fiscales_sucursal.localidad,
+          codigoPostal: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
+          municipio: current_user.sucursal.datos_fiscales_sucursal.municipio,
+          estado: current_user.sucursal.datos_fiscales_sucursal.estado,
+          referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,
+        })
+      end
 
       factura.emisor = CFDI::Emisor.new({
         #rfc: 'AAA010101AAA',
