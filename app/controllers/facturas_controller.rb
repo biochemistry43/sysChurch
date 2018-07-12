@@ -225,7 +225,6 @@ class FacturasController < ApplicationController
         hash_domicilioEmisor[:referencia] = current_user.negocio.datos_fiscales_negocio.referencia ? current_user.negocio.datos_fiscales_negocio.referencia : " "
         hash_domicilioEmisor[:municipio] = current_user.negocio.datos_fiscales_negocio.municipio ? current_user.negocio.datos_fiscales_negocio.municipio : " "
         hash_domicilioEmisor[:estado] = current_user.negocio.datos_fiscales_negocio.estado ? current_user.negocio.datos_fiscales_negocio.estado : " "
-        #pais: current_user.negocio.datos_fiscales_negocio.,
         hash_domicilioEmisor[:codigoPostal] = current_user.negocio.datos_fiscales_negocio.codigo_postal ? current_user.negocio.datos_fiscales_negocio.codigo_postal : " "
       end
       domicilioEmisor = CFDI::DatosComunes::Domicilio.new(hash_domicilioEmisor)

@@ -1,4 +1,5 @@
 class Sucursal < ActiveRecord::Base
+	has_one :datos_fiscales_sucursal
 	has_many :nota_creditos
 	has_many :facturas
 	has_many :factura_recurrentes
