@@ -673,6 +673,15 @@ module CFDI
       CveNombreMetodoPago: hash_info.fetch(:cve_nombre_metodo_pago),
       UsoCfdiDescripcion: hash_info.fetch(:uso_cfdi_descripcion)
       }
+      datos_emisor = {
+        CveNombreRegimenFiscalSAT: hash_info.fetch(:cve_nomb_regimen_fiscalSAT),
+        NombreNegocio: hash_info.fetch(:nombre_negocio),
+        TelefonoNegocio: hash_info.fetch(:tel_negocio),
+        EmailNegocio: hash_info.fetch(:email_negocio),
+        PagWebNegocio: hash_info.fetch(:pag_web_negocio)
+      }
+      #Los datos de la sucursal serán opcionales
+
       datos_receptor={}
       datos_receptor[:Telefono1Receptor] = hash_info.fetch(:Telefono1Receptor) if hash_info.key?(:Telefono1Receptor)
       datos_receptor[:EmailReceptor] = hash_info.fetch(:EmailReceptor) if hash_info.key?(:EmailReceptor)
@@ -681,12 +690,13 @@ module CFDI
 
     builder = Nokogiri::XML::Builder.new(encoding: 'utf-8')  do |xml| #La linea <?xml version="1.0" encoding="utf-8"?> se duplicará con la combinación
       xml.RepresentacionImpresa(ns){
-        xml.DatosReceptor(datos_receptor){
-          xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
-        }
-        xml.DatosEmisor({CveNombreRegimenFiscalSAT: hash_info.fetch(:cve_nomb_regimen_fiscalSAT), NombreNegocio: hash_info.fetch(:nombre_negocio)}){
+
+        xml.DatosEmisor(datos_emisor){
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
           xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
+        }
+        xml.DatosReceptor(datos_receptor){
+          xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
         }
         #Datos de la personalización de la plantilla de impresión de una factura de venta. :P
         xml.DatosPlantilla(datos_plantilla){

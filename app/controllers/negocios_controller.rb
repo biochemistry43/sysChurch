@@ -30,7 +30,7 @@ class NegociosController < ApplicationController
       @datosFiscales = @negocio.datos_fiscales_negocio
       #El RFC debe tener exactamente 12 o 13 carácteres (12 para personas morales y 13 para personas físicas).
       @regimenes_fisica_o_moral = (current_user.negocio.datos_fiscales_negocio.rfc).length == 12 ? RegimenFiscal.where(personaMoral: "true") : RegimenFiscal.where(personaFisica: "true")
-      @regimen_fiscal_id = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.id 
+      @regimen_fiscal_id = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.id
     end
   end
 
@@ -103,6 +103,6 @@ class NegociosController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def negocio_params
-      params.require(:negocio).permit(:logo, :nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email)
+      params.require(:negocio).permit(:logo, :nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :telefono, :email, :pag_web)
     end
 end

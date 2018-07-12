@@ -137,10 +137,26 @@
     </div>
     <div class="form-group">
       <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :telefono, "Teléfono:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :telefono, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
       <%= f.label :email, "Email:", :class=>'col-lg-3 control-label' %>
       <div class="col-lg-8">
         <!-- <input class="form-control" value="Bishop" type="text"> -->
         <%= f.email_field :email, class: "form-control"%>
+      </div>
+    </div>
+    <div class="form-group">
+      <!-- <label class="col-lg-3 control-label">Apellido materno:</label> -->
+      <%= f.label :tpag_web, "Pág. Web:", :class=>'col-lg-3 control-label' %>
+      <div class="col-lg-8">
+        <!-- <input class="form-control" value="Bishop" type="text"> -->
+        <%= f.text_field :pag_web, class: "form-control"%>
       </div>
     </div>
 

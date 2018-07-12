@@ -401,8 +401,10 @@ class FacturasController < ApplicationController
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
-        tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos }
-
+        tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
+        tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
+      }
+      #Datos de contacto del receptor
       receptor_id = params[:receptor_id]
       receptor_final = Cliente.find(receptor_id)
       unless receptor_final.telefono1.to_s.strip.empty?
@@ -411,6 +413,8 @@ class FacturasController < ApplicationController
         hash_info[:Telefono1Receptor] =  receptor_final.telefono2
       end
       hash_info[:EmailReceptor]= receptor_final.email
+
+
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
       template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))

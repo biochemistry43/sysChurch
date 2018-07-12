@@ -49,7 +49,13 @@
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@municipio"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/>.</td></tr>
-              <tr><td> <b>TELÉFONO:</b> <b>PÁGINA WEB: </b> </td></tr>
+              <tr>
+                <td>
+                  <b>TELÉFONO: </b> <xsl:value-of select="//cfdi:DatosEmisor/@TelefonoNegocio"/>
+                  <b>Email: </b> <xsl:value-of select="//cfdi:DatosEmisor/@EmailNegocio"/>
+                </td>
+              </tr>
+              <tr><td><b>PÁGINA WEB: </b> <xsl:value-of select="//cfdi:DatosEmisor/@PagWebNegocio"/></td></tr>
             </table>
           </td>
           <td align="right" >
