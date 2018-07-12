@@ -681,6 +681,9 @@ module CFDI
         PagWebNegocio: hash_info.fetch(:pag_web_negocio)
       }
       #Los datos de la sucursal serán opcionales
+      datos_sucursal = {}
+      datos_sucursal[:TelefonoSucursal] = hash_info.fetch(:tel_sucursal) if hash_info.key?(:tel_sucursal)
+      datos_sucursal[:EmailSucursal] = hash_info.fetch(:email_sucursal) if hash_info.key?(:email_sucursal)
 
       datos_receptor={}
       datos_receptor[:Telefono1Receptor] = hash_info.fetch(:Telefono1Receptor) if hash_info.key?(:Telefono1Receptor)
@@ -694,6 +697,8 @@ module CFDI
         xml.DatosEmisor(datos_emisor){
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
           xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
+        }
+        xml.DatosSucursal(datos_sucursal){
         }
         xml.DatosReceptor(datos_receptor){
           xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})

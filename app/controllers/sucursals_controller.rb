@@ -107,6 +107,6 @@ class SucursalsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sucursal_params
-      params.require(:sucursal).permit(:nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :email)
+      params.require(:sucursal).permit(:nombre, :representante, :calle, :numExterior, :numInterior, :colonia, :codigo_postal, :municipio, :delegacion, :estado, :telefono, :email)
     end
 end

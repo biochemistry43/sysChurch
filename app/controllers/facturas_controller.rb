@@ -413,6 +413,11 @@ class FacturasController < ApplicationController
         hash_info[:Telefono1Receptor] =  receptor_final.telefono2
       end
       hash_info[:EmailReceptor]= receptor_final.email
+      #Solo si tiene más de un establecimiento el negocio...
+      if current_user.sucursal
+        hash_info[:tel_sucursal] = current_user.sucursal.telefono
+        hash_info[:email_sucursal] = current_user.sucursal.email
+      end
 
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)

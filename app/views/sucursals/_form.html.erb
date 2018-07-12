@@ -129,12 +129,26 @@
           <% end %>
         </div>
       </div>
+      <div class="item form-group">
+        <h2 class="control-label col-md-3 col-sm-3 col-xs-12">Datos de contacto:</h2>
+      </div>
+      <div class="item form-group<%= @sucursal.errors[:telefono].any? ? ' has-error has-feedback' : '' %>">
+        <%= f.label :telefono, "Teléfono: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
+        <div class="col-md-9 col-sm-9 col-xs-12 input-group">
+          <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+          <%= f.text_field :telefono, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Email de la sucursal"} do%>
+          <%end%>
+          <%if @sucursal.errors[:telefono].any? %>
+            <p class="bg-danger"><%= @sucursal.errors[:telefono].to_s[/\w([^"]*)/] %></p>
+          <% end %>
+        </div>
+      </div>
 
       <div class="item form-group<%= @sucursal.errors[:email].any? ? ' has-error has-feedback' : '' %>">
         <%= f.label :email, "Email: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-          <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "email del sucursal"} do%>
+          <%= f.email_field :email, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=> "Email de la sucursal"} do%>
           <%end%>
           <%if @sucursal.errors[:email].any? %>
             <p class="bg-danger"><%= @sucursal.errors[:email].to_s[/\w([^"]*)/] %></p>

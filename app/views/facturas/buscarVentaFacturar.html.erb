@@ -185,7 +185,7 @@
             </div>
             <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
               <div class="panel-body">
-
+                  <div class="row">
                     <div class="col-md-4 col-sm-4 col-xs-12">
                       <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
                         Editar cliente original. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
@@ -206,6 +206,8 @@
                       <%end%>
                     <% end %>
                     </div>
+                  </div>
+
 
                     <!--
                     <div class="col-md-4 col-sm-4 col-xs-12">
@@ -220,89 +222,101 @@
                   <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Datos generales:</h2>
                 </div>
 
-
-                <div class="col-md-1 col-sm-2 col-xs-3">
-                  <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, readonly: true }%>
-                </div>
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, readonly: true  }%>
+                <div class="row" style="text-align:center;">
+                  <div class="col-md-1 col-sm-2 col-xs-3">
+                    <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, readonly: true }%>
+                  </div>
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, readonly: true  }%>
+                  </div>
                 </div>
 
 
                 <div class="row" style="text-align:center;">
                   <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección de facturación:</h2>
                 </div>
-                  <!--Se muestra la dirección del cliente -->
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :calle,'Calle:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field',value:@calle_receptor_f, readonly: true }%>
-                </div>
-                <div class="col-md-1 col-sm-3 col-xs-12">
-                  <%= label_tag :no_interior_receptor_vf,'No. Int.:', class:"control-label"%>
-                </div>
-                <div class="col-md-2 col-sm-3 col-xs-12">
-                  <%= number_field_tag(:no_Interior_vf, nil, {class: "form-control text_field", value: @noInterior_receptor_f, readonly: true })%>
-                </div>
-                <div class="col-md-1 col-sm-3 col-xs-12">
-                  <%= label_tag :no_exterior_receptor_vf,'No. Ext.:', class:"control-label"%>
-                </div>
-                <div class="col-md-2 col-sm-3 col-xs-12">
-                  <%= number_field_tag(:no_Exterior_vf, nil, {class: "form-control text_field", value: @noExterior_receptor_f, readonly: true  })%>
+
+                <div class="row" style="padding-bottom:10px;">
+                    <!--Se muestra la dirección del cliente -->
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :calle,'Calle:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field' ,value:@calle_receptor_f, readonly: true }%>
+                  </div>
+                  <div class="col-md-1 col-sm-3 col-xs-12">
+                    <%= label_tag :no_interior_receptor_vf,'No. Int.:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-2 col-sm-3 col-xs-12">
+                    <%= number_field_tag(:no_Interior_vf, nil, {class: "form-control text_field", value: @noInterior_receptor_f, readonly: true })%>
+                  </div>
+                  <div class="col-md-1 col-sm-3 col-xs-12">
+                    <%= label_tag :no_exterior_receptor_vf,'No. Ext.:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-2 col-sm-3 col-xs-12">
+                    <%= number_field_tag(:no_Exterior_vf, nil, {class: "form-control text_field", value: @noExterior_receptor_f, readonly: true  })%>
+                  </div>
                 </div>
 
 
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :colonia,'Colonia:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, readonly: true  }%>
-                </div>
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :localidad,'Localidad:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, readonly: true }%>
-                </div>
-
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :municipio,'Municipio:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, readonly: true  }%>
-                </div>
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :estado,'Estado:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, readonly: true }%>
+                <div class="row" style="padding-bottom:10px;">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :colonia,'Colonia:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, readonly: true  }%>
+                  </div>
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :localidad,'Localidad:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, readonly: true }%>
+                  </div>
                 </div>
 
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :pais,'País:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :pais_receptor_vf, nil,{class:'form-control text_field',value:@pais_receptor_f, readonly: true }%>
-                </div>
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :cp,'C.P.:', class:"control-label"%>
-                </div>
-                <div class="col-md-5 col-sm-10 col-xs-12">
-                  <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, readonly: true  }%>
+                <div class="row" style="padding-bottom:10px;">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :municipio,'Municipio:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, readonly: true  }%>
+                  </div>
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :estado,'Estado:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, readonly: true }%>
+                  </div>
                 </div>
 
-                <div class="col-md-1 col-sm-2 col-xs-12">
-                  <%= label_tag :referencia,'Referencia:', class:"control-label"%>
+                <div class="row" style="padding-bottom:10px;">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :pais,'País:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :pais_receptor_vf, nil,{class:'form-control text_field',value:@pais_receptor_f, readonly: true }%>
+                  </div>
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :cp,'C.P.:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, readonly: true  }%>
+                  </div>
                 </div>
-                <div class="col-md-11 col-sm-10 col-xs-12">
-                  <%= text_area_tag :referencia_receptor_vf, @referencia_receptor_f,{class:'form-control text_field', readonly: true }%>
+
+                <div class="row" style="padding-bottom:10px;">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :referencia,'Referencia:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-11 col-sm-10 col-xs-12">
+                    <%= text_area_tag :referencia_receptor_vf, @referencia_receptor_f,{class:'form-control text_field', readonly: true }%>
+                  </div>
                 </div>
 
 
