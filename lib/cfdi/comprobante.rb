@@ -698,7 +698,7 @@ module CFDI
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
         }
         #Si se cumple quiere decir que el negocio tiene más de un establecimiento y para eso debe de existir la dirección fiscal y los datos de contacto
-        unless datos_sucursal.empty? || (@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''}).empty?
+        unless datos_sucursal.empty? && (@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''}).empty?
           xml.DatosSucursal(datos_sucursal){
             xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
           }
