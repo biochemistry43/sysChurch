@@ -213,7 +213,8 @@
                          Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
                       </button>
                     </div>-->
-
+                <!-- El cliente será el mismo de la venta a menos que se requiera facturar a nombre de otro mono. -->
+                <%= hidden_field_tag :receptor_id,  @venta.cliente.id %>
 
                 <div class="row" style="text-align:center;">
                   <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Datos generales:</h2>
