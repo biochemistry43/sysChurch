@@ -74,7 +74,7 @@ class SucursalsController < ApplicationController
 
     respond_to do |format|
       if @sucursal.update(sucursal_params)
-        @sucursal.datos_fiscales_cliente.update(calle: calle_fiscal, numExt: numExt_fiscal, numInt: numInt_fiscal, colonia: colonia_fiscal, localidad: localidad_fiscal, codigo_postal: codigo_postal_fiscal, municipio: municipio_fiscal, estado: estado_fiscal, referencia: referencia_fiscal)
+        @sucursal.datos_fiscales_sucursal.update(calle: calle_fiscal, numExt: numExt_fiscal, numInt: numInt_fiscal, colonia: colonia_fiscal, localidad: localidad_fiscal, codigo_postal: codigo_postal_fiscal, municipio: municipio_fiscal, estado: estado_fiscal, referencia: referencia_fiscal)
         format.json { head :no_content}
         format.js
         #format.html { redirect_to @sucursal, notice: 'Sucursal was successfully updated.' }
