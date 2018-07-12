@@ -210,7 +210,7 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Nombre Fiscal:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <input name="nombreFiscal_f" id="nombreFiscal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Nombre, denominación o razón social." required>
+        <input name="nombreFiscal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.nombreFiscal : ''%>" placeholder="Nombre, denominación o razón social.">
       </div>
     </div>
 
@@ -218,7 +218,7 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">R.F.C.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <input name="rfc_f"  type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Clave del Registro Federal del Contribuyente" id="rfc_input" required>
+          <input name="rfc_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.rfc : ''%>" placeholder="Clave del Registro Federal del Contribuyente" id="rfc_input">
       </div>
     </div>
 
@@ -235,56 +235,56 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Calle:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-road"></i></span>
-        <input name="calle_f" id="calle_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Calle del cliente...">
+          <input name="calle_f" id="calle_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.calle : ''%>" placeholder="Calle del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número exterior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input name="numExterior_f" id="numExterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número exterior...">
+          <input name="numExterior_f" id="numExterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.numExterior : ''%>" placeholder="Número exterior...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número interior:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-home"></i></span>
-        <input name="numInterior_f" id="numInterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Número interior si existe...">
+          <input name="numInterior_f" id="numInterior_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.numInterior : ''%>" placeholder="Número interior si existe...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Colonia:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-tree"></i></span>
-        <input name="colonia_f" id="colonia_f"  type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Colonia del cliente...">
+          <input name="colonia_f" id="colonia_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.colonia : ''%>" placeholder="Colonia del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Localidad:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input name="localidad_f" id="localidad_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Localidad del cliente...">
+          <input name="localidad_f" id="localidad_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.localidad : ''%>" placeholder="Localidad del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">C.P.:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-        <input name="codigo_postal_f" id="codigo_postal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Código postal">
+          <input name="codigo_postal_f" id="codigo_postal_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.codigo_postal : ''%>" placeholder="Código postal">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Municipio:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building"></i></span>
-        <input name="municipio_f" id="municipio_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Municipio de la dirección fiscal del cliente.">
+          <input name="municipio_f" id="municipio_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.municipio : ''%>" placeholder="Municipio de la dirección fiscal del cliente.">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Estado:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
-        <input name="estado_f" id="estado_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Estado de la dirección fiscal del cliente.">
+          <input name="estado_f" id="estado_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.estado: ''%>" placeholder="Estado de la dirección fiscal del cliente.">
       </div>
     </div>
 
@@ -292,15 +292,18 @@
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">País:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-        <input name="pais_f" id="pais_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="País del cliente...">
+          <input name="pais_f" id="pais_f" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@cliente.datos_fiscales_cliente ? @cliente.datos_fiscales_cliente.pais : ''%>" placeholder="País del cliente...">
       </div>
     </div>
     <div class="item form-group ">
       <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Referencia:</label>
       <div class="col-md-9 col-sm-9 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-
-        <textarea name="referencia_f" id="referencia_f"  class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Una referencia, ejemplo: A un lado del negocio..."></textarea>
+          <%if @cliente.datos_fiscales_cliente %>
+            <%= text_area_tag :referencia_f, @cliente.datos_fiscales_cliente.referencia,{class:'form-control text_field', id:"referencia_f"}%>
+          <% else %>
+            <textarea name="referencia_f" id="referencia_f"  class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Una referencia, ejemplo: A un lado del negocio..."></textarea>
+          <% end %>
       </div>
     </div>
 </div>
@@ -310,7 +313,6 @@
     <%= f.submit @cliente.new_record? ? "Crear cliente" : "Actualizar cliente", :class => "btn btn-success", id:"RFC_Opcional"%>
   </div>
 
-
 </div>
   <div class="col-xs-3" align="center">
 
@@ -318,9 +320,6 @@
       <li class="active"><a href="#generales" data-toggle="tab">Datos básicos</a></li>
 
       <li><a href="#facturación" data-toggle="tab">Datos de facturación</a></li>
-
-
-
   </div>
 
 </div>
