@@ -150,56 +150,68 @@
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Calle:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-road"></i></span>
-            <input name="calle_f" id="dir_fiscal_calle" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.calle : ''%>" placeholder="Calle del cliente...">
+            <input name="dir_fiscal_calle" id="dir_fiscal_calle" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.calle : ''%>" placeholder="Calle del cliente...">
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número exterior:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-home"></i></span>
-            <input name="numExterior_f" id="dir_fiscal_numExt" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.numExt : ''%>" placeholder="Número exterior...">
+            <% if @sucursal.datos_fiscales_sucursal %>
+              <%= number_field_tag(:dir_fiscal_numExt , @sucursal.datos_fiscales_sucursal.numExt, {class: "form-control col-md-7 col-xs-12 text_field", style: "display: none;", placeholder:"Número exterior..."})%>
+            <% else %>
+              <%= number_field_tag(:dir_fiscal_numExt , nil, {class: "form-control col-md-7 col-xs-12 text_field",  placeholder:"Número exterior..."})%>
+            <% end %>
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Número interior:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-home"></i></span>
-            <input name="numInterior_f" id="dir_fiscal_numInt" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.numInt : ''%>" placeholder="Número interior si existe...">
+          <% if @sucursal.datos_fiscales_sucursal %>
+            <%= number_field_tag(:dir_fiscal_numInt , @sucursal.datos_fiscales_sucursal.numInt, {class: "form-control col-md-7 col-xs-12 text_field", style: "display: none;", placeholder:"Número exterior..."})%>
+          <% else %>
+            <%= number_field_tag(:dir_fiscal_numInt , nil, {class: "form-control col-md-7 col-xs-12 text_field",  placeholder:"Número exterior..."})%>
+          <% end %>
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Colonia:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-tree"></i></span>
-            <input name="colonia_f" id="dir_fiscal_colonia" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.colonia : ''%>" placeholder="Colonia del cliente...">
+            <input name="dir_fiscal_colonia" id="dir_fiscal_colonia" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.colonia : ''%>" placeholder="Colonia del cliente...">
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Localidad:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-building"></i></span>
-            <input name="localidad_f" id="dir_fiscal_localidad" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.localidad : ''%>" placeholder="Localidad del cliente...">
+            <input name="dir_fiscal_localidad" id="dir_fiscal_localidad" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.localidad : ''%>" placeholder="Localidad del cliente...">
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">C.P.:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-navicon"></i></span>
-            <input name="codigo_postal_f" id="dir_fiscal_codigo_postal" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.codigo_postal : ''%>" placeholder="Código postal">
+          <% if @sucursal.datos_fiscales_sucursal %>
+            <%= number_field_tag(:dir_fiscal_codigo_postal, @sucursal.datos_fiscales_sucursal.codigo_postal, {class: "form-control col-md-7 col-xs-12 text_field", style: "display: none;", placeholder:"Número exterior..."})%>
+          <% else %>
+            <%= number_field_tag(:dir_fiscal_codigo_postal , nil, {class: "form-control col-md-7 col-xs-12 text_field",  placeholder:"Número exterior..."})%>
+          <% end %>
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Municipio:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-building"></i></span>
-            <input name="municipio_f" id="dir_fiscal_municipio" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.municipio : ''%>" placeholder="Municipio de la dirección fiscal del cliente.">
+            <input name="dir_fiscal_municipio" id="dir_fiscal_municipio" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.municipio : ''%>" placeholder="Municipio de la dirección fiscal del cliente.">
         </div>
       </div>
       <div class="item form-group ">
         <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Estado:</label>
         <div class="col-md-9 col-sm-9 col-xs-12 input-group">
           <span class="input-group-addon"><i class="fa fa-building-o"></i></span>
-            <input name="estado_f" id="dir_fiscal_estado" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.estado: ''%>" placeholder="Estado de la dirección fiscal del cliente.">
+            <input name="dir_fiscal_estado" id="dir_fiscal_estado" type="text" class="form-control col-md-7 col-xs-12 text_field" value= "<%=@sucursal.datos_fiscales_sucursal ? @sucursal.datos_fiscales_sucursal.estado: ''%>" placeholder="Estado de la dirección fiscal del cliente.">
         </div>
       </div>
 
@@ -210,7 +222,7 @@
             <%if @sucursal.datos_fiscales_sucursal %>
               <%= text_area_tag :dir_fiscal_referencia, @sucursal.datos_fiscales_sucursal.referencia,{class:'form-control text_field', id:"dir_fiscal_referencia"}%>
             <% else %>
-              <textarea name="referencia" id="dir_fiscal_referencia"  class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Una referencia, ejemplo: En frente de un árbol de..."></textarea>
+              <textarea name="dir_fiscal_referencia" id="dir_fiscal_referencia"  class="form-control col-md-7 col-xs-12 text_field" value= "" placeholder="Una referencia, ejemplo: En frente de un árbol de..."></textarea>
             <% end %>
         </div>
       </div>

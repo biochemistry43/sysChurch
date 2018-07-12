@@ -24,10 +24,24 @@ class SucursalsController < ApplicationController
   # POST /sucursals
   # POST /sucursals.json
   def create
-    @sucursal = Sucursal.new(sucursal_params)  
+    @sucursal = Sucursal.new(sucursal_params)
+    #Datos fiscales de la sucursal
+    calle_fiscal = params[:dir_fiscal_calle]
+    numExt_fiscal = params[:dir_fiscal_numExt]
+    numInt_fiscal = params[:dir_fiscal_numInt]
+    colonia_fiscal = params[:dir_fiscal_colonia]
+    localidad_fiscal = params[:dir_fiscal_localidad]
+    codigo_postal_fiscal = params[:dir_fiscal_codigo_postal]
+    municipio_fiscal = params[:dir_fiscal_municipio]
+    estado_fiscal = params[:dir_fiscal_estado]
+    referencia_fiscal = params[:dir_fiscal_referencia]
+
+    @datos_fiscales_sucursal = DatosFiscalesSucursal.new(calle: calle_fiscal, numExt: numExt_fiscal, numInt: numInt_fiscal, colonia: colonia_fiscal, localidad: localidad_fiscal, codigo_postal: codigo_postal_fiscal, municipio: municipio_fiscal, estado: estado_fiscal, referencia: referencia_fiscal)
+
     respond_to do |format|
       if @sucursal.valid?
         if @sucursal.save
+          @sucursal.datos_fiscales_sucursal = @datos_fiscales_sucursal if @datos_fiscales_sucursal.save
           current_user.negocio.sucursals << @sucursal
           format.js
           format.html { redirect_to @sucursal, notice: 'La sucursal fue creada.' }
@@ -47,8 +61,20 @@ class SucursalsController < ApplicationController
   # PATCH/PUT /sucursals/1
   # PATCH/PUT /sucursals/1.json
   def update
+    #Datos fiscales de la sucursal
+    calle_fiscal = params[:dir_fiscal_calle]
+    numExt_fiscal = params[:dir_fiscal_numExt]
+    numInt_fiscal = params[:dir_fiscal_numInt]
+    colonia_fiscal = params[:dir_fiscal_colonia]
+    localidad_fiscal = params[:dir_fiscal_localidad]
+    codigo_postal_fiscal = params[:dir_fiscal_codigo_postal]
+    municipio_fiscal = params[:dir_fiscal_municipio]
+    estado_fiscal = params[:dir_fiscal_estado]
+    referencia_fiscal = params[:dir_fiscal_referencia]
+
     respond_to do |format|
       if @sucursal.update(sucursal_params)
+        @sucursal.datos_fiscales_cliente.update(calle: calle_fiscal, numExt: numExt_fiscal, numInt: numInt_fiscal, colonia: colonia_fiscal, localidad: localidad_fiscal, codigo_postal: codigo_postal_fiscal, municipio: municipio_fiscal, estado: estado_fiscal, referencia: referencia_fiscal)
         format.json { head :no_content}
         format.js
         #format.html { redirect_to @sucursal, notice: 'Sucursal was successfully updated.' }
@@ -56,7 +82,7 @@ class SucursalsController < ApplicationController
       else
         #format.html { render :edit }
         #format.json { render json: @sucursal.errors, status: :unprocessable_entity }
-        format.json {render json: @articulo.errors.full_messages, status: :unprocessable_entity}
+        format.json {render json: @sucursal.errors.full_messages, status: :unprocessable_entity}
         format.js {render :edit}
       end
     end
