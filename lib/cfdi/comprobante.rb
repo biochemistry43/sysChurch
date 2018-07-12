@@ -696,13 +696,17 @@ module CFDI
 
         xml.DatosEmisor(datos_emisor){
           xml.DomicilioEmisor(@emisor.domicilioFiscal.to_h.reject {|k,v| v == nil}) #
-          xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
         }
-        xml.DatosSucursal(datos_sucursal){
-        }
+        #Si se cumple quiere decir que el negocio tiene más de un establecimiento y para eso debe de existir la dirección fiscal y los datos de contacto
+        unless datos_sucursal.empty? || (@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''}).empty?
+          xml.DatosSucursal(datos_sucursal){
+            xml.ExpedidoEn(@emisor.expedidoEn.to_h.reject {|k,v| v == nil || v == ''})
+          }
+        end
         xml.DatosReceptor(datos_receptor){
           xml.DomicilioReceptor(@receptor.domicilioFiscal.to_h.reject {|k,v| v == nil || v == ''})
         }
+
         #Datos de la personalización de la plantilla de impresión de una factura de venta. :P
         xml.DatosPlantilla(datos_plantilla){
         }

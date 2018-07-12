@@ -81,6 +81,7 @@
             </table>
           </td>
         </tr>
+        <xsl:if test="//cfdi:DatosSucursal">
         <tr>
              <table style="border: solid 1px {$color_fondo};" width="100%" border="1">
                 <thead>
@@ -109,6 +110,7 @@
                </tbody>
             </table>
         </tr>
+        </xsl:if>
         <tr>
             <table style="border: solid 1px {$color_fondo};" width="100%" border="1">
                <thead>

@@ -244,6 +244,8 @@ class FacturasController < ApplicationController
           estado: current_user.sucursal.datos_fiscales_sucursal.estado,
           referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,
         })
+      else
+        expedidoEn= CFDI::DatosComunes::Domicilio.new({})
       end
 
       factura.emisor = CFDI::Emisor.new({
