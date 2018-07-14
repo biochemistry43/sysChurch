@@ -45,10 +45,12 @@
   <% if @consulta %>
   <div class="row">
     <div class="col-md-12" style="color: gray;">
-        <%if @facturas.size >= 1%>
-        Se <% if @facturas.size == 1%>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %>.
+        <%if @facturas%>
+          <%if @facturas.size >= 1%>
+            Se <% if @facturas.size == 1%>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %>.
+          <%end%>
         <%else%>
-        No se encontró ninguna factura con:
+            No se encontró ninguna factura con:
         <%end%>
     </div>
   </div>

@@ -41,8 +41,10 @@
               <tr ><td> <b>REGIMEN: </b><xsl:value-of select="//cfdi:DatosEmisor/@CveNombreRegimenFiscalSAT"/> </td></tr>
               <tr><td > <b>DIRECCIÓN: </b>Calle:
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@calle"/>, No.
-                <xsl:value-of select="//cfdi:DomicilioEmisor/@noExterior"/>, No. Int.
-                <xsl:value-of select="//cfdi:DomicilioEmisor/@noInterior"/>, Col.
+                <xsl:value-of select="//cfdi:DomicilioEmisor/@noExterior"/>
+                <xsl:if test="//cfdi:DomicilioEmisor/@noInterior">, No. Int.
+                  <xsl:value-of select="//cfdi:DomicilioEmisor/@noInterior"/>
+                </xsl:if>, Col.
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@colonia"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@referencia"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@localidad"/>, C.P.
@@ -94,12 +96,14 @@
                    <th align="right">Dirección:  </th>
                    <td colspan="3">Calle:
                      <xsl:value-of select="//cfdi:ExpedidoEn/@calle"/>, No.
-                     <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/>, No. Int.
-                     <xsl:value-of select="//cfdi:ExpedidoEn/@noInterior"/>, Col.
+                     <xsl:value-of select="//cfdi:ExpedidoEn/@noExterior"/>
+                     <xsl:if test="//cfdi:ExpedidoEn/@noInterior">, No. Int.
+                       <xsl:value-of select="//cfdi:ExpedidoEn/@noInterior"/>
+                     </xsl:if>, Col.
                      <xsl:value-of select="//cfdi:ExpedidoEn/@colonia"/>,
                      <xsl:value-of select="//cfdi:ExpedidoEn/@referencia"/>,
                      <xsl:value-of select="//cfdi:ExpedidoEn/@localidad"/>, C.P.
-                     <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
+                     <xsl:value-of select="//cfdi:ExpedidoEn/@codigoPostal"/>,
                      <xsl:value-of select="//cfdi:ExpedidoEn/@municipio"/>,
                      <xsl:value-of select="//cfdi:ExpedidoEn/@estado"/>.
                    </td>
@@ -129,10 +133,14 @@
                       <th align="right">Dirección:  </th>
                       <td colspan="3">
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/>, No.
-                        <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/>, No. Int.
-                        <xsl:value-of select="//cfdi:DomicilioReceptor/@noInterior"/>, Col.
+                        <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/>
+                        <xsl:if test="//cfdi:DomicilioReceptor/@noInterior">, No. Int.
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@noInterior"/>
+                        </xsl:if>, Col.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@colonia"/>,
-                        <xsl:value-of select="//cfdi:DomicilioReceptor/@referencia"/>,
+                        <xsl:if test="//cfdi:DomicilioReceptor/@referencia">
+                          <xsl:value-of select="//cfdi:DomicilioReceptor/@referencia"/>,
+                        </xsl:if>
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@localidad"/>, C.P.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@codigoPostal"/>,
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@municipio"/>,
@@ -183,7 +191,7 @@
                <tr>
                    <td colspan="5" align="left"><b>MÉTODO DE PAGO: </b><xsl:value-of select="cfdi:RepresentacionImpresa/@CveNombreMetodoPago"/></td>
                    <th align="right">Descuento:</th>
-                   <td align="right">$ <xsl:value-of select="@Descuento"/></td>
+                   <td align="right">$ 0.00<xsl:value-of select="@Descuento"/></td>
                </tr>
 
                <tr>
@@ -289,7 +297,7 @@
              <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@Unidad"/></td>
              <td style="border-bottom: 1px solid {$color_fondo};"  align="center" class="conceptos"><xsl:value-of select="@Descripcion"/></td>
              <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@ValorUnitario"/></td>
-             <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@Descuento"/></td>
+             <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ 0.00<xsl:value-of select="@Descuento"/></td>
              <td style="border-bottom: 1px solid {$color_fondo};"  align="right" class="conceptos">$ <xsl:value-of select="@Importe"/></td>
          </tr>
        </xsl:when>

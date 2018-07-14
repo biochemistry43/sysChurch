@@ -666,7 +666,7 @@ module CFDI
     ns={
       CodigoQR: "/home/daniel/Documentos/timbox-ruby/code_qr_CFDI.png", #la misma ruta donde se guarda el CBB
       CadOrigComplemento: hash_info.fetch(:cadOrigComplemento),
-      Logo: hash_info.fetch(:logo),
+      Logo: "http://www.fonditos.com/wallpapers/vista/10593.jpg",#hash_info.fetch(:logo),
       TotalLetras: total_to_words(),
       NombRegimenFiscal:"E",
       CveNombreFormaPago: hash_info.fetch(:cve_nombre_forma_pago),

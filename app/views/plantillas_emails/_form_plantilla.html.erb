@@ -44,6 +44,35 @@
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
   </div>
 <% end %>
+<!--{{Nombre del cliente}}=> nombre del cliente
+
+{{Fecha de la venta}}=> fecha de venta
+
+{{Número de venta}} => número de venta
+
+{{Folio de la venta}}=> folio de la venta
+
+{{Fecha de la factura}} => fecha de la factura
+
+{{Número de factura}} => número de factura
+
+{{Folio de la factura}} => folio de la factura
+
+
+
+#El campo total de factura no existe, pero se agregará
+
+{{Nombre del negocio}} => nombre del negocio
+
+{{Nombre de la sucursal}} => nombre de la sucursal
+
+{{Email de contacto}} => email de la sucursal
+
+{{Teléfono de contacto}} => teléfono de la sucursal
+
+
+
+Texto variable de una factura de venta! -->
 
 <% if @plantillas_email.comprobante == "fv" || @plantillas_email.comprobante == "ac_fv" %>
   <script type="text/javascript">
@@ -74,7 +103,7 @@
         ['style', ['bold', 'italic', 'underline', 'clear']],
         ['font', ['strikethrough', 'superscript', 'subscript']],
         ['color', ['color']],
-        //['para', ['ul', 'ol', 'paragraph']],
+        ['para', ['ul', 'ol', 'paragraph']],
         ['height', ['height']],
         ['insert',['link','table','hr']],
         ['misc',['undo','redo']]
@@ -112,7 +141,7 @@
         ['style', ['bold', 'italic', 'underline', 'clear']],
         ['font', ['strikethrough', 'superscript', 'subscript']],
         ['color', ['color']],
-        //['para', ['ul', 'ol', 'paragraph']],
+        ['para', ['ul', 'ol', 'paragraph']],
         ['height', ['height']],
         ['insert',['link','table','hr']],
         ['misc',['undo','redo']]
