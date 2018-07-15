@@ -386,7 +386,7 @@ class FacturasController < ApplicationController
       logo=current_user.negocio.logo
       uso_cfdi_descripcion = @usoCfdi.descripcion
       cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
-      cve_nombre_metodo_pago = params[:metodo_pago]
+      cve_nombre_metodo_pago =  params[:metodo_pago] == "PUE" ? "PUE - Pago en una sola exhibición" : "PPD - Pago en parcialidades o diferido"
       #Para la clave y nombre del regimen fiscal
       cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
       nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
@@ -467,7 +467,7 @@ class FacturasController < ApplicationController
         archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
         archivo.write (xml)
         archivo.close
-
+=begin
         #7.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
@@ -541,7 +541,7 @@ class FacturasController < ApplicationController
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
-
+=end
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
