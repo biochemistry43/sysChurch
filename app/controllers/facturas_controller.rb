@@ -434,9 +434,9 @@ class FacturasController < ApplicationController
       dir_negocio = current_user.negocio.nombre
       dir_cliente = params[:nombre_fiscal_receptor_vf]
 
-      #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
-      #fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
+      #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
       fecha_registroBD=Date.parse(fecha_expedicion_f.to_s)
+      dir_dia = fecha_registroBD.strftime("%d")
       dir_mes = fecha_registroBD.strftime("%m")
       dir_anno = fecha_registroBD.strftime("%Y")
 
@@ -448,9 +448,9 @@ class FacturasController < ApplicationController
           #1.-Un negocio puede o no tener sucursales
         if current_user.sucursal
           dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         end
 
         #Los comprobantes de almacenan en google cloud
@@ -467,11 +467,11 @@ class FacturasController < ApplicationController
         archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
         archivo.write (xml)
         archivo.close
-=begin
+
         #7.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])
+          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: @venta.montoVenta)
 
           @factura.folio_fiscal = folio_fiscal_xml
           @factura.ruta_storage =  ruta_storage
@@ -541,7 +541,7 @@ class FacturasController < ApplicationController
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
-=end
+
           #fecha_expedicion=@factura.fecha_expedicion
           file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
           file=File.open( "public/#{file_name}")
@@ -1989,6 +1989,7 @@ class FacturasController < ApplicationController
       #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
       #fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
       fecha_registroBD=Date.parse(fecha_expedicion_f.to_s)
+      dir_dia = fecha_registroBD.strftime("%d")
       dir_mes = fecha_registroBD.strftime("%m")
       dir_anno = fecha_registroBD.strftime("%Y")
 
@@ -2000,9 +2001,9 @@ class FacturasController < ApplicationController
           #1.-Un negocio puede o no tener sucursales
         if current_user.sucursal
           dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         end
 
         #Los comprobantes de almacenan en google cloud
