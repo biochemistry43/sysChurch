@@ -65,8 +65,8 @@
             <thead>
               <tr class="headings">
                 <th class="column-title" >Cantidad </th>
-                <th class="column-title" >Unidad </th>
-                <th class="column-title" >Clave </th>
+                <th class="column-title" >Unidad (SAT)</th>
+                <th class="column-title" >Clave (SAT) </th>
                 <th class="column-title" >Descripción </th>
                 <th class="column-title" >Precio</th>
                 <th class="column-title" >Importe </th>
@@ -76,8 +76,8 @@
               <% @items.each do |item| %>
                 <tr>
                   <td> <%= item.cantidad %> </td>
-                  <td> <%= item.articulo.presentacion_producto.nombre%> </td>
-                  <td> <%= item.articulo.clave %> </td>
+                  <td> <%= item.articulo.unidad_medida.clave%> - <%= item.articulo.unidad_medida.nombre%>  </td>
+                  <td> <%= %> </td>
                   <td> <%= item.articulo.nombre %> </td>
                   <td> <%= item.precio_venta %> </td>
                   <td> <%= item.precio_venta * item.cantidad  %> </td>

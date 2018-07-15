@@ -6,10 +6,9 @@ class UnidadMedida < ActiveRecord::Base
 
   def nombre_simbolo_UM
     if simbolo.empty?
-      "#{nombre} "
+      "#{clave} - #{nombre}"
     else
-      "#{nombre} [ #{simbolo} ]"
+      "#{clave} - #{nombre} [ #{simbolo} ]"
     end
   end
-
 end
