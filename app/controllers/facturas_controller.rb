@@ -471,7 +471,7 @@ class FacturasController < ApplicationController
         #7.- SE SALVA EN LA BASE DE DATOS
           #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
           folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: @venta.montoVenta)
+          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])#, monto: @venta.montoVenta)
 
           @factura.folio_fiscal = folio_fiscal_xml
           @factura.ruta_storage =  ruta_storage
@@ -487,8 +487,8 @@ class FacturasController < ApplicationController
           cliente_id=@venta.cliente.id
           Cliente.find(cliente_id).facturas << @factura
 
-          @factura.ventas <<  @venta
-
+          @venta.factura = @factura
+          #@factura.ventas <<  @venta
 
           end
 
