@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180714200620) do
+ActiveRecord::Schema.define(version: 20180718021132) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -330,6 +330,27 @@ ActiveRecord::Schema.define(version: 20180714200620) do
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
+
+  create_table "factura_globals", force: :cascade do |t|
+    t.string   "folio"
+    t.date     "fecha_expedicion"
+    t.string   "estado_factura"
+    t.integer  "user_id"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.string   "folio_fiscal"
+    t.integer  "consecutivo"
+    t.string   "ruta_storage"
+    t.integer  "factura_forma_pago_id"
+    t.decimal  "monto"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "factura_globals", ["factura_forma_pago_id"], name: "index_factura_globals_on_factura_forma_pago_id"
+  add_index "factura_globals", ["negocio_id"], name: "index_factura_globals_on_negocio_id"
+  add_index "factura_globals", ["sucursal_id"], name: "index_factura_globals_on_sucursal_id"
+  add_index "factura_globals", ["user_id"], name: "index_factura_globals_on_user_id"
 
   create_table "factura_recurrente_articulos", force: :cascade do |t|
     t.integer  "factura_recurrente_id"

@@ -1,0 +1,267 @@
+<div class="right_col" role="main">
+
+  <div class="page-title">
+
+    <div class="title_left">
+
+      <h1>Facturas globales</h1>
+    </div>
+  </div>
+ 
+  <div class="clearfix"></div>
+  <hr>
+  <div class="row">
+    <div class="div-add-button">
+        <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-primary btn-lg btn-add active"} do%>
+          <i class="fa fa-file-text-o"></i> Generar factura global
+        <%end%>
+    </div>
+  </div> <!--Fin de botón -->
+
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="row">
+    <div>
+      <table class="table table-striped responsive-utilities jambo_table data-table">
+        <thead>
+          <tr>
+            <th style="text-align: center;">Folio</th>
+            <th style="text-align: center;">Cliente </th> <!-- Todos las facturas globales son al público en general-->
+            <th style="text-align: center;">Fecha</th>
+            <th style="text-align: center;">Total</th>
+            <!--th style="text-align: center;">Pagado</th>
+            <th style="text-align: center;">Por pagar</th-->
+            <th style="text-align: center;">Estado</th>
+            <th style="text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @factura_globals.each do |fg| %>
+          <% if fg.estado_factura.eql?("Cancelada")%>
+            <tr style="background-color: #F8D7CB">
+            <!--tr style="background-color: ##FDE47F"-->
+          <%else%>
+            <tr>
+          <%end%>
+              <td style="text-align: center;"><%= fg.folio %></td>
+              <td style="text-align: center;"><%= fg.cliente.nombre_completo %></td>
+              <td style="text-align: center;"><%= fg.fecha_expedicion %></td>
+              <td style="text-align: center;"><%= fg.monto %></td>
+
+              <!--if factura.forma_pago.nombre.eql?("efectivo")-->
+              <!--<td style="text-align: center;"><factura.venta.montoVenta%></td>
+              <end>-->
+              <!--td style="text-align: center;"><%= %></td>
+              <td style="text-align: center;"><%= %></td-->
+
+              <td style="text-align: center;">
+                <% if fg.estado_factura.eql?("Activa") %>
+                  <span class="btn btn-success"> Activa </span>
+                <%elsif fg.estado_factura.eql?("Borrador")%>
+                  <span class="btn btn-info"> Borrador </span>
+                <%elsif fg.estado_factura.eql?("Cerrada")%>
+                  <span class="btn btn-warning"> Cerrada </span>
+                <%elsif fg.estado_factura.eql?("Cancelada")%>
+                  <span class="btn btn-danger"> Cancelada</span>
+                <%end%>
+              </td>
+              <td style="text-align: center;" >
+
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      </div>
+    </div>
+    <!-- render 'modalFacturas'>
+    < render 'modalEmails'>
+    < render 'modalVentas'>
+    < render 'modalCancelaFacturaVenta'-->
+  </div>
+
+</div>
+
+   <script>
+    $(document).ready(function(){
+
+      $('.data-table').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
+    });
+
+    $(document).ready(function(){
+      //Función para validar un RFC
+      // Devuelve el RFC sin espacios ni guiones si es correcto
+      // Devuelve false si es inválido
+      // (debe estar en mayúsculas, guiones y espacios intermedios opcionales)
+      function rfcValido(rfc, aceptarGenerico = true) {
+        const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+        var   validado = rfc.match(re);
+
+        if (!validado)  //Coincide con el formato general del regex?
+            return false;
+
+        //Separar el dígito verificador del resto del RFC
+        const digitoVerificador = validado.pop(),
+              rfcSinDigito = validado.slice(1).join(''),
+              len = rfcSinDigito.length,
+
+          //Obtener el digito esperado
+              diccionario = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ",
+              indice = len + 1;
+        var   suma,
+              digitoEsperado;
+
+        if (len == 12) suma = 0
+        else suma = 481; //Ajuste para persona moral
+
+        for(var i=0; i<len; i++)
+            suma += diccionario.indexOf(rfcSinDigito.charAt(i)) * (indice - i);
+        digitoEsperado = 11 - suma % 11;
+        if (digitoEsperado == 11) digitoEsperado = 0;
+        else if (digitoEsperado == 10) digitoEsperado = "A";
+
+        //El dígito verificador coincide con el esperado?
+        // o es un RFC Genérico (ventas a público general)?
+        if ((digitoVerificador != digitoEsperado)
+         && (!aceptarGenerico || rfcSinDigito + digitoVerificador != "XAXX010101000"))
+            return false;
+        else if (!aceptarGenerico && rfcSinDigito + digitoVerificador == "XEXX010101000")
+            return false;
+        return rfcSinDigito + digitoVerificador;
+      }
+
+      $('select#condicion_monto_factura').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "rango desde"){
+            $('#monto_factura').show().val("");
+            $('#monto_factura2').show().val("");
+          }else{
+            $('#monto_factura').show().val("");
+            $('#monto_factura2').hide().val("");
+          }
+          //Ocultar cuando no este seleccionado ninguno
+      });
+
+      $('select#opcion_busqueda_cliente').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "Buscar por R.F.C."){
+            //Handler para el evento cuando cambia el input
+            // -Lleva la RFC a mayúsculas para validarlo
+            // -Elimina los espacios que pueda tener antes o después
+          var validador_RFC_Obligatorio2 = function(e){
+            var input = document.getElementById("rfc_input2");
+            var rfc = input.value.trim().toUpperCase()
+            var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+            var colorearRojo=document.getElementById("errorRFC2");
+
+            if (!rfcCorrecto) {
+
+              colorearRojo.className+=" has-error has-feedback";
+
+              e.preventDefault();
+
+            }
+
+          };
+            //Se pone a la escucha el sumit del formulario
+            var facturarYCrearNueva=document.getElementById("RFC_Obligatorio2");
+            facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio2);
+
+            $('.nombre_collection_select').hide().val("");
+            $('.rfc_text_field').show().val("");
+
+          }else if (valor == "Buscar por nombre fiscal") {
+            $('#errorRFC2').removeClass(" has-error has-feedback");
+            $('.nombre_collection_select').show().val("");
+            $('.rfc_text_field').hide().val("");
+          }
+
+          //Ocultar cuando no este seleccionado ninguno
+      });
+
+
+      //Para la búsqueda por monto de
+      $("#formFiltrosAvanzados").submit(function(e){
+
+          if (condicion == "rango desde"){
+            var monto_factura =  $("#monto_factura").val();
+            var monto_factura2 = $("#monto_factura2").val();
+            if (monto_factura2.length == 0 || monto_factura.length == 0){
+            alert("valor"+ monto_factura+ "valor 2"+ monto_factura2);
+              e.preventDefault();
+            }
+
+          }else{
+            var monto_factura =  $("#monto_factura").val();
+
+            if (monto_factura.length == 0){
+            alert("valor"+ monto_factura);
+              e.preventDefault();
+            }
+          }
+      });
+
+      //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
+      $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
+          if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+            $('#errorRFC').removeClass(" has-error has-feedback");
+            $('.rfc_input').hide().val("");
+            $('#nombreFiscalCliente').show();
+            $('#leyenda_filtro_cliente').html("Nombre:");
+          }
+          else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+              //Handler para el evento cuando cambia el input
+              // -Lleva la RFC a mayúsculas para validarlo
+              // -Elimina los espacios que pueda tener antes o después
+            var validador_RFC_Obligatorio = function(e){
+              var input = document.getElementById("rfc_input");
+              var rfc = input.value.trim().toUpperCase()
+              var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+              var colorearRojo=document.getElementById("errorRFC");
+
+              if (!rfcCorrecto) {
+
+                colorearRojo.className+=" has-error has-feedback";
+
+                e.preventDefault();
+
+              }
+
+            };
+              //Se pone a la escucha el sumit del formulario
+              var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
+              facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
+
+            $('#nombreFiscalCliente').hide().val("");
+            $('.rfc_input').show();
+            $('#leyenda_filtro_cliente').html("R.F.C.:");
+
+          }
+
+      });
+
+    });
+
+  </script>
+
+
+  <!--%= javascript_include_tag "ventas" %-->
+  <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->

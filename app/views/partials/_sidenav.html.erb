@@ -229,6 +229,10 @@
                         <li><%= link_to "Notas de crédito", nota_creditos_index_path%>
                         </li>
                       <%end%>
+                      <%if can? :create, Factura%>
+                        <li><%= link_to "Facturas de ventas", factura_globals_index_path %>
+                        </li>
+                      <%end%>
                     </ul>
                   </li>
                 <% end %> <!-- Fin if can create Articulo -->

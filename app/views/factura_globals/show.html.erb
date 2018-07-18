@@ -1,0 +1,59 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Folio:</strong>
+  <%= @factura_global.folio %>
+</p>
+
+<p>
+  <strong>Fecha expedicion:</strong>
+  <%= @factura_global.fecha_expedicion %>
+</p>
+
+<p>
+  <strong>Estado factura:</strong>
+  <%= @factura_global.estado_factura %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @factura_global.user %>
+</p>
+
+<p>
+  <strong>Negocio:</strong>
+  <%= @factura_global.negocio %>
+</p>
+
+<p>
+  <strong>Sucursal:</strong>
+  <%= @factura_global.sucursal %>
+</p>
+
+<p>
+  <strong>Folio fiscal:</strong>
+  <%= @factura_global.folio_fiscal %>
+</p>
+
+<p>
+  <strong>Consecutivo:</strong>
+  <%= @factura_global.consecutivo %>
+</p>
+
+<p>
+  <strong>Ruta storage:</strong>
+  <%= @factura_global.ruta_storage %>
+</p>
+
+<p>
+  <strong>Factura forma pago:</strong>
+  <%= @factura_global.factura_forma_pago %>
+</p>
+
+<p>
+  <strong>Monto:</strong>
+  <%= @factura_global.monto %>
+</p>
+
+<%= link_to 'Edit', edit_factura_global_path(@factura_global) %> |
+<%= link_to 'Back', factura_globals_path %>
