@@ -85,6 +85,25 @@ class FacturaGlobalsController < ApplicationController
     end
   end
 
+  def filtro_por_folio
+    @consulta = true
+    @fechas = false
+    @por_folio = true
+    @avanzada = false
+    @por_cliente= false
+
+    if request.post?
+      @folio_fact = params[:folio_fact]
+      @facturas = Factura.find_by folio: @folio_fact
+      if can? :create, Negocio
+        @factura_globals = current_user.negocio.factura_globals.where(folio: @folio_fact)
+      else
+        @factura_globals= current_user.sucursal.factura_globals.where(folio: @folio_fact)
+      end
+    end
+  end
+
+
 
 
   private

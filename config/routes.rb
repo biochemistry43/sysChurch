@@ -4,8 +4,9 @@ Rails.application.routes.draw do
   #resources :factura_globals
   get 'factura_globals/index'
   post 'factura_globals/filtro_por_fecha'
+  post 'factura_globals/filtro_por_folio'
 
-  
+
   resources :plantillas_emails
   resources :config_comprobantes
   resources :impuestos
