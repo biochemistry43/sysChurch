@@ -1,6 +1,7 @@
 class Factura < ActiveRecord::Base
   has_many :nota_creditos
-  has_many :ventas
+  #has_many :ventas
+  belongs_to :venta
   belongs_to :user
   belongs_to :negocio
   belongs_to :sucursal

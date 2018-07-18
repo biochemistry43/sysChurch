@@ -1,5 +1,6 @@
 class Venta < ActiveRecord::Base
-	belongs_to :factura
+	#belongs_to :factura
+	has_one :factura
 	has_many :item_ventas
 	has_one :venta_forma_pago
 	has_many :venta_canceladas

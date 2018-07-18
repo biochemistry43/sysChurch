@@ -1042,7 +1042,7 @@ class FacturasController < ApplicationController
       destinatario = params[:destinatario]
       #SE ENVIAN LOS COMPROBANTES(pdf y/o xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
       #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-      venta = @factura.ventas.first
+      venta = @factura.venta#s.first
       txtVariable_nombCliente = @factura.cliente.nombre_completo # =>No se toma de la venta por que se puede facturar a nombre de otro cuate
       #texti variable para las ventas
       txtVariable_fechaVenta =  venta.fechaVenta # => fechaVenta
@@ -1138,7 +1138,7 @@ class FacturasController < ApplicationController
     end
 
     #@tema.html_safe
-    venta = @factura.ventas.first
+    venta = @factura.venta#s.first
     txtVariable_nombCliente = @factura.cliente.nombre_completo # =>No se toma de la venta por que se puede facturar a nombre de otro cuate
     #texti variable para las ventas
     txtVariable_fechaVenta =  venta.fechaVenta # => fechaVenta
@@ -1609,11 +1609,12 @@ class FacturasController < ApplicationController
   # GET /facturas/1
   # GET /facturas/1.json
   def show
-    ventas = @factura.ventas
-    if ventas.length == 1 #Cuando se trate de una sola venta facturada
-      venta = ventas.first
+    #ventas = @factura.ventas
+    #if ventas.length == 1 #Cuando se trate de una sola venta facturada
+      #venta = ventas.first
+      venta = @factura.venta
       @items  = venta.item_ventas
-      @montoFactura = venta.montoVenta
+      #@montoFactura = venta.montoVenta
       @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
       @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
       cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
@@ -1621,9 +1622,9 @@ class FacturasController < ApplicationController
       @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
       nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
       @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
-    elsif ventas.length > 1 #Si es una factura global contiene varias ventas
+    #elsif ventas.length > 1 #Si es una factura global contiene varias ventas
 
-    end
+    #end
 
   end
 
