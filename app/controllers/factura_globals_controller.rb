@@ -61,6 +61,32 @@ class FacturaGlobalsController < ApplicationController
     end
   end
 
+  #FILTROS DE BÚQUEDA PARA LAS FACTURAS GLOBALES
+  def filtro_por_fecha
+    @consulta = true
+    @fechas=true
+    @por_folio=false
+    @avanzada = false
+    #@por_cliente= false => Todas las facturas globales son al público en general
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      if can? :create, Negocio
+        @factura_globals = current_user.negocio.factura_globals.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      else
+        @factura_globals = current_user.sucursal.factura_globals.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_factura_global

@@ -19,6 +19,56 @@
   </div> <!--Fin de botón -->
 
 
+    <hr style="border-style: solid; border-width: 2px;">
+
+  	<button id="filtro_por_fecha" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por fecha <i class="fa fa-sort-down"></i>
+   	</button>
+       <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
+      <%= form_tag({ controller: "factura_globals", action: "filtro_por_fecha" }, {:class=> "form-horizontal", :method => :post}) do %>
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            Búsqueda por fechas:
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Desde:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Hasta:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Consultar facturas', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+      <% end %>
+    </div> <!--Fin de busqueda por fecha-->
+    <!-- Termina buscador por rango de fechas -->
+
+
+
 
 <div class="col-md-12 col-sm-12 col-xs-12">
   <div class="row">
