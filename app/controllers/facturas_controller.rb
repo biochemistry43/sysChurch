@@ -572,6 +572,8 @@ class FacturasController < ApplicationController
   #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
   def cancelaFacturaVenta
     @categorias_devolucion = current_user.negocio.cat_venta_canceladas
+    #Solo se muestran los datos
+    plantilla_email("ac_fv")
   end
 
   def cancelaFacturaVenta2
@@ -610,16 +612,17 @@ class FacturasController < ApplicationController
     a.write (acuse)
     a.close
 
+    #En este caso se toman como para metros ya que la cancelación solo la prodrán realizar los uasurios con privilegios de administrador y sepa q
     #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
     destinatario = params[:destinatario]
-    #Aquí el mensaje de la configuración...
-    mensaje = "HOLA cara de bola"
-    tema = "Acuse de cancelación"
+    asunto = params[:asunto]
+    mensaje = params[:summernote]
+    
     comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
 
-    FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
+    FacturasEmail.factura_email(destinatario, mensaje, asunto, comprobantes).deliver_now
 
-    @venta = Venta.find_by(factura: @factura.id)
+    @venta = @factura.venta #Venta.find_by(factura: @factura.id)
     #respond_to do |format|
       #Por si quieren tambien afectar el inventario.
       if params[:rbtn] == "rbtn_factura_venta"
@@ -657,13 +660,7 @@ class FacturasController < ApplicationController
             itemVenta.save
           end
         end
-        #format.json { head :no_content}
-        #format.js
-      #else
-        #Agregar extenciones...y transacciones.
-        #format.html { redirect_to facturas_index_path, notice: 'No se pudo cancelar la venta de la factura, intente cancelarla desde el módulo de ventas..' }
-      #end
-    end
+      end
     respond_to do |format| # Agregar mensajes después de las transacciones
       format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
     end
@@ -2164,7 +2161,54 @@ class FacturasController < ApplicationController
       @nombreFiscalClientes = DatosFiscalesCliente.where(cliente_id: current_user.negocio.clientes.where(negocio_id: current_user.negocio.id))
       #@clientes = current_user.negocio.clientes
     end
+    #Esta función sirve para optener la plantilla de email de los comprobantes, según sus estatus
+    def plantilla_email (opc)
 
+      @destinatario = @factura.cliente.email
+      #Se usa la plamntilla de email para los acuses de cancelación para las facturas de ventas
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
+
+      @asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
+    
+      venta = @factura.venta#s.first
+      txtVariable_nombCliente = @factura.cliente.nombre_completo # =>No se toma de la venta por que se puede facturar a nombre de otro cuate
+      
+      #Texto variable para las ventas
+      txtVariable_fechaVenta =  venta.fechaVenta 
+      txtVariable_consecutivoVenta = venta.consecutivo 
+      #txtVariable_montoVenta = venta.montoVenta 
+      txtVariable_folioVenta = venta.folio 
+
+      #texto variable para las facturas
+      txtVariable_fechaFactura = @factura.fecha_expedicion 
+      txtVariable_numeroFactura = @factura.consecutivo 
+      txtVariable_folioFactura = @factura.folio
+      #El total que haga fila mientras me decido
+
+      #Datos del negocio y sucurssal
+      txtVariable_negocio= @factura.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
+      txtVariable_sucursal = @factura.sucursal.nombre
+      txtVariable_email = @factura.sucursal.email
+      txtVariable_telefono = @factura.sucursal.telefono
+
+      #Se reemplaza 
+      mensaje_email = mensaje.gsub(/(\{\{Nombre del cliente\}\})/, "#{txtVariable_nombCliente}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la venta\}\})/, "#{txtVariable_fechaVenta}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Número de venta\}\})/, "#{txtVariable_consecutivoVenta}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la venta\}\})/, "#{txtVariable_folioVenta}")
+      #Datos de la factura.
+      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
+      #Dirección y dtos de contacto del changarro
+      mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Email de contacto\}\})/, "#{txtVariable_email}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Teléfono de contacto\}\})/, "#{txtVariable_telefono}")
+
+      @mensaje= mensaje_email
+
+    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def factura_params
