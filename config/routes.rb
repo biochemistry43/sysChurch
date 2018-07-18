@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'factura_globals/index'
   post 'factura_globals/filtro_por_fecha'
   post 'factura_globals/filtro_por_folio'
+  post 'factura_globals/filtro_avanzado'
 
 
   resources :plantillas_emails
