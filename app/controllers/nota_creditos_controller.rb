@@ -236,55 +236,13 @@ class NotaCreditosController < ApplicationController
     def enviar_nota_credito
       #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
       if request.post?
-        destinatario = params[:destinatario]
-        #SE ENVIAN LOS COMPROBANTES(pdf y/o xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
-        #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        txtVariable_nombCliente = @nota_credito.cliente.nombre_completo # =>No se toma de la venta por que se puede nota_creditor a nombre de otro cuate
-
-        #texto variable para las nota_creditos
-        txtVariable_fecha_nc = @nota_credito.fecha_expedicion
-        txtVariable_numero_nc = @nota_credito.consecutivo
-        txtVariable_folio_nc = @nota_credito.folio
-        #Datos de la factura relacionada
-        txtVariable_fechaFactura =  @nota_credito.factura.fecha_expedicion
-        txtVariable_numeroFactura = @nota_credito.factura.consecutivo
-        #txtVariable_montoVenta = venta.montoVenta
-        txtVariable_folioFactura = @nota_credito.factura.folio
-
-        #Datos de la dirección de la empresa
-        txtVariable_negocio= @nota_credito.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
-        #En cuanto a los datos de la sucursal
-        txtVariable_sucursal = @nota_credito.sucursal.nombre
-        txtVariable_email = @nota_credito.sucursal.email
-        txtVariable_telefono = @nota_credito.sucursal.telefono
-
-
-        txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
-        #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
+        destinatario_final = params[:destinatario]
 
         if @nota_credito.estado_nc == "Activa"
-           asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
-           mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
+           plantilla_email("nc")
         elsif @nota_credito.estado_nc == "Cancelada"
-           mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").msg_email
-           asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").asunto_email
+           plantilla_email("ac_nc")
         end
-
-        #msg = "Hola sr. {{nombreCliente}} le hago llegar por este medio la factura de su compra del día {{fechaVenta}}"
-        mensaje_email = mensaje.gsub(/(\{\{Nombre del cliente\}\})/, "#{txtVariable_nombCliente}")
-        #Datos de la nota de crédito
-        mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la nota de crédito\}\})/, "#{txtVariable_fecha_nc}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{txtVariable_numero_nc}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{txtVariable_folio_nc}")
-        #Datos de la factura.
-        mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
-        #Dirección y dtos de contacto del changarro
-        mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Email de contacto\}\})/, "#{txtVariable_email}")
-        mensaje_email = mensaje_email.gsub(/(\{\{Teléfono de contacto\}\})/, "#{txtVariable_telefono}")
 
         ruta_storage_nc = @nota_credito.ruta_storage
         ruta_storage_fv = @nota_credito.factura.ruta_storage
@@ -336,7 +294,7 @@ class NotaCreditosController < ApplicationController
 
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-        FacturasEmail.factura_email(destinatario, mensaje_email, asunto, comprobantes).deliver_now
+        FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
         respond_to do |format|
           format.html { redirect_to action: "index"}
@@ -347,59 +305,15 @@ class NotaCreditosController < ApplicationController
       end
     end
 
-    def mostrar_email_nota_credito #get
+    def mostrar_email_nota_credito
       #Solo se muestran los datos
       @destinatario = @nota_credito.cliente.email
-      #@mensaje = current_user.negocio.config_comprobante.msg_email
-      txtVariable_nombCliente = @nota_credito.cliente.nombre_completo # =>No se toma de la venta por que se puede nota_creditor a nombre de otro cuate
-
-      #texto variable para las nota_creditos
-      txtVariable_fecha_nc = @nota_credito.fecha_expedicion
-      txtVariable_numero_nc = @nota_credito.consecutivo
-      txtVariable_folio_nc = @nota_credito.folio
-      #Datos de la factura relacionada
-      txtVariable_fechaFactura =  @nota_credito.factura.fecha_expedicion
-      txtVariable_numeroFactura = @nota_credito.factura.consecutivo
-      #txtVariable_montoVenta = venta.montoVenta
-      txtVariable_folioFactura = @nota_credito.factura.folio
-
-      #Datos de la dirección de la empresa
-      txtVariable_negocio= @nota_credito.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
-      #En cuanto a los datos de la sucursal
-      txtVariable_sucursal = @nota_credito.sucursal.nombre
-      txtVariable_email = @nota_credito.sucursal.email
-      txtVariable_telefono = @nota_credito.sucursal.telefono
-
-
-      txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
-      #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
 
       if @nota_credito.estado_nc == "Activa"
-         asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
-         mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
+         plantilla_email("nc")
       elsif @nota_credito.estado_nc == "Cancelada"
-         mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").msg_email
-         asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").asunto_email
+         plantilla_email("ac_nc")
       end
-
-      #msg = "Hola sr. {{nombreCliente}} le hago llegar por este medio la factura de su compra del día {{fechaVenta}}"
-      mensaje_email = mensaje.gsub(/(\{\{Nombre del cliente\}\})/, "#{txtVariable_nombCliente}")
-      #Datos de la nota de crédito
-      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la nota de crédito\}\})/, "#{txtVariable_fecha_nc}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{txtVariable_numero_nc}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{txtVariable_folio_nc}")
-      #Datos de la factura.
-      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
-      #Dirección y dtos de contacto del changarro
-      mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Email de contacto\}\})/, "#{txtVariable_email}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Teléfono de contacto\}\})/, "#{txtVariable_telefono}")
-
-      @mensaje= mensaje_email
-      @asunto = asunto
 
     end
 
@@ -472,6 +386,63 @@ class NotaCreditosController < ApplicationController
       #
       @nombreFiscalClientes = DatosFiscalesCliente.where(cliente_id: current_user.negocio.clientes.where(negocio_id: current_user.negocio.id))
       #@clientes = current_user.negocio.clientes
+    end
+        #Esta función sirve para optener la plantilla de email de los comprobantes, según sus estatus
+    #Solo funciona para las notas de crédito y para el envío de los acuses de cancelación de las mismas.
+    def plantilla_email (opc)
+      #Las 4 opciones posibles son:
+        #fv => factura de venta
+        #nc => nota de crédito
+        #ac_fv => acuse de cancelación de factura de venta (Las facturas globales quedan excluidas)
+        #ac_nc => acuse de cancelación de nota de crédito
+
+      #Se usa la plamntilla de email para los acuses de cancelación para las notas de crédito
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
+      @asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
+    
+      #Se obtienen los valores reales de las operaciones dede de la BD.
+      factura = @nota_credito.factura
+      txtVariable_nombCliente = @nota_credito.cliente.nombre_completo 
+
+      #texto variable para los datos de las facturas
+      txtVariable_fechaFactura = factura.fecha_expedicion 
+      txtVariable_numeroFactura = factura.consecutivo 
+      txtVariable_folioFactura = factura.folio
+      txtVariable_montoFactura = factura.venta.montoVenta
+
+      #texto variable para llos datos de la nota de crédito
+      txtVariable_fechaNC = @nota_credito.fecha_expedicion 
+      txtVariable_numeroNC = @nota_credito.consecutivo 
+      txtVariable_folioNC = @nota_credito.folio
+      txtVariable_montoNC = @nota_credito.monto
+
+      #Datos del negocio y sucurssal
+      txtVariable_negocio = @nota_credito.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
+      txtVariable_sucursal = @nota_credito.sucursal.nombre
+      txtVariable_email = @nota_credito.sucursal.email
+      txtVariable_telefono = @nota_credito.sucursal.telefono
+
+      #Se reemplaza 
+      mensaje_email = mensaje.gsub(/(\{\{Nombre del cliente\}\})/, "#{txtVariable_nombCliente}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Total de la factura\}\})/, "#{txtVariable_montoFactura}")
+      #Datos de la factura.
+
+      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la nota de crédito\}\})/, "#{txtVariable_fechaNC}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{txtVariable_numeroNC}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{txtVariable_folioNC}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Total de la nota de crédito\}\})/, "#{txtVariable_montoNC}")
+
+      #Dirección y dtos de contacto del changarro
+      mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Email de contacto\}\})/, "#{txtVariable_email}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Teléfono de contacto\}\})/, "#{txtVariable_telefono}")
+
+      @mensaje= mensaje_email
+
     end
     # Never trust parameters from the scary internet, only allow the white list through.
     def nota_credito_params

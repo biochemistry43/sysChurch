@@ -2040,6 +2040,7 @@ class FacturasController < ApplicationController
       #@clientes = current_user.negocio.clientes
     end
     #Esta función sirve para optener la plantilla de email de los comprobantes, según sus estatus
+    #Solo funciona para facturas de ventas y para el envío de los acuses de cancelación de las mismas.
     def plantilla_email (opc)
       #Las 4 opciones posibles son:
         #fv => factura de venta
@@ -2055,17 +2056,19 @@ class FacturasController < ApplicationController
       #Se obtienen los valores reales de las operaciones dede de la BD.
       venta = @factura.venta#s.first
       txtVariable_nombCliente = @factura.cliente.nombre_completo # =>No se toma de la venta por que se puede facturar a nombre de otro cuate
-      
+
       #Texto variable para las ventas
       txtVariable_fechaVenta =  venta.fechaVenta 
       txtVariable_consecutivoVenta = venta.consecutivo 
       #txtVariable_montoVenta = venta.montoVenta 
       txtVariable_folioVenta = venta.folio 
 
+
       #texto variable para las facturas
       txtVariable_fechaFactura = @factura.fecha_expedicion 
       txtVariable_numeroFactura = @factura.consecutivo 
       txtVariable_folioFactura = @factura.folio
+      txtVariable_montoFactura = venta.montoVenta
       #El total que haga fila mientras me decido
 
       #Datos del negocio y sucurssal
@@ -2083,6 +2086,7 @@ class FacturasController < ApplicationController
       mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
       mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
       mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
+      mensaje_email = mensaje_email.gsub(/(\{\{Total de la factura\}\})/, "#{txtVariable_montoFactura}")
       #Dirección y dtos de contacto del changarro
       mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
       mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
