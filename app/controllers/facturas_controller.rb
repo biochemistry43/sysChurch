@@ -1320,12 +1320,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1347,12 +1347,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1378,12 +1378,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1404,12 +1404,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
