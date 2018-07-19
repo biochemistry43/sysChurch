@@ -25,7 +25,7 @@
       <div class="input-group col-md-6 col-sm-6 col-xs-12">
         <span class="input-group-addon"><i class="fa fa-user"></i></span>
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%=email_field_tag :destinatario, @destinatario, class: 'form-control text_field'%>
+        <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
         <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
       </div>
     </div>
