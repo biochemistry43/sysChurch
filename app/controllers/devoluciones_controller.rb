@@ -510,6 +510,55 @@ class DevolucionesController < ApplicationController
   	@itemVenta = ItemVenta.find(params[:id])
   	@categorias = current_user.negocio.cat_venta_canceladas
     @cajas = current_user.sucursal.caja_sucursals
+    #plantilla_email("nc")
+
+    if @itemVenta.venta.factura.present?
+      #Se supone que esto es solo si la venta está facturada
+      require 'plantilla_email/plantilla_email.rb'
+
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
+      asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
+
+      # :( Se tienen que calcular todos los textos variables por que se trata de crear apenas una nota de crédito 
+      cadena = PlantillaEmail::AsuntoMensaje.new
+      factura_relacionada_NC = @itemVenta.venta.factura
+      cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+      
+      #Para obtener el numero consecutivo a partir de la ultima NC
+      consecutivo = 0
+      if current_user.sucursal.nota_creditos.last
+        consecutivo = current_user.sucursal.nota_creditos.last.consecutivo
+        if consecutivo
+          consecutivo += 1
+        end
+      else
+        consecutivo = 1 
+      end
+
+      #El folio de las facturas se forma por defecto por la clave de las sucursales
+      claveSucursal = current_user.sucursal.clave
+      serie = claveSucursal + "NC"
+      fecha_expedicion_nc = Time.now
+      fecha_expedicion_nc = fecha_expedicion_nc.strftime("%Y-%m-%d")
+      
+      cadena.fechaNC = fecha_expedicion_nc
+      cadena.numNC = consecutivo
+      cadena.folioNC = serie + consecutivo.to_s
+      cadena.totalNC = "X.XX"#@nota_credito.monto""
+        
+      cadena.fechaFact = @itemVenta.venta.factura.fecha_expedicion
+      cadena.numFact = @itemVenta.venta.factura.consecutivo
+      cadena.folioFact = @itemVenta.venta.factura.folio
+      cadena.totalFact = @itemVenta.venta.factura.venta.montoVenta
+        
+      cadena.nombNegocio = current_user.negocio.nombre 
+      cadena.nombSucursal = current_user.sucursal.nombre
+      cadena.emailContacto = current_user.sucursal.email
+      cadena.telContacto = current_user.sucursal.telefono
+
+      @mensaje = cadena.reemplazar_texto(mensaje)
+      @asunto = cadena.reemplazar_texto(asunto)
+    end
   end
 
   def devolucion
@@ -736,20 +785,10 @@ class DevolucionesController < ApplicationController
           consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
         end
 
-        if current_user.sucursal.clave.present?
-          #El folio de las facturas se forma por defecto por la clave de las sucursales, pero si el usuario quiere establecer sus propias series para otro fin, se tomará la serie que el usuario indique en las configuración de Facturas y Notas
-          #claveSucursal = current_user.sucursal.clave
-          claveSucursal = current_user.sucursal.clave
-          folio_registroBD = claveSucursal + "F"
-          folio_registroBD << consecutivo.to_s
-          serie = claveSucursal + "F"
-        else
-          folio_default="F"
-          folio_registroBD =folio_default
-          #Una serie por default les guste o no les guste, pero útil para que no se produzca un colapso
-          serie = folio_default
-        end
-
+        #El folio de las facturas se forma por defecto por la clave de las sucursales
+        claveSucursal = current_user.sucursal.clave
+        serie = claveSucursal + "NC"
+ 
         fecha_expedicion_nc = Time.now
         #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
         #La informacion de la nota de crédito debe de ser la misma que la del comprobante de ingreso a la que se le realizará el descuento, devolucion...
@@ -995,7 +1034,7 @@ class DevolucionesController < ApplicationController
         archivo.close
 
         #SE SALVA EN LA BD
-        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: consecutivo, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage)
+        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta)
         #@factura = Factura.find(@venta.factura_id)
 
         if @nota_credito.save
@@ -1008,46 +1047,9 @@ class DevolucionesController < ApplicationController
 
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        txtVariable_nombCliente = @factura.cliente.nombre_completo # =>nombreCliente
-
-        txtVariable_fechaVenta =  @venta.fechaVenta # => fechaVenta
-        txtVariable_consecutivoVenta = @venta.consecutivo # => númeroVenta
-        #txtVariable_montoVenta = @venta.montoVenta # => totalVenta
-        txtVariable_folioVenta = @venta.folio # => folioVenta
-        #texto variable para las facturas
-        txtVariable_fechaFactura = @factura.fecha_expedicion
-        txtVariable_numeroFactura = @factura.consecutivo
-        txtVariable_folioFactura = @factura.folio
-
-        #Datos de la dirección de la empresa
-        txtVariable_negocio= @factura.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
-        #En cuanto a los datos de la sucursal
-        txtVariable_sucursal = @factura.sucursal.nombre
-        txtVariable_email = @factura.sucursal.email
-        txtVariable_telefono = @factura.sucursal.telefono
-
-        txtVariable_nombNegocio = current_user.negocio.datos_fiscales_negocio.nombreFiscal # => nombreNegocio
-        #txtVariable_emailNegocio = current_user.negocio.datos_fiscales_negocio.email # => nombre
-        mensaje = "Hola cara de bola"#current_user.negocio.config_comprobante.msg_email
-        #msg = "Hola sr. {{nombreCliente}} le hago llegar por este medio la factura de su compra del día {{fechaVenta}}"
-        mensaje_email = mensaje.gsub(/(\{\{nombreCliente\}\})/, "#{txtVariable_nombCliente}")
-        mensaje_email = mensaje_email.gsub(/(\{\{fechaVenta\}\})/, "#{txtVariable_fechaVenta}")
-        mensaje_email = mensaje_email.gsub(/(\{\{numeroVenta\}\})/, "#{txtVariable_consecutivoVenta}")
-        mensaje_email = mensaje_email.gsub(/(\{\{folioVenta\}\})/, "#{txtVariable_folioVenta}")
-        #Datos de la factura.
-        mensaje_email = mensaje_email.gsub(/(\{\{fechaFactura\}\})/, "#{txtVariable_fechaFactura}")
-        mensaje_email = mensaje_email.gsub(/(\{\{numeroFactura\}\})/, "#{txtVariable_numeroFactura}")
-        mensaje_email = mensaje_email.gsub(/(\{\{folioFactura\}\})/, "#{txtVariable_folioFactura}")
-        #Dirección y dtos de contacto del changarro
-        mensaje_email = mensaje_email.gsub(/(\{\{negocio\}\})/, "#{txtVariable_negocio}")
-        mensaje_email = mensaje_email.gsub(/(\{\{sucursal\}\})/, "#{txtVariable_sucursal}")
-        mensaje_email = mensaje_email.gsub(/(\{\{email\}\})/, "#{txtVariable_email}")
-        mensaje_email = mensaje_email.gsub(/(\{\{telefono\}\})/, "#{txtVariable_telefono}")
-
-        #mensaje = current_user.negocio.config_comprobante.msg_email
         destinatario = params[:destinatario]
-        tema = "HOLA CARA DE GATO"
-        #file_name = "#{consecutivo}_#{fecha_file}"
+        #plantilla_email("nc")
+       
         comprobantes = {}
         #Aquí  no se da a elegir si desea enviar pdf o xml porque, simplemente se le enviarán al cliente la representación impresa de la nota de crédito y su CFDI(xml).
         comprobantes[:pdf_nc] = "public/#{file_name}_NotaCrédito.pdf"
@@ -1056,8 +1058,6 @@ class DevolucionesController < ApplicationController
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
       end #Fin de @venta.factura.present?
-
-
 
 
       respond_to do |format|
