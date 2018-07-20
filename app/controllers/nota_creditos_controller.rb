@@ -319,6 +319,7 @@ class NotaCreditosController < ApplicationController
 
     #Para cancelar una nota de crédito de una perteneciente a una factura.
     def mostrar_email_cancelacion_nc
+      plantilla_email("ac_nc")
       #@categorias_devolucion = current_user.negocio.cat_venta_canceladas
     end
 
