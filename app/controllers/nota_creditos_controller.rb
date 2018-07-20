@@ -387,61 +387,39 @@ class NotaCreditosController < ApplicationController
       @nombreFiscalClientes = DatosFiscalesCliente.where(cliente_id: current_user.negocio.clientes.where(negocio_id: current_user.negocio.id))
       #@clientes = current_user.negocio.clientes
     end
-        #Esta función sirve para optener la plantilla de email de los comprobantes, según sus estatus
-    #Solo funciona para las notas de crédito y para el envío de los acuses de cancelación de las mismas.
-    def plantilla_email (opc)
+    #Esta función sirve para optener la plantilla de email de los comprobantes, según sus estatus
+    #Solo funciona para facturas de ventas y para el envío de los acuses de cancelación de las mismas.
+    def plantilla_email(opc)
+      require 'plantilla_email/plantilla_email.rb'
       #Las 4 opciones posibles son:
         #fv => factura de venta
-        #nc => nota de crédito
         #ac_fv => acuse de cancelación de factura de venta (Las facturas globales quedan excluidas)
         #ac_nc => acuse de cancelación de nota de crédito
-
-      #Se usa la plamntilla de email para los acuses de cancelación para las notas de crédito
-      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
-      @asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
+        #nc => nota de crédito
     
-      #Se obtienen los valores reales de las operaciones dede de la BD.
-      factura = @nota_credito.factura
-      txtVariable_nombCliente = @nota_credito.cliente.nombre_completo 
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
+      asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
 
-      #texto variable para los datos de las facturas
-      txtVariable_fechaFactura = factura.fecha_expedicion 
-      txtVariable_numeroFactura = factura.consecutivo 
-      txtVariable_folioFactura = factura.folio
-      txtVariable_montoFactura = factura.venta.montoVenta
+      cadena = PlantillaEmail::AsuntoMensaje.new
+      cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+      
+      cadena.fechaNC = @nota_credito.fecha_expedicion
+      cadena.numNC = @nota_credito.consecutivo
+      cadena.folioNC = @nota_credito.folio
+      cadena.totalNC = @nota_credito.monto
+      
+      cadena.fechaFact = @nota_credito.factura.fecha_expedicion
+      cadena.numFact = @nota_credito.factura.consecutivo
+      cadena.folioFact = @nota_credito.factura.folio
+      cadena.totalFact = @nota_credito.factura.venta.montoVenta
+      
+      cadena.nombNegocio = @nota_credito.negocio.nombre 
+      cadena.nombSucursal = @nota_credito.sucursal.nombre
+      cadena.emailContacto = @nota_credito.sucursal.email
+      cadena.telContacto = @nota_credito.sucursal.telefono
 
-      #texto variable para llos datos de la nota de crédito
-      txtVariable_fechaNC = @nota_credito.fecha_expedicion 
-      txtVariable_numeroNC = @nota_credito.consecutivo 
-      txtVariable_folioNC = @nota_credito.folio
-      txtVariable_montoNC = @nota_credito.monto
-
-      #Datos del negocio y sucurssal
-      txtVariable_negocio = @nota_credito.negocio.nombre # => Nombre de la empresa, negocio, changarro o ...
-      txtVariable_sucursal = @nota_credito.sucursal.nombre
-      txtVariable_email = @nota_credito.sucursal.email
-      txtVariable_telefono = @nota_credito.sucursal.telefono
-
-      #Se reemplaza 
-      mensaje_email = mensaje.gsub(/(\{\{Nombre del cliente\}\})/, "#{txtVariable_nombCliente}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la factura\}\})/, "#{txtVariable_fechaFactura}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Número de factura\}\})/, "#{txtVariable_numeroFactura}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la factura\}\})/, "#{txtVariable_folioFactura}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Total de la factura\}\})/, "#{txtVariable_montoFactura}")
-      #Datos de la factura.
-
-      mensaje_email = mensaje_email.gsub(/(\{\{Fecha de la nota de crédito\}\})/, "#{txtVariable_fechaNC}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{txtVariable_numeroNC}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{txtVariable_folioNC}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Total de la nota de crédito\}\})/, "#{txtVariable_montoNC}")
-
-      #Dirección y dtos de contacto del changarro
-      mensaje_email = mensaje_email.gsub(/(\{\{Nombre del negocio\}\})/, "#{txtVariable_negocio}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Nombre de la sucursal\}\})/, "#{txtVariable_sucursal}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Email de contacto\}\})/, "#{txtVariable_email}")
-      mensaje_email = mensaje_email.gsub(/(\{\{Teléfono de contacto\}\})/, "#{txtVariable_telefono}")
-
-      @mensaje= mensaje_email
+      @mensaje = cadena.reemplazar_texto(mensaje)
+      @asunto = cadena.reemplazar_texto(asunto)
 
     end
     # Never trust parameters from the scary internet, only allow the white list through.

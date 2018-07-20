@@ -16,10 +16,10 @@ module PlantillaEmail
 		      cadena = cadena.gsub(/(\{\{Folio de la factura\}\})/, "#{@folioFact}") if @folioFact
 		      cadena = cadena.gsub(/(\{\{Total de la factura\}\})/, "#{@totalFact}") if @totalFact
 
-		      cadena = cadena.gsub(/(\{\{Fecha de la factura\}\})/, "#{@fechaNC}") if @fechaNC
-		      cadena = cadena.gsub(/(\{\{Número de factura\}\})/, "#{@numNC}") if @numNC
-		      cadena = cadena.gsub(/(\{\{Folio de la factura\}\})/, "#{@folioNC}") if @folioNC
-		      cadena = cadena.gsub(/(\{\{Total de la factura\}\})/, "#{@totalNC}") if @totalNC
+		      cadena = cadena.gsub(/(\{\{Fecha de la nota de crédito\}\})/, "#{@fechaNC}") if @fechaNC
+		      cadena = cadena.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{@numNC}") if @numNC
+		      cadena = cadena.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{@folioNC}") if @folioNC
+		      cadena = cadena.gsub(/(\{\{Total de la nota de crédito\}\})/, "#{@totalNC}") if @totalNC
 
 		      #Dirección y dtos de contacto del changarro
 		      cadena = cadena.gsub(/(\{\{Nombre del negocio\}\})/, "#{@nombNegocio}") if @nombNegocio
