@@ -41,6 +41,7 @@ class VentasController < ApplicationController
 
   def edit
     @items = @venta.item_ventas
+    plantilla_email("ac_fv")
   end
 
   def create
@@ -101,11 +102,10 @@ class VentasController < ApplicationController
 
               #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
               destinatario = params[:destinatario]
-              #Aquí el mensaje de la configuración...
-              mensaje = "HOLA cara de bola"
-              tema = "Acuse de cancelación"
+              plantilla_email("ac_fv")
+              
               comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
-              FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
+              FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
           end
         end
 
@@ -377,5 +377,31 @@ class VentasController < ApplicationController
     def set_categorias_cancelacion
         @categorias_devolucion = current_user.negocio.cat_venta_canceladas
     end
+    #Esta función sirve para optener la plantilla de email para el envío del acuse de cancelación de la factura de venta
+    def plantilla_email (opc)
+      require 'plantilla_email/plantilla_email.rb'
+
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
+      asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
+
+      cadena = PlantillaEmail::AsuntoMensaje.new
+      cadena.nombCliente = @venta.factura.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+      cadena.fechaVta = @venta.fechaVenta 
+      cadena.numVta = @venta.consecutivo
+      cadena.folioVta = @venta.folio
+      cadena.fechaFact = @venta.factura.fecha_expedicion
+      cadena.numFact = @venta.factura.consecutivo
+      cadena.folioFact = @venta.factura.folio
+      cadena.totalFact = @venta.montoVenta #El total 
+      cadena.nombNegocio = @venta.factura.negocio.nombre 
+      cadena.nombSucursal = @venta.factura.sucursal.nombre
+      cadena.emailContacto = @venta.factura.sucursal.email
+      cadena.telContacto = @venta.factura.sucursal.telefono
+
+      @mensaje = cadena.reemplazar_texto(mensaje)
+      @asunto = cadena.reemplazar_texto(asunto)
+
+    end
+
 
 end
