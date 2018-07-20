@@ -15,9 +15,8 @@
     <div class="form-group">
       <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
       <div class="input-group col-md-9 col-sm-9 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= text_field_tag :asunto, nil,{class:'form-control text_field', value: @asunto}%>
+
+        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field', id: "summernote_asunto"}%>
       </div>
     </div>
   </div>
@@ -80,6 +79,15 @@
   </div>
   <%end%>
   <script type="text/javascript">
+    /*Editor de texto para los asuntos de las plantillas de email solo permite poner texto variable sin aplicar formato al texto*/
+    $('#summernote_asunto').summernote({
+        tabsize: 2,
+        minHeight: 40,
+        maxHeight: 40,
+        maxWidth: 200,
+        lang: 'es-ES', // default: 'en-US'
+        toolbar: false,
+    });
 
     //$(document).ready(function() {
     //  $('#summernote').summernote();
