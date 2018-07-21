@@ -118,16 +118,17 @@
 
       <div class="row">
           <hr style="border-style: solid; border-width: 2px;">
-        <div class="panel panel-default" >
-          <div class="panel-heading" style="background-color:#A3CC5B; color: white " >
-            <h3 class="panel-title">Factura electrónica 3.3</h3>
+        <div class="panel panel-primary" >
+          <div class="panel-heading">
+            <h3 class="panel-title panel-default">Factura electrónica 3.3</h3>
           </div>
 
           <div class="panel-body">
             <!--Panel para el encabezado del comprobante-->
             <div class="panel panel-default" >
               <div class="panel-body">
-                <div class="col-md-offset-6 col-sm-offset-6 col-xs-offset-6">
+                <div class="row">
+                  <div class="col-md-offset-6 col-sm-offset-6 col-xs-offset-6">
                   <div class="col-md-2 col-sm-2 col-xs-12">
                     <%= label_tag :serie,'Serie', class:"control-label"%>
                   </div>
@@ -146,63 +147,62 @@
                 <div class="col-lg-8">
 
                   < new_f.text_field :folio, class: "form-control",value:@rfc_emisor>
-                </div>-->
-              </div>
-
-            </div>
-            <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
-              <h3 class="panel-title">Forma y método de pago</h3>
-            </div>
-            <div class="panel panel-default" >
-              <div class="panel-body">
-                <div class="col-md-6 col-sm-6 col-xs-6">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    <%= label_tag :lbl_metodo_pago,'Método de pago.', class:"control-label"%>
-                  </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                      <%= select_tag :metodo_pago, "<option value='PUE'>PUE - Pago en una sola exhibición</option><option value= 'PPD'>PPD - Pago en parcialidades o diferido</option>".html_safe,   class: 'form-control' %>
-                    <!--%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :descripcion, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%-->
-                  </div>
+                </div>-->   
                 </div>
-                <div class="col-md-6 col-sm-6 col-xs-6">
-                  <div class="col-md-4 col-sm-4 col-xs-12">
+              </div>
+            </div>
+           
+            <div class="panel panel-default" >
+
+              <div class="panel-heading"  >
+                <h3 class="panel-title panel-default">Forma y método de pago</h3>
+              </div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-2 col-sm-2 col-xs-3">
+                      <%= label_tag :lbl_metodo_pago,'Método de pago.', class:"control-label"%>
+                  </div>
+                  <div class="col-md-4 col-sm-10 col-xs-12">
+                      <%= select_tag :metodo_pago, "<option value='PUE'>PUE - Pago en una sola exhibición</option><option value= 'PPD'>PPD - Pago en parcialidades o diferido</option>".html_safe,   class: 'form-control' %>
+                  </div>
+
+                  <div class="col-md-2 col-sm-2 col-xs-3">
                       <%= label_tag :lbl_forma_pago,'Forma de pago.', class:"control-label"%>
                   </div>
-                  <div class="col-md-8 col-sm-8 col-xs-12">
-                    <%= collection_select(nil, :forma_pago_id, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
+                  <div class="col-md-4 col-sm-10 col-xs-12">
+                     <%= collection_select(nil, :forma_pago_id, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{}, { class: "form-control col-md-7 col-xs-12" })%>
                   </div>
                 </div>
-
               </div>
-
             </div>
 
 
 
-            <!--Panel para los datos de RECEPTOR-->
-            <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
-              <h3 class="panel-title">Datos del receptor</h3>
-            </div>
-            <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
+           
+            <div class="panel panel-default">
+                 <!--Panel para los datos de RECEPTOR-->
+              <div class="panel-heading">
+                <h3 class="panel-title panel-default">Datos del receptor</h3>
+              </div>
               <div class="panel-body">
                   <div class="row">
                     <div class="col-md-4 col-sm-4 col-xs-12">
-                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
-                        Editar cliente original. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
+                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-primary col-md-12 col-sm-12 col-xs-12", remote: true, } do %>
+                        <i class="fa fa-pencil"> </i> Editar cliente original.
                       <% end %>
 
                     </div>
 
                     <div class="col-md-4 col-sm-4 col-xs-12">
-                    <button type="button" class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="cambiarClienteBtn">
+                    <button type="button" class="btn btn-warning col-md-12 col-sm-12 col-xs-12" id="cambiarClienteBtn">
                       <i class="fa fa-user"> </i> Cambiar cliente
                     </button>
                     </div>
 
                     <div class="col-md-4 col-sm-4 col-xs-12">
                     <% if can? :create, Cliente %>
-                      <%= link_to new_cliente_path, {remote: true, class: "btn btn-success col-md-12 col-sm-12 col-xs-12"}  do %>
-                         Nuevo cliente.
+                      <%= link_to new_cliente_path, {remote: true, class: "btn btn-info col-md-12 col-sm-12 col-xs-12"}  do %>
+                         <i class="fa fa-plus"></i> Nuevo cliente.
                       <%end%>
                     <% end %>
                     </div>
@@ -222,7 +222,7 @@
                   <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Datos generales:</h2>
                 </div>
 
-                <div class="row" style="text-align:center;">
+                <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-3">
                     <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
                   </div>
@@ -237,12 +237,20 @@
                   </div>
                 </div>
 
+                <div class="row">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :referencia,'Uso CFDI:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-11 col-sm-10 col-xs-12">
+                     <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :clave_descripcion_uso_cfdi, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
+                  </div>
+                </div>
 
                 <div class="row" style="text-align:center;">
                   <h2 class="control-label col-md-12 col-sm-12 col-xs-12">Dirección de facturación:</h2>
                 </div>
 
-                <div class="row" style="padding-bottom:10px;">
+                <div class="row" style="padding-bottom:15px;">
                     <!--Se muestra la dirección del cliente -->
                   <div class="col-md-1 col-sm-2 col-xs-12">
                     <%= label_tag :calle,'Calle:', class:"control-label"%>
@@ -265,7 +273,7 @@
                 </div>
 
 
-                <div class="row" style="padding-bottom:10px;">
+                <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
                     <%= label_tag :colonia,'Colonia:', class:"control-label"%>
                   </div>
@@ -280,7 +288,7 @@
                   </div>
                 </div>
 
-                <div class="row" style="padding-bottom:10px;">
+                <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
                     <%= label_tag :municipio,'Municipio:', class:"control-label"%>
                   </div>
@@ -295,7 +303,7 @@
                   </div>
                 </div>
 
-                <div class="row" style="padding-bottom:10px;">
+                <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
                     <%= label_tag :pais,'País:', class:"control-label"%>
                   </div>
@@ -310,7 +318,7 @@
                   </div>
                 </div>
 
-                <div class="row" style="padding-bottom:10px;">
+                <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
                     <%= label_tag :referencia,'Referencia:', class:"control-label"%>
                   </div>
@@ -321,22 +329,8 @@
 
 
               </div>
-              <div class="panel-heading" style="background-color:#A3CC5B; color:white " >
-                <h3 class="panel-title">Uso del C.F.D.I.</h3>
-              </div>
-              <div class="panel panel-default col-md-12 col-sm-12 col-xs-12">
-                <div class="panel-body">
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="col-md-2 col-sm-2 col-xs-12">
-                      <%= label_tag :uso_cfdi,'Uso C.F.D.I.', class:"control-label"%>
-                    </div>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      <%= collection_select(nil, :uso_cfdi_id, UsoCfdi.all, :id, :clave_descripcion_uso_cfdi, {:selected => UsoCfdi.find_by(descripcion:"Gastos en general").id }, { class: "form-control col-md-7 col-xs-12" })%>
-                    </div>
-                  </div>
 
-                </div>
-              </div>
+
             </div>
 
 
@@ -369,52 +363,67 @@
               </tbody>
             </table>
             <!--Panel para el total representao en letras-->
-            <div class="">
-              <div class="panel panel-default col-md-8 col-sm-8 col-xs-12">
+    
+            <!-- label_tag :total_letras,@total_en_letras, class:"control-label", style:"font-size:30px;"-->
+     
+         
+              <!--Panel para los totales de la factura global -->
+
+              <div class="panel panel-default col-md-offset-8 col-sm-offset-8" >
+                <div class="panel-heading"  >
+                  <h3 class="panel-title panel-default">Totales</h3>
+                </div>
                 <div class="panel-body">
-                    <div class="">
-                      <%= label_tag :total_letras,@total_en_letras, class:"control-label"%>
+                  <!-- Subtotal-->
+                  <div class="row">
+                    <div class="col-md-6 col-sm-2 col-xs-3">
+                        <%= label_tag :lbl_subtotal,'Subtotal: ', class:"control-label"%>
                     </div>
+                    <div class="col-md-6 col-sm-10 col-xs-12">
+                       $ <%= @subtotal %> 
+                    </div>
+                  </div>
+                  <!--Descuento -->
+                  <div class="row">
+                    <div class="col-md-6 col-sm-2 col-xs-3">
+                        <%= label_tag :lbl_descuento,'Descuento: ', class:"control-label"%>
+                    </div>
+                    <div class="col-md-6 col-sm-10 col-xs-12">
+                       $ <%= @descuento_string%> 
+                    </div>
+                  </div>
+                  <!--IVA -->
+                  <div class="row">
+                    <div class="col-md-6 col-sm-2 col-xs-3">
+                        <%= label_tag :lbl_IVA,'I.V.A. ', class:"control-label"%>
+                    </div>
+                    <div class="col-md-6 col-sm-10 col-xs-12">
+                       $ <%='%.2f' % @iva.round(2)%>
+                    </div>
+                  </div>
+                  <!--IEPS -->
+                  <div class="row">
+                    <div class="col-md-6 col-sm-2 col-xs-3">
+                        <%= label_tag :lbl_IEPS,'I.E.P.S ', class:"control-label"%>
+                    </div>
+                    <div class="col-md-6 col-sm-10 col-xs-12">
+                       $ <%=  '%.2f' % @ieps.round(2)%> 
+                    </div>
+                  </div>
+                  <!--IEPS -->
+                  <div class="row">
+                    <div class="col-md-6 col-sm-2 col-xs-3">
+                        <%= label_tag :lbl_total,'TOTAL: ', class:"control-label", style:"font-size: 40px;"%>
+                    </div>
+                    <div class="col-md-6 col-sm-10 col-xs-12" style="font-size: 40px; color:red;">
+                       $ <%=  @total_string%>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-              <!--Panel para los totales de la factura global -->
-              <div class="col-md-offset-8 col-sm-offset-8 ">
-                <table id ="table_sales" class="table table-striped responsive-utilities jambo_table data" style="margin: 20px 0; font-size: 16px;">
-                  <thead>
-                    <tr class="headings">
-                      <th colspan="2" class="column-title"> Calculos y redondeos </th>
-                    </tr>
-                  </thead>
-                  <tbody style="text-align: right;">
-                      <tr>
-                        <td> Subtotal: </td>
-                        <td > $ <%= @subtotal%> </td>
-                      </tr>
-                      <tr>
-                        <td> Descuento:  </td>
-                        <td >$ <%= @descuento_string%> </td>
-                      </tr>
-                      <tr>
-                        <td> IVA: </td>
-                        <td >  $ <%='%.2f' % @iva.round(2)%></td>
-                      </tr>
-                      <tr>
-                        <td> IEPS: </td>
-                        <td >$ <%=  '%.2f' % @ieps.round(2)%> </td>
-                      </tr>
-                      <tr>
-                        <td> TOTAL </td>
-                        <td >$ <%=  @total_string%> </td>
-                      </tr>
-                  </tbody>
-                </table>
 
-              </div>
-
-            </div>
-
-            </div>
-
+          </div>
           <div class="col-md-12 col-sm-12 col-xs-12" style="margin:20px;">
             <div class="text-center" id="ListPage">
               <%= submit_tag 'Cancelar', {:class=>"btn btn-default btn-lg"} %>
@@ -496,6 +505,6 @@ jQuery("#btn_datos_manualmente").click(function () {
 
 </script>
 
-<%= stylesheet_link_tag "facturas" %>
+<!-- stylesheet_link_tag "facturas" %-->
 <%= javascript_include_tag "validador_RFC_Obligatorio" %>
 <%= javascript_include_tag "mostrarDetallesVenta" %>

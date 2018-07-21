@@ -10,7 +10,7 @@ class PlantillasEmailsController < ApplicationController
   # GET /plantillas_emails/1
   # GET /plantillas_emails/1.json
   def show
-    
+
     if @plantillas_email.comprobante == "fv"
       leyenda = "Facturas de ventas"
     elsif @plantillas_email.comprobante == "nc"
@@ -56,7 +56,7 @@ class PlantillasEmailsController < ApplicationController
 
       if @plantillas_email.update(plantillas_email_params)
         @plantillas_email.update(asunto_email: asunto)
-        format.html { redirect_to @plantillas_email, notice: 'Plantillas email was successfully updated.' }
+        format.html { redirect_to @plantillas_email, notice: 'La plantilla de email fue actualizada correctamente.' }
         format.json { render :show, status: :ok, location: @plantillas_email }
       else
         format.html { render :edit }
