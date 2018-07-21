@@ -774,7 +774,7 @@ class DevolucionesController < ApplicationController
         #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
         #llave2 = CFDI::Key.new llave, pass_llave
 
-        #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
+        #Para obtener el numero consecutivo a partir de la ultima NC o de lo contrario asignarle por primera vez un número
         consecutivo = 0
         if current_user.sucursal.nota_creditos.last
           consecutivo = current_user.sucursal.nota_creditos.last.consecutivo
@@ -782,7 +782,7 @@ class DevolucionesController < ApplicationController
             consecutivo += 1
           end
         else
-          consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+          consecutivo = 1 
         end
 
         #El folio de las facturas se forma por defecto por la clave de las sucursales
@@ -809,44 +809,47 @@ class DevolucionesController < ApplicationController
           total: '%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
         })
 
-        #Datos del emisor
-        #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor si no existiera.
+        #Dirección del negocio(La misma que la de la factura)
+        #La dirección fiscal ya no es requerida por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
+        #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor para las NC
         @factura = @venta.factura
         domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
           calle: @factura.negocio.datos_fiscales_negocio.calle,
           noExterior: @factura.negocio.datos_fiscales_negocio.numExterior,
           noInterior: @factura.negocio.datos_fiscales_negocio.numInterior,
           colonia: @factura.negocio.datos_fiscales_negocio.colonia,
+          localidad: @factura.negocio.datos_fiscales_negocio.localidad,
+          referencia: @factura.negocio.datos_fiscales_negocio.referencia,
           municipio: @factura.negocio.datos_fiscales_negocio.municipio,
           estado: @factura.negocio.datos_fiscales_negocio.estado,
           codigoPostal: @factura.negocio.datos_fiscales_negocio.codigo_postal
           })
-
-        expedidoEn= CFDI::DatosComunes::Domicilio.new({
-          #Estos datos los uso como datos fiscales, sin current_user.sucursal.codigo_postalembargo si se hara distinción entre direccion comun y dirección fiscal,
-          #se debera corregir.
-          calle: @factura.sucursal.calle,
-          noExterior: @factura.sucursal.numExterior,
-          noInterior: @factura.sucursal.numInterior,
-          colonia: @factura.sucursal.colonia,
-          #localidad: current_user.negocio.datos_fiscales_negocio.,
-          #referencia: current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
-          municipio: @factura.sucursal.municipio,
-          estado: @factura.sucursal.estado,
-          #pais: current_user.negocio.datos_fiscales_negocio.,
-          codigoPostal: @factura.sucursal.codigo_postal
-        })
+        #Dirección de la sucursal(es la misma que la de la factura)
+        if  current_user.sucursal
+          expedidoEn= CFDI::DatosComunes::Domicilio.new({
+            calle: @factura.sucursal.datos_fiscales_sucursal.calle,
+            noExterior: @factura.sucursal.datos_fiscales_sucursal.numExt,
+            noInterior: @factura.sucursal.datos_fiscales_sucursal.numInt,
+            colonia: @factura.sucursal.datos_fiscales_sucursal.colonia,
+            localidad: @factura.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
+            referencia: @factura.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
+            municipio: @factura.sucursal.datos_fiscales_sucursal.municipio,
+            estado: @factura.sucursal.datos_fiscales_sucursal.estado,
+            codigoPostal: @factura.sucursal.datos_fiscales_sucursal.codigo_postal,
+          })
+        else
+          expedidoEn= CFDI::DatosComunes::Domicilio.new({})
+        end
 
         factura.emisor = CFDI::Emisor.new({
           rfc: current_user.negocio.datos_fiscales_negocio.rfc,
           nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
-
           regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
           domicilioFiscal: domicilioEmisor,
           expedidoEn: expedidoEn
         })
 
-        #La dirección fiscal del cliente para empezar no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
+        #La dirección fiscal del cliente a quien fue expedida la factura
         domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
           calle: @factura.cliente.datos_fiscales_cliente.calle,
           noExterior: @factura.cliente.datos_fiscales_cliente.numExterior,
@@ -854,19 +857,21 @@ class DevolucionesController < ApplicationController
           colonia: @factura.cliente.datos_fiscales_cliente.colonia,
           localidad: @factura.cliente.datos_fiscales_cliente.localidad,
           municipio: @factura.cliente.datos_fiscales_cliente.municipio,
+          referencia: @factura.cliente.datos_fiscales_cliente.referencia,
           estado: @factura.cliente.datos_fiscales_cliente.estado,
           codigoPostal: @factura.cliente.datos_fiscales_cliente.codigo_postal,
-          #referencia: @factura.cliente.datos_fiscales_cliente.
+          pais: @factura.cliente.datos_fiscales_cliente.pais
           })
+
         #Se cargan los mismo datos del receptor, aquí solo se trata de devolución y no de una nota de crédito para enmendar un error.
         #Atributos del receptor
-        rfc_receptor_f = @factura.cliente.datos_fiscales_cliente.rfc
+        rfc_receptor_nc = @factura.cliente.datos_fiscales_cliente.rfc
         nombre_fiscal_receptor_nc = @factura.cliente.datos_fiscales_cliente.nombreFiscal
         #Al tratarse de un CFDI de egresos, no será un comprobante de deducción para el receptor, ya que se está emitiendo para disminuir el importe de un CFDI relacionado.
         #Por lo tanto el uso sera: G02 - Devoluciones, descuentos o bonificaciones
 
         factura.receptor = CFDI::Receptor.new({
-           rfc: rfc_receptor_f,
+           rfc: rfc_receptor_nc,
            nombre: nombre_fiscal_receptor_nc,
            UsoCFDI: "G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
            domicilioFiscal: domicilioReceptor
@@ -1003,6 +1008,7 @@ class DevolucionesController < ApplicationController
         #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
         #fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
         fecha_registroBD=Date.parse(fecha_expedicion_nc.to_s)
+        dir_dia = fecha_registroBD.strftime("%d")
         dir_mes = fecha_registroBD.strftime("%m")
         dir_anno = fecha_registroBD.strftime("%Y")
 
@@ -1012,9 +1018,9 @@ class DevolucionesController < ApplicationController
 
         if current_user.sucursal
           dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
         end
 
         #Los comprobantes de almacenan en google cloud
