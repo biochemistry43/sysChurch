@@ -10,6 +10,7 @@ class PlantillasEmailsController < ApplicationController
   # GET /plantillas_emails/1
   # GET /plantillas_emails/1.json
   def show
+    
     if @plantillas_email.comprobante == "fv"
       leyenda = "Facturas de ventas"
     elsif @plantillas_email.comprobante == "nc"
@@ -51,7 +52,10 @@ class PlantillasEmailsController < ApplicationController
   # PATCH/PUT /plantillas_emails/1.json
   def update
     respond_to do |format|
+      asunto = ActionView::Base.full_sanitizer.sanitize(params[:asunto_email])
+
       if @plantillas_email.update(plantillas_email_params)
+        @plantillas_email.update(asunto_email: asunto)
         format.html { redirect_to @plantillas_email, notice: 'Plantillas email was successfully updated.' }
         format.json { render :show, status: :ok, location: @plantillas_email }
       else

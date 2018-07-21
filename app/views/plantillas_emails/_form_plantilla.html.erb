@@ -17,7 +17,8 @@
       <div class="input-group col-md-10 col-sm-10 col-xs-12">
         <!--span class="input-group-addon"><i class="fa fa-pencil"> </i></span-->
         <!-- f.text_field :asunto_email, class:'form-control text_field'-->
-        <%= f.text_area :asunto_email, class:'form-control text_field', id:"summernote_asunto"%>
+           <%= text_area_tag :asunto_email, @plantillas_email.asunto_email,{class:'form-control text_field',id:"summernote_asunto" }%>
+        <!--f.text_area :asunto_email, class:'form-control text_field', id:"summernote_asunto"%-->
       </div>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-12">

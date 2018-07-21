@@ -537,15 +537,7 @@ module CFDI
         params += @impuestos.traslados_cadena_original[cont]
       end
       cont =cont+1
-=begin
-        AQUÍ SE DEBE DE PONER:
-          Retenciónnombre
-            *sus atributos
-          Aduanera
-            ...
-          CuentaPredial
-            ...
-=end
+
       end
       if @impuestos.traslados.any?
         #Se supone que el único impuesto en las facturas electronicas el el IVA trasladado

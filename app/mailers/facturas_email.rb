@@ -2,7 +2,7 @@ class FacturasEmail < ApplicationMailer
 
   default from: "leinadlm95@gmail.com" #Cambiarlo por el correo del negocio
 
-  def factura_email (destinatario, mensaje, tema, comprobantes)
+  def factura_email (destinatario, mensaje, asunto, comprobantes)
     #Tengo pendiente comprobar que los archivos existan en la carpeta para evitar un error al intentar leer un archivo.***
 
     #Para enviar las facturas en formato xml y/o pdf
@@ -28,7 +28,7 @@ class FacturasEmail < ApplicationMailer
 =end
 
     #Tan simple :( como responder en formato html para que muestre el texto con sus estilos y no como texto plano.
-    mail(to: destinatario, body:mensaje,  subject: tema) do |format|
+    mail(to: destinatario, body:mensaje,  subject: asunto) do |format|
       #format.text { render plain: "Hello Mikel!" }
       format.html { render html: "#{mensaje}".html_safe }
     end
