@@ -807,7 +807,7 @@ class DevolucionesController < ApplicationController
           #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
           metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
           lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
-          total: '%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
+          total: @cantidad_devuelta.to_f * @itemVenta.precio_venta#'%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
         })
 
         #Dirección del negocio(La misma que la de la factura)
@@ -905,7 +905,7 @@ class DevolucionesController < ApplicationController
               elsif c.articulo.impuesto.nombre == "IEPS"
                 clave_impuesto =  "003"
               end
-              factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+              nota_credito.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
                 tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
             #end
             #elsif c.articulo.impuesto.tipo == "Local"
@@ -987,16 +987,34 @@ class DevolucionesController < ApplicationController
         #Para el nombre del changarro feo jajaja
         nombre_negocio = current_user.negocio.nombre
 
+        #Personalización de la plantilla de impresión de una factura de venta. :P
+        tipo_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").tipo_fuente
+        tam_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").tam_fuente
+        color_fondo = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_fondo
+        color_banda = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_banda
+        color_titulos = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_titulos
 
         #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-        hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion:uso_cfdi_descripcion, cve_nombre_forma_pago:cve_nombre_forma_pago,cve_nombre_metodo_pago:cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio:nombre_negocio }
-        #A estas alturas estos datos si deben de existir.
-        hash_info[:Telefono1Receptor]= @factura.cliente.telefono1 #if @factura.cliente.telefono1
-        hash_info[:EmailReceptor]= @factura.cliente.email #if @factura.cliente.email
+        hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
+          tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
+          tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
+        }
 
+        unless @factura.cliente.telefono1.to_s.strip.empty?
+          hash_info[:Telefono1Receptor] =  @factura.cliente.telefono1
+        else
+          hash_info[:Telefono1Receptor] =  @factura.cliente.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
+        end
+        hash_info[:EmailReceptor]= @factura.cliente.email unless @factura.cliente.email.to_s.strip.empty?
+        #Solo si tiene más de un establecimiento el negocio...
+        if current_user.sucursal
+          hash_info[:tel_sucursal] = current_user.sucursal.telefono
+          hash_info[:email_sucursal] = current_user.sucursal.email
+        end
 
         xml_rep_impresa = nota_credito.add_elements_to_xml(hash_info)
         template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
+
         html_document = template.transform(xml_rep_impresa)
         #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
         pdf = WickedPdf.new.pdf_from_string(html_document)
