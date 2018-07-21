@@ -764,6 +764,7 @@ class DevolucionesController < ApplicationController
         #II. Emisión de CFDI de Egresos relacionado a un comprobante
         require 'cfdi'
         require 'timbrado'
+        require 'plantilla_email/plantilla_email.rb'
 
         #1.- CERTIFICADOS,  LLAVES Y CLAVES
         certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
@@ -792,7 +793,7 @@ class DevolucionesController < ApplicationController
         fecha_expedicion_nc = Time.now
         #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
         #La informacion de la nota de crédito debe de ser la misma que la del comprobante de ingreso a la que se le realizará el descuento, devolucion...
-        factura = CFDI::Comprobante.new({
+        nota_credito = CFDI::Comprobante.new({
           serie: serie,
           folio: consecutivo,
           fecha: fecha_expedicion_nc,
@@ -841,7 +842,7 @@ class DevolucionesController < ApplicationController
           expedidoEn= CFDI::DatosComunes::Domicilio.new({})
         end
 
-        factura.emisor = CFDI::Emisor.new({
+        nota_credito.emisor = CFDI::Emisor.new({
           rfc: current_user.negocio.datos_fiscales_negocio.rfc,
           nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
           regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
@@ -870,7 +871,7 @@ class DevolucionesController < ApplicationController
         #Al tratarse de un CFDI de egresos, no será un comprobante de deducción para el receptor, ya que se está emitiendo para disminuir el importe de un CFDI relacionado.
         #Por lo tanto el uso sera: G02 - Devoluciones, descuentos o bonificaciones
 
-        factura.receptor = CFDI::Receptor.new({
+        nota_credito.receptor = CFDI::Receptor.new({
            rfc: rfc_receptor_nc,
            nombre: nombre_fiscal_receptor_nc,
            UsoCFDI: "G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
@@ -916,23 +917,23 @@ class DevolucionesController < ApplicationController
             hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
             hash_conceptos[:Importe] = importe_concepto
           end
-          factura.conceptos << CFDI::Concepto.new(hash_conceptos)
+          nota_credito.conceptos << CFDI::Concepto.new(hash_conceptos)
           cont += 1
         end
 
-        factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+        nota_credito.uuidsrelacionados << CFDI::Cfdirelacionado.new({
           uuid: @factura.folio_fiscal #Aquí se relaciona el comprobante de ingreso por la que se realizará la nota de crŕedito
           })
-        factura.cfdisrelacionados = CFDI::CfdiRelacionados.new({
+        nota_credito.cfdisrelacionados = CFDI::CfdiRelacionados.new({
           tipoRelacion: "03"# Devolución de mercancías sobre facturas o traslados previos
         })
 
         #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
-        @total_to_w= factura.total_to_words
+        @total_to_w = nota_credito.total_to_words
         # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
-        certificado.certifica factura
+        certificado.certifica nota_credito
         # Esto genera la factura como xml
-        p xml= factura.comprobante_to_xml
+        p xml = nota_credito.comprobante_to_xml
         # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
         archivo_xml = generar_sello(xml, llave, pass_llave)
 
@@ -954,7 +955,7 @@ class DevolucionesController < ApplicationController
         xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
         #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
-        factura.complemento=CFDI::Complemento.new(
+        nota_credito.complemento=CFDI::Complemento.new(
           {
             Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
             uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
@@ -966,11 +967,11 @@ class DevolucionesController < ApplicationController
         )
         #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
         xml_copia=xml_timbrado
-        xml_timbrado_storage = factura.comprobante_to_xml #Hasta este punto se le agregado el complemento con eso es suficiente para el CFDI
+        xml_timbrado_storage = nota_credito.comprobante_to_xml #Hasta este punto se le agregado el complemento con eso es suficiente para el CFDI
 
         #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
-        codigoQR = factura.qr_code xml_timbrado
-        cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
+        codigoQR = nota_credito.qr_code xml_timbrado
+        cadOrigComplemento = nota_credito.complemento.cadena_TimbreFiscalDigital
         logo=current_user.negocio.logo
         #No hay nececidad de darle a escoger el uso del cfdi al usuario.
         uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
@@ -994,7 +995,7 @@ class DevolucionesController < ApplicationController
         hash_info[:EmailReceptor]= @factura.cliente.email #if @factura.cliente.email
 
 
-        xml_rep_impresa = factura.add_elements_to_xml(hash_info)
+        xml_rep_impresa = nota_credito.add_elements_to_xml(hash_info)
         template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
         html_document = template.transform(xml_rep_impresa)
         #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
@@ -1054,7 +1055,31 @@ class DevolucionesController < ApplicationController
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         destinatario = params[:destinatario]
-        #plantilla_email("nc")
+
+        mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
+        asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
+
+        cadena = PlantillaEmail::AsuntoMensaje.new
+        factura_relacionada_NC = @itemVenta.venta.factura
+        cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+        
+        cadena.fechaNC = fecha_expedicion_nc.strftime("%Y-%m-%d")
+        cadena.numNC = consecutivo
+        cadena.folioNC = serie + consecutivo.to_s
+        cadena.totalNC = @cantidad_devuelta.to_f * @itemVenta.precio_venta
+          
+        cadena.fechaFact = @factura.fecha_expedicion
+        cadena.numFact = @factura.consecutivo
+        cadena.folioFact = @factura.folio
+        cadena.totalFact = @factura.venta.montoVenta
+          
+        cadena.nombNegocio = current_user.negocio.nombre 
+        cadena.nombSucursal = current_user.sucursal.nombre
+        cadena.emailContacto = current_user.sucursal.email
+        cadena.telContacto = current_user.sucursal.telefono
+
+        @mensaje = cadena.reemplazar_texto(mensaje)
+        @asunto = cadena.reemplazar_texto(asunto)
        
         comprobantes = {}
         #Aquí  no se da a elegir si desea enviar pdf o xml porque, simplemente se le enviarán al cliente la representación impresa de la nota de crédito y su CFDI(xml).
@@ -1062,7 +1087,7 @@ class DevolucionesController < ApplicationController
         comprobantes[:xml_nc] = "public/#{file_name}_NotaCrédito.xml"
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-        FacturasEmail.factura_email(destinatario, mensaje_email, tema, comprobantes).deliver_now
+        FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
       end #Fin de @venta.factura.present?
 
 

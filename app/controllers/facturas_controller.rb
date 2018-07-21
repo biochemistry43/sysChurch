@@ -325,20 +325,6 @@ class FacturasController < ApplicationController
         cont += 1
       end
 
-=begin
-      factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-        uuid:"123456789"
-        })
-      factura.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-        uuid:"987654321"
-      })
-
-      factura.cfdisrelacionados = CFDI::CfdiRelacionados.new({
-        tipoRelacion: "NOTA DE CRÉDITO"#,
-        #uuids: folis
-      })
-=end
-
       #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
       @total_to_w= factura.total_to_words
       # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
