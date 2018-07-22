@@ -1,4 +1,7 @@
 <%= form_tag({ controller: "devoluciones", action: "hacerDevolucion" }, {:class=> "form-horizontal", :method => :post}) do %>
+    <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
+        <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de devolución:</h2>
+    </div>
 
     <div class="item form-group">
       <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Categoría de la devolución*:</label>
@@ -47,35 +50,82 @@
     </div>
 
     <%if @itemVenta.venta.factura.present? && @itemVenta.venta.factura.estado_factura == "Activa"%>
-    <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
-      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Envío de la nota de crédito:</h2>
-    </div>
-    <!--Campos para el envio del Acuse de cancelación-->
-    <div class="item form-group">
-      <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%=email_field_tag :destinatario, @itemVenta.venta.factura.cliente.email, class: 'form-control text_field'%>
-        <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
+      <!--Para mostrar los datos de la N.c. como relación, uuid, uso y sha la la sha la la -->
+      <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
+        <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Datos de la N.C.:</h2>
       </div>
-    </div>
-    <div class="item form-group">
-      <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-        <!--span class="input-group-addon"><i class="fa fa-pencil"></i></span-->
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field', id: "summernoteAsunto_nc"} %>
-      </div>
-    </div>
-    <div class="form-group">
-      <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
 
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-         <!--textarea id="summernote" name="summernote"></textarea-->
-        <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernoteMensaje_nc"}%>
+      <div class="item form-group">
+        <%= label_tag :lbl_uuid_relacionado, "UUID de la factura: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span>
+          <%= text_field_tag :uuid_factura, @folio_fiscal, class: 'form-control text_field', readonly:true%>
+        </div>
       </div>
-    </div>
+      <div class="item form-group">
+        <%= label_tag :lbl_tipo_relacion, "Tipo de relación: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span>
+          <%= select_tag :tipo_relacion, "<option value='03'>03 – Devolución de mercancías sobre facturas o traslados previos</option>".html_safe,   class: 'form-control' %>
+        </div>
+      </div>
+      <div class="item form-group">
+        <%= label_tag :lbl_uso_NC, "Uso de la N.C.: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span>
+          <%= select_tag :uso_nc, "<option value='G02'>G02 – Devoluciones, descuentos o bonificaciones</option>".html_safe,   class: 'form-control'%>
+        </div>
+      </div>
+
+      <div class="item form-group">
+        <%= label_tag :lbl_metodo_pago, "Método de pago: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+          <%= select_tag :metodo_pago_nc, "<option value='PUE'>PUE – Pago en una sola exhibición</option>".html_safe,   class: 'form-control'%>
+        </div>
+      </div>
+      <div class="item form-group">
+        <%= label_tag :lbl_forma_pago_NC, "Forma de pago: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-dollar"></i></span>
+          <%= collection_select(nil, :forma_pago_nc, FacturaFormaPago.all, :id, :cve_nombre_forma_pagoSAT,{:selected => @itemVenta.venta.factura.factura_forma_pago.id}, { class: "form-control" })%>
+
+          
+        </div>
+      </div>
+   
+
+
+
+      <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
+        <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Envío de la N.C.:</h2>
+      </div>
+      <!--Campos para el envio del Acuse de cancelación-->
+      <div class="item form-group">
+        <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+          <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+          <%=email_field_tag :destinatario, @itemVenta.venta.factura.cliente.email, class: 'form-control text_field'%>
+          <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
+        </div>
+      </div>
+      <div class="item form-group">
+        <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <!--span class="input-group-addon"><i class="fa fa-pencil"></i></span-->
+          <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+          <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'} %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label col-md-4 col-sm-4 col-xs-12", style:"text-align:right;"%>
+
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+           <!--textarea id="summernote" name="summernote"></textarea-->
+          <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernoteMensaje_nc"}%>
+        </div>
+      </div>
     <% end %>
     <%= hidden_field_tag :item_venta, @itemVenta.id %>
 

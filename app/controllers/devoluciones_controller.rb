@@ -513,6 +513,7 @@ class DevolucionesController < ApplicationController
     #plantilla_email("nc")
 
     if @itemVenta.venta.factura.present?
+      @folio_fiscal = @itemVenta.venta.factura.folio_fiscal
       #Se supone que esto es solo si la venta está facturada
       require 'plantilla_email/plantilla_email.rb'
 
@@ -751,7 +752,7 @@ class DevolucionesController < ApplicationController
         end
       end
 
-      #Se crea una nota de crédito(Sola para las ventas que tengan una factura relacionada)
+      #Se crea una nota de crédito(Solo para las ventas que tengan una factura relacionada)
       if @venta.factura.present?
         #Comprobante de Egreso.- Amparan devoluciones, descuentos y bonificaciones
         #para efectos de deducibilidad y también puede utilizarse para corregir o restar un
@@ -803,7 +804,7 @@ class DevolucionesController < ApplicationController
           #Forma de pago, opciones de registro:
             #La que se registró en el comprobante de tipo ingreso.
             #Con la que se está efectuando el descuento, devolución o bonificación en su caso.
-          FormaPago: @venta.factura.factura_forma_pago.cve_forma_pagoSAT, #CATALOGO Es de tipo string
+          FormaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
           #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
           metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
           lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
@@ -874,7 +875,7 @@ class DevolucionesController < ApplicationController
         nota_credito.receptor = CFDI::Receptor.new({
            rfc: rfc_receptor_nc,
            nombre: nombre_fiscal_receptor_nc,
-           UsoCFDI: "G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
+           UsoCFDI: params[:uso_nc],#G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
            domicilioFiscal: domicilioReceptor
           })
         #Cuando se realiza una nota de crédito por devolución, el comprobante de egreso(nota de crédito) debe de contener solo los productos devueltos.
@@ -922,10 +923,10 @@ class DevolucionesController < ApplicationController
         end
 
         nota_credito.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-          uuid: @factura.folio_fiscal #Aquí se relaciona el comprobante de ingreso por la que se realizará la nota de crŕedito
+          uuid: params[:uuid_factura] #@factura.folio_fiscal #Aquí se relaciona el comprobante de ingreso por la que se realizará la nota de crŕedito
           })
         nota_credito.cfdisrelacionados = CFDI::CfdiRelacionados.new({
-          tipoRelacion: "03"# Devolución de mercancías sobre facturas o traslados previos
+          tipoRelacion: params[:tipo_relacion]#{}"03"# Devolución de mercancías sobre facturas o traslados previos
         })
 
         #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
@@ -976,7 +977,7 @@ class DevolucionesController < ApplicationController
         #No hay nececidad de darle a escoger el uso del cfdi al usuario.
         uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
         #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
-        cve_nombre_forma_pago = "#{@factura.factura_forma_pago.cve_forma_pagoSAT } - #{@factura.factura_forma_pago.nombre_forma_pagoSAT}"
+        cve_nombre_forma_pago = "#{FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT } - #{FacturaFormaPago.find(params[:forma_pago_nc]).nombre_forma_pagoSAT}"
         #método de pago(clave y descripción)
         #"deberá de ser siempre.. PUE"
         cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"
@@ -1059,7 +1060,8 @@ class DevolucionesController < ApplicationController
         archivo.close
 
         #SE SALVA EN LA BD
-        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta)
+        folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
+        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
         #@factura = Factura.find(@venta.factura_id)
 
         if @nota_credito.save
@@ -1068,6 +1070,7 @@ class DevolucionesController < ApplicationController
           current_user.sucursal.nota_creditos << @nota_credito
           Cliente.find_by(@factura.cliente.id).nota_creditos << @nota_credito
           @factura.nota_creditos <<  @nota_credito
+          FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
         end
 
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
