@@ -41,7 +41,9 @@ class VentasController < ApplicationController
 
   def edit
     @items = @venta.item_ventas
-    plantilla_email("ac_fv")
+    if @venta.factura.present?
+      plantilla_email("ac_fv") if @venta.factura.estado_factura == "Activa"
+    end
   end
 
   def create
@@ -54,14 +56,15 @@ class VentasController < ApplicationController
       venta = params[:venta]
       observaciones = venta[:observaciones]
       @items = @venta.item_ventas
-      #Changos que hacen estas cosas aquí? jajja
-      require 'timbrado'
-      require 'nokogiri'
-      require 'byebug'
+
 
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
 
         if @venta.factura.present?
+                #Changos que hacen estas cosas aquí? jajja
+          require 'timbrado'
+          require 'nokogiri'
+          require 'byebug'
           if @venta.factura.estado_factura == "Activa"
               # Parametros para la conexión al Webservice
               wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"

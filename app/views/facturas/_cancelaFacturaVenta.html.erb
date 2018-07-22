@@ -23,7 +23,7 @@
     <div class="item form-group">
       <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
       <div class="input-group col-md-6 col-sm-6 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
         <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
         <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
@@ -35,7 +35,7 @@
       <div class="input-group col-md-6 col-sm-6 col-xs-12">
         <!--span class="input-group-addon"><i class="fa fa-pencil"></i></span-->
         <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field',id: "summernoteAsunto_ac_fv"} %>
+        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'} %>
       </div>
     </div>
     <div class="form-group">

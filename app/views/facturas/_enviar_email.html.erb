@@ -5,7 +5,7 @@
     <div class="form-group">
       <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
       <div class="input-group col-md-9 col-sm-9 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
         <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
         <!-- text_field_tag :destinatario, nil, {class:'form-control text_field', value: @destinatario}-->
       </div>
@@ -16,7 +16,7 @@
       <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
       <div class="input-group col-md-9 col-sm-9 col-xs-12">
 
-        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field', id: "summernote_asunto"}%>
+        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'}%>
       </div>
     </div>
   </div>
