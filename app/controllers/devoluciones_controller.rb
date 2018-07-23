@@ -1068,7 +1068,7 @@ class DevolucionesController < ApplicationController
           current_user.nota_creditos << @nota_credito
           current_user.negocio.nota_creditos << @nota_credito
           current_user.sucursal.nota_creditos << @nota_credito
-          Cliente.find_by(@factura.cliente.id).nota_creditos << @nota_credito
+          Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
           @factura.nota_creditos <<  @nota_credito
           FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
         end

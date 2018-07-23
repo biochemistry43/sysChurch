@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180719062003) do
+ActiveRecord::Schema.define(version: 20180723063701) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -552,6 +552,22 @@ ActiveRecord::Schema.define(version: 20180719062003) do
     t.string   "telefono"
     t.string   "pag_web"
   end
+
+  create_table "nota_credito_canceladas", force: :cascade do |t|
+    t.datetime "fecha_cancelacion"
+    t.string   "ruta_storage"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "user_id"
+    t.integer  "nota_credito_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "nota_credito_canceladas", ["negocio_id"], name: "index_nota_credito_canceladas_on_negocio_id"
+  add_index "nota_credito_canceladas", ["nota_credito_id"], name: "index_nota_credito_canceladas_on_nota_credito_id"
+  add_index "nota_credito_canceladas", ["sucursal_id"], name: "index_nota_credito_canceladas_on_sucursal_id"
+  add_index "nota_credito_canceladas", ["user_id"], name: "index_nota_credito_canceladas_on_user_id"
 
   create_table "nota_creditos", force: :cascade do |t|
     t.string   "folio"

@@ -59,13 +59,11 @@ class VentasController < ApplicationController
 
 
       if @venta.update(:observaciones => observaciones, :status => "Cancelada")
-
         if @venta.factura.present?
-                #Changos que hacen estas cosas aquí? jajja
-          require 'timbrado'
-          require 'nokogiri'
-          require 'byebug'
           if @venta.factura.estado_factura == "Activa"
+              require 'timbrado'
+              require 'nokogiri'
+              require 'byebug' #whats?
               # Parametros para la conexión al Webservice
               wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
               usuario = "AAA010101000"
@@ -109,6 +107,15 @@ class VentasController < ApplicationController
               
               comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
               FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
+=begin
+            if @venta.factura.nota_creditos.present?
+
+              print "CON NOTAS DE CRÉDITO"
+
+            else
+              print "SIN NOTA DE CRÉDITO"
+            end
+=end            
           end
         end
 
