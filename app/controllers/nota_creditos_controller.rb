@@ -177,30 +177,22 @@ class NotaCreditosController < ApplicationController
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
-
     bucket = storage.bucket "cfdis"
-
-    fecha_expedicion= @nota_credito.fecha_expedicion
-    consecutivo = @nota_credito.consecutivo
-
     ruta_storage = @nota_credito.ruta_storage
 
-    #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}_NotaCrédito.pdf"
-
-    file_download_storage = bucket.file "#{ruta_storage}_NotaCrédito.pdf"
-    file_download_storage.download "public/#{file_name}"
+    file_download_storage = bucket.file "#{ruta_storage}.pdf"
+    file_download_storage.download "public/#{@nota_credito.id}.pdf"
 
 
     #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?( "public/#{file_name}")
-      file=File.open( "public/#{file_name}")
+    if File::exists?( "public/#{@nota_credito.id}.pdf")
+      file=File.open( "public/#{@nota_credito.id}.pdf")
       send_file( file, :disposition => "inline", :type => "application/pdf")
       #File.delete("public/#{file_name}")
     else
       respond_to do |format|
         format.html { redirect_to action: "index" }
-        flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+        flash[:notice] = "No se encontró la factura, vuelva a intentarlo por favor."
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
     end
@@ -210,22 +202,15 @@ class NotaCreditosController < ApplicationController
     def descargar_nota_credito
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
-
       bucket = storage.bucket "cfdis"
-
-      fecha_expedicion=@nota_credito.fecha_expedicion
-      consecutivo =@nota_credito.consecutivo
 
       ruta_storage = @nota_credito.ruta_storage
 
       #Se descarga el pdf de la nube y se guarda en el disco
-      file_name = "#{consecutivo}_#{fecha_expedicion}_NotaCrédito.xml"
+      file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
+      file_download_storage_xml.download "public/#{@nota_credito.id}.xml"
 
-      file_download_storage_xml = bucket.file "#{ruta_storage}_NotaCrédito.xml"
-
-      file_download_storage_xml.download "public/#{file_name}"
-
-      xml = File.open( "public/#{file_name}")
+      xml = File.open( "public/#{@nota_credito.id}.xml")
       send_file(
         xml,
         filename: "CFDI.xml",
@@ -249,56 +234,48 @@ class NotaCreditosController < ApplicationController
         #Se descargan los archivos que el usuario haya indicado que se enviarán como archivos adjuntos
         gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
         storage=gcloud.storage
-
         bucket = storage.bucket "cfdis"
 
-        fecha_expedicion_nc=@nota_credito.fecha_expedicion
-        consecutivo_nc =@nota_credito.consecutivo
-        file_name_nc = "#{consecutivo_nc}_#{fecha_expedicion_nc}"
         #Se dice que cundo se envia una nota de credito también se debe de enviar los comprobates de ingreso(facturas de vetas), para que el cliente compruebe la diferencia entre los montos.
-        fecha_expedicion_fv= @nota_credito.factura.fecha_expedicion
-        consecutivo_fv = @nota_credito.factura.consecutivo
-        file_name_fv = "#{consecutivo_fv}_#{fecha_expedicion_fv}"
-
-
         comprobantes = {}
         if params[:pdf_nc] == "yes"
-          comprobantes[:pdf_nc] = "public/#{file_name_nc}_NotaCrédito.pdf"
-          file_download_storage_xml = bucket.file "#{ruta_storage_nc}_NotaCrédito.pdf"
-          file_download_storage_xml.download "public/#{file_name_nc}_NotaCrédito.pdf"
+          comprobantes[:pdf_nc] = "public/#{@nota_credito.id}.pdf"
+          file_download_storage_xml = bucket.file "#{ruta_storage_nc}.pdf"
+          file_download_storage_xml.download "public/#{@nota_credito.id}.pdf"
         end
 
         if params[:xml_nc] == "yes"
-          comprobantes[:xml_nc] = "public/#{file_name_nc}_NotaCrédito.xml"
-          file_download_storage_xml = bucket.file "#{ruta_storage_nc}_NotaCrédito.xml"
-          file_download_storage_xml.download "public/#{file_name_nc}_NotaCrédito.xml"
+          comprobantes[:xml_nc] = "public/#{@nota_credito.id}.xml"
+          file_download_storage_xml = bucket.file "#{ruta_storage_nc}.xml"
+          file_download_storage_xml.download "public/#{@nota_credito.id}.xml"
         end
-
-        #Para enviar las facturas de ventas.
-        if params[:pdf] == "yes"
-          comprobantes[:pdf] = "public/#{file_name_fv}_RepresentaciónImpresa.pdf"
-          file_download_storage_xml = bucket.file "#{ruta_storage_fv}_RepresentaciónImpresa.pdf"
-          file_download_storage_xml.download "public/#{file_name_fv}_RepresentaciónImpresa.pdf"
-        end
-        if params[:xml] == "yes"
-          comprobantes[:xml] = "public/#{file_name_fv}_CFDI.xml"
-          file_download_storage_xml = bucket.file "#{ruta_storage_fv}_CFDI.xml"
-          file_download_storage_xml.download "public/#{file_name_fv}_CFDI.xml"
-        end
-        #Solo cuando este cancelada
+=begin
+                #Solo cuando este cancelada
         if params[:xml_Ac_nc] == "yes"
           comprobantes[:xml_nc] = "public/#{file_name}_NotaCrédito.xml"
           file_download_storage_xml = bucket.file "#{ruta_storage}_NotaCrédito.xml"
           file_download_storage_xml.download "public/#{file_name}_NotaCrédito.xml"
         end
+=end
 
+        #Por si el usuario también desea enviar la factura de venta relacionada a la nota de crédito
+        if params[:pdf] == "yes"
+          comprobantes[:pdf] = "public/#{@nota_credito.factura.id}.pdf"
+          file_download_storage_xml = bucket.file "#{ruta_storage_fv}.pdf"
+          file_download_storage_xml.download "public/#{@nota_credito.factura.id}.pdf"
+        end
+        if params[:xml] == "yes"
+          comprobantes[:xml] = "public/#{@nota_credito.factura.id}.xml"
+          file_download_storage_xml = bucket.file "#{ruta_storage_fv}.xml"
+          file_download_storage_xml.download "public/#{@nota_credito.factura.id}.xml"
+        end
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
         respond_to do |format|
           format.html { redirect_to action: "index"}
-          flash[:notice] = "Los comprobantes se han enviado a #{destinatario}!"
+          flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
           #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
         end
 
@@ -329,7 +306,6 @@ class NotaCreditosController < ApplicationController
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
       usuario = "AAA010101000"
       contrasena = "h6584D56fVdBbSmmnB"
-
       # Parametros para la cancelación del CFDI
       uuid = @nota_credito.folio_fiscal
       rfc = "AAA010101AAA"
@@ -341,7 +317,7 @@ class NotaCreditosController < ApplicationController
       xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
       #se extrae el acuse de cancelación del xml cancelado
       acuse = xml_cancelado.xpath("//acuse_cancelacion").text
-
+      #Se crea un objeto de cloud para descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
       bucket = storage.bucket "cfdis"
