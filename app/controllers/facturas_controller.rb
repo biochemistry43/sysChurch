@@ -5,6 +5,55 @@ class FacturasController < ApplicationController
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal ]
   before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
+    # GET /facturas/new
+  def new
+    @factura = Factura.new
+  end
+
+  # GET /facturas/1/edit
+  def edit
+  end
+
+  # POST /facturas
+  # POST /facturas.json
+  def create
+    @factura = Factura.new(factura_params)
+
+    respond_to do |format|
+      if @factura.save
+        format.html { redirect_to @factura, notice: 'Factura was successfully created.' }
+        format.json { render :show, estado_factura: :created, location: @factura }
+      else
+        format.html { render :new }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /facturas/1
+  # PATCH/PUT /facturas/1.json
+  def update
+    respond_to do |format|
+      if @factura.update(factura_params)
+        format.html { redirect_to @factura, notice: 'Factura was successfully updated.' }
+        format.json { render :show, estado_factura: :ok, location: @factura }
+      else
+        format.html { render :edit }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /facturas/1
+  # DELETE /facturas/1.json
+  def destroy
+    @factura.destroy
+    respond_to do |format|
+      format.html { redirect_to facturas_url, notice: 'Factura was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
   def buscarVentaFacturar
     @consulta = false
@@ -683,24 +732,17 @@ class FacturasController < ApplicationController
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
-
     bucket = storage.bucket "cfdis"
-
-    fecha_expedicion=@factura.fecha_expedicion
-    consecutivo =@factura.consecutivo
-
     ruta_storage = @factura.ruta_storage
-
     #Se descarga el pdf de la nube y se guarda en el disco
-    file_name="#{consecutivo}_#{fecha_expedicion}_RepresentaciónImpresa.pdf"
 
-    file_download_storage = bucket.file "#{ruta_storage}_RepresentaciónImpresa.pdf"
-    file_download_storage.download "public/#{file_name}"
+    file_download_storage = bucket.file "#{ruta_storage}.pdf"
+    file_download_storage.download "public/#{@factura.id}.pdf"
 
 
     #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?( "public/#{file_name}")
-      file=File.open( "public/#{file_name}")
+    if File::exists?( "public/#{@factura.id}.pdf")
+      file=File.open( "public/#{@factura.id}.pdf")
       send_file( file, :disposition => "inline", :type => "application/pdf")
       #File.delete("public/#{file_name}")
     else
@@ -724,31 +766,30 @@ class FacturasController < ApplicationController
       end
 
       ruta_storage = @factura.ruta_storage
-      #Se descargan los archivos que el usuario haya indicado que se enviarán como archivos adjuntos
+      #Se crea un objeto de cloud para poder descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
       bucket = storage.bucket "cfdis"
-      fecha_expedicion=@factura.fecha_expedicion
-      consecutivo =@factura.consecutivo
-      file_name = "#{consecutivo}_#{fecha_expedicion}"
+
       comprobantes = {}
       if params[:pdf] == "yes"
-        comprobantes[:pdf] = "public/#{file_name}_RepresentaciónImpresa.pdf"
-        file_download_storage_xml = bucket.file "#{ruta_storage}_RepresentaciónImpresa.pdf"
-        file_download_storage_xml.download "public/#{file_name}_RepresentaciónImpresa.pdf"
+        comprobantes[:pdf] = "public/#{@factura.id}.pdf"
+        file_download_storage_xml = bucket.file "#{ruta_storage}.pdf"
+        file_download_storage_xml.download "public/#{@factura.id}.pdf"
       end
       if params[:xml] == "yes"
-        comprobantes[:xml] = "public/#{file_name}_CFDI.xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
-        file_download_storage_xml.download "public/#{file_name}_CFDI.xml"
+        comprobantes[:xml] = "public/#{@factura.id}.xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
+        file_download_storage_xml.download "public/#{@factura.id}.xml"
       end
+=begin      
       #Solo es posible si la factura de venta está cancelada
       if params[:xml_Ac] == "yes"
         comprobantes[:xml_Ac] = "public/#{file_name}_AcuseDeCancelación.xml"
         file_download_storage_xml = bucket.file "#{ruta_storage}_AcuseDeCancelación.xml"
         file_download_storage_xml.download "public/#{file_name}_AcuseDeCancelación.xml"
       end
-
+=end
       #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
       FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
@@ -772,22 +813,14 @@ class FacturasController < ApplicationController
   def descargar_cfdis
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
-
     bucket = storage.bucket "cfdis"
-
-    fecha_expedicion=@factura.fecha_expedicion
-    consecutivo =@factura.consecutivo
-
     ruta_storage = @factura.ruta_storage
 
-    #Se descarga el pdf de la nube y se guarda en el disco
-    file_name = "#{consecutivo}_#{fecha_expedicion}_CFDI.xml"
+    file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
 
-    file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
+    file_download_storage_xml.download "public/#{@factura.id}.xml"
 
-    file_download_storage_xml.download "public/#{file_name}"
-
-    xml = File.open( "public/#{file_name}")
+    xml = File.open( "public/#{@factura.id}.xml")
     send_file(
       xml,
       filename: "CFDI.xml",
@@ -1216,55 +1249,6 @@ class FacturasController < ApplicationController
 
     #end
 
-  end
-
-  # GET /facturas/new
-  def new
-    @factura = Factura.new
-  end
-
-  # GET /facturas/1/edit
-  def edit
-  end
-
-  # POST /facturas
-  # POST /facturas.json
-  def create
-    @factura = Factura.new(factura_params)
-
-    respond_to do |format|
-      if @factura.save
-        format.html { redirect_to @factura, notice: 'Factura was successfully created.' }
-        format.json { render :show, estado_factura: :created, location: @factura }
-      else
-        format.html { render :new }
-        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /facturas/1
-  # PATCH/PUT /facturas/1.json
-  def update
-    respond_to do |format|
-      if @factura.update(factura_params)
-        format.html { redirect_to @factura, notice: 'Factura was successfully updated.' }
-        format.json { render :show, estado_factura: :ok, location: @factura }
-      else
-        format.html { render :edit }
-        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /facturas/1
-  # DELETE /facturas/1.json
-  def destroy
-    @factura.destroy
-    respond_to do |format|
-      format.html { redirect_to facturas_url, notice: 'Factura was successfully destroyed.' }
-      format.json { head :no_content }
-    end
   end
 
   def devolucion
