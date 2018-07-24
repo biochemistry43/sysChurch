@@ -162,10 +162,10 @@ class FacturasController < ApplicationController
         certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
         # Esta se convierte de un archivo .key con:
         # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-        llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-        pass_llave = "12345678a"
+        path_llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+        password_llave = "12345678a"
         #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-        #llave2 = CFDI::Key.new llave, pass_llave
+        llave = CFDI::Key.new path_llave, password_llave
 
         #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
         consecutivo = 0
@@ -318,9 +318,10 @@ class FacturasController < ApplicationController
       # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
       certificado.certifica factura
       # Esto genera la factura como xml
-      p xml= factura.comprobante_to_xml
+      #p xml= factura.comprobante_to_xml
+      archivo_xml = llave.sella factura
       # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-      archivo_xml = generar_sello(xml, llave, pass_llave)
+     #p archivo_xml = generar_sello(factura, llave, pass_llave)
 
       # Convertir la cadena del xml en base64
       xml_base64 = Base64.strict_encode64(archivo_xml)
@@ -439,7 +440,7 @@ class FacturasController < ApplicationController
         end
 
         archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
-        archivo.write (xml)
+        archivo.write (archivo_xml)
         archivo.close
 
         #7.- SE SALVA EN LA BASE DE DATOS

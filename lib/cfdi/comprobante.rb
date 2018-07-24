@@ -25,13 +25,10 @@ module CFDI
     }
 
     # Configurar las opciones default de los comprobantes
-    #
     # == Parameters:
     # options::
     #  Las opciones del comprobante: tasa (de impuestos), defaults: un Hash con la moneda (pesos), version (3.2), TipoCambio (1), y tipoDeComprobante (ingreso)
-    #
     # @return [Hash]
-    #
     def self.configure options
       @@options = Comprobante.rmerge @@options, options
       @@options
@@ -64,20 +61,7 @@ module CFDI
       @folio=folio
     end
 
-    #DESCUENTO COMERCIAL por cada concepto
-    #def Descuento
-    #  desc=0.00
-    #  @conceptos.each do |d|
-    #    desc += d.Descuento
-    #  end
-    #  @Descuento=desc
-    #end
-    #DESCUENTO RAPPEL
-    #def Descuento= (des)
-    #  @Descuento=des.to_f
-    #end
-    #DESCUENTO POR PAGO PUNTUAL
-    #...
+
     def subTotal  # Regresa el subtotal de este comprobante, tomando el importe de cada concepto
       subtotal = 0.00
       @conceptos.each do |c|
@@ -93,33 +77,8 @@ module CFDI
       "( #{total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
     end
 
-=begin
-    def = value
-      @impuestos = case @version
-      when '3.2'
-          return value if value.is_a? Impuestos
-          raise 'v3.2 CFDI impuestos must be an array of hashes' unless value.is_a? Array
-
-          traslados = value.map {|i|
-            raise 'v3.2 CFDI impuestos must be an array of hashes' unless i.is_a? Hash
-
-            tasa = i[:tasa] || @opciones[:tasa]
-
-            {
-              tasa: tasa,
-              impuesto: i[:impuesto] || 'IVA',
-              importe: tasa * self.subTotal
-            }
-          }
-
-          Impuestos.new({ traslados: traslados })
-        when '3.3' then value.is_a?(Impuestos) ? value : Impuestos.new(value)
-      end
-    end
-=end
     # Asigna un emisor de tipo {CFDI::Entidad}
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
-    #
     # @return [CFDI::Entidad] Una entidad
     #Retorna un objeto de la clase Cfdirelacionado para poder acceder
     def uuidsrelacionados= data #Novato novato tenia que ser un método get, no método set!
@@ -203,7 +162,7 @@ module CFDI
       complemento
     end
 
-
+=begin
     # Asigna una fecha al comprobante
     # @param  fecha [Time, String] La fecha y hora (YYYY-MM-DDTHH:mm:SS) de la emisión
     # @return [String] la fecha en formato '%FT%R:%S'
@@ -211,7 +170,7 @@ module CFDI
       fecha = fecha.strftime('%FT%R:%S') unless fecha.is_a? String
       @fecha = fecha
     end
-
+=end
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.3
 
@@ -223,7 +182,7 @@ module CFDI
         Version: @version,
         Serie: @serie,
         Folio: @folio,
-        Fecha: @fecha,
+        #Fecha: @fecha,
         FormaPago: @FormaPago,
         SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
@@ -235,6 +194,7 @@ module CFDI
         LugarExpedicion: @lugarExpedicion,
       }
       #El campo Condiciones de pago no debe de existir en los
+      ns[:Fecha] = @fecha if @fecha
       ns[:CondicionesDePago] = @condicionesDePago if @condicionesDePago
       #ns[:serie] = @serie if @serie
       #ns[:TipoCambio] = @TipoCambio if @TipoCambio
@@ -251,13 +211,13 @@ module CFDI
         ns[:Certificado] = @certificado
       end
 
-      #if @sello
-      #  ns[:Sello] = @sello
-      #end
+      if @sello
+        ns[:Sello] = @sello
+      end
 
       #VAMO A HACER TRAMPITA
       #if @sello
-        ns[:Sello] = ""
+       # ns[:Sello] = ""
       #end
 
       @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
