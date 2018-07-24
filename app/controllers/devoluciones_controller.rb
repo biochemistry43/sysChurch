@@ -767,15 +767,18 @@ class DevolucionesController < ApplicationController
         require 'timbrado'
         require 'plantilla_email/plantilla_email.rb'
 
+#========================================================================================================================
         #1.- CERTIFICADOS,  LLAVES Y CLAVES
         certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
         # Esta se convierte de un archivo .key con:
         # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-        llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-        pass_llave = "12345678a"
+        path_llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
+        password_llave = "12345678a"
         #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-        #llave2 = CFDI::Key.new llave, pass_llave
+        llave = CFDI::Key.new path_llave, password_llave
 
+#========================================================================================================================
+        #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
         #Para obtener el numero consecutivo a partir de la ultima NC o de lo contrario asignarle por primera vez un número
         consecutivo = 0
         if current_user.sucursal.nota_creditos.last
@@ -797,7 +800,7 @@ class DevolucionesController < ApplicationController
         nota_credito = CFDI::Comprobante.new({
           serie: serie,
           folio: consecutivo,
-          fecha: fecha_expedicion_nc,
+          #fecha: fecha_expedicion_nc,
           #Deberá ser de tipo Egreso
           tipoDeComprobante: "E",
           #La moneda por default es MXN
@@ -929,49 +932,51 @@ class DevolucionesController < ApplicationController
           tipoRelacion: params[:tipo_relacion]#{}"03"# Devolución de mercancías sobre facturas o traslados previos
         })
 
-        #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
+#========================================================================================================================
+        #3.- SE AGREGA EL CERTIFICADO Y EL SELLO DIGITAL
         @total_to_w = nota_credito.total_to_words
         # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
         certificado.certifica nota_credito
-        # Esto genera la factura como xml
-        p xml = nota_credito.comprobante_to_xml
-        # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-        archivo_xml = generar_sello(xml, llave, pass_llave)
+        #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
+        xml_certificado_sellado = llave.sella nota_credito
+
+#========================================================================================================================
+      #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
+        #Se obtiene el xml timbrado
 
         # Convertir la cadena del xml en base64
-        xml_base64 = Base64.strict_encode64(archivo_xml)
+        xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
 
         # Parametros para conexion al Webservice (URL de Pruebas)
         wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
         usuario = "AAA010101000"
         contrasena = "h6584D56fVdBbSmmnB"
 
-        gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-        storage=gcloud.storage
+        xml_timbox = timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
-        bucket = storage.bucket "cfdis"
-
-        #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
-        #Se obtiene el xml timbrado
-        xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+        #Guardo el xml recien timbradito de timbox, calientito
+        nc_id = current_user.sucursal.nota_creditos.last ? current_user.sucursal.nota_creditos.last.id : 1
+        archivo = File.open("public/#{nc_id}_nc.xml", "w")
+        archivo.write (xml_timbox)
+        archivo.close
 
         #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
         nota_credito.complemento=CFDI::Complemento.new(
           {
-            Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-            uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
-            FechaTimbrado:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-            RfcProvCertif:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-            SelloCFD:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-            NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+            Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+            uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+            FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+            RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+            SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+            NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
           }
         )
         #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-        xml_copia=xml_timbrado
-        xml_timbrado_storage = nota_credito.comprobante_to_xml #Hasta este punto se le agregado el complemento con eso es suficiente para el CFDI
+        xml_copia = xml_timbox
 
+#========================================================================================================================
         #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
-        codigoQR = nota_credito.qr_code xml_timbrado
+        codigoQR = nota_credito.qr_code xml_timbox
         cadOrigComplemento = nota_credito.complemento.cadena_TimbreFiscalDigital
         logo=current_user.negocio.logo
         #No hay nececidad de darle a escoger el uso del cfdi al usuario.
@@ -1019,49 +1024,46 @@ class DevolucionesController < ApplicationController
         html_document = template.transform(xml_rep_impresa)
         #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
         pdf = WickedPdf.new.pdf_from_string(html_document)
+        #Se guarda el pdf 
+        save_path = Rails.root.join('public',"#{nc_id}_nc.pdf")
+        File.open(save_path, 'wb') do |file|
+            file << pdf
+        end
 
+#========================================================================================================================
         #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-        #Directorios
+        gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+        storage=gcloud.storage
+        bucket = storage.bucket "cfdis"
+
+        #Se realizan las consultas para formar los directorios en cloud
         dir_negocio = current_user.negocio.nombre
         dir_cliente = nombre_fiscal_receptor_nc
 
-        #Obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
-        #fecha_xml = xml_timbrado.xpath('//@Fecha')[0]
-        fecha_registroBD=Date.parse(fecha_expedicion_nc.to_s)
+        #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
+        fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
         dir_dia = fecha_registroBD.strftime("%d")
         dir_mes = fecha_registroBD.strftime("%m")
         dir_anno = fecha_registroBD.strftime("%Y")
 
-        fecha_file= fecha_registroBD.strftime("%Y-%m-%d")
-        #Nomenclatura para el nombre del archivo: consecutivo + fecha + extención
-        file_name="#{consecutivo}_#{fecha_file}"
-
+        fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
         if current_user.sucursal
           dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{nc_id}_nc"
         else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
+          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{nc_id}_nc"
         end
 
         #Los comprobantes de almacenan en google cloud
-        file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
-        file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_NotaCrédito.xml"
-        #Se guardan los dos archivos(pdf y xml)
-        #El nombre del pdf formado por: consecutivo + fecha_registroBD + nombre + extención
-        nombre_pdf="#{consecutivo}_#{fecha_registroBD}_NotaCrédito.pdf"
-        save_path = Rails.root.join('public',nombre_pdf)
-        File.open(save_path, 'wb') do |file|
-           file << pdf
-        end
+        #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
+        #file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_NotaCrédito.xml"
+        file = bucket.create_file "public/#{nc_id}_nc.pdf", "#{ruta_storage}.pdf"
+        file = bucket.create_file "public/#{nc_id}_nc.xml", "#{ruta_storage}.xml"
 
-        #No queda de otra más que guardarlo para el envio por email al cliente
-        archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_NotaCrédito.xml", "w")
-        archivo.write (xml)
-        archivo.close
-
-        #SE SALVA EN LA BD
-        folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_expedicion_nc, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
+#========================================================================================================================
+      #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
+        folio_fiscal_xml = xml_timbox.xpath('//@UUID')
+        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
         #@factura = Factura.find(@venta.factura_id)
 
         if @nota_credito.save
@@ -1073,6 +1075,7 @@ class DevolucionesController < ApplicationController
           FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
         end
 
+#========================================================================================================================
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         destinatario = params[:destinatario]
@@ -1101,16 +1104,11 @@ class DevolucionesController < ApplicationController
 
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)
-       
-        comprobantes = {}
-        #Aquí  no se da a elegir si desea enviar pdf o xml porque, simplemente se le enviarán al cliente la representación impresa de la nota de crédito y su CFDI(xml).
-        comprobantes[:pdf_nc] = "public/#{file_name}_NotaCrédito.pdf"
-        comprobantes[:xml_nc] = "public/#{file_name}_NotaCrédito.xml"
+        
+        comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
 
-        #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
       end #Fin de @venta.factura.present?
-
 
       respond_to do |format|
 	    if @devolucion.valid?
@@ -1123,10 +1121,8 @@ class DevolucionesController < ApplicationController
             flash[:notice] = "La devolución se realizó con éxito"
             format.html { redirect_to action: "devolucion" }
           end
-
 	      else
 	        format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
-
 	      end
 	    else
 	      format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
