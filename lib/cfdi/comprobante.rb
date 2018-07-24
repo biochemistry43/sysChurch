@@ -77,6 +77,7 @@ module CFDI
       "( #{total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
     end
 
+
     # Asigna un emisor de tipo {CFDI::Entidad}
     # @param  emisor [Hash, CFDI::Entidad] Los datos de un emisor
     # @return [CFDI::Entidad] Una entidad

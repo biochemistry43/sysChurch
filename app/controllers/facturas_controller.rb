@@ -153,12 +153,14 @@ class FacturasController < ApplicationController
     if request.post?
       require 'cfdi'
       require 'timbrado'
+
       if params[:commit] == "Cancelar"
         @venta=nil #Se borran los datos por si el usuario le da "atras" en el navegador.
         redirect_to facturas_index_path
       else
         @venta = Venta.find(params[:id]) if params.key?(:id)
-        #1.- CERTIFICADOS,  LLAVES Y CLAVES
+#========================================================================================================================
+        #1.-CERTIFICADOS,  LLAVES Y CLAVES
         certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
         # Esta se convierte de un archivo .key con:
         # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
@@ -167,6 +169,8 @@ class FacturasController < ApplicationController
         #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
         llave = CFDI::Key.new path_llave, password_llave
 
+#========================================================================================================================
+        #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
         #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
         consecutivo = 0
         if current_user.sucursal.facturas.last
@@ -183,15 +187,12 @@ class FacturasController < ApplicationController
         folio_registroBD << consecutivo.to_s
         serie = claveSucursal + "FV"
 
-
-      fecha_expedicion_f = Time.now
-      forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
-      metodo_pago_f = params[:metodo_pago] == "PUE - Pago en una sola exhibición" ? "PUE" : "PPD"
-      #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+        forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
+        metodo_pago_f = params[:metodo_pago] == "PUE - Pago en una sola exhibición" ? "PUE" : "PPD"
+      
       factura = CFDI::Comprobante.new({
         serie: serie,
         folio: consecutivo,
-        fecha: fecha_expedicion_f,
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #La moneda por default es MXN
         FormaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
@@ -248,7 +249,6 @@ class FacturasController < ApplicationController
       #Datos del receptor
       #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
       #Los datos de facturación del receptor son recibidos como paramatros porque puede ser facturado a otro fulano distino al que hizo la compra o haber sido hecha al público en general.
-
       domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
         calle: params[:calle_receptor_vf],
         noExterior: params[:no_Exterior_vf],
@@ -262,12 +262,12 @@ class FacturasController < ApplicationController
         referencia: params[:referencia_receptor_vf]
         })
 
-      @usoCfdi = UsoCfdi.find(params[:uso_cfdi_id])
+      uso_cfdi = UsoCfdi.find(params[:uso_cfdi_id])
       factura.receptor = CFDI::Receptor.new({
         #Datos requeridos si o si son: el rfc, nombre fiscal y el uso del CFDI.
          rfc: params[:rfc_input],
          nombre: params[:nombre_fiscal_receptor_vf],
-         UsoCFDI:@usoCfdi.clave, #CATALOGO
+         UsoCFDI:uso_cfdi.clave, #CATALOGO
          domicilioFiscal: domicilioReceptor
         })
       #<< para que puedan ser agragados los conceptos que se deseen.
@@ -313,53 +313,50 @@ class FacturasController < ApplicationController
         cont += 1
       end
 
-      #3.- SE AGREGA EL CERTIFICADO Y SELLO DIGITAL
+#========================================================================================================================
+      #3.- SE AGREGA EL CERTIFICADO Y EL SELLO DIGITAL
       @total_to_w= factura.total_to_words
       # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
       certificado.certifica factura
-      # Esto genera la factura como xml
-      #p xml= factura.comprobante_to_xml
-      archivo_xml = llave.sella factura
-      # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-     #p archivo_xml = generar_sello(factura, llave, pass_llave)
+      #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena oriiginal
+      xml_certificado_sellado = llave.sella factura
 
-      # Convertir la cadena del xml en base64
-      xml_base64 = Base64.strict_encode64(archivo_xml)
-
+#========================================================================================================================
+      #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
+      #Se convierte el xml en base64 para mandarselo a TIMBOX
+      xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
       # Parametros para conexion al Webservice (URL de Pruebas)
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
       usuario = "AAA010101000"
       contrasena = "h6584D56fVdBbSmmnB"
-
-      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-      storage=gcloud.storage
-
-      bucket = storage.bucket "cfdis"
-
-      #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
       #Se obtiene el xml timbrado
-      xml_timbrado= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+      xml_timbox= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+      #Guardo el xml recien timbradito de timbox, calientito
+      fv_id = current_user.sucursal.facturas.last ? current_user.sucursal.facturas.last.id : 1
+      archivo = File.open("public/#{fv_id}_fv.xml", "w")
+      archivo.write (xml_timbox)
+      archivo.close
 
       #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
       factura.complemento=CFDI::Complemento.new(
         {
-          Version: xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-          uuid:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
-          FechaTimbrado:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-          RfcProvCertif:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-          SelloCFD:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-          NoCertificadoSAT:xml_timbrado.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+          Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+          uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+          FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+          RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+          SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+          NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
         }
       )
       #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-      xml_copia=xml_timbrado
-      xml_timbrado_storage = factura.comprobante_to_xml #Hasta este punto se le agregado el complemento con eso es suficiente para el CFDI
+      xml_copia = xml_timbox
 
+#========================================================================================================================
       #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
-      codigoQR=factura.qr_code xml_timbrado
+      codigoQR=factura.qr_code xml_timbox
       cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
       logo=current_user.negocio.logo
-      uso_cfdi_descripcion = @usoCfdi.descripcion
+      uso_cfdi_descripcion = uso_cfdi.descripcion
       cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
       cve_nombre_metodo_pago =  params[:metodo_pago] == "PUE" ? "PUE - Pago en una sola exhibición" : "PPD - Pago en parcialidades o diferido"
       #Para la clave y nombre del regimen fiscal
@@ -403,92 +400,83 @@ class FacturasController < ApplicationController
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
+      #Se guarda el pdf 
+      nombre_pdf="#{fv_id}_fv.pdf"
+      save_path = Rails.root.join('public',nombre_pdf)
+      File.open(save_path, 'wb') do |file|
+          file << pdf
+      end
 
+#========================================================================================================================
       #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-      #Directorios
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
+      bucket = storage.bucket "cfdis"
+
+      #Se realizan las consultas para formar los directorios en cloud
       dir_negocio = current_user.negocio.nombre
       dir_cliente = params[:nombre_fiscal_receptor_vf]
-
       #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
-      fecha_registroBD=Date.parse(fecha_expedicion_f.to_s)
+      fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
       dir_dia = fecha_registroBD.strftime("%d")
       dir_mes = fecha_registroBD.strftime("%m")
       dir_anno = fecha_registroBD.strftime("%Y")
 
-      fecha_file= fecha_registroBD.strftime("%Y-%m-%d")
+      fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
       #Nomenclatura para el nombre del archivo: consecutivo + fecha + extención
-      file_name="#{consecutivo}_#{fecha_file}"
 
-        #Cosas a tener en cuenta antes de indicarle una ruta:
-          #1.-Un negocio puede o no tener sucursales
-        if current_user.sucursal
-          dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
-        else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{file_name}"
-        end
+      #Cosas a tener en cuenta antes de indicarle una ruta:
+        #1.-Un negocio puede o no tener sucursales
+      if current_user.sucursal
+        dir_sucursal = current_user.sucursal.nombre
+        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{fv_id}_fv"
+      else
+        ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{fv_id}_fv"
+      end
 
-        #Los comprobantes de almacenan en google cloud
-        file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
-        file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_CFDI.xml"
+      #Los comprobantes de almacenan en google cloud
+      #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
+      #file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}_CFDI.xml"
+      file = bucket.create_file "public/#{fv_id}_fv.pdf", "#{ruta_storage}.pdf"
+      file = bucket.create_file "public/#{fv_id}_fv.xml", "#{ruta_storage}.xml"
 
-        #El nombre del pdf formado por: consecutivo + fecha_registroBD
-        nombre_pdf="#{consecutivo}_#{fecha_registroBD}_RepresentaciónImpresa.pdf"
-        save_path = Rails.root.join('public',nombre_pdf)
-        File.open(save_path, 'wb') do |file|
-           file << pdf
-        end
+#========================================================================================================================
+      #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
+      #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
+      folio_fiscal_xml = xml_timbox.xpath('//@UUID')
+      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])#, monto: @venta.montoVenta)
 
-        archivo = File.open("public/#{consecutivo}_#{fecha_registroBD}_CFDI.xml", "w")
-        archivo.write (archivo_xml)
-        archivo.close
+      @factura.folio_fiscal = folio_fiscal_xml
+      @factura.ruta_storage =  ruta_storage
 
-        #7.- SE SALVA EN LA BASE DE DATOS
-          #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
-          folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])#, monto: @venta.montoVenta)
+      if @factura.save
+         current_user.facturas<<@factura
+         current_user.negocio.facturas<<@factura
+         current_user.sucursal.facturas<<@factura
+         forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
+         forma_pago.facturas << @factura
 
-          @factura.folio_fiscal = folio_fiscal_xml
-          @factura.ruta_storage =  ruta_storage
+         #Se factura a nombre del cliente que realizó la compra en el negocio.
+         cliente_id=@venta.cliente.id
+         Cliente.find(cliente_id).facturas << @factura
+         @venta.factura = @factura
+         #@factura.ventas <<  @venta
+      end
 
-          if @factura.save
-          current_user.facturas<<@factura
-          current_user.negocio.facturas<<@factura
-          current_user.sucursal.facturas<<@factura
-          forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
-          forma_pago.facturas << @factura
-
-          #Se factura a nombre del cliente que realizó la compra en el negocio.
-          cliente_id=@venta.cliente.id
-          Cliente.find(cliente_id).facturas << @factura
-
-          @venta.factura = @factura
-          #@factura.ventas <<  @venta
-
-          end
-
+#=======================================================================================================================
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
-        #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        
         destinatario_final = params[:destinatario]
+        #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         plantilla_email("fv")
-        #file_name = "#{consecutivo}_#{fecha_file}"
-        comprobantes = {}
-        #Aquí  no se da a elegir si desea enviar pdf o xml porque, porque, porque no jajaja
-        comprobantes[:pdf] = "public/#{file_name}_RepresentaciónImpresa.pdf"
-        comprobantes[:xml] = "public/#{file_name}_CFDI.xml"
-
+        comprobantes = {pdf:"public/#{fv_id}_fv.pdf", xml: "public/#{fv_id}_fv.xml"}
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
-          #fecha_expedicion=@factura.fecha_expedicion
-          file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
-          file=File.open( "public/#{file_name}")
-
+#=======================================================================================================================
+          #9.- SE MUESTRA EL PDF, SE REDIRIGE AL INDEX O ALGUNA EXCEPCIÓN
           if params[:commit] == "Facturar y crear nueva"
-            enviar = params[:enviar_al_correo]
             if "yes" == params[:imprimir]
-              send_file( file, :disposition => "inline", :type => "application/pdf")
+              send_file( File.open( "public/#{fv_id}_fv.pdf"), :disposition => "inline", :type => "application/pdf")
             else
               respond_to do |format|
               format.html { redirect_to action: "facturaDeVentas", notice: 'La factura fue registrada existoxamente!' }
@@ -496,14 +484,13 @@ class FacturasController < ApplicationController
             end
           else
             if "yes" == params[:imprimir]
-              send_file( file, :disposition => "inline", :type => "application/pdf")
+              send_file( File.open( "public/#{fv_id}_fv.pdf"), :disposition => "inline", :type => "application/pdf")
             else
               respond_to do |format|
                 format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
               end
             end
           end
-
       end #fin de else que permiten facturar
     end #Fin del méodo post
   end #Fin del controlador
@@ -1526,10 +1513,10 @@ class FacturasController < ApplicationController
       # Esto genera la factura como xml
       puts xml= factura.comprobante_to_xml
       # Para mandarla a un PAC, necesitamos sellarla, y esto lo hace agregando el sello
-      archivo_xml = generar_sello(xml, llave, pass_llave)
+      xml_certificado_sellado = generar_sello(xml, llave, pass_llave)
 
       # Convertir la cadena del xml en base64
-      xml_base64 = Base64.strict_encode64(archivo_xml)
+      xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
 
       # Parametros para conexion al Webservice (URL de Pruebas)
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
