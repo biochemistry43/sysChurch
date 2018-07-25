@@ -150,86 +150,126 @@
     </div>
     <!-- Termina buscador por atributos del cliente-->
 
+ <!-- Este botón despliega el div con las opciones para filtros avanzados -->
+    <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros Avanzados <i class="fa fa-sort-down"></i>
+    </button>
 
-   <!-- Este botón despliega el div con las opciones para filtros avanzados -->
-   <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
-     Filtros Avanzados <i class="fa fa-sort-down"></i>
-   </button>
+    <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
+    <div id="opciones_filtros_avanzados" class="opciones_filtros row">
+      <%= form_tag({ controller: "nota_creditos", action: "consulta_avanzada" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
+        <div class="item form-group">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div style="text-align: left; color: black;">
+              Elija un conjunto de criterios para hacer un filtro más detallado.
+            </div>
+          </div>
+        </div>
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Seleccione un rango de fechas:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+            </div>
+          </div>
+        </div>
 
-   <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
-   <div id="opciones_filtros_avanzados" class="opciones_filtros row">
-     <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal", :method => :post}) do %>
-       <div class="item form-group">
-         <div class="col-md-6 col-sm-6 col-xs-12">
-           <div style="text-align: left; color: black;">
-             Elija un conjunto de criterios para hacer un filtro más detallado.
-           </div>
-         </div>
-       </div>
-       <div class="item form-group">
-         <div class="col-md-3 col-sm-6 col-xs-12">
-           <div style="text-align: right;">
-             Seleccione un rango de fechas:
-           </div>
-         </div>
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Cliente:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= select_tag :opcion_busqueda_cliente, "<option>Buscar por R.F.C.</option><option>Buscar por nombre fiscal</option>".html_safe, :prompt => 'Elija una opción.',  class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;"  id="errorRFC2">
+                <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12 nombre_collection_select", style: "display: none;"})%>
+                <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_text_field", id:"rfc_input2", :placeholder=>"RFC del cliente...", style: "display: none;"} do%>
+                  <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <%end%>
+            </div>
+          </div>
+        </div>
+        <!--Filtro por monto de venta-->
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Por monto:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= select_tag :condicion_monto_nc, "<option>menor que</option><option>mayor que</option><option>menor o igual que</option><option>mayor o igual que</option><option>igual que</option><option>diferente que</option><option id='rangoMonto'>rango desde</option>".html_safe, :prompt => 'Elija una condición.',  class: 'form-control' %>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= number_field_tag(:monto1 , nil, {class: "form-control text_field", style: "display: none;"})%>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              <%= number_field_tag(:monto2 , nil, {class: "form-control text_field", style: "display: none;"})%>
+            </div>
+          </div>
+        </div>
 
-         <div class="col-md-3 col-sm-6 col-xs-12">
-           <div class="text-center">
-             <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
-           </div>
-         </div>
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div style="text-align: right;">
+              Status de factura:
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-center">
+              <%= select_tag "estado_nc", "<option>Todas</option><option>Activa</option><option>Cancelada</option>".html_safe,  class: 'form-control' %>
+            </div>
+          </div>
+        </div>
 
-         <div class="col-md-3 col-sm-6 col-xs-12">
-           <div class="text-center">
-             <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+        <% if can? :create, Negocio %>
 
-           </div>
-         </div>
-       </div>
+          <div class="item form-group">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div style="text-align: right;">
+                Sucursal:
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+              <div class="text-center">
+                <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+              </div>
+            </div>
+          </div>
 
+        <% end %>
 
-       <div class="item form-group">
-         <div class="col-md-3 col-sm-6 col-xs-12">
-           <div style="text-align: right;">
-             Status de factura:
-           </div>
-         </div>
-         <div class="col-md-3 col-sm-6 col-xs-12">
-           <div class="text-center">
-             <%= select_tag "estado_nc", "<option>Todas</option><option>Activa</option><option>Cancelada</option>".html_safe,  class: 'form-control' %>
-           </div>
-         </div>
-       </div>
+        <div class="item form-group">
+          <div class="col-md-3 col-sm-6 col-xs-12">
 
-       <% if can? :create, Negocio %>
-
-         <div class="item form-group">
-           <div class="col-md-3 col-sm-6 col-xs-12">
-             <div style="text-align: right;">
-               Sucursal:
-             </div>
-           </div>
-           <div class="col-md-3 col-sm-6 col-xs-12">
-             <div class="text-center">
-               <!-- collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })-->
-             </div>
-           </div>
-         </div>
-
-         <% end %>
-
-         <div class="item form-group">
-           <div class="col-md-3 col-sm-6 col-xs-12">
-
-           </div>
-           <div class="col-md-3 col-sm-6 col-xs-12">
-             <div class="text-left">
-               <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info"} %>
-             </div>
-           </div>
-         </div>
+          </div>
+          <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="text-left">
+              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
+            </div>
+          </div>
+        </div>
       <% end %>
     </div>
+
 
     <!--Lista de todas las notas de crédito -->
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -288,9 +328,7 @@
                        <i class="fa fa-close"></i>
                       <% end %>
 
-
                   </td>
-
                 </tr>
               <% end %>
             </tbody>
@@ -322,7 +360,78 @@
               }
             }
           });
+
+          /*Botones de los filtros*/
+          $("#filtro_por_cliente").click(function(e){
+            if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+              $('#errorRFC').removeClass(" has-error has-feedback");
+                $('.rfc_input').hide().val("");
+              $('#nombreFiscalCliente').show();
+              $('#leyenda_filtro_cliente').html("Nombre:");
+            }
+            else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+              $('#errorRFC').removeClass(" has-error has-feedback");
+              $('.rfc_input').hide().val("");
+
+              $('#nombreFiscalCliente').hide().val("");
+              $('.rfc_input').show();
+              $('#leyenda_filtro_cliente').html("R.F.C.:");
+            }
+
+            if( $("#opciones_filtros_por_cliente").is(":visible") ){
+               $(this).html('Filtros por cliente <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros por cliente <i class="fa fa-sort-up"></i>');
+            }
+
+            $("#opciones_filtros_por_cliente").slideToggle("fast");
+          });
+
+          $("#filtros_avanzados").click(function(e){
+            if( $("#opciones_filtros_avanzados").is(":visible") ){
+              $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
+            }
+            $("#opciones_filtros_avanzados").slideToggle("fast");
+          });
+
+          $("#filtro_por_folio").click(function(e){
+            if( $("#opciones_filtros_por_folio").is(":visible") ){
+                $(this).html('Filtros por folio <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros por folio <i class="fa fa-sort-up"></i>');
+            }
+            $("#opciones_filtros_por_folio").slideToggle("fast");
+          });
+
+          $("#filtro_por_fecha").click(function(e){
+            if( $("#opciones_filtros_por_fecha").is(":visible") ){
+              $(this).html('Filtros por fecha <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros por fecha <i class="fa fa-sort-up"></i>');
+            }
+            $("#opciones_filtros_por_fecha").slideToggle("fast");
+          });
+
         });
+
+        $('select#condicion_monto_nc').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "rango desde"){
+            $('#monto1').show().val("");
+            $('#monto2').show().val("");
+          }else{
+            $('#monto1').show().val("");
+            $('#monto2').hide().val("");
+          }
+          //Ocultar cuando no este seleccionado ninguno
+        });
+
 
         $(document).ready(function(){
           //Función para validar un RFC
@@ -365,70 +474,7 @@
                 return false;
             return rfcSinDigito + digitoVerificador;
           }
-          $("#filtro_por_cliente").click(function(e){
-
-            if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
-              $('#errorRFC').removeClass(" has-error has-feedback");
-              $('.rfc_input').hide().val("");
-              $('#nombreFiscalCliente').show();
-              $('#leyenda_filtro_cliente').html("Nombre:");
-            }
-            else if ($("#rbtn_rbtn_rfc").is(":checked")) {
-              $('#errorRFC').removeClass(" has-error has-feedback");
-              $('.rfc_input').hide().val("");
-
-              $('#nombreFiscalCliente').hide().val("");
-              $('.rfc_input').show();
-              $('#leyenda_filtro_cliente').html("R.F.C.:");
-
-            }
-
-
-            if( $("#opciones_filtros_por_cliente").is(":visible") ){
-               $(this).html('Filtros por cliente <i class="fa fa-sort-down"></i>');
-            }
-            else{
-              $(this).html('Filtros por cliente <i class="fa fa-sort-up"></i>');
-            }
-
-            $("#opciones_filtros_por_cliente").slideToggle("fast");
-
-          });
-
-            $("#filtros_avanzados").click(function(e){
-              if( $("#opciones_filtros_avanzados").is(":visible") ){
-                $(this).html('Filtros Avanzados <i class="fa fa-sort-down"></i>');
-              }
-              else{
-                $(this).html('Filtros Avanzados <i class="fa fa-sort-up"></i>');
-              }
-              $("#opciones_filtros_avanzados").slideToggle("fast");
-            });
-
-            $("#filtro_por_folio").click(function(e){
-              if( $("#opciones_filtros_por_folio").is(":visible") ){
-                 $(this).html('Filtros por folio <i class="fa fa-sort-down"></i>');
-              }
-              else{
-                $(this).html('Filtros por folio <i class="fa fa-sort-up"></i>');
-              }
-
-              $("#opciones_filtros_por_folio").slideToggle("fast");
-
-            });
-
-            $("#filtro_por_fecha").click(function(e){
-              if( $("#opciones_filtros_por_fecha").is(":visible") ){
-                 $(this).html('Filtros por fecha <i class="fa fa-sort-down"></i>');
-              }
-              else{
-                $(this).html('Filtros por fecha <i class="fa fa-sort-up"></i>');
-              }
-
-              $("#opciones_filtros_por_fecha").slideToggle("fast");
-
-            });
-
+         
             //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
             $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
                 if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
@@ -466,6 +512,42 @@
 
                 }
             });
+             $('select#opcion_busqueda_cliente').on('change',function(){
+          var valor = $(this).val();
+          if (valor == "Buscar por R.F.C."){
+            //Handler para el evento cuando cambia el input
+            // -Lleva la RFC a mayúsculas para validarlo
+            // -Elimina los espacios que pueda tener antes o después
+          var validador_RFC_Obligatorio2 = function(e){
+            var input = document.getElementById("rfc_input2");
+            var rfc = input.value.trim().toUpperCase()
+            var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+            var colorearRojo=document.getElementById("errorRFC2");
+
+            if (!rfcCorrecto) {
+
+              colorearRojo.className+=" has-error has-feedback";
+
+              e.preventDefault();
+
+            }
+
+          };
+            //Se pone a la escucha el sumit del formulario
+            var facturarYCrearNueva=document.getElementById("RFC_Obligatorio2");
+            facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio2);
+
+            $('.nombre_collection_select').hide().val("");
+            $('.rfc_text_field').show().val("");
+
+          }else if (valor == "Buscar por nombre fiscal") {
+            $('#errorRFC2').removeClass(" has-error has-feedback");
+            $('.nombre_collection_select').show().val("");
+            $('.rfc_text_field').hide().val("");
+          }
+
+          //Ocultar cuando no este seleccionado ninguno
+      });
 
 
         });

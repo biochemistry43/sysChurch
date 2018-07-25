@@ -1,7 +1,8 @@
 class NotaCreditosController < ApplicationController
   before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf, :descargar_nota_credito, :mostrar_email_nota_credito, :enviar_nota_credito, :mostrar_email_cancelacion_nc, :cancelar_nota_credito]
   #before_action :set_sucursales, only: [:index, :consulta_avanzada]
-  before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente]
+  before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada]
+  before_action :set_sucursales, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada]
 
   # GET /nota_creditos
   # GET /nota_creditos.json
@@ -72,8 +73,7 @@ class NotaCreditosController < ApplicationController
     end
   end
 
-  #CONSULTAS
-
+  #FILTROS PARA LAS NOTAS DE CRÉDITO
   def consulta_por_fecha
     @consulta = true
     @fechas=true
@@ -171,6 +171,210 @@ class NotaCreditosController < ApplicationController
     end
   end
 
+  def consulta_avanzada
+
+    @consulta = true
+    @avanzada = true
+    @fechas=false
+    @por_folio=false
+
+    #@clientes = current_user.negocio.clientes.nombre
+    if request.post?
+      @fechaInicial = DateTime.parse(params[:fecha_inicial_avanzado]).to_date
+      @fechaFinal = DateTime.parse(params[:fecha_final_avanzado]).to_date
+
+      clientes_ids = []
+      if params[:opcion_busqueda_cliente] == "Buscar por R.F.C."
+        #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
+        #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
+        @rfc = params[:rfc]
+        @por_cliente = true if @rfc
+        datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
+
+        datos_fiscales_cliente.each do |dfc|
+          clientes_ids << dfc.cliente_id
+        end
+        #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
+        #@facturas = current_user.negocio.facturas.where(cliente_id: clientes_ids)
+        #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+      elsif params[:opcion_busqueda_cliente] == "Buscar por nombre fiscal"
+
+        #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
+        datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
+        @por_cliente = true
+        @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+        clientes_ids << datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+        #@facturas = current_user.negocio.facturas.where(cliente_id: cliente)
+      end
+
+      @estado = params[:estado_nc]
+
+      @suc = params[:suc_elegida]
+
+      unless @suc.empty?
+        @sucursal = Sucursal.find(@suc)
+      end
+      @monto_nc = false
+      @condicion_monto_nc = params[:condicion_monto_nc]
+
+      #Se convierte la descripción al operador equivalente
+      unless @condicion_monto_nc.empty?
+        @monto_nc = true
+        operador_monto = case @condicion_monto_nc
+           when "menor que" then "<"
+           when "mayor que" then ">"
+           when "menor o igual que" then "<="
+           when "mayor o igual que" then ">="
+           when "igual que" then "="
+           when "diferente que" then "!=" #o también <> Distinto de
+           when "rango desde" then ".." #o también <> Distinto de
+        end
+      end
+
+      if can? :create, Negocio
+        unless @suc.empty?
+          #valida si se eligió un cliente específico para esta consulta
+          if @rfc || @nombreFiscal#@cliente
+            #Filtra por monto de la venta facurada.
+            if operador_monto
+              @monto1 = params[:monto1]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @nota_creditos = current_user.negocio.nota_creditos.where("monto #{operador_monto} ?", @monto1) if @monto1
+              else
+                @monto2 = params[:monto2]
+                @nota_creditos = current_user.negocio.nota_creditos.where(monto: @monto1..@monto2) if @monto1 && @monto2
+              end
+              #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_nc: @estado, sucursal: @sucursal)
+              else
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, sucursal: @sucursal)
+              end
+            else
+              #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_nc: @estado, sucursal: @sucursal)
+              else
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, sucursal: @sucursal)
+              end
+            end
+          # Si no se eligió cliente, entonces no filtra los comprobantes el cliente al que se expidió el comprobante
+          else
+            #Filtra por monto de la venta facurada.
+            if operador_monto
+              @monto1 = params[:monto1]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @nota_creditos = current_user.negocio.nota_creditos.where("monto #{operador_monto} ?", @monto1) if @monto1
+              else
+                @monto2 = params[:monto2]
+                @nota_creditos = current_user.negocio.nota_creditos.where(monto: @monto1..@monto2) if @monto1 && @monto2
+              end
+              #Si el estado elegido es todas, entonces no filtra los comprobantes el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_nc: @estado, sucursal: @sucursal)
+              else
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+              end
+              #Si el usuario no seleccionó una condición para filtrar por el monto del comprobante
+            else
+              #Si el estado elegido es todas, entonces no filtra los comprobantes el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_nc: @estado, sucursal: @sucursal)
+              else
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal)
+              end
+            end
+          end
+        #Si el usuario no eligió ninguna sucursal específica, no filtra los comprobantes por sucursal
+        else
+          #valida si se eligió un cliente
+          if @rfc || @nombreFiscal#@cliente
+            #Filtra por monto de la nota de crédito
+            if operador_monto
+              @monto1 = params[:monto1]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @nota_creditos = current_user.negocio.nota_creditos.where("monto #{operador_monto} ?", @monto1) if @monto1
+              else
+                @monto2 = params[:monto2]
+                @nota_creditos = current_user.negocio.nota_creditos.where(monto: @monto1..@monto2) if @monto1 && @monto2
+              end
+              #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado
+              unless @estado.eql?("Todas")
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_nc: @estado)
+              else
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
+              end
+            else
+              #Si el estado elegido es todas, entonces no filtra las notas de crédito por el estado
+              unless @estado.eql?("Todas")
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_nc: @estado)
+              else
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
+              end
+            end
+          # Si no se eligió cliente, entonces no filtra las notas de crédito por el cliente
+          else
+            if operador_monto
+              @monto1= params[:monto1]
+              unless operador_monto == ".." #Cuando se trata de un rango
+                @nota_creditos = current_user.negocio.nota_creditos.where("monto #{operador_monto} ?", @monto1) if @monto1
+              else
+                @monto2 = params[:monto2]
+                @nota_creditos = current_user.negocio.nota_creditos.where(monto: @monto1..@monto2) if @monto1 && @monto2
+              end
+              #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_nc: @estado)
+              else
+                @nota_creditos = @nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+              end
+            else
+              #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+              unless @estado.eql?("Todas")
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_nc: @estado)
+              else
+                @nota_creditos = current_user.negocio.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+              end
+            end
+          end
+        end
+
+      #Si el usuario no es un administrador o subadministrador
+      else
+
+        #valida si se eligió un cliente específico para esta consulta
+        if @rfc || @nombreFiscal#@cliente
+
+          #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+          unless @estado.eql?("Todas")
+            @nota_creditos = current_user.sucursal.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids, estado_nc: @estado)
+          else
+            @nota_creditos = current_user.sucursal.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, cliente: clientes_ids)
+          end #Termina unless @estado.eql?("Todas")
+
+        # Si no se eligió cliente, entonces no filtra los comprobantes el cliente
+        else
+
+          #Si el estado elegido es todas, entonces no filtra los comprobantes por el estado del comprobante
+          unless @estado.eql?("Todas")
+            @nota_creditos = current_user.sucursal.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal, estado_nc: @estado)
+          else
+            @nota_creditos = current_user.sucursal.nota_creditos.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+          end #Termina unless @estado.eql?("Todas")
+
+        end #Termina if @cajero
+
+      end
+
+      respond_to do |format|
+        format.html
+        format.json
+        format.js
+      end
+    end
+  end
+
+
 
   #Acción para imprimir la nota de crédito
   def imprimirpdf
@@ -192,7 +396,7 @@ class NotaCreditosController < ApplicationController
     else
       respond_to do |format|
         format.html { redirect_to action: "index" }
-        flash[:notice] = "No se encontró la factura, vuelva a intentarlo por favor."
+        flash[:notice] = "No se encontró la nota de crédito, vuelva a intentarlo por favor."
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
     end

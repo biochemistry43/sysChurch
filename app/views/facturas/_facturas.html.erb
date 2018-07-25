@@ -625,45 +625,6 @@
           }
       });
 
-      //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
-      $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
-          if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
-            $('#errorRFC').removeClass(" has-error has-feedback");
-            $('.rfc_input').hide().val("");
-            $('#nombreFiscalCliente').show();
-            $('#leyenda_filtro_cliente').html("Nombre:");
-          }
-          else if ($("#rbtn_rbtn_rfc").is(":checked")) {
-              //Handler para el evento cuando cambia el input
-              // -Lleva la RFC a mayúsculas para validarlo
-              // -Elimina los espacios que pueda tener antes o después
-            var validador_RFC_Obligatorio = function(e){
-              var input = document.getElementById("rfc_input");
-              var rfc = input.value.trim().toUpperCase()
-              var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
-              var colorearRojo=document.getElementById("errorRFC");
-
-              if (!rfcCorrecto) {
-
-                colorearRojo.className+=" has-error has-feedback";
-
-                e.preventDefault();
-
-              }
-
-            };
-              //Se pone a la escucha el sumit del formulario
-              var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
-              facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
-
-            $('#nombreFiscalCliente').hide().val("");
-            $('.rfc_input').show();
-            $('#leyenda_filtro_cliente').html("R.F.C.:");
-
-          }
-
-      });
-
     });
 
   </script>
