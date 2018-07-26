@@ -1061,18 +1061,25 @@ class DevolucionesController < ApplicationController
         file = bucket.create_file "public/#{nc_id}_nc.xml", "#{ruta_storage}.xml"
 
 #========================================================================================================================
-      #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
+      #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
         folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
         @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
         #@factura = Factura.find(@venta.factura_id)
 
-        if @nota_credito.save
+        if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
           current_user.nota_creditos << @nota_credito
           current_user.negocio.nota_creditos << @nota_credito
           current_user.sucursal.nota_creditos << @nota_credito
           Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
-          @factura.nota_creditos <<  @nota_credito
+          #@factura.nota_creditos <<  @nota_credito
           FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
+
+          #Esto se hace debido a que se permite crear comprobantes con captura manual de datos(Sin depender de una venta del sistema)
+          @factura_nota_credito = FacturaNotaCredito.new(estado_nc: "Activa", estado_fv: "Activa") #El monto esa pendiente
+          @factura.factura_nota_creditos << @factura_nota_credito
+          @nota_credito.factura_nota_creditos << @factura_nota_credito
+          @factura_nota_credito.save
+
         end
 
 #========================================================================================================================

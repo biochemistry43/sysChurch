@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  factura_id: 
+  nota_credito_id: 
+  estado_fv: MyString
+  estado_nc: MyString
+  monto_fv: MyString
+
+two:
+  factura_id: 
+  nota_credito_id: 
+  estado_fv: MyString
+  estado_nc: MyString
+  monto_fv: MyString

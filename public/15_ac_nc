@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Acuse Fecha="2018-07-26T02:24:50" RfcEmisor="AAA010101AAA">
+  <Folios>
+    <UUID>D90A058F-CB05-4EB2-9CFE-6ADCB30B3D69</UUID>
+    <EstatusUUID>201</EstatusUUID>
+  </Folios>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#" Id="SelloSAT">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha512"/>
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+            <XPath>not(ancestor-or-self::*[local-name()='Signature'])</XPath>
+          </Transform>
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"/>
+        <DigestValue>ML2rVJ79GS6cQNjRI7wmoRu5aFykTgian5alYvohYhR5Dh3QB43LX1RadDFutgMIM3q60LozLGdtmLVDdnhZsg==</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>lO73l44krAoObyw+HGI/ychDJa3PpxiqDWZ0tLqUrhDj0E4Dv5mWE1t4wzOST26zJENixF4ZBGAk8Jj+fM8Kuw==</SignatureValue>
+    <KeyInfo>
+      <KeyName>00001088888800000016</KeyName>
+      <KeyValue>
+        <RSAKeyValue>
+          <Modulus>xnL2zDPtH5jDsAZDTIfMqbKGrve+At8Kyx2EZvbfXbpK9uVExWS874oMelFzNq69/YqSReT3I7I8wr+joy5O7ouZH+4KWdIGp4Si6lHe0kntxzNmuuKyOPkJ9tMcntnFmQ4bfxFxlg/Ud2hCtuoy3j2xYkIXu5O4pGM98Nz8pAM=</Modulus>
+          <Exponent>AQAB</Exponent>
+        </RSAKeyValue>
+      </KeyValue>
+    </KeyInfo>
+  </Signature>
+</Acuse>

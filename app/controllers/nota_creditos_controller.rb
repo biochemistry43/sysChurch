@@ -499,7 +499,9 @@ class NotaCreditosController < ApplicationController
 
     #Para cancelar una nota de crédito de una perteneciente a una factura.
     def mostrar_email_cancelacion_nc
-      plantilla_email("ac_nc")
+      #plantilla_email("ac_nc")
+      @asunto = "nada"
+      @mensaje = "nada"
       #@categorias_devolucion = current_user.negocio.cat_venta_canceladas
     end
 
@@ -563,9 +565,9 @@ class NotaCreditosController < ApplicationController
       #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
       destinatario_final = params[:destinatario]
       #Aquí el mensaje de la configuración...
-      plantilla_email("ac_nc")
-      comprobantes = {xml_Ac_nc: "public/#{ac_nc_id}_ac_nc"}
-      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
+      #plantilla_email("ac_nc")
+      #comprobantes = {xml_Ac_nc: "public/#{ac_nc_id}_ac_nc"}
+      #FacturasEmail.factura_email(destinatario_final, "Hola", "Feoo", comprobantes).deliver_now
 
       respond_to do |format| # Agregar mensajes después de las transacciones
         format.html { redirect_to nota_creditos_index_path, notice: "La nota de crédito con folio: #{@nota_credito.folio} ha sido cancelada y se ha enviado al email #{destinatario_final} exitosamente!" }

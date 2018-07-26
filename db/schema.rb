@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180723063701) do
+ActiveRecord::Schema.define(version: 20180726054250) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -351,6 +351,19 @@ ActiveRecord::Schema.define(version: 20180723063701) do
   add_index "factura_globals", ["negocio_id"], name: "index_factura_globals_on_negocio_id"
   add_index "factura_globals", ["sucursal_id"], name: "index_factura_globals_on_sucursal_id"
   add_index "factura_globals", ["user_id"], name: "index_factura_globals_on_user_id"
+
+  create_table "factura_nota_creditos", force: :cascade do |t|
+    t.integer  "factura_id"
+    t.integer  "nota_credito_id"
+    t.string   "estado_fv"
+    t.string   "estado_nc"
+    t.string   "monto_fv"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "factura_nota_creditos", ["factura_id"], name: "index_factura_nota_creditos_on_factura_id"
+  add_index "factura_nota_creditos", ["nota_credito_id"], name: "index_factura_nota_creditos_on_nota_credito_id"
 
   create_table "factura_recurrente_articulos", force: :cascade do |t|
     t.integer  "factura_recurrente_id"

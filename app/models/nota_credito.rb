@@ -1,5 +1,5 @@
 class NotaCredito < ActiveRecord::Base
-  belongs_to :factura
+  has_many :factura_nota_creditos
   belongs_to :user
   belongs_to :cliente
   belongs_to :sucursal
