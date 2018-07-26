@@ -1,6 +1,7 @@
 class Negocio < ActiveRecord::Base
 	has_many :plantillas_emails
 	has_many :nota_creditos
+	has_many :nota_credito_canceladas
 	has_many :config_comprobantes
 	has_many :impuestos
 	has_many :clave_prod_servs

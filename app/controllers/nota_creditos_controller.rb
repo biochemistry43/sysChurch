@@ -453,14 +453,15 @@ class NotaCreditosController < ApplicationController
           file_download_storage_xml = bucket.file "#{ruta_storage_nc}.xml"
           file_download_storage_xml.download "public/#{@nota_credito.id}.xml"
         end
-=begin
-                #Solo cuando este cancelada
-        if params[:xml_Ac_nc] == "yes"
-          comprobantes[:xml_nc] = "public/#{file_name}_NotaCrédito.xml"
-          file_download_storage_xml = bucket.file "#{ruta_storage}_NotaCrédito.xml"
-          file_download_storage_xml.download "public/#{file_name}_NotaCrédito.xml"
+        #Solo cuando este cancelada
+        if @nota_credito.estado_nc == "Cancelada"
+          ruta_storage_ac_nc = @nota_credito.nota_credito_cancelada.ruta_storage
+          if params[:xml_Ac_nc] == "yes"
+            comprobantes[:xml_Ac_nc] = "public/#{@nota_credito.nota_credito_cancelada.id}.xml"
+            file_download_storage_xml = bucket.file "#{ruta_storage_ac_nc}.xml"
+            file_download_storage_xml.download "public/#{@nota_credito.nota_credito_cancelada.id}.xml"
+          end
         end
-=end
 
         #Por si el usuario también desea enviar la factura de venta relacionada a la nota de crédito
         if params[:pdf] == "yes"
@@ -482,7 +483,6 @@ class NotaCreditosController < ApplicationController
           flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
           #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
         end
-
       end
     end
 
@@ -495,7 +495,6 @@ class NotaCreditosController < ApplicationController
       elsif @nota_credito.estado_nc == "Cancelada"
          plantilla_email("ac_nc")
       end
-
     end
 
     #Para cancelar una nota de crédito de una perteneciente a una factura.
@@ -505,12 +504,12 @@ class NotaCreditosController < ApplicationController
     end
 
     def cancelar_nota_credito
-      #Primero se procede a cancelar y enviar el acuse de cancelación
+      require 'timbrado'
+   
       # Parametros para la conexión al Webservice
       wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
       usuario = "AAA010101000"
       contrasena = "h6584D56fVdBbSmmnB"
-      # Parametros para la cancelación del CFDI
       uuid = @nota_credito.folio_fiscal
       rfc = "AAA010101AAA"
       pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
@@ -518,38 +517,58 @@ class NotaCreditosController < ApplicationController
       pfx_base64 = Base64.strict_encode64(bin_file)
       pfx_password = "12345678a"
       #Se cancela
+
       xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
-      #se extrae el acuse de cancelación del xml cancelado
       acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+
+      #se extrae el acuse de cancelación del xml cancelado
       #Se crea un objeto de cloud para descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
       bucket = storage.bucket "cfdis"
-      #Consultas
-      ruta_storage = @nota_credito.ruta_storage
-      fecha_expedicion=@nota_credito.fecha_expedicion
-      consecutivo =@nota_credito.consecutivo
-      file_name = "#{consecutivo}_#{fecha_expedicion}"
+      #Se realizan las consultas para formar los directorios en cloud
+      dir_negocio = current_user.negocio.nombre
+      dir_sucursal = current_user.sucursal.nombre
+      dir_cliente = @nota_credito.cliente.nombre_completo
+      #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
+      fecha_cancelacion =  DateTime.parse(Nokogiri::XML(acuse).xpath("//@Fecha").to_s)
+
+      dir_dia = fecha_cancelacion.strftime("%d")
+      dir_mes = fecha_cancelacion.strftime("%m")
+      dir_anno = fecha_cancelacion.strftime("%Y")
+
+      ac_nc_id = NotaCreditoCancelada.last ? NotaCreditoCancelada.last.id + 1 : 1
+
+      ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{ac_nc_id}_ac_nc"
       #Se guarda el Acuse en la nube
-      file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelaciónNotaCrédito.xml"
-      #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
-      @nota_credito.update( estado_nc: "Cancelada") #Pasa de activa a cancelada
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
+
       acuse = Nokogiri::XML(acuse)
-      a = File.open("public/#{file_name}_AcuseDeCancelaciónNotaCrédito", "w")
+      a = File.open("public/#{ac_nc_id}_ac_nc", "w")
       a.write (acuse)
       a.close
 
-      #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
-      destinatario = params[:destinatario]
-      #Aquí el mensaje de la configuración...
-      mensaje = "HOLA cara de bola"
-      tema = "Acuse de cancelación"
-      comprobantes = {xml_Ac_nc: "public/#{file_name}_AcuseDeCancelaciónNotaCrédito"}
+      #Se registra la cancelación de la nota de crédito
+      @nota_credito_cancelada = NotaCreditoCancelada.new(fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
 
-      FacturasEmail.factura_email(destinatario, mensaje, tema, comprobantes).deliver_now
+      if @nota_credito_cancelada.save
+        #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
+        @nota_credito.update( estado_nc: "Cancelada") #Pasa de activa a cancelada
+        current_user.negocio.nota_credito_canceladas << @nota_credito_cancelada
+        current_user.sucursal.nota_credito_canceladas << @nota_credito_cancelada 
+        current_user.nota_credito_canceladas << @nota_credito_cancelada
+        @nota_credito.nota_credito_cancelada = @nota_credito_cancelada
+      end
+
+      #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
+      destinatario_final = params[:destinatario]
+      #Aquí el mensaje de la configuración...
+      plantilla_email("ac_nc")
+      comprobantes = {xml_Ac_nc: "public/#{ac_nc_id}_ac_nc"}
+      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
       respond_to do |format| # Agregar mensajes después de las transacciones
-        format.html { redirect_to nota_creditos_index_path, notice: "La nota de crédito con folio: #{@nota_credito.folio} ha sido cancelada y se ha enviado el acuse por email exitosamente!" }
+        format.html { redirect_to nota_creditos_index_path, notice: "La nota de crédito con folio: #{@nota_credito.folio} ha sido cancelada y se ha enviado al email #{destinatario_final} exitosamente!" }
       end
     end
 

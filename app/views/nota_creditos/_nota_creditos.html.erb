@@ -291,9 +291,9 @@
               <% @nota_creditos.each do |nc| %>
                 <tr>
                   <td style="text-align: center;"><%= nc.folio %></td>
-                  <td style="text-align: center;"><%= nc.cliente.nombre_completo%></td>
+                  <td style="text-align: center;"><%= nc.cliente.datos_fiscales_cliente.nombreFiscal %></td>
                   <td style="text-align: center;"><%= nc.fecha_expedicion%></td>
-                  <td style="text-align: center;"><%= %></td>
+                  <td style="text-align: center;">$ <%= nc.monto %></td>
                   <!--Por el momento solo dos estados -->
                   <td style="text-align: center;">
                     <% if nc.estado_nc.eql?("Activa") %>
@@ -323,11 +323,15 @@
                       <i class="fa fa-info-circle"></i>
                       <% end %>
 
-                      <%= link_to url={action: "mostrar_email_cancelacion_nc", controller: "nota_creditos", id: nc}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
-                      <!--%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura},  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar"}, data: { confirm: "¿Desea cancelar esta venta?"} do %-->
-                       <i class="fa fa-close"></i>
+                      <% if nc.estado_nc == "Activa" %>
+                        <%= link_to url={action: "mostrar_email_cancelacion_nc", controller: "nota_creditos", id: nc}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                         <i class="fa fa-close"></i>
+                        <% end %>
+                      <% else %>
+                        <%= button_tag  class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top', disabled: true do %>
+                          <i class="fa fa-close"></i>
+                        <% end %>
                       <% end %>
-
                   </td>
                 </tr>
               <% end %>

@@ -381,7 +381,7 @@ class FacturasController < ApplicationController
       #Se obtiene el xml timbrado
       xml_timbox= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
       #Guardo el xml recien timbradito de timbox, calientito
-      fv_id = current_user.sucursal.facturas.last ? current_user.sucursal.facturas.last.id : 1
+      fv_id = Factura.last ? Factura.last.id + 1 : 1
       archivo = File.open("public/#{fv_id}_fv.xml", "w")
       archivo.write (xml_timbox)
       archivo.close

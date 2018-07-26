@@ -955,7 +955,7 @@ class DevolucionesController < ApplicationController
         xml_timbox = timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
         #Guardo el xml recien timbradito de timbox, calientito
-        nc_id = current_user.sucursal.nota_creditos.last ? current_user.sucursal.nota_creditos.last.id : 1
+        nc_id = NotaCredito.last ? NotaCredito.last.id + 1 : 1
         archivo = File.open("public/#{nc_id}_nc.xml", "w")
         archivo.write (xml_timbox)
         archivo.close
@@ -1041,7 +1041,7 @@ class DevolucionesController < ApplicationController
         dir_cliente = nombre_fiscal_receptor_nc
 
         #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
-        fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
+        fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado').to_s) 
         dir_dia = fecha_registroBD.strftime("%d")
         dir_mes = fecha_registroBD.strftime("%m")
         dir_anno = fecha_registroBD.strftime("%Y")
@@ -1062,7 +1062,7 @@ class DevolucionesController < ApplicationController
 
 #========================================================================================================================
       #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
-        folio_fiscal_xml = xml_timbox.xpath('//@UUID')
+        folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
         @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
         #@factura = Factura.find(@venta.factura_id)
 
