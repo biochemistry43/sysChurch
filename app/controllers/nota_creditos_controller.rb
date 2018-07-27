@@ -1,8 +1,8 @@
 class NotaCreditosController < ApplicationController
   before_action :set_nota_credito, only: [:show, :edit, :update, :destroy, :imprimirpdf, :descargar_nota_credito, :mostrar_email_nota_credito, :enviar_nota_credito, :mostrar_email_cancelacion_nc, :cancelar_nota_credito]
   #before_action :set_sucursales, only: [:index, :consulta_avanzada]
-  before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada]
-  before_action :set_sucursales, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada]
+  before_action :set_clientes, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada, :consulta_por_cfdi_relacionado]
+  before_action :set_sucursales, only: [:index, :consulta_por_fecha, :consulta_por_folio, :consulta_por_cliente, :consulta_avanzada, :consulta_por_cfdi_relacionado]
 
   # GET /nota_creditos
   # GET /nota_creditos.json
@@ -170,6 +170,50 @@ class NotaCreditosController < ApplicationController
       end
     end
   end
+
+  #Ésta función permite obtener las notas de crédito pertenecientes a una factura de venta.  
+  def consulta_por_cfdi_relacionado
+    @consulta = true
+    @fechas = false
+    @por_folio = false
+    @avanzada = false
+    @por_cliente= false
+    @por_cfd_relacionado = true
+
+    if request.post?
+      @folio_nc = params[:folio_fv]
+      if can? :create, Negocio
+        
+        factura = current_user.negocio.facturas.find_by(folio: params[:folio_fv])
+        if factura 
+          @nota_creditos = []
+          notaCreditosFacturaVenta = factura.factura_nota_creditos
+          notaCreditosFacturaVenta.each do |nc_fv|
+          @nota_creditos << nc_fv.nota_credito
+          end
+        else
+          #La mera neta del planeta con esta salgo jeje 
+          #Me muero de programador... Se realiza una consulta que jamás se cumplirá poq en la vista el each...
+          @nota_creditos = current_user.negocio.nota_creditos.where(id: nil)
+        end
+      else
+
+        factura = current_user.sucursal.facturas.find_by(folio: params[:folio_fv])
+        if factura
+          @nota_creditos = []
+          notaCreditosFacturaVenta = factura.factura_nota_creditos
+          notaCreditosFacturaVenta.each do |nc_fv|
+            #También se obtienen solo las notas de crédito de la sucursal 
+            @nota_creditos << nc_fv.nota_credito if current_user.sucursal.nota_creditos.find_by(id: nc_fv.nota_credito)
+          end
+        else
+          #La explicación de esta línea esta arriba jaja
+          @nota_creditos = current_user.sucursal.nota_creditos.where(id: nil)
+        end        
+      end
+    end
+  end
+
 
   def consulta_avanzada
 

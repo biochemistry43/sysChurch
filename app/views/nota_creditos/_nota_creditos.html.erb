@@ -151,6 +151,42 @@
     <!-- Termina buscador por atributos del cliente-->
 
 
+    <button id="filtro_por_cfdi_relacionado" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
+      Filtros por CFDI relacionado <i class="fa fa-sort-down"></i>
+    </button>
+    <!-- Este form permite buscar las facturas de acuerdo al folio ingresado-->
+    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cfdi_relacionado">
+      <%= form_tag({ controller: "nota_creditos", action: "consulta_por_cfdi_relacionado" }, {:class=> "form-horizontal", :method => :post}) do %>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+                Filtro por CFDI relacionado:
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-1 col-xs-1">
+          <div style="text-align: right; color: black;">
+            Folio:
+          </div>
+        </div>
+
+        <div class="col-md-2 col-sm-6 col-xs-12">
+          <div class="text-center">
+            <%= text_field_tag :folio_fv, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de la factura..."} do%>
+              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+            <%end%>
+          </div>
+        </div>
+
+        <div class="col-md-1 col-sm-5 col-xs-12">
+          <div class="text-center">
+            <%= submit_tag 'Filtrar por CFDI relacionado', {:class=>"btn btn-info"} %>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+    <!-- Termina buscador por folio de notas de crédito -->
 
  <!-- Este botón despliega el div con las opciones para filtros avanzados -->
     <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
@@ -392,6 +428,16 @@
             }
 
             $("#opciones_filtros_por_cliente").slideToggle("fast");
+          });
+
+          $("#filtro_por_cfdi_relacionado").click(function(e){
+            if( $("#opciones_filtros_por_cfdi_relacionado").is(":visible") ){
+                $(this).html('Filtros por CFDI relacionado <i class="fa fa-sort-down"></i>');
+            }
+            else{
+              $(this).html('Filtros por CFDI relacionado <i class="fa fa-sort-up"></i>');
+            }
+            $("#opciones_filtros_por_cfdi_relacionado").slideToggle("fast");
           });
 
           $("#filtros_avanzados").click(function(e){

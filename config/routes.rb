@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   post 'nota_creditos/consulta_por_fecha'
   post 'nota_creditos/consulta_por_folio'
   post 'nota_creditos/consulta_por_cliente'
+  post 'nota_creditos/consulta_por_cfdi_relacionado'
   post 'nota_creditos/consulta_avanzada'
   get 'nota_creditos/descargar_nota_credito'
   get 'nota_creditos/mostrar_email_nota_credito'
