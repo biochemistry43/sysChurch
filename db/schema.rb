@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180726054250) do
+ActiveRecord::Schema.define(version: 20180726103018) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -323,6 +323,22 @@ ActiveRecord::Schema.define(version: 20180726054250) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
+
+  create_table "factura_canceladas", force: :cascade do |t|
+    t.datetime "fecha_cancelacion"
+    t.string   "ruta_storage"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "user_id"
+    t.integer  "factura_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "factura_canceladas", ["factura_id"], name: "index_factura_canceladas_on_factura_id"
+  add_index "factura_canceladas", ["negocio_id"], name: "index_factura_canceladas_on_negocio_id"
+  add_index "factura_canceladas", ["sucursal_id"], name: "index_factura_canceladas_on_sucursal_id"
+  add_index "factura_canceladas", ["user_id"], name: "index_factura_canceladas_on_user_id"
 
   create_table "factura_forma_pagos", force: :cascade do |t|
     t.string   "cve_forma_pagoSAT"

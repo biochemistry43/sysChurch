@@ -519,9 +519,9 @@ class NotaCreditosController < ApplicationController
       #Se cancela
 
       xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+      #se extrae el acuse de cancelación del xml cancelado
       acuse = xml_cancelado.xpath("//acuse_cancelacion").text
 
-      #se extrae el acuse de cancelación del xml cancelado
       #Se crea un objeto de cloud para descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage

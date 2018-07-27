@@ -232,8 +232,7 @@ class FacturasController < ApplicationController
         end
 
         claveSucursal = current_user.sucursal.clave
-        folio_registroBD = claveSucursal + "FV"
-        folio_registroBD << consecutivo.to_s
+        folio_registroBD = claveSucursal + "FV" + consecutivo.to_s
         serie = claveSucursal + "FV"
 
         forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
@@ -552,15 +551,12 @@ class FacturasController < ApplicationController
   end
 
   def cancelaFacturaVenta2
-    #Primero se procede a cancelar y enviar el acuse de cancelación
-    # Parametros para la conexión al Webservice
     require 'timbrado'
-   
-  
+    #Primero se procede a cancelar y enviar el acuse de cancelación
+    # Parametros para la conexión al Webservice  
     wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
-
     # Parametros para la cancelación del CFDI
     uuid = @factura.folio_fiscal
     rfc = "AAA010101AAA"
@@ -568,8 +564,7 @@ class FacturasController < ApplicationController
     bin_file = File.binread(pfx_path)
     pfx_base64 = Base64.strict_encode64(bin_file)
     pfx_password = "12345678a"
-    #Se cancela
-=begin  
+    #Se cancela 
     xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
     #se extrae el acuse de cancelación del xml cancelado
     acuse = xml_cancelado.xpath("//acuse_cancelacion").text
@@ -577,99 +572,69 @@ class FacturasController < ApplicationController
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
     bucket = storage.bucket "cfdis"
-    #Consultas
-    ruta_storage = @factura.ruta_storage
-    fecha_expedicion=@factura.fecha_expedicion
-    consecutivo =@factura.consecutivo
-    file_name = "#{consecutivo}_#{fecha_expedicion}"
+
+    #Se realizan las consultas para formar los directorios en cloud
+    dir_negocio = current_user.negocio.nombre
+    dir_sucursal = current_user.sucursal.nombre
+    dir_cliente = @factura.cliente.nombre_completo
+
+    #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
+    fecha_cancelacion =  DateTime.parse(Nokogiri::XML(acuse).xpath("//@Fecha").to_s) #Es el único atributo llamado Fecha en el acuse :P
+    dir_dia = fecha_cancelacion.strftime("%d")
+    dir_mes = fecha_cancelacion.strftime("%m")
+    dir_anno = fecha_cancelacion.strftime("%Y")
+
+    ac_fv_id = FacturaCancelada.last ? FacturaCancelada.last.id + 1 : 1
+
+    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{ac_fv_id}_ac_fv"
     #Se guarda el Acuse en la nube
-    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelación.xml"
-    #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
-    @factura.update( estado_factura: "Cancelada") #Pasa de activa a cancelada
+    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
+
     acuse = Nokogiri::XML(acuse)
-    a = File.open("public/#{file_name}_AcuseDeCancelación", "w")
+    a = File.open("public/#{ac_fv_id}_ac_fv", "w")
     a.write (acuse)
     a.close
-=end
-    if @factura.nota_creditos.present?
-      nota_creditos = @factura.nota_creditos
-      nota_creditos.each do |nc|
-        #No tiene sentido cancelar una nota de crédito que esta cancelada osea jelouuu
-        if nc.estado_nc == "Activa"
-          # Parametros para la cancelación del CFDI
-          uuid_nc = nc.folio_fiscal
 
-          xml_cancelado_nc = cancelar_cfdis usuario, contrasena, rfc, uuid_nc, pfx_base64, pfx_password, wsdl_url
-          #se extrae el acuse de cancelación del xml cancelado
-          acuse_nc = xml_cancelado_nc.xpath("//acuse_cancelacion").text
+    #Se guarda el Acuse en la nube
+    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
+    #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
 
-          #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-          #Directorios
-          dir_negocio = current_user.negocio.nombre
-          dir_cliente = @factura.cliente.nombre_completo
-          p fecha_expedicion_ac_nc = xml_cancelado_nc.xpath('//@Fecha')[0]
-          dir_dia = fecha_expedicion_ac_nc.strftime("%d")
-          dir_mes = fecha_expedicion_ac_nc.strftime("%m")
-          dir_anno = fecha_expedicion_ac_nc.strftime("%Y")
+    #Se registra la cancelación de la factura
+    @factura_cancelada = FacturaCancelada.new(fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
 
-          ac_nc_id = current_user.sucursal.nota_credito_candeladas.last ? current_user.sucursal.nota_credito_candeladas.last.id : 1
+    if @factura_cancelada.save
+      current_user.negocio.factura_canceladas << @factura_cancelada
+      current_user.sucursal.factura_canceladas << @factura_cancelada 
+      current_user.factura_canceladas << @factura_cancelada
+      @factura.factura_cancelada = @factura_cancelada
 
-          #Cosas a tener en cuenta antes de indicarle una ruta:
-            #1.-Un negocio puede o no tener sucursales
-          if current_user.sucursal
-            dir_sucursal = current_user.sucursal.nombre
-            ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/"
-          else
-            ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/"
-          end
-          #Se guarda el Acuse en la nube
-          file = bucket.create_file StringIO.new(acuse_nc.to_s), "#{ruta_storage}#{ac_nc_id}_ac_nc.xml"
-          #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
-          nc.update( estado_nc: "Cancelada") #Cada nota de crédito pasa de activa a cancelada
-          acuse = Nokogiri::XML(acuse)
-          #Se guarda el xml
-          a = File.open("public/#{ac_nc_id}_ac_nc", "w")
-          a.write (acuse)
-          a.close
+      @factura.update( estado_factura: "Cancelada") 
 
-          #Se obtiene la plantilla para el envío del acuse de cancelación de cada nota de crédito
-          destinatario = params[:destinatario_ac_nc]
-
-          mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").msg_email
-          asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "ac_nc").asunto_email
-
-          cadena = PlantillaEmail::AsuntoMensaje.new
-          cadena.nombCliente = nc.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+      #Naaa mejor un filtro en las notas de crédito para que cancelen sus comprobantes relacionados...
+=begin
+      #En caso que la factura de venta tenga una o más notas de crédito relacionadas
+      if @factura.factura_nota_creditos.present?
+        #Se cambia el estado de la Factura de activa a Cancelada
+        @factura.update(estado_factura: "Cancelada") 
+ 
+        facturaVentaNotaCredito = @factura.factura_nota_creditos
+        facturaVentaNotaCredito.each do | fv_nc|
+          #Se comprueba que cada nota de credito de la factura no esté relacioonada con otro comprobante de ingreso para proceder a cancelarla
           
-          cadena.fechaNC = nc.fecha_expedicion
-          cadena.numNC = nc.consecutivo
-          cadena.folioNC = nc.folio
-          cadena.totalNC = nc.monto
-          
-          cadena.fechaFact = nc.factura.fecha_expedicion
-          cadena.numFact = nc.factura.consecutivo
-          cadena.folioFact = nc.factura.folio
-          cadena.totalFact = nc.factura.venta.montoVenta
-          
-          cadena.nombNegocio = nc.negocio.nombre 
-          cadena.nombSucursal = nc.sucursal.nombre
-          cadena.emailContacto = nc.sucursal.email
-          cadena.telContacto = nc.sucursal.telefono
-
-          mensaje = cadena.reemplazar_texto(mensaje)
-          asunto = cadena.reemplazar_texto(asunto)
-          
-          comprobantes = {ac_nc: "public/#{ac_nc_id}_ac_nc"}
-
-          FacturasEmail.factura_email(destinatario, mensaje, asunto, comprobantes).deliver_now
-         end
+          notaCredito = NotaCredito.find(fv_nc.nota_credito.id)#.facturas_nota_creditos
+            notaCreditoFacturaVenta = FacturaNotaCredito.where(nota_credito: notaCredito)
+            
+            #Quiere decir que la nota de credito fue realizada únicamente para la factura de venta que se cancelará, por lo q también se debe de cancelar la NC
+            if notaCreditoFacturaVenta.length == 1 
+              cancelar = true
+            end 
+        end
+        #También se cambia el estado de las notas de crédito relacionadas, siempre y cuando éstas no esten asociadas a otros comprobantes de ingreso 
+        notaCredito.update(estado_nc: "Cancelada")
+              FacturaNotaCredito.find_by(factura: @factura, nota_credito: nc).update(estado_nc: "Cancelada")
       end
-      #p "CON NOTA DE CRÉDITOS"
-    else
-      p "SIN NOTAS DE CRÉDITOS"
+=end      
     end
-
-=begin  
 
     #En este caso se toman como para metros ya que la cancelación solo la prodrán realizar los uasurios con privilegios de administrador y sepa q
     #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
@@ -691,10 +656,6 @@ class FacturasController < ApplicationController
         #venta = params[:venta]
         observaciones = params[:observaciones]
         @items = @venta.item_ventas
-        #Changos que hacen estas cosas aquí? jajaja
-        require 'timbrado'
-        require 'nokogiri'
-        require 'byebug'
 
         if @venta.update(:observaciones => observaciones, :status => "Cancelada")
           #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
@@ -721,7 +682,7 @@ class FacturasController < ApplicationController
           end
         end
       end
-=end      
+     
     respond_to do |format| # Agregar mensajes después de las transacciones
       format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
     end
