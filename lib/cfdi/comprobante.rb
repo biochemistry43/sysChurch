@@ -174,7 +174,6 @@ module CFDI
 =end
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.3
-
     def comprobante_to_xml
       ns = {
         'xmlns:cfdi' => "http://www.sat.gob.mx/cfd/3",
@@ -215,11 +214,6 @@ module CFDI
       if @sello
         ns[:Sello] = @sello
       end
-
-      #VAMO A HACER TRAMPITA
-      #if @sello
-       # ns[:Sello] = ""
-      #end
 
       @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
         xml.Comprobante(ns) do
@@ -284,6 +278,8 @@ module CFDI
                             #cant_trasladados_federales += 1 #aumenta siempre y cuando el impuesto sea valido
                             #impuestos_aplicables = true
                           end
+                          #Se 
+
                         i +=1
                         end
                         #arre_ImpPorVenta.each {|x| arrayTrasladados << x }
@@ -317,85 +313,33 @@ module CFDI
               #total_detained.to_i > 0
             #cant_it = @impuestos.traslados.count
             xml.Impuestos(tax_options) do
-                xml.Traslados{
-                resumen_traslados=[] #Para guardar todos los diferentes impuestos trasladados.
-                #Se obtienen los valores del primer impuesto traslado y se almacenan.
-                primer_impuesto_traslado = @impuestos.traslados.first
-                impuesto_it = primer_impuesto_traslado.tax #Impuesto => tax
-                tipoFactor_it = primer_impuesto_traslado.type_factor #TipoFactor => type_factor
-                tasaOCuota_it = primer_impuesto_traslado.rate #TasaOCuota => rate
-                importe_it = primer_impuesto_traslado.import #Importe => import
-                resumen_traslados << [impuesto_it, tipoFactor_it, tasaOCuota_it, importe_it]
-
-                #incluido = nil
-                contador_impuestos = 0
-                indice = 0 #El indice del arreglo resumen_traslados[][] aumenta cuando se deja de comparar un impuesto y se pasa a otro
-                it = 0 #Es un apuntador (No siempre incremente de uno en uno)
-                while it < c_it #Itera todos los impuestos de los conceptos(Excluidos los impuestos vacios)
-                indice_cambio = 0
-                bandera_cambio = true
-                  val = 0
-                  while val < @impuestos.traslados.count
-                    #Se identifican los valores iguales
-                    if @impuestos.traslados[it].tax == @impuestos.traslados[val].tax && @impuestos.traslados[it].rate == @impuestos.traslados[val].rate
-                      #Se suman los importes de los impuestos iguales
-                      #El indice 3 pertenece a los importes de los impuestos
-                      #En tal caso que fueran = sería el mismo impuesto que se quiere comparar por lo que no se toma en cuenta para sumar sus importes
-                      if it != val
-                        resumen_traslados[indice][3] = resumen_traslados[indice][3] + @impuestos.traslados[val].import
-                        p "Igual [#{it},#{val}]"
-                      end
-
-                    else #Se debe de identificar el impuesto diferente más proximo y guardarlo hasta la nueva iteración
-
-                      if bandera_cambio
-                        if val > it
-                          ite = 0
-                          #Se comprueba que no se haya tomado en cuenta el mismo impuesto antes.
-                          while ite < resumen_traslados.length
-
-                            if resumen_traslados[ite][0] == @impuestos.traslados[val].tax && resumen_traslados[ite][2] == @impuestos.traslados[val].rate
-                              incluido = true
-                              bandera_cambio = false
-                            end
-                            ite += 1
-                          end
-
-                          if incluido != true
-                            incluido = false
-                            indice_cambio = val
-                          end
-                        end
-                      end
-
-                    end
-                    val += 1
-                  end #Fin de bucle anidado
-                  #Se agrega un elemento Traslado por cada impuesto estrictamente diferente
-                  xml.Traslado(
-                  Impuesto: resumen_traslados[indice][0],
-                  TipoFactor:resumen_traslados[indice][1],
-                  TasaOCuota: '%.6f' % resumen_traslados[indice][2].round(6),
-                  #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
-                  Importe: '%.2f' % resumen_traslados[indice][3].round(2) #Esto es el importe por cada impuesto diferente
-                  )
-                  if incluido == false
-                    p "entré #{it}"
-                    it += 1  #Si hay un cambio y que éste no se haya tomado en cuanta, se incrementa
-                    indice += 1 #Solo si hay cambio seguirá entrando
-
-                    #SE AGREGA EL NUEVO IMPUESTO DETECTADO
-                    p "Diferente [#{it},#{val}]"
-                    #Se agrega, pero como está dentro del ciclo el indeice hará referencia al anterior hasta que incremente it
-                    resumen_traslados << [@impuestos.traslados[indice_cambio].tax,
-                                          @impuestos.traslados[indice_cambio].type_factor,
-                                          @impuestos.traslados[indice_cambio].rate,
-                                          @impuestos.traslados[indice_cambio].import]
-                  else #Si no se detecto cambio quiere decir que todos los impuestos traslados son identicos
-                    break
-                  end
+              xml.Traslados{
+                array_traslados = []
+                @impuestos.traslados.each do |traslado|
+                  array_traslados << [traslado.tax, traslado.type_factor, traslado.rate, traslado.base, traslado.import]
                 end
+                #Solo se toma en cuenta el impuesto, el tipo factor y la tasa, y todos los repetidos se mandan a volar 
+                traslados_unicos =[]
+                array_traslados.each {|u| traslados_unicos << u.take(3) }
+                traslados_unicos = traslados_unicos.uniq
+
+                traslados_unicos.each do |traslado_unico|
+                  traslado_unico << 0
+                  @impuestos.traslados.each do |traslado|
+                    traslado_unico[3] =  traslado_unico[3] + traslado.import  if traslado_unico[0]  == traslado.tax && traslado_unico[1] == traslado.type_factor && traslado_unico[2] == traslado.rate 
+                  end
+
+                  xml.Traslado(
+                    Impuesto: traslado_unico[0],
+                    TipoFactor:traslado_unico[1],
+                    TasaOCuota: '%.6f' % traslado_unico[2].round(6),
+                    #El valor del campo Importe correspondiente a Traslado debe tener hasta la cantidad de decimales que soporte la moneda.
+                    Importe: '%.2f' % traslado_unico[3].round(2) #Esto es el importe por cada impuesto diferente
+                  )
+                end
+
               }
+           
                 #if @impuestos.detained.count > 0
                 #  xml.Retenciones do
                 #    @impuestos.detained.each do |det|

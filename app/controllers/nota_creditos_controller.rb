@@ -657,12 +657,12 @@ class NotaCreditosController < ApplicationController
       cadena.numNC = @nota_credito.consecutivo
       cadena.folioNC = @nota_credito.folio
       cadena.totalNC = @nota_credito.monto
-=begin      
-      cadena.fechaFact = @nota_credito.factura.fecha_expedicion
-      cadena.numFact = @nota_credito.factura.consecutivo
-      cadena.folioFact = @nota_credito.factura.folio
-      cadena.totalFact = @nota_credito.factura.venta.montoVenta
-=end      
+   
+      cadena.fechaFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.fecha_expedicion
+      cadena.numFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.consecutivo
+      cadena.folioFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.folio
+      cadena.totalFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.venta.montoVenta
+     
       cadena.nombNegocio = @nota_credito.negocio.nombre 
       cadena.nombSucursal = @nota_credito.sucursal.nombre
       cadena.emailContacto = @nota_credito.sucursal.email

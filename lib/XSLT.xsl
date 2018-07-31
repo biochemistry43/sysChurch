@@ -249,12 +249,12 @@
                 </tr><!--3 -->
                 <tr>
                   <!--b) Número de serie del CSD del emisor y del SAT. -->
-                  <th align="right" >Número de serie del Certificado de Sello Digital: </th>
+                  <th align="right" >No. de serie del Certificado de Sello Digital: </th>
                   <td align="left"> <small><xsl:value-of select="@NoCertificado"/></small></td>
                 </tr><!--4 -->
                 <tr>
                   <!-- b) Número de serie del CSD del emisor y del SAT. -->
-                  <th align="right" >Número de serie del Certificado de Sello Digital del SAT: </th>
+                  <th align="right" >No. de serie del Certificado de Sello Digital del SAT: </th>
                   <td align="left"> <small><xsl:value-of select="//@NoCertificadoSAT"/></small></td>
                 </tr><!--5 -->
 
@@ -262,7 +262,7 @@
               </table>
             </td>
 
-            <tr colspan="3"><th >Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
+            <tr colspan="3" ><th >Sello Digital del CFDI:</th></tr> <!--V. Sello digital del contribuyente que lo expide. -->
             <tr colspan="3"><td class="paddingTablas" id="text-transform"><small><xsl:value-of select="@Sello"/></small></td></tr> <!--Debe de ser el mismo que SelloCFD -->
 
             <tr colspan="3"><th >Sello Digital del SAT:</th></tr> <!--IV. El sello digital del SAT.- -->
