@@ -478,7 +478,7 @@ class NotaCreditosController < ApplicationController
         end
 
         ruta_storage_nc = @nota_credito.ruta_storage
-        ruta_storage_fv = @nota_credito.factura.ruta_storage
+        #ruta_storage_fv = @nota_credito.factura.ruta_storage
         #Se descargan los archivos que el usuario haya indicado que se enviarán como archivos adjuntos
         gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
         storage=gcloud.storage
