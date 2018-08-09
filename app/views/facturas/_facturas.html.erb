@@ -417,7 +417,7 @@
               <td style="text-align: center;"><%= factura.folio %></td>
               <td style="text-align: center;"><%= factura.cliente.nombre_completo %></td>
               <td style="text-align: center;"><%= factura.fecha_expedicion %></td>
-              <td style="text-align: center;"><%= factura.venta.montoVenta %></td>
+              <td style="text-align: center;"><%= factura.monto %></td>
 
               <!--if factura.forma_pago.nombre.eql?("efectivo")-->
               <!--<td style="text-align: center;"><factura.venta.montoVenta%></td>
@@ -439,15 +439,12 @@
               <td style="text-align: center;" >
                 <!--Imprimir factura-->
                 <% if can? :read, factura %>
-                <% if factura.estado_factura.eql?("Activa") %>
+    
                   <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                     <i class="fa fa-print"></i>
                   <% end %>
-                <% else %>
-                  <%= button_tag class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', disabled: true do %>
-                    <i class="fa fa-print"></i>
-                  <% end %>
-                <% end %>
+    
+     
 
                 <% unless factura.estado_factura.eql?("Borrador") %>
                   <%= link_to url={action: "enviar_email", controller: "facturas", id: factura}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>

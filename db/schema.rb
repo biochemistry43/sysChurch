@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180726103018) do
+ActiveRecord::Schema.define(version: 20180808211302) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -433,7 +433,7 @@ ActiveRecord::Schema.define(version: 20180726103018) do
     t.string   "ruta_storage"
     t.integer  "factura_forma_pago_id"
     t.string   "cve_metodo_pagoSAT"
-    t.integer  "venta_id"
+    t.decimal  "monto"
   end
 
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
@@ -441,7 +441,6 @@ ActiveRecord::Schema.define(version: 20180726103018) do
   add_index "facturas", ["negocio_id"], name: "index_facturas_on_negocio_id"
   add_index "facturas", ["sucursal_id"], name: "index_facturas_on_sucursal_id"
   add_index "facturas", ["user_id"], name: "index_facturas_on_user_id"
-  add_index "facturas", ["venta_id"], name: "index_facturas_on_venta_id"
 
   create_table "forma_pagos", force: :cascade do |t|
     t.string   "nombre"
@@ -886,8 +885,11 @@ ActiveRecord::Schema.define(version: 20180726103018) do
     t.string   "folio"
     t.integer  "consecutivo"
     t.integer  "factura_global_id"
+    t.integer  "factura_id"
+    t.string   "tipo_factura"
   end
 
   add_index "ventas", ["factura_global_id"], name: "index_ventas_on_factura_global_id"
+  add_index "ventas", ["factura_id"], name: "index_ventas_on_factura_id"
 
 end

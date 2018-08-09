@@ -37,7 +37,7 @@
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Total:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-usd"></i></span>
-                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.venta.montoVenta %>">
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.monto %>">
               </div>
             </div>
         </div> <!-- fin de generales-->
@@ -73,15 +73,24 @@
               </tr>
             </thead>
             <tbody>
-              <% @items.each do |item| %>
-                <tr>
-                  <td> <%= item.cantidad %> </td>
-                  <td> <%= item.articulo.unidad_medida.clave%> - <%= item.articulo.unidad_medida.nombre%>  </td>
-                  <td> <%= item.articulo.clave_prod_serv.clave %> </td>
-                  <td> <%= item.articulo.nombre %> </td>
-                  <td> <%= item.precio_venta %> </td>
-                  <td> <%= item.precio_venta * item.cantidad  %> </td>
-                </tr>
+              <!--Por si despues hay fusión de ventas para una sola factura, se distinguen los articulos que pertenecen a cada venta -->
+              <% ventas = @factura.ventas %>
+              <% ventas.each_with_index do |vta, index| %>
+              <% items = vta.item_ventas %>
+                <% items.each do |item| %>
+                  <% if index % 2 == 0 %>
+                      <tr> 
+                    <% else %>
+                      <tr style="background-color: #E9F4F2;"> 
+                    <% end %>
+                    <td> <%= item.cantidad %> </td>
+                    <td> <%= item.articulo.unidad_medida.clave%> - <%= item.articulo.unidad_medida.nombre%>  </td>
+                    <td> <%= item.articulo.clave_prod_serv.clave %> </td>
+                    <td> <%= item.articulo.nombre %> </td>
+                    <td> <%= item.precio_venta %> </td>
+                    <td> <%= item.precio_venta * item.cantidad  %> </td>
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>

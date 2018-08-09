@@ -5,6 +5,37 @@ class FacturasController < ApplicationController
   before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal ]
   before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
+  # GET /facturas
+  # GET /facturas.json
+  def index
+    @consulta = false
+    @avanzada = false
+
+    if request.get?
+      #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+        #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else
+        #@facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: "fv"}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+      end
+    end
+  end
+
+  # GET /facturas/1
+  # GET /facturas/1.json
+  def show
+
+      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
+      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
+      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
+      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
+      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
+      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
+      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
+  end
+
     # GET /facturas/new
   def new
     @factura = Factura.new
@@ -478,9 +509,9 @@ class FacturasController < ApplicationController
         #1.-Un negocio puede o no tener sucursales
       if current_user.sucursal
         dir_sucursal = current_user.sucursal.nombre
-        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{fv_id}_fv"
+        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{fv_id}_fv"
       else
-        ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{fv_id}_fv"
+        ruta_storage = "#{dir_negocio}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{fv_id}_fv"
       end
 
       #Los comprobantes de almacenan en google cloud
@@ -490,15 +521,12 @@ class FacturasController < ApplicationController
       file = bucket.create_file "public/#{fv_id}_fv.xml", "#{ruta_storage}.xml"
 
 #========================================================================================================================
-=begin
+
       #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
       #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
       folio_fiscal_xml = xml_timbox.xpath('//@UUID')
-      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago])#, monto: @venta.montoVenta)
-
-      @factura.folio_fiscal = folio_fiscal_xml
-      @factura.ruta_storage =  ruta_storage
-
+      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: folio_fiscal_xml, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
+      
       if @factura.save
          current_user.facturas<<@factura
          current_user.negocio.facturas<<@factura
@@ -509,10 +537,12 @@ class FacturasController < ApplicationController
          #Se factura a nombre del cliente que realizó la compra en el negocio.
          cliente_id=@venta.cliente.id
          Cliente.find(cliente_id).facturas << @factura
-         @venta.factura = @factura
-         #@factura.ventas <<  @venta
+         #@venta.factura = @factura
+
+         @venta.update(tipo_factura: "fv")
+         @factura.ventas <<  @venta
       end
-=end
+
 #=======================================================================================================================
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         destinatario_final = params[:destinatario]
@@ -588,7 +618,7 @@ class FacturasController < ApplicationController
 
     ac_fv_id = FacturaCancelada.last ? FacturaCancelada.last.id + 1 : 1
 
-    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{ac_fv_id}_ac_fv"
+    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_fv_id}_ac_fv"
     #Se guarda el Acuse en la nube
     file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
 
@@ -643,46 +673,49 @@ class FacturasController < ApplicationController
     destinatario = params[:destinatario]
     asunto = params[:asunto]
     mensaje = params[:summernote]
-    
-    comprobantes = {xml_Ac: "public/#{file_name}_AcuseDeCancelación"}
+
+    comprobantes = {xml_Ac: "public/#{ac_fv_id}_ac_fv"}
 
     FacturasEmail.factura_email(destinatario, mensaje, asunto, comprobantes).deliver_now
 
-    @venta = @factura.venta #Venta.find_by(factura: @factura.id)
+    ventas = @factura.ventas #Venta.find_by(factura: @factura.id)
     #respond_to do |format|
       #Por si quieren tambien afectar el inventario.
-    
       if params[:rbtn] == "rbtn_factura_venta"
         categoria = params[:cat_cancelacion]
         cat_venta_cancelada = CatVentaCancelada.find(categoria)
         #venta = params[:venta]
         observaciones = params[:observaciones]
-        @items = @venta.item_ventas
 
-        if @venta.update(:observaciones => observaciones, :status => "Cancelada")
-          #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
-          movimiento_caja = @venta.movimiento_caja_sucursal
+        #@items = @venta.item_ventas
+        #Si la factura esta compuesta por varias ventas de un mismo cliente, pero que no sea una factura global... se realiza la devolución de cada una de ellas
+        ventas.each do |vta|
+          if vta.update(:observaciones => observaciones, :status => "Cancelada")
+            #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
+            movimiento_caja = vta.movimiento_caja_sucursal
 
-          #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
-          if movimiento_caja.tipo_pago.eql?("efectivo")
-            caja_sucursal = @venta.caja_sucursal
-            saldo = caja_sucursal.saldo
-            saldoActualizado = saldo - @venta.montoVenta
-            caja_sucursal.saldo = saldoActualizado
-            caja_sucursal.save
-          end
+            #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
+            if movimiento_caja.tipo_pago.eql?("efectivo")
+              caja_sucursal = vta.caja_sucursal
+              saldo = caja_sucursal.saldo
+              saldoActualizado = saldo - vta.montoVenta
+              caja_sucursal.saldo = saldoActualizado
+              caja_sucursal.save
+            end
 
-          #Se elimina el movimiento de caja relacionado con la venta
-          movimiento_caja.destroy
+            #Se elimina el movimiento de caja relacionado con la venta
+            movimiento_caja.destroy
 
-          #Por cada item de venta, se crea un registro de venta cancelada.
-          @venta.item_ventas.each do |itemVenta|
-            ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => @venta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>@venta.negocio, :sucursal=>@venta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
-            ventaCancelada.save
-            itemVenta.status = "Con devoluciones"
-            itemVenta.save
+            #Por cada item de venta, se crea un registro de venta cancelada.
+            vta.item_ventas.each do |itemVenta|
+              ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => vta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>vta.negocio, :sucursal=>vta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
+              ventaCancelada.save
+              itemVenta.status = "Con devoluciones"
+              itemVenta.save
+            end
           end
         end
+      ########
       end
      
     respond_to do |format| # Agregar mensajes después de las transacciones
@@ -736,14 +769,14 @@ class FacturasController < ApplicationController
 
       comprobantes = {}
       if params[:pdf] == "yes"
-        comprobantes[:pdf] = "public/#{@factura.id}.pdf"
+        comprobantes[:pdf] = "public/#{@factura.id}_fv.pdf"
         file_download_storage_xml = bucket.file "#{ruta_storage}.pdf"
-        file_download_storage_xml.download "public/#{@factura.id}.pdf"
+        file_download_storage_xml.download "public/#{@factura.id}_fv.pdf"
       end
       if params[:xml] == "yes"
         comprobantes[:xml] = "public/#{@factura.id}.xml"
         file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-        file_download_storage_xml.download "public/#{@factura.id}.xml"
+        file_download_storage_xml.download "public/#{@factura.id}_fv.xml"
       end
 =begin      
       #Solo es posible si la factura de venta está cancelada
@@ -1031,12 +1064,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1058,12 +1091,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1089,12 +1122,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1115,12 +1148,12 @@ class FacturasController < ApplicationController
             if operador_monto
               @monto_factura = params[:monto_factura]
               unless operador_monto == ".." #Cuando se trata de un rango
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
-                #@facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where("montoVenta #{operador_monto} ?", @monto_factura)) if @monto_factura
+                @facturas = current_user.negocio.facturas.where("monto #{operador_monto} ?", @monto_factura) if @monto_factura
               else
                 @monto_factura2 = params[:monto_factura2]
-                @facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
-                #@facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
+                #@facturas = current_user.negocio.facturas.where(venta_id: current_user.negocio.ventas.where(montoVenta: @monto_factura..@monto_factura2)) if @monto_factura && @monto_factura2
+                @facturas = current_user.negocio.facturas.where(monto: @monto_factura..@monto_factura2) if @monto_factura && @monto_factura2
               end
               #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
               unless @estado_factura.eql?("Todas")
@@ -1173,45 +1206,6 @@ class FacturasController < ApplicationController
         format.js
       end
     end
-  end
-
-
-  # GET /facturas
-  # GET /facturas.json
-  def index
-
-    @consulta = false
-    @avanzada = false
-
-    if request.get?
-      if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-      else
-        @facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-      end
-    end
-  end
-
-  # GET /facturas/1
-  # GET /facturas/1.json
-  def show
-    #ventas = @factura.ventas
-    #if ventas.length == 1 #Cuando se trate de una sola venta facturada
-      #venta = ventas.first
-      venta = @factura.venta
-      @items  = venta.item_ventas
-      #@montoFactura = venta.montoVenta
-      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
-      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
-      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
-      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
-      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
-      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
-      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
-    #elsif ventas.length > 1 #Si es una factura global contiene varias ventas
-
-    #end
-
   end
 
   def devolucion
@@ -1719,13 +1713,13 @@ class FacturasController < ApplicationController
 
       cadena = PlantillaEmail::AsuntoMensaje.new
       cadena.nombCliente = @factura.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
-      cadena.fechaVta = @factura.venta.fechaVenta 
-      cadena.numVta = @factura.venta.consecutivo
-      cadena.folioVta = @factura.venta.folio
+      #cadena.fechaVta = @factura.venta.fechaVenta 
+      #cadena.numVta = @factura.venta.consecutivo
+      #cadena.folioVta = @factura.venta.folio
       cadena.fechaFact = @factura.fecha_expedicion
       cadena.numFact = @factura.consecutivo
       cadena.folioFact = @factura.folio
-      cadena.totalFact = @factura.venta.montoVenta
+      #cadena.totalFact = @factura.venta.montoVenta
       cadena.nombNegocio = @factura.negocio.nombre 
       cadena.nombSucursal = @factura.sucursal.nombre
       cadena.emailContacto = @factura.sucursal.email
