@@ -1,7 +1,8 @@
 module PlantillaEmail 
 	class AsuntoMensaje
 
-		texto_variable = [:nombCliente, :fechaVta, :numVta, :folioVta, :fechaFact, :numFact, :folioFact, :totalFact, :fechaNC, :numNC, :folioNC, :totalNC, :nombNegocio, :nombSucursal, :emailContacto, :telContacto]
+		texto_variable = [:nombCliente, :fechaVta, :numVta, :folioVta, :fechaFact, :numFact, :folioFact, :totalFact, :fechaNC, :numNC, :folioNC, :totalNC, :nombNegocio, :nombSucursal, :emailContacto, :telContacto,
+						  :fechaCancelacion]
 		attr_accessor(*texto_variable)
 		
 		def reemplazar_texto (cadena)
@@ -20,6 +21,9 @@ module PlantillaEmail
 		      cadena = cadena.gsub(/(\{\{Número de la nota de crédito\}\})/, "#{@numNC}") if @numNC
 		      cadena = cadena.gsub(/(\{\{Folio de la nota de crédito\}\})/, "#{@folioNC}") if @folioNC
 		      cadena = cadena.gsub(/(\{\{Total de la nota de crédito\}\})/, "#{@totalNC}") if @totalNC
+
+		      #Se pude usar para la fecha de cancelación de una nota de crédito o una factura
+		      cadena = cadena.gsub(/(\{\{Fecha de cancelación\}\})/, "#{@fechaCancelacion}") if @fechaCancelacion
 
 		      #Dirección y dtos de contacto del changarro
 		      cadena = cadena.gsub(/(\{\{Nombre del negocio\}\})/, "#{@nombNegocio}") if @nombNegocio

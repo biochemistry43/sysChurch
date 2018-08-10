@@ -590,7 +590,7 @@ class FacturasController < ApplicationController
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
     # Parametros para la cancelación del CFDI
-    uuid = @factura.folio_fiscal
+    uuid = ["113D811E-2B32-41F0-8585-FE68C07AB97D"]#@factura.folio_fiscal
     rfc = "AAA010101AAA"
     pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
     bin_file = File.binread(pfx_path)
@@ -778,14 +778,14 @@ class FacturasController < ApplicationController
         file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
         file_download_storage_xml.download "public/#{@factura.id}_fv.xml"
       end
-=begin      
+     
       #Solo es posible si la factura de venta está cancelada
       if params[:xml_Ac] == "yes"
-        comprobantes[:xml_Ac] = "public/#{file_name}_AcuseDeCancelación.xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}_AcuseDeCancelación.xml"
-        file_download_storage_xml.download "public/#{file_name}_AcuseDeCancelación.xml"
+        comprobantes[:xml_Ac] = "public/#{@factura.factura_cancelada.id}_ac_fv.xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
+        file_download_storage_xml.download "public/#{@factura.factura_cancelada.id}_ac_fv.xml"
       end
-=end
+
       #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
       FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
@@ -1712,21 +1712,40 @@ class FacturasController < ApplicationController
       asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
 
       cadena = PlantillaEmail::AsuntoMensaje.new
-      cadena.nombCliente = @factura.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
-      #cadena.fechaVta = @factura.venta.fechaVenta 
-      #cadena.numVta = @factura.venta.consecutivo
-      #cadena.folioVta = @factura.venta.folio
-      cadena.fechaFact = @factura.fecha_expedicion
-      cadena.numFact = @factura.consecutivo
-      cadena.folioFact = @factura.folio
-      #cadena.totalFact = @factura.venta.montoVenta
-      cadena.nombNegocio = @factura.negocio.nombre 
-      cadena.nombSucursal = @factura.sucursal.nombre
-      cadena.emailContacto = @factura.sucursal.email
-      cadena.telContacto = @factura.sucursal.telefono
+      if opc == "fv"
+        cadena.nombCliente = @factura.cliente.nombre_completo 
 
-      @mensaje = cadena.reemplazar_texto(mensaje)
-      @asunto = cadena.reemplazar_texto(asunto)
+        cadena.fechaFact = @factura.fecha_expedicion
+        cadena.numFact = @factura.consecutivo
+        cadena.folioFact = @factura.folio 
+        cadena.totalFact = @factura.monto
+        cadena.nombNegocio = @factura.negocio.nombre 
+        cadena.nombSucursal = @factura.sucursal.nombre 
+        cadena.emailContacto = @factura.sucursal.email 
+        cadena.telContacto = @factura.sucursal.telefono 
+
+        @mensaje = cadena.reemplazar_texto(mensaje)
+        @asunto = cadena.reemplazar_texto(asunto)
+      else
+        #El cliente debe de ser el mismo
+        cadena.nombCliente = @factura.cliente.nombre_completo 
+
+        cadena.fechaCancelacion = @factura.factura_cancelada.fecha_cancelacion
+        #cadena.folioAcuseCancelacion = @factura.factura_cancelada.folio
+
+        cadena.fechaFact = @factura.fecha_expedicion
+        cadena.numFact = @factura.consecutivo
+        cadena.folioFact = @factura.folio 
+        cadena.totalFact = @factura.monto
+
+        cadena.nombNegocio = @factura.factura_cancelada.negocio.nombre
+        cadena.nombSucursal = @factura.factura_cancelada.sucursal.nombre
+        cadena.emailContacto = @factura.factura_cancelada.sucursal.email
+        cadena.telContacto = @factura.factura_cancelada.sucursal.telefono
+
+        @mensaje = cadena.reemplazar_texto(mensaje)
+        @asunto = cadena.reemplazar_texto(asunto)
+      end
 
     end
 
