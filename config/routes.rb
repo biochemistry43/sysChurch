@@ -1,13 +1,5 @@
 Rails.application.routes.draw do
 
-
-  #resources :factura_globals
-  get 'factura_globals/index'
-  post 'factura_globals/filtro_por_fecha'
-  post 'factura_globals/filtro_por_folio'
-  post 'factura_globals/filtro_avanzado'
-
-
   resources :plantillas_emails
   resources :config_comprobantes
   resources :impuestos
@@ -40,6 +32,7 @@ Rails.application.routes.draw do
 
   #resources :facturas
   get 'facturas/index'
+  get 'facturas/index_facturas_globales'
   get 'facturas/show'
   get 'facturas/new'
   get 'facturas/create'

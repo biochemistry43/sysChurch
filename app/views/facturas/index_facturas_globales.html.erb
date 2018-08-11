@@ -2,8 +2,7 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-
-      <h1>Facturas de ventas</h1>
+      <h1>Facturas globales</h1>
     </div>
   </div>
 
@@ -11,11 +10,12 @@
   <hr>
   <div class="row">
     <div class="div-add-button">
-        <%= link_to url={controller: "facturas", action: "buscarVentaFacturar"}, html_options={class: "btn btn-primary active btn-lg btn-add",id: "anadir-factura-btn"} do%>
-          <i class="fa fa-file-text-o"></i> Facturar una venta
+        <%= link_to  url={controller: "facturas", action: "generarFacturaGlobal"}, html_options={class: "btn btn-info btn-lg btn-add"} do %>
+          <i class="fa fa-file-text-o"></i> Generar factura global
         <%end%>
     </div>
   </div> <!--Fin de botón -->
+
   <% if @consulta %>
   <div class="row">
     <div class="col-md-12" style="color: gray;">
@@ -100,7 +100,7 @@
     </button>
     <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
-      <%= form_tag({ controller: "facturas", action: "consulta_facturas", :tipo_factura => "fv"}, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_facturas", :tipo_factura => "fg"}, {:class=> "form-horizontal", :method => :post}) do %>
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
             Búsqueda por fechas:
@@ -147,7 +147,7 @@
     </button>
     <!-- Este form permite buscar las facturas de acuerdo al folio ingresado-->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_folio">
-      <%= form_tag({ controller: "facturas", action: "consulta_por_folio", :tipo_factura => "fv" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_por_folio", :tipo_factura => "fg"}, {:class=> "form-horizontal", :method => :post}) do %>
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
@@ -178,64 +178,6 @@
       <% end %>
     </div>
     <!-- Termina buscador por clave de producto -->
-    <button id="filtro_por_cliente" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
-      Filtros por cliente<i class="fa fa-sort-down"></i>
-    </button>
-    <!-- Permite realizar una busqueda de la facturas de un cliente en específico -->
-    <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_cliente">
-          <!--El filtro por cliente no requiere un parametro, porque solo se utiliza para las facturas de ventas, las globales son para un mismo cliente-->
-      <%= form_tag({ controller: "facturas", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post}) do %>
-        <div class="form_row" style="margin-bottom: 30px;">
-          <div class="btn-group" data-toggle="buttons">
-            <%= label_tag "lbl2", "lbl_rfc", class: "btn btn-primary btn-xs form-check-label" do %>
-              <%= radio_button_tag 'rbtn', "rbtn_rfc",  class:"form-check-input"%> Buscar por R.F.C
-              <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
-            <%end%>
-            <%= label_tag "lbl", "lbl_nombreFiscal", class: "btn btn-primary btn-xs active form-check-label" do %>
-              <%= radio_button_tag 'rbtn', "rbtn_nombreFiscal", class:"form-check-input"%>Buscar por nombre fiscal
-              <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
-            <%end%>
-
-        </div>
-        </div>
-        <div class="item form-group">
-          <div class="col-md-2 col-sm-6 col-xs-12">
-            <div class="text-center">
-              Filtro por cliente:
-            </div>
-          </div>
-          <div class="col-md-1 col-sm-1 col-xs-1">
-            <div style="text-align: right; color: black;">
-              <%= label_tag "lbl", "Nombre:", class: "control-label", id: "leyenda_filtro_cliente"%>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="text-center" id="errorRFC">
-
-              <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
-
-              <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input",id:"rfc_input", :placeholder=>"RFC del cliente..."} do%>
-                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-              <%end%>
-            </div>
-          </div>
-
-          <div class="col-md-1 col-sm-5 col-xs-12">
-            <div class="text-center">
-              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
-            </div>
-          </div>
-        </div>
-
-
-
-      <% end %>
-    </div>
-    <!-- Termina buscador por atributos del cliente-->
-
-
-
-
 
     <!-- Este botón despliega el div con las opciones para filtros avanzados -->
     <button id="filtros_avanzados" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
@@ -244,7 +186,7 @@
 
     <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
     <div id="opciones_filtros_avanzados" class="opciones_filtros row">
-      <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_avanzada", :tipo_factura => "fg"}, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
         <div class="item form-group">
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div style="text-align: left; color: black;">
@@ -273,26 +215,6 @@
           </div>
         </div>
 
-        <div class="item form-group">
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div style="text-align: right;">
-              Cliente:
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div style="text-align: right;">
-              <%= select_tag :opcion_busqueda_cliente, "<option>Buscar por R.F.C.</option><option>Buscar por nombre fiscal</option>".html_safe, :prompt => 'Elija una opción.',  class: 'form-control' %>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
-            <div style="text-align: right;"  id="errorRFC2">
-                <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12 nombre_collection_select", style: "display: none;"})%>
-                <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_text_field", id:"rfc_input2", :placeholder=>"RFC del cliente...", style: "display: none;"} do%>
-                  <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-                <%end%>
-            </div>
-          </div>
-        </div>
         <!--Filtro por monto de venta-->
         <div class="item form-group">
           <div class="col-md-3 col-sm-6 col-xs-12">
@@ -340,7 +262,7 @@
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <div class="text-center">
-                <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+                <!-- collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%-->
               </div>
             </div>
           </div>

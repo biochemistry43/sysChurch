@@ -12,13 +12,31 @@ class FacturasController < ApplicationController
     @avanzada = false
 
     if request.get?
+      @tipo_factura = params[:tipo_factura]
       #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+        @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: params[:tipo_factura]}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
         #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
         #@facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: "fv"}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: params[:tipo_factura]}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+      end
+    end
+  end
+
+  def index_facturas_globales
+    @consulta = false
+    @avanzada = false
+
+    if request.get?
+      @tipo_factura = params[:tipo_factura]
+      #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
+      if can? :create, Negocio
+        @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: params[:tipo_factura]}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
+        #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+      else
+        #@facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: params[:tipo_factura]}, facturas: {created_at: Date.today.beginning_of_month..Date.today.end_of_month}).uniq.order(created_at: :desc)
       end
     end
   end
@@ -26,7 +44,6 @@ class FacturasController < ApplicationController
   # GET /facturas/1
   # GET /facturas/1.json
   def show
-
       @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Púlico general"
       @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
       cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
@@ -902,16 +919,19 @@ class FacturasController < ApplicationController
     if request.post?
       @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
       @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      @tipo_factura = params[:tipo_factura]
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+        @facturas = current_user.negocio.facturas.joins(:ventas).where( ventas: {tipo_factura: @tipo_factura}, facturas: {fecha_expedicion: @fechaInicial..@fechaFinal}).uniq
       else
-        @facturas = current_user.sucursal.facturas.where(fecha_expedicion: @fechaInicial..@fechaFinal)
+        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: @tipo_factura}, facturas: {fecha_expedicion: @fechaInicial..@fechaFinal}).uniq
       end
 
       respond_to do |format|
-        format.html
-        format.json
-        format.js
+        if @tipo_factura == "fv"
+          format.html { render 'index'}
+        elsif @tipo_factura == "fg"
+          format.html { render 'index_facturas_globales'}
+        end
       end
     end
   end
@@ -925,16 +945,26 @@ class FacturasController < ApplicationController
     @por_cliente= false
 
     if request.post?
+      @tipo_factura = params[:tipo_factura]
       @folio_fact = params[:folio_fact]
       @facturas = Factura.find_by folio: @folio_fact
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(folio: @folio_fact)
+        @facturas = current_user.negocio.facturas.joins(:ventas).where( ventas: {tipo_factura: @tipo_factura}, facturas: {folio: @folio_fact}).uniq
       else
-        @facturas = current_user.sucursal.facturas.where(folio: @folio_fact)
+        @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: @tipo_factura}, facturas: {folio: @folio_fact}).uniq
+        #@facturas = current_user.sucursal.facturas.where(folio: @folio_fact)
+      end
+    end
+    respond_to do |format|
+      if @tipo_factura == "fv"
+        format.html { render 'index'}
+      elsif @tipo_factura == "fg"
+        format.html { render 'index_facturas_globales'}
       end
     end
   end
-
+  
+  #Las facturas globales no usan este filtro por que son echas al público en gral.
   def consulta_por_cliente
     @consulta = true
     @fechas = false
@@ -1241,8 +1271,8 @@ class FacturasController < ApplicationController
     #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
     consecutivo = 0
-    if current_user.sucursal.factura_globals.last
-      consecutivo = current_user.sucursal.factura_globals.last.consecutivo
+    if current_user.sucursal.facturas.last
+      consecutivo = current_user.sucursal.facturas.last.consecutivo
       if consecutivo
         consecutivo += 1
       end
@@ -1450,7 +1480,7 @@ class FacturasController < ApplicationController
       #Se obtiene el xml timbrado
       xml_timbox= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
       #Guardo el xml recien timbradito de timbox, calientito
-      fg_id = FacturaGlobal.last ? FacturaGlobal.last.id + 1 : 1
+      fg_id = Factura.last ? Factura.last.id + 1 : 1
       archivo = File.open("public/#{fg_id}_fg.xml", "w")
       archivo.write (xml_timbox)
       archivo.close

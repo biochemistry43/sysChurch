@@ -216,7 +216,7 @@
                     </a>
                     <ul class="nav child_menu" style="display: none">
                       <%if can? :create, Factura%>
-                        <li><%= link_to "Facturas de ventas", facturas_index_path %>
+                        <li><%= link_to "Facturas de ventas", facturas_index_path(:tipo_factura => "fv")%>
                         </li>
                       <%end%>
 
@@ -230,7 +230,7 @@
                         </li>
                       <%end%>
                       <%if can? :create, Factura%>
-                        <li><%= link_to "Facturas globales", factura_globals_index_path %>
+                        <li><%= link_to "Facturas globales", facturas_index_facturas_globales_path(:tipo_factura => "fg")%>
                         </li>
                       <%end%>
                     </ul>
