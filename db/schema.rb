@@ -347,27 +347,6 @@ ActiveRecord::Schema.define(version: 20180808211302) do
     t.datetime "updated_at",           null: false
   end
 
-  create_table "factura_globals", force: :cascade do |t|
-    t.string   "folio"
-    t.date     "fecha_expedicion"
-    t.string   "estado_factura"
-    t.integer  "user_id"
-    t.integer  "negocio_id"
-    t.integer  "sucursal_id"
-    t.string   "folio_fiscal"
-    t.integer  "consecutivo"
-    t.string   "ruta_storage"
-    t.integer  "factura_forma_pago_id"
-    t.decimal  "monto"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "factura_globals", ["factura_forma_pago_id"], name: "index_factura_globals_on_factura_forma_pago_id"
-  add_index "factura_globals", ["negocio_id"], name: "index_factura_globals_on_negocio_id"
-  add_index "factura_globals", ["sucursal_id"], name: "index_factura_globals_on_sucursal_id"
-  add_index "factura_globals", ["user_id"], name: "index_factura_globals_on_user_id"
-
   create_table "factura_nota_creditos", force: :cascade do |t|
     t.integer  "factura_id"
     t.integer  "nota_credito_id"
@@ -873,8 +852,8 @@ ActiveRecord::Schema.define(version: 20180808211302) do
   create_table "ventas", force: :cascade do |t|
     t.date     "fechaVenta"
     t.float    "montoVenta"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
     t.integer  "caja_sucursal_id"
     t.integer  "user_id"
     t.integer  "sucursal_id"
@@ -884,12 +863,10 @@ ActiveRecord::Schema.define(version: 20180808211302) do
     t.text     "observaciones"
     t.string   "folio"
     t.integer  "consecutivo"
-    t.integer  "factura_global_id"
     t.integer  "factura_id"
     t.string   "tipo_factura"
   end
 
-  add_index "ventas", ["factura_global_id"], name: "index_ventas_on_factura_global_id"
   add_index "ventas", ["factura_id"], name: "index_ventas_on_factura_id"
 
 end
