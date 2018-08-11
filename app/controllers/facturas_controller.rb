@@ -954,14 +954,15 @@ class FacturasController < ApplicationController
         @facturas = current_user.sucursal.facturas.joins(:ventas).where( ventas: {tipo_factura: @tipo_factura}, facturas: {folio: @folio_fact}).uniq
         #@facturas = current_user.sucursal.facturas.where(folio: @folio_fact)
       end
-    end
-    respond_to do |format|
-      if @tipo_factura == "fv"
-        format.html { render 'index'}
-      elsif @tipo_factura == "fg"
-        format.html { render 'index_facturas_globales'}
+      respond_to do |format|
+        if @tipo_factura == "fv"
+          format.html { render 'index'}
+        elsif @tipo_factura == "fg"
+          format.html { render 'index_facturas_globales'}
+        end
       end
     end
+
   end
   
   #Las facturas globales no usan este filtro por que son echas al público en gral.
@@ -973,12 +974,11 @@ class FacturasController < ApplicationController
     @por_cliente= true
 
     if request.post?
-
       if can? :create, Negocio
         #@facturas = current_user.negocio.facturas.where(cliente_id: current_user.negocio.clientes.where(id:(DatosFiscalesCliente.find_by rfc: @rfc).cliente_id))
         if params[:rbtn] == "rbtn_rfc"
           #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
-          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
+          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000 pero solo para las realizads a un solo cliente)
           @rfc = params[:rfc]
           datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
           clientes_ids = []
@@ -986,14 +986,14 @@ class FacturasController < ApplicationController
             clientes_ids << dfc.cliente_id
           end
           #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
-          @facturas = current_user.negocio.facturas.where(cliente_id: clientes_ids)
+          @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {cliente_id: clientes_ids}).uniq
           #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
         elsif params[:rbtn] == "rbtn_nombreFiscal"
           #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
           datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
           @nombreFiscal = datos_fiscales_cliente.nombreFiscal
           cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
-          @facturas = current_user.negocio.facturas.where(cliente_id: cliente)
+          @facturas = current_user.negocio.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {cliente_id: cliente}).uniq
         end
 
       else
@@ -1006,15 +1006,22 @@ class FacturasController < ApplicationController
           datos_fiscales_cliente.each do |dfc|
             clientes_ids << dfc.cliente_id
           end
-          @facturas = current_user.sucursal.facturas.where(cliente_id: clientes_ids)
+          @facturas = current_user.sucursal.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {cliente_id: clientes_ids}).uniq
+          #@facturas = current_user.sucursal.facturas.where(cliente_id: clientes_ids)
           #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
         elsif params[:rbtn] == "rbtn_nombreFiscal"
           #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
           datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
           @nombreFiscal = datos_fiscales_cliente.nombreFiscal
           cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
-          @facturas = current_user.sucursal.facturas.where(cliente_id: cliente)
+
+          @facturas = current_user.sucursal.facturas.joins(:ventas).where(ventas: {tipo_factura: "fv"}, facturas: {cliente_id: clientes_ids}).uniq
+          #@facturas = current_user.sucursal.facturas.where(cliente_id: cliente)
         end
+
+      end
+      respond_to do |format|
+        format.html { render 'index'}
       end
     end
   end
