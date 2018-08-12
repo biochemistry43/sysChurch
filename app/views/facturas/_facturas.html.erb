@@ -244,7 +244,7 @@
 
     <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
     <div id="opciones_filtros_avanzados" class="opciones_filtros row">
-      <%= form_tag({ controller: "facturas", action: "consulta_avanzada" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_avanzada", :tipo_factura => "fv"}, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
         <div class="item form-group">
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div style="text-align: left; color: black;">

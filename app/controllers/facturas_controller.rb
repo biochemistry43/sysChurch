@@ -2,7 +2,7 @@ class FacturasController < ApplicationController
   before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi, :cancelaFacturaVenta, :cancelaFacturaVenta2]
   #before_action :set_facturaDeVentas, only: [:show]
   #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
-  before_action :set_sucursales, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal ]
+  before_action :set_sucursales, only: [:index, :index_facturas_globales, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal]
   before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
   # GET /facturas
@@ -1278,8 +1278,8 @@ class FacturasController < ApplicationController
     #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
     #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
     consecutivo = 0
-    if current_user.sucursal.facturas.last
-      consecutivo = current_user.sucursal.facturas.last.consecutivo
+    if current_user.sucursal.facturas.joins(:ventas).where(ventas: {tipo_factura: "fg"}).last
+      consecutivo = current_user.sucursal.facturas.joins(:ventas).where(ventas: {tipo_factura: "fg"}).last.consecutivo
       if consecutivo
         consecutivo += 1
       end
@@ -1487,13 +1487,13 @@ class FacturasController < ApplicationController
       #Se obtiene el xml timbrado
       xml_timbox= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
       #Guardo el xml recien timbradito de timbox, calientito
-      fg_id = Factura.last ? Factura.last.id + 1 : 1
+      fg_id = Factura.joins(:ventas).where(ventas: {tipo_factura: "fg"}).last ? Factura.joins(:ventas).where(ventas: {tipo_factura: "fg"}).last.id + 1 : 1
       archivo = File.open("public/#{fg_id}_fg.xml", "w")
       archivo.write (xml_timbox)
       archivo.close
 
       #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
-      factura.complemento=CFDI::Complemento.new(
+      factura.complemento = CFDI::Complemento.new(
         {
           Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
           uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
@@ -1505,7 +1505,6 @@ class FacturasController < ApplicationController
       )
       #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
       xml_copia = xml_timbox
-
 
 #========================================================================================================================
       #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
@@ -1533,23 +1532,12 @@ class FacturasController < ApplicationController
         tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
         tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
       }
-=begin
-      #Datos de contacto del receptor
-      receptor_id = params[:receptor_id]
-      receptor_final = Cliente.find(receptor_id)
-      unless receptor_final.telefono1.to_s.strip.empty?
-        hash_info[:Telefono1Receptor] =  receptor_final.telefono1
-      else
-        hash_info[:Telefono1Receptor] =  receptor_final.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
-      end
-      hash_info[:EmailReceptor]= receptor_final.email unless receptor_final.email.to_s.strip.empty?
-=end      
+  
       #Solo si tiene más de un establecimiento el negocio...
       if current_user.sucursal
         hash_info[:tel_sucursal] = current_user.sucursal.telefono
         hash_info[:email_sucursal] = current_user.sucursal.email
       end
-
 
       xml_rep_impresa = factura.add_elements_to_xml(hash_info)
       #puts xml_rep_impresa
@@ -1592,61 +1580,47 @@ class FacturasController < ApplicationController
       file = bucket.create_file "public/#{fg_id}_fg.pdf", "#{ruta_storage}.pdf"
       file = bucket.create_file "public/#{fg_id}_fg.xml", "#{ruta_storage}.xml"
 
+      #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado)
+      #Las facturas globales no tiene sentido enviarlas por email por que son a público en general.
 
-        #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado)
-        #Las facturas globales no tiene sentido enviarlas por email por que son a público en general.
+      #8.- SE REGISTRA LA NUEVA FACTURA GLOBAL EN LA BASE DE DATOS
+      #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
+      folio_fiscal_xml = xml_timbox.xpath('//@UUID')
+      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: 'PUE', monto: '%.2f' % (@ventas.map(&:montoVenta).reduce(:+)).round(2), folio_fiscal: folio_fiscal_xml, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
+      
+      if @factura.save
+        current_user.facturas<<@factura
+        current_user.negocio.facturas<<@factura
+        current_user.sucursal.facturas<<@factura
+        #FacturaFormaPago.find_by(cve_forma_pagoSAT: cve_forma_pagoSAT)
+        forma_pago = FacturaFormaPago.find_by(cve_forma_pagoSAT: cve_forma_pagoSAT)
+        forma_pago.facturas << @factura
 
-        #8.- SE SALVA EN LA BASE DE DATOS
-          #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
-          #folio_fiscal_xml = xml_timbrado.xpath('//@UUID')
-          #@factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: "PUE")
-=begin
-          @factura.folio_fiscal = folio_fiscal_xml
-          @factura.ruta_storage =  ruta_storage
+        #A público en general
+        current_user.negocio.clientes.find_by(nombre: "General").facturas << @factura
+        #@venta.factura = @factura
+        @ventas.each do |vta| 
+          vta.update(tipo_factura: "fg")
+          @factura.ventas << vta
+        end
 
-          if @factura.save
-          current_user.facturas<<@factura
-          current_user.negocio.facturas<<@factura
-          current_user.sucursal.facturas<<@factura
-          #Se relaciona con su forma de pago
-          forma_pago = FacturaFormaPago.find_by(cve_forma_pagoSAT: cve_forma_pagoSAT) #Recibir como parametro si hay dos operaciones con montos iguales pero diferente forma de pago
-          forma_pago.facturas << @factura
+        
+        #@factura.ventas <<  @venta
 
-          #Se factura a nombre del cliente que realizó la compra en el negocio.
-          #cliente_id=@@venta.cliente.id
-          #Cliente.find(cliente_id).facturas << @factura
+      end
 
-          #venta_id=@@venta.id
-          #Venta.find(venta_id).factura = @factura #relación uno a uno
-          end
-=end
-          #fecha_expedicion=@factura.fecha_expedicion
-          #file_name="#{consecutivo}_#{fecha_file}_RepresentaciónImpresa.pdf"
-          #file=File.open( "public/#{file_name}")
-
-          #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-          if File::exists?( "public/#{fg_id}_fg.pdf")
-            file=File.open( "public/#{fg_id}_fg.pdf")
-            send_file( file, :disposition => "inline", :type => "application/pdf")
-            #File.delete("public/#{file_name}")
-          else
-            respond_to do |format|
-              format.html { redirect_to action: "index" }
-              flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
-              #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-            end
-          end
-      #puts folio
-    #rescue => e
-      #puts "FECHA: #{hoy}"
-      #puts "NO HAY VENTAS CON ESTA FECHA"
-      #puts e
-      #respond_to do |format|
-      #  format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
-      #end
-    #end
-
-
+      #Se comprueba que el archivo exista en la carpeta publica de la aplicación
+      if File::exists?( "public/#{fg_id}_fg.pdf")
+        file=File.open( "public/#{fg_id}_fg.pdf")
+        send_file( file, :disposition => "inline", :type => "application/pdf")
+        #File.delete("public/#{file_name}")
+      else
+        respond_to do |format|
+          format.html { redirect_to action: "index_facturas_globales" }
+          flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+          #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+        end
+      end
   end
 
   def generarFacturaGlobal
