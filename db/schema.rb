@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180808211302) do
+ActiveRecord::Schema.define(version: 20180813221024) do
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -413,6 +413,7 @@ ActiveRecord::Schema.define(version: 20180808211302) do
     t.integer  "factura_forma_pago_id"
     t.string   "cve_metodo_pagoSAT"
     t.decimal  "monto"
+    t.string   "tipo_factura"
   end
 
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
@@ -864,7 +865,6 @@ ActiveRecord::Schema.define(version: 20180808211302) do
     t.string   "folio"
     t.integer  "consecutivo"
     t.integer  "factura_id"
-    t.string   "tipo_factura"
   end
 
   add_index "ventas", ["factura_id"], name: "index_ventas_on_factura_id"
