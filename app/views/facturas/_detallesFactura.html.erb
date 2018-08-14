@@ -19,6 +19,15 @@
                 <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.fecha_expedicion %>" >
               </div>
             </div>
+            <% if @factura.tipo_factura == "fg" %>
+              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Sucursal:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-institution"></i></span>
+                  <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.sucursal.nombre %>" >
+                </div>
+              </div>
+            <% end %>
             <div class="form-group col-md-10 col-sm-12 col-xs-12">
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Forma de pago:</label>
               <div class="input-group">
@@ -41,7 +50,7 @@
               </div>
             </div>
         </div> <!-- fin de generales-->
-        <% if can? :read, DatosFiscalesCliente%>
+
         <div class="tab-pane" id="receptor">
           <div class="form-group col-md-10 col-sm-12 col-xs-12">
           <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Nombre Fiscal</label>
@@ -58,7 +67,6 @@
             </div>
           </div>
         </div>
-        <%end%>
 
         <div class="tab-pane" id="conceptos">
           <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
@@ -96,9 +104,33 @@
           </table>
         </div>
 
-
-
-
+        <div class="tab-pane" id="ventas">
+          <table id ="tabla_compras" class="table table-striped responsive-utilities jambo_table">
+            <thead>
+              <tr class="headings">
+                <th class="column-title" >Cantidad</th>
+                <th class="column-title" >Unidad (SAT)</th>
+                <th class="column-title" >Clave (SAT) </th>
+                <th class="column-title" >Descripción </th>
+                <th class="column-title" >Precio</th>
+                <th class="column-title" >Importe </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% ventas = @factura.ventas %>
+              <% ventas.each_with_index do |vta|%>
+                <tr> 
+                  <td> 1 </td>
+                  <td> ACT </td>
+                  <td> 01010101 </td>
+                  <td> Venta - <%= vta.folio %> </td>
+                  <td> <%= vta.montoVenta %> </td>
+                  <td> <%= vta.montoVenta %> </td>
+                </tr>
+              <%end%>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -107,10 +139,13 @@
       <!-- Nav tabs -->
       <ul class="nav nav-tabs tabs-right">
         <li class="active"><a href="#generales" data-toggle="tab">Datos Comprobante</a></li>
-        <% if can? :read, DatosFiscalesCliente%>
-        <li><a href="#receptor" data-toggle="tab">Datos Receptor</a></li>
-        <%end%>
-        <li><a href="#conceptos" data-toggle="tab">Conceptos</a></li>
+        <% if @factura.tipo_factura == "fv"%>
+          <li><a href="#receptor" data-toggle="tab">Datos Receptor</a></li>
+          <li><a href="#conceptos" data-toggle="tab">Conceptos</a></li>
+        <% elsif @factura.tipo_factura == "fg" %>
+          <li><a href="#ventas" data-toggle="tab">Ventas</a></li>
+        <% end %>
+
       </ul>
     </div>
 
