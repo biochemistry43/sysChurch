@@ -769,11 +769,6 @@ class FacturasController < ApplicationController
     if request.post?
 
       destinatario_final = params[:destinatario]
-      if @factura.estado_factura == "Activa"
-        plantilla_email("fv")
-      elsif @factura.estado_factura == "Cancelada"
-        plantilla_email("ac_fv")
-      end
 
       ruta_storage = @factura.ruta_storage
       #Se crea un objeto de cloud para poder descargar los comprobantes
@@ -782,27 +777,40 @@ class FacturasController < ApplicationController
       bucket = storage.bucket "cfdis"
 
       comprobantes = {}
+      tipo_factura = @factura.tipo_factura
       if params[:pdf] == "yes"
-        comprobantes[:pdf] = "public/#{@factura.id}_fv.pdf"
+        comprobantes[:pdf] = "public/#{@factura.id}_#{tipo_factura}.pdf"
         file_download_storage_xml = bucket.file "#{ruta_storage}.pdf"
-        file_download_storage_xml.download "public/#{@factura.id}_fv.pdf"
+        file_download_storage_xml.download "public/#{@factura.id}_#{tipo_factura}.pdf"
       end
       if params[:xml] == "yes"
-        comprobantes[:xml] = "public/#{@factura.id}.xml"
+        comprobantes[:xml] = "public/#{@factura.id}_#{tipo_factura}.xml"
         file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-        file_download_storage_xml.download "public/#{@factura.id}_fv.xml"
+        file_download_storage_xml.download "public/#{@factura.id}_#{tipo_factura}.xml"
       end
      
       #Solo es posible si la factura de venta está cancelada
       if params[:xml_Ac] == "yes"
-        comprobantes[:xml_Ac] = "public/#{@factura.factura_cancelada.id}_ac_fv.xml"
+        comprobantes[:xml_Ac] = "public/#{@factura.factura_cancelada.id}_ac_#{tipo_factura}.xml"
         file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-        file_download_storage_xml.download "public/#{@factura.factura_cancelada.id}_ac_fv.xml"
+        file_download_storage_xml.download "public/#{@factura.factura_cancelada.id}_ac_#{tipo_factura}.xml"
       end
 
-      #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
-
+      if @factura.tipo_factura == "fv"
+        if @factura.estado_factura == "Activa"
+          plantilla_email("fv")
+        elsif @factura.estado_factura == "Cancelada"
+          plantilla_email("ac_fv")
+        end
+        FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
+        #Si se tata de una factura global no se envian en automatico a algun cliente, porq son echas al público en general (ya me aburri de decir esto siiempre jaja)
+        #Pero chance y el usurio con privilegios se la quiera enviar al contador o q se yo...
+      else
+        mensaje = params[:summernote]
+        asunto = params[:asunto]
+        FacturasEmail.factura_email(destinatario_final, mensaje, asunto, comprobantes).deliver_now
+      end
+        
       respond_to do |format|
         format.html { redirect_to action: "index"}
         flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
@@ -814,11 +822,13 @@ class FacturasController < ApplicationController
 
   def enviar_email 
     #Solo para las facturas de ventas
-    if @factura.estado_factura == "Activa"
-      plantilla_email("fv")
-    elsif @factura.estado_factura == "Cancelada"
-      plantilla_email("ac_fv")
-    end
+    if @factura.tipo_factura == "fv"
+      if @factura.estado_factura == "Activa"
+        plantilla_email("fv")
+      elsif @factura.estado_factura == "Cancelada"
+        plantilla_email("ac_fv")
+      end
+    end 
   end
 
   def descargar_cfdis

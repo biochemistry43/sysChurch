@@ -419,8 +419,6 @@
                   <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                     <i class="fa fa-print"></i>
                   <% end %>
-    
-     
 
                 <% unless factura.estado_factura.eql?("Borrador") %>
                   <%= link_to url={action: "enviar_email", controller: "facturas", id: factura}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
