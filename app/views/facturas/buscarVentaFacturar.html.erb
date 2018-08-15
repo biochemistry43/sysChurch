@@ -51,7 +51,7 @@
   <div class="row" style="margin-bottom: 30px;">
 
       <!-- Este formulario permite consultar si existe este folio de venta en la base de datos -->
-      <%= form_tag({ controller: "facturas", action: "buscarVentaFacturar" }, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "buscarVentaFacturar" }, {:class=> "form-horizontal", :method => :get}) do %>
         <div class="item form-group">
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div style="text-align: left; color: black;">

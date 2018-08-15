@@ -104,7 +104,7 @@ class FacturasController < ApplicationController
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
   def buscarVentaFacturar
     @consulta = false
-    if request.post?
+    #if request.post?
       #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
       @venta = current_user.negocio.ventas.find_by :folio=>params[:folio]
       #@@venta = @venta
@@ -241,7 +241,7 @@ class FacturasController < ApplicationController
       else #Fin de la comprobación de existencia del folio de la venta del negocio
         @folioVenta = params[:folio]
       end
-    end
+    #end
   end
 
   def facturarVenta

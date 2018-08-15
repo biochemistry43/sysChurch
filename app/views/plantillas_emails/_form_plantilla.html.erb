@@ -46,8 +46,10 @@
   </div>
 <% end %>
 
+<script type="text/javascript">
+  
 <% if @plantillas_email.comprobante == "fv" %>
-  <script type="text/javascript">
+
     /*Editor de texto para los asuntos de las plantillas de email solo permite poner texto variable sin aplicar formato al texto*/
     $('#summernote_asunto').summernote({
         tabsize: 2,
@@ -107,9 +109,9 @@
 
       ]
     });
-  </script>
+
   <% elsif @plantillas_email.comprobante == "ac_fv" %>
-  <script type="text/javascript">
+
     /*Editor de texto para los asuntos de las plantillas de email solo permite poner texto variable sin aplicar formato al texto*/
     $('#summernote_asunto').summernote({
         tabsize: 2,
@@ -169,9 +171,9 @@
 
       ]
     });
-  </script>
+
 <% elsif @plantillas_email.comprobante == "nc" || @plantillas_email.comprobante == "ac_nc" %>
-  <script type="text/javascript">
+ 
     $('#summernote_asunto').summernote({
         tabsize: 2,
         height: 170,
@@ -231,5 +233,5 @@
 
       ]
     });
-  </script>
 <% end %>
+</script>

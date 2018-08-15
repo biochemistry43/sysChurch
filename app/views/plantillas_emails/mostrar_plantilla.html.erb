@@ -28,8 +28,8 @@
       <% end %>
   <hr>
   </div>
-    <div class="row">
-
+    <% if @consulta && @plantillas_email%>
+      <div class="row">
         <div class="panel-body">
           <!--Panel para el encabezado del comprobante-->
           <div class="panel panel-default" >
@@ -43,6 +43,7 @@
           </div>
         </div>
       </div>
+    <% end %>
   </div>
 
 </div>

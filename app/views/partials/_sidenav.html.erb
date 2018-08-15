@@ -304,62 +304,14 @@
                     </a>
                       <ul class="nav child_menu" style="display: none">
                         <!--Se le pasa el id del negocio por que tambien se mostrará la canfiguraución de las factuuras recurrentes y notas de crédito--> <!--<i class="fa fa-envelope"></i> <i class="fa fa-paint-brush"></i> -->
-                        <li><%= link_to controller: "plantillas_emails", action:"show", id: current_user.negocio.plantillas_emails.find_by(comprobante: "fv").id do%>Plantillas de emails<%end%></li>
-                        <li><%= link_to controller: "config_comprobantes", action:"show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fv").id do%>Colores y fuentes<%end%></li>
+                        <li>
+                          <%= link_to 'Plantillas de email', {controller: "plantillas_emails", action: "mostrar_plantilla", comprobante: "fv"}, {:method=>"post"}  %>
 
-                        <!--li>
-                          <a>
-                            <i class="fa fa-list-alt"></i> Catálogos<span class="fa fa-chevron-down"></span>
-                          </a>
-                          <ul class="nav child_menu" style="display:none">
-                            <li>
-                              <%= link_to caja_sucursals_path do%>
-                                Forma de pago
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to caja_sucursals_path do%>
-                                Moneda
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to caja_sucursals_path do%>
-                                Tipo de comprobante
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to metodo_pagos_path do%>
-                                Método de pago
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to uso_cfdis_path do%>
-                                Uso CFDI
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to clave_prod_servs_path do%>
-                                Clave producto
-                              <% end %>
-                            </li>
-                            <li>
-                              <%= link_to unidad_medidas_path do%>
-                                Unidad de medida
-                              <% end %>
-                            </li>
-                            <!--
-                            La clave de Unidad => en el módulo de productos con el nombre de presentaciónes.
-                            El código postal => se encuentra en el módulo de negocios como un atributo.
-                            No hay nesecidad de presentar el catálolgo de regimen fiscal por que solo sera el del negocio
-                           -->
+                          </li>
+                        <li><%= link_to controller: "config_comprobantes", action:"show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fv").id do%>Colores y fuentes<%end%></li>
                           </ul>
 
-                        </li-->
-
-
-
-
-                      </ul>
+                    
                   </li>
 
 

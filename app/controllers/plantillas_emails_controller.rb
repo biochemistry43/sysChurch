@@ -7,9 +7,17 @@ class PlantillasEmailsController < ApplicationController
     @plantillas_emails = PlantillasEmail.all
   end
 
+  def mostrar_plantilla
+    @consulta = true
+
+      @plantillas_email = current_user.negocio.plantillas_emails.find_by(comprobante: params[:comprobante])
+
+  end 
+
   # GET /plantillas_emails/1
   # GET /plantillas_emails/1.json
   def show
+=begin
 
     if @plantillas_email.comprobante == "fv"
       leyenda = "Facturas de ventas"
@@ -21,6 +29,7 @@ class PlantillasEmailsController < ApplicationController
       leyenda = "Acuse de cancelación de notas de crédito"
     end
     @nombre_plantilla = leyenda
+=end
   end
 
   # GET /plantillas_emails/new
@@ -78,6 +87,7 @@ class PlantillasEmailsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_plantillas_email
+
       @plantillas_email = PlantillasEmail.find(params[:id])
     end
 
