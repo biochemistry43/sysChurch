@@ -1,4 +1,4 @@
-<%= form_tag({ controller: "plantillas_emails", action: "update", id: @plantillas_email.id }, {:class=> "form-horizontal", :method => :post, remote: true}) do %>
+<%= form_tag({ controller: "plantillas_emails", action: "update", id: @plantillas_email.id }, {:class=> "form-horizontal", :method => :put, remote: true}) do %>
   <div class="row">
     <div class="col-md-9 col-sm-9 col-xs-12">
 
@@ -36,9 +36,9 @@
 <% end %>
 
 <script type="text/javascript">
+
+   var texto_variable = ['Nombre del cliente','Fecha','Número','Folio','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto']
   
-<% if @plantillas_email.comprobante == "fv" %>
-
     /*Editor de texto para los asuntos de las plantillas de email solo permite poner texto variable sin aplicar formato al texto*/
     $('#summernote_asunto').summernote({
         tabsize: 2,
@@ -49,8 +49,7 @@
         toolbar: false,
         //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
         hint: {
-          mentions: ['Nombre del cliente',
-                     'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
+          mentions: texto_variable,
           match: /\B@(\w*)$/,
           search: function (keyword, callback) {
             callback($.grep(this.mentions, function (item) {
@@ -71,8 +70,7 @@
         lang: 'es-ES', // default: 'en-US'
         //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
         hint: {
-          mentions: ['Nombre del cliente',
-                     'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
+          mentions: texto_variable,
           match: /\B@(\w*)$/,
           search: function (keyword, callback) {
             callback($.grep(this.mentions, function (item) {
@@ -98,129 +96,4 @@
 
       ]
     });
-
-  <% elsif @plantillas_email.comprobante == "ac_fv" %>
-
-    /*Editor de texto para los asuntos de las plantillas de email solo permite poner texto variable sin aplicar formato al texto*/
-    $('#summernote_asunto').summernote({
-        tabsize: 2,
-        minHeight: 40,
-        maxHeight: 40,
-        maxWidth: 200,
-        lang: 'es-ES', // default: 'en-US'
-        toolbar: false,
-        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-        hint: {
-          mentions: ['Nombre del cliente', 'Fecha de cancelación',
-                     'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
-          match: /\B@(\w*)$/,
-          search: function (keyword, callback) {
-            callback($.grep(this.mentions, function (item) {
-              return item.indexOf(keyword) == 0;
-            }));
-          },
-          content: function (item) {
-            return '{{' + item + '}}';
-          }
-        },
-    });
-
-      $('#summernote').summernote({
-        tabsize: 2,
-        minHeight: 170,
-        maxHeight: 170,
-        maxWidth: 200,
-        lang: 'es-ES', // default: 'en-US'
-        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-        hint: {
-          mentions: ['Nombre del cliente', 'Fecha de cancelación',
-                     'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
-          match: /\B@(\w*)$/,
-          search: function (keyword, callback) {
-            callback($.grep(this.mentions, function (item) {
-              return item.indexOf(keyword) == 0;
-            }));
-          },
-          content: function (item) {
-            return '{{' + item + '}}';
-          }
-        },
-
-        toolbar: [
-        // [groupName, [list of button]]
-        ['fontname',['fontname']],
-        ['fontsize', ['fontsize']],
-        ['style', ['bold', 'italic', 'underline', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']],
-        ['insert',['link','table','hr']],
-        ['misc',['undo','redo']]
-
-      ]
-    });
-
-<% elsif @plantillas_email.comprobante == "nc" || @plantillas_email.comprobante == "ac_nc" %>
- 
-    $('#summernote_asunto').summernote({
-        tabsize: 2,
-        height: 170,
-        minHeight: 40,
-        maxHeight: 40,
-        maxWidth: 200,
-        lang: 'es-ES', // default: 'en-US'
-        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-        toolbar:false,
-        hint: {
-          //Para las notas de crédito no hacen falta los datos de la venta, pero si resulta util los datos de la factura asociada.
-          mentions: ['Nombre del cliente','Fecha de la nota de crédito','Número de la nota de crédito','Folio de la nota de crédito', 'Total de la nota de crédito' ,'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
-          match: /\B@(\w*)$/,
-          search: function (keyword, callback) {
-            callback($.grep(this.mentions, function (item) {
-              return item.indexOf(keyword) == 0;
-            }));
-          },
-          content: function (item) {
-            return '{{' + item + '}}';
-          }
-        },
-    });
-      $('#summernote').summernote({
-        tabsize: 2,
-        height: 170,
-        minHeight: 170,
-        maxHeight: 170,
-        maxWidth: 200,
-        lang: 'es-ES', // default: 'en-US'
-        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
-        hint: {
-          //Para las notas de crédito no hacen falta los datos de la venta, pero si resulta util los datos de la factura asociada.
-          mentions: ['Nombre del cliente','Fecha de la nota de crédito','Número de la nota de crédito','Folio de la nota de crédito', 'Total de la nota de crédito' ,'Fecha de la factura','Número de factura','Folio de la factura','Total de la factura','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto'],
-          match: /\B@(\w*)$/,
-          search: function (keyword, callback) {
-            callback($.grep(this.mentions, function (item) {
-              return item.indexOf(keyword) == 0;
-            }));
-          },
-          content: function (item) {
-            return '{{' + item + '}}';
-          }
-        },
-
-        toolbar: [
-        // [groupName, [list of button]]
-        ['fontname',['fontname']],
-        ['fontsize', ['fontsize']],
-        ['style', ['bold', 'italic', 'underline', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']],
-        ['insert',['link','table','hr']],
-        ['misc',['undo','redo']]
-
-      ]
-    });
-<% end %>
 </script>

@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
 
   #resources :plantillas_emails
-  post 'plantillas_emails/update'
-  
+  put 'plantillas_emails/update'
+
   post 'plantillas_emails/mostrar_plantilla'
   get 'plantillas_emails/mostrar_plantilla'
 
