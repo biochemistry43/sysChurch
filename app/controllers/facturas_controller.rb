@@ -593,7 +593,11 @@ class FacturasController < ApplicationController
   def cancelaFacturaVenta
     @categorias_devolucion = current_user.negocio.cat_venta_canceladas
     #Solo se muestran los datos
-    plantilla_email("ac_fv")
+    if @factura.tipo_factura == "fv"
+      plantilla_email("ac_fv")
+    elsif @factura.tipo_factura == "fg"
+      plantilla_email("ac_fg")
+    end
   end
 
   def cancelaFacturaVenta2
@@ -654,43 +658,19 @@ class FacturasController < ApplicationController
       current_user.factura_canceladas << @factura_cancelada
       @factura.factura_cancelada = @factura_cancelada
 
-      @factura.update( estado_factura: "Cancelada") 
-
-      #Naaa mejor un filtro en las notas de crédito para que cancelen sus comprobantes relacionados...
-=begin
-      #En caso que la factura de venta tenga una o más notas de crédito relacionadas
-      if @factura.factura_nota_creditos.present?
-        #Se cambia el estado de la Factura de activa a Cancelada
-        @factura.update(estado_factura: "Cancelada") 
- 
-        facturaVentaNotaCredito = @factura.factura_nota_creditos
-        facturaVentaNotaCredito.each do | fv_nc|
-          #Se comprueba que cada nota de credito de la factura no esté relacioonada con otro comprobante de ingreso para proceder a cancelarla
-          
-          notaCredito = NotaCredito.find(fv_nc.nota_credito.id)#.facturas_nota_creditos
-            notaCreditoFacturaVenta = FacturaNotaCredito.where(nota_credito: notaCredito)
-            
-            #Quiere decir que la nota de credito fue realizada únicamente para la factura de venta que se cancelará, por lo q también se debe de cancelar la NC
-            if notaCreditoFacturaVenta.length == 1 
-              cancelar = true
-            end 
-        end
-        #También se cambia el estado de las notas de crédito relacionadas, siempre y cuando éstas no esten asociadas a otros comprobantes de ingreso 
-        notaCredito.update(estado_nc: "Cancelada")
-              FacturaNotaCredito.find_by(factura: @factura, nota_credito: nc).update(estado_nc: "Cancelada")
-      end
-=end      
+      @factura.update( estado_factura: "Cancelada")      
     end
 
-    #En este caso se toman como para metros ya que la cancelación solo la prodrán realizar los uasurios con privilegios de administrador y sepa q
-    #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
-    destinatario = params[:destinatario]
-    asunto = params[:asunto]
-    mensaje = params[:summernote]
+    if @factura.tipo_factura == "fv"
+      plantilla_email("ac_fv")
+    elsif @factura.tipo_factura == "fg"
+      plantilla_email("ac_fg")
+    end
 
+    destinatario = params[:destinatario]
     comprobantes = {xml_Ac: "public/#{ac_fv_id}_ac_fv"}
 
-    FacturasEmail.factura_email(destinatario, mensaje, asunto, comprobantes).deliver_now
+    FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
 
     ventas = @factura.ventas #Venta.find_by(factura: @factura.id)
     #respond_to do |format|
@@ -802,15 +782,16 @@ class FacturasController < ApplicationController
         elsif @factura.estado_factura == "Cancelada"
           plantilla_email("ac_fv")
         end
-        FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
-        #Si se tata de una factura global no se envian en automatico a algun cliente, porq son echas al público en general (ya me aburri de decir esto siiempre jaja)
-        #Pero chance y el usurio con privilegios se la quiera enviar al contador o q se yo...
-      else
-        mensaje = params[:summernote]
-        asunto = params[:asunto]
-        FacturasEmail.factura_email(destinatario_final, mensaje, asunto, comprobantes).deliver_now
+      elsif @factura.tipo_factura == "fg"
+        if @factura.estado_factura == "Activa"
+          plantilla_email("fg")
+        elsif @factura.estado_factura == "Cancelada"
+          plantilla_email("ac_fg")
+        end
       end
-        
+
+      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
+
       respond_to do |format|
         format.html { redirect_to action: "index"}
         flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
@@ -821,14 +802,21 @@ class FacturasController < ApplicationController
   end
 
   def enviar_email 
-    #Solo para las facturas de ventas
+
     if @factura.tipo_factura == "fv"
       if @factura.estado_factura == "Activa"
         plantilla_email("fv")
       elsif @factura.estado_factura == "Cancelada"
         plantilla_email("ac_fv")
       end
-    end 
+    elsif @factura.tipo_factura == "fg"
+      if @factura.estado_factura == "Activa"
+        plantilla_email("fg")
+      elsif @factura.estado_factura == "Cancelada"
+        plantilla_email("ac_fg")
+      end
+    end
+
   end
 
   def descargar_cfdis
@@ -1580,7 +1568,7 @@ class FacturasController < ApplicationController
       file = bucket.create_file "public/#{fg_id}_fg.xml", "#{ruta_storage}.xml"
 
       #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado)
-      #Las facturas globales no tiene sentido enviarlas por email por que son a público en general.
+      
 
       #8.- SE REGISTRA LA NUEVA FACTURA GLOBAL EN LA BASE DE DATOS
       #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
@@ -1716,7 +1704,8 @@ class FacturasController < ApplicationController
       asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
 
       cadena = PlantillaEmail::AsuntoMensaje.new
-      if opc == "fv"
+
+      if opc == "fv" || opc == "fg"
         cadena.nombCliente = @factura.cliente.nombre_completo 
 
         cadena.fecha = @factura.fecha_expedicion
@@ -1731,23 +1720,25 @@ class FacturasController < ApplicationController
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)
 
-      elsif opc == "ac_fv"
+      #Solo por que estos dos tipos de comprobantes estan dentro de la misma tabla de la BD
+      elsif opc == "ac_fv" || opc == "ac_fg"
         #El cliente debe de ser el mismo
         cadena.nombCliente = @factura.cliente.nombre_completo 
 
-        cadena.fecha = @factura.factura_cancelada.fecha_cancelacion
+        #cadena.fecha = @factura.factura_cancelada.fecha_cancelacion
 
         #cadena.numero = @factura.consecutivo
         #cadena.folio = @factura.folio 
         # cadena.total = @factura.monto
 
-        cadena.nombNegocio = @factura.factura_cancelada.negocio.nombre
-        cadena.nombSucursal = @factura.factura_cancelada.sucursal.nombre
-        cadena.emailContacto = @factura.factura_cancelada.sucursal.email
-        cadena.telContacto = @factura.factura_cancelada.sucursal.telefono
+        #cadena.nombNegocio = @factura.factura_cancelada.negocio.nombre
+        #cadena.nombSucursal = @factura.factura_cancelada.sucursal.nombre
+        #cadena.emailContacto = @factura.factura_cancelada.sucursal.email
+        #cadena.telContacto = @factura.factura_cancelada.sucursal.telefono
 
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)
+
       end
 
     end
