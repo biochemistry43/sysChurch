@@ -67,6 +67,7 @@ class PlantillasEmailsController < ApplicationController
     respond_to do |format|
     if @plantillas_email.update(asunto_email: asunto, msg_email: mensaje)
       format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
+      format.js
     else
       format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
     end
