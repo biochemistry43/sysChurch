@@ -1085,38 +1085,44 @@ class DevolucionesController < ApplicationController
 #========================================================================================================================
         #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-        destinatario = params[:destinatario]
+       
+        #Si la factura es una factura comun y correiente, se usa la plantilla de notas de crédito para las facturas de ventas
+        if @factura.tipo_factura == "fv"
+          destinatario = params[:destinatario]
 
-        mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
-        asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
+          mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").msg_email
+          asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").asunto_email
 
-        cadena = PlantillaEmail::AsuntoMensaje.new
-        factura_relacionada_NC = @itemVenta.venta.factura
-        cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
-        
-        cadena.fechaNC = fecha_expedicion_nc.strftime("%Y-%m-%d")
-        cadena.numNC = consecutivo
-        cadena.folioNC = serie + consecutivo.to_s
-        cadena.totalNC = @cantidad_devuelta.to_f * @itemVenta.precio_venta
+          cadena = PlantillaEmail::AsuntoMensaje.new
+          factura_relacionada_NC = @itemVenta.venta.factura
+          cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
           
-        cadena.fechaFact = @factura.fecha_expedicion
-        cadena.numFact = @factura.consecutivo
-        cadena.folioFact = @factura.folio
-        cadena.totalFact = @factura.venta.montoVenta
+          cadena.fechaNC = fecha_expedicion_nc.strftime("%Y-%m-%d")
+          cadena.numNC = consecutivo
+          cadena.folioNC = serie + consecutivo.to_s
+          cadena.totalNC = @cantidad_devuelta.to_f * @itemVenta.precio_venta
+            
+          cadena.fechaFact = @factura.fecha_expedicion
+          cadena.numFact = @factura.consecutivo
+          cadena.folioFact = @factura.folio
+          cadena.totalFact = @factura.venta.montoVenta
+            
+          cadena.nombNegocio = current_user.negocio.nombre 
+          cadena.nombSucursal = current_user.sucursal.nombre
+          cadena.emailContacto = current_user.sucursal.email
+          cadena.telContacto = current_user.sucursal.telefono
+
+          @mensaje = cadena.reemplazar_texto(mensaje)
+          @asunto = cadena.reemplazar_texto(asunto)
           
-        cadena.nombNegocio = current_user.negocio.nombre 
-        cadena.nombSucursal = current_user.sucursal.nombre
-        cadena.emailContacto = current_user.sucursal.email
-        cadena.telContacto = current_user.sucursal.telefono
+          comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
 
-        @mensaje = cadena.reemplazar_texto(mensaje)
-        @asunto = cadena.reemplazar_texto(asunto)
-        
-        comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
+          FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
+        end #Fin de @venta.factura.present?
 
-        FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
-      end #Fin de @venta.factura.present?
-
+      #En cambio si la factura es una factura global, la plantilla que se es diferente... usada para enviarla probablemente al contador
+      elsif @factura.tipo_factura == "fg"
+      end
       respond_to do |format|
 	    if @devolucion.valid?
 	      if @devolucion.save && @itemVenta.save && @venta.save

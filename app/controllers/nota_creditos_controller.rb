@@ -646,30 +646,43 @@ class NotaCreditosController < ApplicationController
         #ac_fv => acuse de cancelación de factura de venta (Las facturas globales quedan excluidas)
         #ac_nc => acuse de cancelación de nota de crédito
         #nc => nota de crédito
-    
       mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
       asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
-
       cadena = PlantillaEmail::AsuntoMensaje.new
-      cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
       
-      cadena.fechaNC = @nota_credito.fecha_expedicion
-      cadena.numNC = @nota_credito.consecutivo
-      cadena.folioNC = @nota_credito.folio
-      cadena.totalNC = @nota_credito.monto
-   
-      cadena.fechaFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.fecha_expedicion
-      cadena.numFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.consecutivo
-      cadena.folioFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.folio
-      cadena.totalFact = FacturaNotaCredito.find_by(nota_credito: @nota_credito).factura.venta.montoVenta
-     
-      cadena.nombNegocio = @nota_credito.negocio.nombre 
-      cadena.nombSucursal = @nota_credito.sucursal.nombre
-      cadena.emailContacto = @nota_credito.sucursal.email
-      cadena.telContacto = @nota_credito.sucursal.telefono
+      if opc == "nc"
+        cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+        
+        cadena.fecha = @nota_credito.fecha_expedicion
+        cadena.numero = @nota_credito.consecutivo
+        cadena.folio = @nota_credito.folio
+        cadena.total = @nota_credito.monto
+        
+        cadena.nombNegocio = @nota_credito.negocio.nombre 
+        cadena.nombSucursal = @nota_credito.sucursal.nombre
+        cadena.emailContacto = @nota_credito.sucursal.email
+        cadena.telContacto = @nota_credito.sucursal.telefono
 
-      @mensaje = cadena.reemplazar_texto(mensaje)
-      @asunto = cadena.reemplazar_texto(asunto)
+        @mensaje = cadena.reemplazar_texto(mensaje)
+        @asunto = cadena.reemplazar_texto(asunto)
+
+      #Se trata entonces de una cancelación de una nota de crédito y las cancelaciones de las notas de crédito tienen su propia plantilla
+      elsif opc == "ac_nc"
+        cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+        
+        #cadena.fecha = @nota_credito.fecha_expedicion#
+        #cadena.numero = @nota_credito.consecutivo
+        #cadena.folio = @nota_credito.folio
+        #cadena.total = @nota_credito.monto
+        
+        cadena.nombNegocio = @nota_credito.negocio.nombre 
+        cadena.nombSucursal = @nota_credito.sucursal.nombre
+        cadena.emailContacto = @nota_credito.sucursal.email
+        cadena.telContacto = @nota_credito.sucursal.telefono
+
+        @mensaje = cadena.reemplazar_texto(mensaje)
+        @asunto = cadena.reemplazar_texto(asunto)
+      end
 
     end
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -1719,10 +1719,10 @@ class FacturasController < ApplicationController
       if opc == "fv"
         cadena.nombCliente = @factura.cliente.nombre_completo 
 
-        cadena.fechaFact = @factura.fecha_expedicion
-        cadena.numFact = @factura.consecutivo
-        cadena.folioFact = @factura.folio 
-        cadena.totalFact = @factura.monto
+        cadena.fecha = @factura.fecha_expedicion
+        cadena.numero = @factura.consecutivo
+        cadena.folio= @factura.folio 
+        cadena.total= @factura.monto
         cadena.nombNegocio = @factura.negocio.nombre 
         cadena.nombSucursal = @factura.sucursal.nombre 
         cadena.emailContacto = @factura.sucursal.email 
@@ -1730,17 +1730,16 @@ class FacturasController < ApplicationController
 
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)
-      else
+
+      elsif opc == "ac_fv"
         #El cliente debe de ser el mismo
         cadena.nombCliente = @factura.cliente.nombre_completo 
 
-        cadena.fechaCancelacion = @factura.factura_cancelada.fecha_cancelacion
-        #cadena.folioAcuseCancelacion = @factura.factura_cancelada.folio
+        cadena.fecha = @factura.factura_cancelada.fecha_cancelacion
 
-        cadena.fechaFact = @factura.fecha_expedicion
-        cadena.numFact = @factura.consecutivo
-        cadena.folioFact = @factura.folio 
-        cadena.totalFact = @factura.monto
+        #cadena.numero = @factura.consecutivo
+        #cadena.folio = @factura.folio 
+        # cadena.total = @factura.monto
 
         cadena.nombNegocio = @factura.factura_cancelada.negocio.nombre
         cadena.nombSucursal = @factura.factura_cancelada.sucursal.nombre
