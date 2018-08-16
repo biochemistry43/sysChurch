@@ -35,7 +35,7 @@
           <div class="panel panel-default" >
             <!--div class="panel-heading" style="background-color:#A3CC5B; color: white " -->
             <div class="panel-heading">
-              <h3 class="panel-title"> <%= @tipo_comprobante %></h3>
+              <h3 class="panel-title"> <%= @nombre_plantilla %></h3>
             </div>
             <div class="panel-body">
               <%= render "form_plantilla"%>
@@ -47,30 +47,3 @@
   </div>
 
 </div>
-
-<!--
-<p id="notice"> notice ></p>
-
-<p>
-  <strong>Asunto email:</strong>
-   @plantillas_email.asunto_email
-</p>
-
-<p>
-  <strong>Msg email:</strong>
-   @plantillas_email.msg_email
-</p>
-
-<p>
-  <strong>Comprobante:</strong>
-   @plantillas_email.comprobante
-</p>
-
-<p>
-  <strong>Negocio:</strong>
-   @plantillas_email.negocio
-</p>
-
- link_to 'Edit', edit_plantillas_email_path(@plantillas_email)
- link_to 'Back', plantillas_emails_path
--->

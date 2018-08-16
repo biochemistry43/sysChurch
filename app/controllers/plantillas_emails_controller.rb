@@ -1,5 +1,5 @@
 class PlantillasEmailsController < ApplicationController
-  before_action :set_plantillas_email, only: [:show, :edit, :update, :destroy]
+  before_action :set_plantillas_email, only: [:show, :edit, :destroy]
 
   # GET /plantillas_emails
   # GET /plantillas_emails.json
@@ -8,28 +8,27 @@ class PlantillasEmailsController < ApplicationController
   end
 
   def mostrar_plantilla
-    @consulta = true
-
+    @consulta = false
+    if request.post?
+      @consulta =true
       @plantillas_email = current_user.negocio.plantillas_emails.find_by(comprobante: params[:comprobante])
-
+      
+      @tipo_comprobante = case params[:comprobante]
+        when "fv" then "Facturas de ventas"
+        when "fg" then "Facturas globales"
+        when "nc_fv" then "Notas de crédito de facturas de ventas"
+        when "nc_fg" then "Notas de crédito de facturas globales"
+        when "ac_fv" then "Acuses de cancelación de facturas de ventas"
+        when "ac_fg" then "Acuses de cancelación de facturas globales" #o también <> Distinto de
+        when "ac_nc_fv" then "Acuses de cancelación de notas de crédito para facturas de ventas" #o también <> Distinto de
+        when "ac_nc_fg" then "Acuses de cancelación de notas de crédito para facturas globales" #o también <> Distinto de
+      end
+    end
   end 
 
   # GET /plantillas_emails/1
   # GET /plantillas_emails/1.json
   def show
-=begin
-
-    if @plantillas_email.comprobante == "fv"
-      leyenda = "Facturas de ventas"
-    elsif @plantillas_email.comprobante == "nc"
-      leyenda = "Notas de crédito"
-    elsif @plantillas_email.comprobante == "ac_fv"
-      leyenda = "Acuse de cancelación de facturas de ventas"
-    elsif @plantillas_email.comprobante == "ac_nc"
-      leyenda = "Acuse de cancelación de notas de crédito"
-    end
-    @nombre_plantilla = leyenda
-=end
   end
 
   # GET /plantillas_emails/new
@@ -60,6 +59,19 @@ class PlantillasEmailsController < ApplicationController
   # PATCH/PUT /plantillas_emails/1
   # PATCH/PUT /plantillas_emails/1.json
   def update
+    @consulta = true
+    asunto = ActionView::Base.full_sanitizer.sanitize(params[:asunto_email])
+    mensaje = params[:summernote]
+    @plantillas_email = PlantillasEmail.find(params[:id])
+
+    respond_to do |format|
+    if @plantillas_email.update(asunto_email: asunto, msg_email: mensaje)
+      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
+    else
+      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
+    end
+  end
+=begin
     respond_to do |format|
       asunto = ActionView::Base.full_sanitizer.sanitize(params[:asunto_email])
 
@@ -72,6 +84,7 @@ class PlantillasEmailsController < ApplicationController
         format.json { render json: @plantillas_email.errors, status: :unprocessable_entity }
       end
     end
+=end
   end
 
   # DELETE /plantillas_emails/1
@@ -87,7 +100,6 @@ class PlantillasEmailsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_plantillas_email
-
       @plantillas_email = PlantillasEmail.find(params[:id])
     end
 

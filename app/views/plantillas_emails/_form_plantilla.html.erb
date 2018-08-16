@@ -1,19 +1,8 @@
-<%= form_for @plantillas_email do |f| %>
-
-  <% if @plantillas_email.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@plantillas_email.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
-      <ul>
-      <% @plantillas_email.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%= form_tag({ controller: "plantillas_emails", action: "update", id: @plantillas_email.id }, {:class=> "form-horizontal", :method => :post}) do %>
   <div class="row">
-
     <div class="col-md-9 col-sm-9 col-xs-12">
-      <%= f.label :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
+
+      <%= label_tag :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
       <div class="input-group col-md-10 col-sm-10 col-xs-12">
         <!--span class="input-group-addon"><i class="fa fa-pencil"> </i></span-->
         <!-- f.text_field :asunto_email, class:'form-control text_field'-->
@@ -26,10 +15,10 @@
   </div>
   <div class="row">
     <div class="col-md-9 col-sm-9 col-xs-12">
-        <%= f.label :msg_email, "Su mensaje: ", class:"control-label col-md-2 col-sm-2 col-xs-12",  style:"text-align:right;"%>
+        <%= label_tag :msg_email, "Su mensaje: ", class:"control-label col-md-2 col-sm-2 col-xs-12",  style:"text-align:right;"%>
       <div class="input-group col-md-10 col-sm-10 col-xs-12">
          <!--textarea id="summernote" name="summernote"></textarea-->
-        <%= f.text_area :msg_email, class:'form-control text_field', id: "summernote"%>
+        <%= text_area_tag :summernote, @plantillas_email.msg_email , {class:'form-control text_field', id: "summernote"}%>
       </div>
   </div>
   <div class="col-md-3 col-sm-3 col-xs-12" style="color:black;  font-weight: normal; text-align: justify; font-size: 12px;">
@@ -42,7 +31,7 @@
   </div>
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
-    <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
+    <%= submit_tag "Guardar Cambios", :class=>"btn btn-success active" %>
   </div>
 <% end %>
 
