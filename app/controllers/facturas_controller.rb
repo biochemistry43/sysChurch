@@ -634,7 +634,7 @@ class FacturasController < ApplicationController
     dir_mes = fecha_cancelacion.strftime("%m")
     dir_anno = fecha_cancelacion.strftime("%Y")
 
-    ac_id = AcuseCancelacion.last ? AcuseCancelacion.last.id + 1 : 1
+    ac_id = AcuseCancelacion.present? ? AcuseCancelacion.last.id + 1 : 1
 
     ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_id}_ac_#{@factura.tipo_factura}"
     #Se guarda el Acuse en la nube
@@ -675,14 +675,24 @@ class FacturasController < ApplicationController
       folio = "ACFG" + consecutivo.to_s
     end
 
-    @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: "fv", consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
+    @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: @factura.tipo_factura, consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
 
     if @factura_cancelada.save
       current_user.negocio.acuse_cancelacions << @factura_cancelada
       current_user.sucursal.acuse_cancelacions << @factura_cancelada 
       current_user.acuse_cancelacions << @factura_cancelada
-      #Lo guadaré como referencia y no como relación
-      #@factura.acuse_cancelacions <<  @factura_cancelada
+      
+      #No hay relaciones entre la tabla Acuses y los derefrentes comprobantes, en lugar de ello solo hago referencia 
+      if AcuseCancelacion.present?
+        acuse_cancelacion_id = AcuseCancelacion.last.consecutivo
+        if acuse_cancelacion_id
+          acuse_cancelacion_id += 1
+        end
+      else
+        acuse_cancelacion_id = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+      end
+
+      @factura.ref_acuse_cancelacion =  acuse_cancelacion_id
       @factura.update( estado_factura: "Cancelada")      
     end
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<Acuse Fecha="2018-08-16T22:56:10" RfcEmisor="AAA010101AAA">
+<Acuse Fecha="2018-08-16T23:20:26" RfcEmisor="AAA010101AAA">
   <Folios>
-    <UUID>8C366672-968E-4DF9-A089-4FADB0DE27DC</UUID>
+    <UUID>BC326044-500A-46AB-871A-A6649FCB4F20</UUID>
     <EstatusUUID>201</EstatusUUID>
   </Folios>
   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#" Id="SelloSAT">
