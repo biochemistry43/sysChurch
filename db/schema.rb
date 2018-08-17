@@ -11,7 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180813221024) do
+ActiveRecord::Schema.define(version: 20180816110844) do
+
+  create_table "acuse_cancelacions", force: :cascade do |t|
+    t.string   "folio"
+    t.string   "comprobante"
+    t.integer  "consecutivo"
+    t.date     "fecha_cancelacion"
+    t.string   "ruta_storage"
+    t.integer  "negocio_id"
+    t.integer  "sucursal_id"
+    t.integer  "user_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "acuse_cancelacions", ["negocio_id"], name: "index_acuse_cancelacions_on_negocio_id"
+  add_index "acuse_cancelacions", ["sucursal_id"], name: "index_acuse_cancelacions_on_sucursal_id"
+  add_index "acuse_cancelacions", ["user_id"], name: "index_acuse_cancelacions_on_user_id"
 
   create_table "articulos", force: :cascade do |t|
     t.string   "clave"
@@ -414,8 +431,10 @@ ActiveRecord::Schema.define(version: 20180813221024) do
     t.string   "cve_metodo_pagoSAT"
     t.decimal  "monto"
     t.string   "tipo_factura"
+    t.integer  "acuse_cancelacion_id"
   end
 
+  add_index "facturas", ["acuse_cancelacion_id"], name: "index_facturas_on_acuse_cancelacion_id"
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
   add_index "facturas", ["factura_forma_pago_id"], name: "index_facturas_on_factura_forma_pago_id"
   add_index "facturas", ["negocio_id"], name: "index_facturas_on_negocio_id"
@@ -593,8 +612,10 @@ ActiveRecord::Schema.define(version: 20180813221024) do
     t.string   "folio_fiscal"
     t.decimal  "monto"
     t.integer  "factura_forma_pago_id"
+    t.integer  "acuse_cancelacion_id"
   end
 
+  add_index "nota_creditos", ["acuse_cancelacion_id"], name: "index_nota_creditos_on_acuse_cancelacion_id"
   add_index "nota_creditos", ["cliente_id"], name: "index_nota_creditos_on_cliente_id"
   add_index "nota_creditos", ["factura_forma_pago_id"], name: "index_nota_creditos_on_factura_forma_pago_id"
   add_index "nota_creditos", ["factura_id"], name: "index_nota_creditos_on_factura_id"

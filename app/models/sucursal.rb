@@ -1,10 +1,9 @@
 class Sucursal < ActiveRecord::Base
+	has_many :acuse_cancelacions
 	has_many :factura_globals
-	has_many :nota_credito_canceladas
 	has_one :datos_fiscales_sucursal
 	has_many :nota_creditos
 	has_many :facturas
-	has_many :factura_canceladas
 	has_many :factura_recurrentes
 
 	has_many :users

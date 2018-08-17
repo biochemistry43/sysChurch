@@ -1,6 +1,6 @@
 class Factura < ActiveRecord::Base
   has_many :factura_nota_creditos
-  has_one :factura_cancelada
+  #has_one :factura_cancelada
   #has_many :ventas
   has_many :ventas
   belongs_to :user

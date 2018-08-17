@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_cfdi, :cancelaFacturaVenta, :cancelaFacturaVenta2]
+  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelaFacturaVenta, :cancelaFacturaVenta2]
   #before_action :set_facturaDeVentas, only: [:show]
   #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
   before_action :set_sucursales, only: [:index, :index_facturas_globales, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal]
@@ -608,7 +608,7 @@ class FacturasController < ApplicationController
     usuario = "AAA010101000"
     contrasena = "h6584D56fVdBbSmmnB"
     # Parametros para la cancelación del CFDI
-    uuid = ["113D811E-2B32-41F0-8585-FE68C07AB97D"]#@factura.folio_fiscal
+    uuid = @factura.folio_fiscal
     rfc = "AAA010101AAA"
     pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
     bin_file = File.binread(pfx_path)
@@ -634,30 +634,55 @@ class FacturasController < ApplicationController
     dir_mes = fecha_cancelacion.strftime("%m")
     dir_anno = fecha_cancelacion.strftime("%Y")
 
-    ac_fv_id = FacturaCancelada.last ? FacturaCancelada.last.id + 1 : 1
+    ac_id = AcuseCancelacion.last ? AcuseCancelacion.last.id + 1 : 1
 
-    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_fv_id}_ac_fv"
+    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_id}_ac_#{@factura.tipo_factura}"
     #Se guarda el Acuse en la nube
     file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
 
     acuse = Nokogiri::XML(acuse)
-    a = File.open("public/#{ac_fv_id}_ac_fv", "w")
+    a = File.open("public/#{ac_id}_ac_#{@factura.tipo_factura}", "w")
     a.write (acuse)
     a.close
 
     #Se guarda el Acuse en la nube
     file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
-    #Se cambia el estado de la factura de Activa a Cancelada. Las facturas con acciones
+    
+    #El consecutivo para formar el folio del acuse de cancelación
+    if @factura.tipo_factura == "fv"
+      #El consecutivo del acuse de cancelación de la factura de venta
+      consecutivo = 0
+      if current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last
+        consecutivo = current_user.sucursal.acuse_cancelacions.where(tipo_factura: "fv").last.consecutivo
+        if consecutivo
+          consecutivo += 1
+        end
+      else
+        consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+      end
+      folio = "ACFV" + consecutivo.to_s
+    elsif @factura.tipo_factura == "fg"
+      #El consecutivo del acuse de cancelación de la factura global
+      consecutivo = 0
+      if current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last
+        consecutivo = current_user.sucursal.acuse_cancelacions.where(tipo_factura: "fg").last.consecutivo
+        if consecutivo
+          consecutivo += 1
+        end
+      else
+        consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+      end
+      folio = "ACFG" + consecutivo.to_s
+    end
 
-    #Se registra la cancelación de la factura
-    @factura_cancelada = FacturaCancelada.new(fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
+    @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: "fv", consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
 
     if @factura_cancelada.save
-      current_user.negocio.factura_canceladas << @factura_cancelada
-      current_user.sucursal.factura_canceladas << @factura_cancelada 
-      current_user.factura_canceladas << @factura_cancelada
-      @factura.factura_cancelada = @factura_cancelada
-
+      current_user.negocio.acuse_cancelacions << @factura_cancelada
+      current_user.sucursal.acuse_cancelacions << @factura_cancelada 
+      current_user.acuse_cancelacions << @factura_cancelada
+      #Lo guadaré como referencia y no como relación
+      #@factura.acuse_cancelacions <<  @factura_cancelada
       @factura.update( estado_factura: "Cancelada")      
     end
 
@@ -668,7 +693,7 @@ class FacturasController < ApplicationController
     end
 
     destinatario = params[:destinatario]
-    comprobantes = {xml_Ac: "public/#{ac_fv_id}_ac_fv"}
+    comprobantes = {xml_Ac: "public/#{ac_id}_ac_fv"}
 
     FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
 
@@ -837,75 +862,6 @@ class FacturasController < ApplicationController
     )
   end
 
-  def cancelar_cfdi
-    require 'timbrado'
-    require 'nokogiri'
-    require 'byebug'
-
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-
-    bucket = storage.bucket "cfdis"
-
-    fecha_expedicion=@factura.fecha_expedicion
-    consecutivo =@factura.consecutivo
-
-    ruta_storage = @factura.ruta_storage
-
-    #Se descarga el xml
-    file_name = "#{consecutivo}_#{fecha_expedicion}"
-
-    file_download_storage_xml = bucket.file "#{ruta_storage}_CFDI.xml"
-
-    file_download_storage_xml.download "public/#{file_name}"
-
-    #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?("public/#{file_name}")
-      xml_cfdi=File.open("public/#{file_name}")
-      xml_a_cancelar = Nokogiri::XML(xml_cfdi)
-    else
-      respond_to do |format|
-        format.html { redirect_to action: "index" }
-        flash[:notice] = "No se encontró ningun CFDI con el nombre de: #{file_name}"
-        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-      end
-    end
-    # Parametros para la conexión al Webservice
-    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-    usuario = "AAA010101000"
-    contrasena = "h6584D56fVdBbSmmnB"
-
-    # Parametros para la cancelación del CFDI
-    uuid = xml_a_cancelar.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-    uuid = uuid.to_s
-    rfc = "AAA010101AAA"
-    pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
-    bin_file = File.binread(pfx_path)
-    pfx_base64 = Base64.strict_encode64(bin_file)
-    pfx_password = "12345678a"
-
-    xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
-    #se extrae el acuse de cancelación del xml cancelado
-    acuse = xml_cancelado.xpath("//acuse_cancelacion").text
-
-    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}_AcuseDeCancelación.xml"
-    #acuse = StringIO.new(acuse.to_s)
-    #a = File.open("public/#{file_name}_AcuseDeCancelación", "w")
-    #a.write (acuse)
-    #a.close
-
-    estado_factura="Cancelada"
-    @factura.update(:estado_factura=>estado_factura) #Pasa de activa a cancelada
-
-    #xml_acuse = File.open( "public/#{file_name}_AcuseDeCancelación.xml")
-    #Refresca la pagina
-    redirect_to :back
-    #send_file(
-    #  xml_acuse,
-    #  filename: "AcuseDeCancelación.xml",
-    #  type: "application/xml"
-    #)
-  end
   def consulta_facturas
     @consulta = true
     @fechas=true
@@ -1725,16 +1681,15 @@ class FacturasController < ApplicationController
         #El cliente debe de ser el mismo
         cadena.nombCliente = @factura.cliente.nombre_completo 
 
-        #cadena.fecha = @factura.factura_cancelada.fecha_cancelacion
-
+        #cadena.fecha = fecha_cancelacion 
         #cadena.numero = @factura.consecutivo
-        #cadena.folio = @factura.folio 
-        # cadena.total = @factura.monto
+        #cadena.folio = folio
+        #cadena.total = fecha_cancelacion
 
-        #cadena.nombNegocio = @factura.factura_cancelada.negocio.nombre
-        #cadena.nombSucursal = @factura.factura_cancelada.sucursal.nombre
-        #cadena.emailContacto = @factura.factura_cancelada.sucursal.email
-        #cadena.telContacto = @factura.factura_cancelada.sucursal.telefono
+        cadena.nombNegocio = current_user.negocio.nombre
+        cadena.nombSucursal = current_user.sucursal.nombre
+        cadena.emailContacto = current_user.sucursal.email
+        cadena.telContacto = current_user.sucursal.telefono
 
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)

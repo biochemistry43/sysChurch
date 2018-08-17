@@ -1,15 +1,17 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  fecha_cancelacion: 2018-07-23 01:37:01
+  folio: MyString
+  fecha_cancelacion: 2018-08-16
+  ruta_storage: MyString
   negocio_id: 
   sucursal_id: 
   user_id: 
-  nota_credito_id: 
 
 two:
-  fecha_cancelacion: 2018-07-23 01:37:01
+  folio: MyString
+  fecha_cancelacion: 2018-08-16
+  ruta_storage: MyString
   negocio_id: 
   sucursal_id: 
   user_id: 
-  nota_credito_id: 

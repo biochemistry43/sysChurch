@@ -1,14 +1,13 @@
 class Negocio < ActiveRecord::Base
+	has_many :acuse_cancelacions
 	has_many :plantillas_emails
 	has_many :nota_creditos
-	has_many :nota_credito_canceladas
 	has_many :config_comprobantes
 	has_many :impuestos
 	has_many :clave_prod_servs
 	has_many :unidad_medidas
 	has_many :factura_recurrentes
 	has_many :facturas
-	has_many :factura_canceladas
 
 	has_many :factura_globals
 	mount_uploader :logo, FotoProductoUploader
