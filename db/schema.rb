@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180816110844) do
+ActiveRecord::Schema.define(version: 20180817031227) do
 
   create_table "acuse_cancelacions", force: :cascade do |t|
     t.string   "folio"
@@ -341,22 +341,6 @@ ActiveRecord::Schema.define(version: 20180816110844) do
     t.datetime "updated_at",       null: false
   end
 
-  create_table "factura_canceladas", force: :cascade do |t|
-    t.datetime "fecha_cancelacion"
-    t.string   "ruta_storage"
-    t.integer  "negocio_id"
-    t.integer  "sucursal_id"
-    t.integer  "user_id"
-    t.integer  "factura_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
-  add_index "factura_canceladas", ["factura_id"], name: "index_factura_canceladas_on_factura_id"
-  add_index "factura_canceladas", ["negocio_id"], name: "index_factura_canceladas_on_negocio_id"
-  add_index "factura_canceladas", ["sucursal_id"], name: "index_factura_canceladas_on_sucursal_id"
-  add_index "factura_canceladas", ["user_id"], name: "index_factura_canceladas_on_user_id"
-
   create_table "factura_forma_pagos", force: :cascade do |t|
     t.string   "cve_forma_pagoSAT"
     t.string   "nombre_forma_pagoSAT"
@@ -431,10 +415,9 @@ ActiveRecord::Schema.define(version: 20180816110844) do
     t.string   "cve_metodo_pagoSAT"
     t.decimal  "monto"
     t.string   "tipo_factura"
-    t.integer  "acuse_cancelacion_id"
+    t.integer  "ref_acuse_cancelacion"
   end
 
-  add_index "facturas", ["acuse_cancelacion_id"], name: "index_facturas_on_acuse_cancelacion_id"
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
   add_index "facturas", ["factura_forma_pago_id"], name: "index_facturas_on_factura_forma_pago_id"
   add_index "facturas", ["negocio_id"], name: "index_facturas_on_negocio_id"
@@ -580,22 +563,6 @@ ActiveRecord::Schema.define(version: 20180816110844) do
     t.string   "pag_web"
   end
 
-  create_table "nota_credito_canceladas", force: :cascade do |t|
-    t.datetime "fecha_cancelacion"
-    t.string   "ruta_storage"
-    t.integer  "negocio_id"
-    t.integer  "sucursal_id"
-    t.integer  "user_id"
-    t.integer  "nota_credito_id"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-  end
-
-  add_index "nota_credito_canceladas", ["negocio_id"], name: "index_nota_credito_canceladas_on_negocio_id"
-  add_index "nota_credito_canceladas", ["nota_credito_id"], name: "index_nota_credito_canceladas_on_nota_credito_id"
-  add_index "nota_credito_canceladas", ["sucursal_id"], name: "index_nota_credito_canceladas_on_sucursal_id"
-  add_index "nota_credito_canceladas", ["user_id"], name: "index_nota_credito_canceladas_on_user_id"
-
   create_table "nota_creditos", force: :cascade do |t|
     t.string   "folio"
     t.date     "fecha_expedicion"
@@ -612,10 +579,9 @@ ActiveRecord::Schema.define(version: 20180816110844) do
     t.string   "folio_fiscal"
     t.decimal  "monto"
     t.integer  "factura_forma_pago_id"
-    t.integer  "acuse_cancelacion_id"
+    t.integer  "ref_acuse_cancelacion"
   end
 
-  add_index "nota_creditos", ["acuse_cancelacion_id"], name: "index_nota_creditos_on_acuse_cancelacion_id"
   add_index "nota_creditos", ["cliente_id"], name: "index_nota_creditos_on_cliente_id"
   add_index "nota_creditos", ["factura_forma_pago_id"], name: "index_nota_creditos_on_factura_forma_pago_id"
   add_index "nota_creditos", ["factura_id"], name: "index_nota_creditos_on_factura_id"
