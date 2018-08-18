@@ -1,0 +1,64 @@
+<div class="right_col" role="main">
+  <div class="page-title">
+    <div class="title_left">
+      <h1>Personalización de documentos</h1>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <hr>
+    <div class="row">
+    <%= form_tag({ controller: "config_comprobantes", action: "mostrar_plantilla"}, {:class=> "form-horizontal", :method => :post}) do %>
+
+      <div class="col-md-3 col-sm-2 col-xs-1">
+        <div style="color: black;">
+          Plantilla de impresión para:
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-6 col-xs-12">
+        <%= select_tag :comprobante, "<option value='f'>Facturas (ventas, globales y recurrentes)</option><option value='nc'>Notas de crédito</option><option value='ac'>Acuses de cancelación</option>".html_safe, :prompt => 'Seleccione una plantilla', class: 'form-control' %>
+      </div>
+
+      <div class="col-md-2 col-sm-5 col-xs-12">
+        <div class="text-center">
+          <%= submit_tag 'Mostrar plantilla de email', {:class=>"btn btn-primary active"} %>
+        </div>
+      </div>
+
+      <% end %>
+  <hr>
+  </div>
+  <!--div class="row text-center">
+
+        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fv").id }, html_options={class: "btn btn-primary active"} do>
+          <i class=""></i> Facturas de ventas
+        <end>
+        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fg").id }, html_options={class: "btn btn-default active"} do>
+          <i class=""></i> Facturas globales de ventas
+        <end%>
+        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "nc").id }, html_options={class: "btn btn-primary active"} do>
+          <i class=""></i> Notas de crédito
+        <end>
+
+  <hr>
+  </div-->
+  <% if @consulta && @config_comprobante %>
+    <div class="row">
+
+        <div class="panel-body">
+          <!--Panel para el encabezado del comprobante-->
+          <div class="panel panel-default" >
+            <!--div class="panel-heading" style="background-color:#A3CC5B; color: white " -->
+            <div class="panel-heading">
+              <h3 class="panel-title"> <%= @nombre_plantilla %></h3>
+            </div>
+            <div class="panel-body">
+              <%= render "facturaVenta"%>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+</div>

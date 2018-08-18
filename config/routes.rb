@@ -2,9 +2,13 @@ Rails.application.routes.draw do
 
   #resources :plantillas_emails
   put 'plantillas_emails/update'
-
   post 'plantillas_emails/mostrar_plantilla'
   get 'plantillas_emails/mostrar_plantilla'
+
+
+  put 'config_comprobantes/update'
+  post 'config_comprobantes/mostrar_plantilla'
+  get 'config_comprobantes/mostrar_plantilla'
 
   resources :config_comprobantes
   resources :impuestos

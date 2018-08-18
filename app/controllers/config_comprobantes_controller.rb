@@ -8,41 +8,55 @@ class ConfigComprobantesController < ApplicationController
     #@config_comprobantes = ConfigComprobante.all
   end
 
-  # GET /config_comprobantes/1
-  # GET /config_comprobantes/1.json
-  def show
+
+  def mostrar_plantilla
 =begin
     font-family: Arial, Helvetica, sans-serif;
     font-family: "Times New Roman", Times, serif;
     font-family: "Courier New", Courier, monospace;
 =end
-    #Se extraen los valores de la plantilla de impresión
-    @tipo_fuente = @config_comprobante.tipo_fuente
-    if @tipo_fuente == "Arial"
-      @categoria_fuente = "sans-serif"
-      @opc_fuente = "Helvetica"
-    elsif @tipo_fuente == "Courier New"
-      @categoria_fuente = "monospace"
-      @opc_fuente = "Courier"
-    elsif @tipo_fuente == "Times New Roman"
-      @categoria_fuente = "serif"
-      @opc_fuente = "Times"
-    end
 
-    @tam_fuente = @config_comprobante.tam_fuente
-    @color_fondo = @config_comprobante.color_fondo
-    @color_titulos = @config_comprobante.color_titulos
-    @tipo_fuente = @config_comprobante.tipo_fuente
-    @color_banda = @config_comprobante.color_banda
+    @consulta = false
 
-    if @config_comprobante.comprobante == "fv"
-      leyenda = "Facturas de ventas"
-    elsif @config_comprobante.comprobante == "nc"
-      leyenda = "Notas de crédito"
-    elsif @config_comprobante.comprobante == "fg"
-      leyenda = "Facturas globales de ventas"
+    if request.post?
+      @consulta =true
+      @config_comprobante = current_user.negocio.config_comprobantes.find_by(comprobante: params[:comprobante])
+     
+      #Se extraen los valores de la plantilla de impresión
+      @tipo_fuente = @config_comprobante.tipo_fuente
+      if @tipo_fuente == "Arial"
+        @categoria_fuente = "sans-serif"
+        @opc_fuente = "Helvetica"
+      elsif @tipo_fuente == "Courier New"
+        @categoria_fuente = "monospace"
+        @opc_fuente = "Courier"
+      elsif @tipo_fuente == "Times New Roman"
+        @categoria_fuente = "serif"
+        @opc_fuente = "Times"
+      end
+
+      @tam_fuente = @config_comprobante.tam_fuente
+      @color_fondo = @config_comprobante.color_fondo
+      @color_titulos = @config_comprobante.color_titulos
+      @tipo_fuente = @config_comprobante.tipo_fuente
+      @color_banda = @config_comprobante.color_banda
+
+      if @config_comprobante.comprobante == "fv"
+        leyenda = "Facturas de ventas"
+      elsif @config_comprobante.comprobante == "nc"
+        leyenda = "Notas de crédito"
+      elsif @config_comprobante.comprobante == "fg"
+        leyenda = "Facturas globales de ventas"
+      end
+      @nombre_plantilla = leyenda
     end
-    @nombre_plantilla = leyenda
+  end 
+
+
+  # GET /config_comprobantes/1
+  # GET /config_comprobantes/1.json
+  def show
+
   end
 
   # GET /config_comprobantes/new
