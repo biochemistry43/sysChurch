@@ -814,33 +814,32 @@ class DevolucionesController < ApplicationController
           total: @cantidad_devuelta.to_f * @itemVenta.precio_venta#'%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
         })
 
-        #Dirección del negocio(La misma que la de la factura)
         #La dirección fiscal ya no es requerida por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
         #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor para las NC
         @factura = @venta.factura
         domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-          calle: @factura.negocio.datos_fiscales_negocio.calle,
-          noExterior: @factura.negocio.datos_fiscales_negocio.numExterior,
-          noInterior: @factura.negocio.datos_fiscales_negocio.numInterior,
-          colonia: @factura.negocio.datos_fiscales_negocio.colonia,
-          localidad: @factura.negocio.datos_fiscales_negocio.localidad,
-          referencia: @factura.negocio.datos_fiscales_negocio.referencia,
-          municipio: @factura.negocio.datos_fiscales_negocio.municipio,
-          estado: @factura.negocio.datos_fiscales_negocio.estado,
-          codigoPostal: @factura.negocio.datos_fiscales_negocio.codigo_postal
+          calle: current_user.negocio.datos_fiscales_negocio.calle,
+          noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
+          noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
+          colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+          localidad: current_user.negocio.datos_fiscales_negocio.localidad,
+          referencia: current_user.negocio.datos_fiscales_negocio.referencia,
+          municipio: current_user.negocio.datos_fiscales_negocio.municipio,
+          estado: current_user.negocio.datos_fiscales_negocio.estado,
+          codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
           })
         #Dirección de la sucursal(es la misma que la de la factura)
         if  current_user.sucursal
           expedidoEn= CFDI::DatosComunes::Domicilio.new({
-            calle: @factura.sucursal.datos_fiscales_sucursal.calle,
-            noExterior: @factura.sucursal.datos_fiscales_sucursal.numExt,
-            noInterior: @factura.sucursal.datos_fiscales_sucursal.numInt,
-            colonia: @factura.sucursal.datos_fiscales_sucursal.colonia,
-            localidad: @factura.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
-            referencia: @factura.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
-            municipio: @factura.sucursal.datos_fiscales_sucursal.municipio,
-            estado: @factura.sucursal.datos_fiscales_sucursal.estado,
-            codigoPostal: @factura.sucursal.datos_fiscales_sucursal.codigo_postal,
+            calle: current_user.sucursal.datos_fiscales_sucursal.calle,
+            noExterior: current_user.sucursal.datos_fiscales_sucursal.numExt,
+            noInterior: current_user.sucursal.datos_fiscales_sucursal.numInt,
+            colonia: current_user.sucursal.datos_fiscales_sucursal.colonia,
+            localidad: current_user.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
+            referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
+            municipio: current_user.sucursal.datos_fiscales_sucursal.municipio,
+            estado: current_user.sucursal.datos_fiscales_sucursal.estado,
+            codigoPostal: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
           })
         else
           expedidoEn= CFDI::DatosComunes::Domicilio.new({})

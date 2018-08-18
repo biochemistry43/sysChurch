@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180817031227) do
+ActiveRecord::Schema.define(version: 20180817050704) do
 
   create_table "acuse_cancelacions", force: :cascade do |t|
     t.string   "folio"
@@ -580,6 +580,7 @@ ActiveRecord::Schema.define(version: 20180817031227) do
     t.decimal  "monto"
     t.integer  "factura_forma_pago_id"
     t.integer  "ref_acuse_cancelacion"
+    t.string   "tipo_factura"
   end
 
   add_index "nota_creditos", ["cliente_id"], name: "index_nota_creditos_on_cliente_id"
