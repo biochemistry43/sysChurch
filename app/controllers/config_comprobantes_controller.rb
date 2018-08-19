@@ -10,11 +10,6 @@ class ConfigComprobantesController < ApplicationController
 
 
   def mostrar_plantilla
-=begin
-    font-family: Arial, Helvetica, sans-serif;
-    font-family: "Times New Roman", Times, serif;
-    font-family: "Courier New", Courier, monospace;
-=end
 
     @consulta = false
 

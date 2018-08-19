@@ -60,9 +60,13 @@ class PlantillasEmailsController < ApplicationController
   # PATCH/PUT /plantillas_emails/1.json
   def update
     @consulta = true
-    asunto = ActionView::Base.full_sanitizer.sanitize(params[:asunto_email])
-    mensaje = params[:summernote]
-    @plantillas_email = PlantillasEmail.find(params[:id])
+
+    asunto = plantillas_email_params[:asunto_email]
+
+    asunto = ActionView::Base.full_sanitizer.sanitize(asunto)
+    mensaje = plantillas_email_params[:summernote]
+
+    @plantillas_email = PlantillasEmail.find(plantillas_email_params[:id])
 
     respond_to do |format|
     if @plantillas_email.update(asunto_email: asunto, msg_email: mensaje)
@@ -106,6 +110,6 @@ class PlantillasEmailsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def plantillas_email_params
-      params.require(:plantillas_email).permit(:asunto_email, :msg_email, :comprobante, :negocio_id)
+      params.permit(:asunto_email, :summernote, :id)
     end
 end
