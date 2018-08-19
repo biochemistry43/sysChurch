@@ -24,29 +24,18 @@ class ConfigComprobantesController < ApplicationController
      
       #Se extraen los valores de la plantilla de impresión
       @tipo_fuente = @config_comprobante.tipo_fuente
-      if @tipo_fuente == "Arial"
-        @categoria_fuente = "sans-serif"
-        @opc_fuente = "Helvetica"
-      elsif @tipo_fuente == "Courier New"
-        @categoria_fuente = "monospace"
-        @opc_fuente = "Courier"
-      elsif @tipo_fuente == "Times New Roman"
-        @categoria_fuente = "serif"
-        @opc_fuente = "Times"
-      end
-
       @tam_fuente = @config_comprobante.tam_fuente
       @color_fondo = @config_comprobante.color_fondo
       @color_titulos = @config_comprobante.color_titulos
       @tipo_fuente = @config_comprobante.tipo_fuente
       @color_banda = @config_comprobante.color_banda
 
-      if @config_comprobante.comprobante == "fv"
-        leyenda = "Facturas de ventas"
+      if @config_comprobante.comprobante == "f"
+        leyenda = "Facturas"
       elsif @config_comprobante.comprobante == "nc"
         leyenda = "Notas de crédito"
-      elsif @config_comprobante.comprobante == "fg"
-        leyenda = "Facturas globales de ventas"
+      elsif @config_comprobante.comprobante == "ac"
+        leyenda = "Acuses de cancelación"
       end
       @nombre_plantilla = leyenda
     end
@@ -88,12 +77,23 @@ class ConfigComprobantesController < ApplicationController
   # PATCH/PUT /config_comprobantes/1.json
   def update
 
+    @consulta = true
+
     color_fondo = params[:color_fondo]
     color_banda = params[:color_banda]
     color_titulos = params[:color_titulos]
     tipo_fuente = params[:tipo_fuente]
     tam_fuente = params[:tam_fuente]
 
+    respond_to do |format|
+    if @config_comprobante.update(tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo: color_fondo, color_titulos:color_titulos, color_banda:color_banda )
+      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
+      format.js
+    else
+      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
+    end
+  end
+=begin
     #@config_comprobante = ConfigComprobante.find_by(negocio_id: current_user.negocio.id)
     respond_to do |format|
       #if @config_comprobante.update(config_comprobante_params)
@@ -105,6 +105,7 @@ class ConfigComprobantesController < ApplicationController
         format.json { render json: @config_comprobante.errors, status: :unprocessable_entity }
       end
     end
+=end
   end
 
   # DELETE /config_comprobantes/1

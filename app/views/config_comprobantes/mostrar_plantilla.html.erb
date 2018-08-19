@@ -28,20 +28,7 @@
       <% end %>
   <hr>
   </div>
-  <!--div class="row text-center">
 
-        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fv").id }, html_options={class: "btn btn-primary active"} do>
-          <i class=""></i> Facturas de ventas
-        <end>
-        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "fg").id }, html_options={class: "btn btn-default active"} do>
-          <i class=""></i> Facturas globales de ventas
-        <end%>
-        < link_to url={controller: "config_comprobantes", action: "show", id: current_user.negocio.config_comprobantes.find_by(comprobante: "nc").id }, html_options={class: "btn btn-primary active"} do>
-          <i class=""></i> Notas de crédito
-        <end>
-
-  <hr>
-  </div-->
   <% if @consulta && @config_comprobante %>
     <div class="row">
 
@@ -52,7 +39,7 @@
             <div class="panel-heading">
               <h3 class="panel-title"> <%= @nombre_plantilla %></h3>
             </div>
-            <div class="panel-body">
+            <div class="panel-body",  id="update">
               <%= render "facturaVenta"%>
             </div>
           </div>

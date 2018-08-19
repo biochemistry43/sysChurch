@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get 'config_comprobantes/mostrar_plantilla'
 
   resources :config_comprobantes
+
   resources :impuestos
   #resources :nota_creditos
   get 'nota_creditos/index'
