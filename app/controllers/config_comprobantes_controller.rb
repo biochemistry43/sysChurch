@@ -74,14 +74,23 @@ class ConfigComprobantesController < ApplicationController
 
     @consulta = true
 
-    color_fondo = params[:color_fondo]
-    color_banda = params[:color_banda]
-    color_titulos = params[:color_titulos]
-    tipo_fuente = params[:tipo_fuente]
-    tam_fuente = params[:tam_fuente]
+    @color_fondo = params[:color_fondo]
+    @color_banda = params[:color_banda]
+    @color_titulos = params[:color_titulos]
+    @tipo_fuente = params[:tipo_fuente]
+    @tam_fuente = params[:tam_fuente]
+
+    if @config_comprobante.comprobante == "f"
+      leyenda = "Facturas"
+    elsif @config_comprobante.comprobante == "nc"
+      leyenda = "Notas de crédito"
+    elsif @config_comprobante.comprobante == "ac"
+      leyenda = "Acuses de cancelación"
+    end
+    @nombre_plantilla = leyenda
 
     respond_to do |format|
-    if @config_comprobante.update(tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo: color_fondo, color_titulos:color_titulos, color_banda:color_banda )
+    if @config_comprobante.update(tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo: @color_fondo, color_titulos: @color_titulos, color_banda: @color_banda )
       format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
       format.js
     else
@@ -123,6 +132,7 @@ class ConfigComprobantesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def config_comprobante_params
-      params.require(:config_comprobante).permit(:comprobante, :tipo_fuente, :tam_fuente, :color_fondo, :color_titulos, :color_banda, :negocio_id)
+      params.permit(:comprobante, :tipo_fuente, :tam_fuente, :color_fondo, :color_titulos, :color_banda, :negocio_id)
+      #params.require(:config_comprobante).permit(:comprobante, :tipo_fuente, :tam_fuente, :color_fondo, :color_titulos, :color_banda, :negocio_id)
     end
 end
