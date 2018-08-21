@@ -810,7 +810,7 @@ class DevolucionesController < ApplicationController
           FormaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
           #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
           metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
-          lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+          lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
           total: @cantidad_devuelta.to_f * @itemVenta.precio_venta#'%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
         })
 

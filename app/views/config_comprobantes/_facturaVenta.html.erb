@@ -42,9 +42,10 @@
         <%= color_field_tag 'color_titulos', @color_titulos, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_titulos"%>
     </div>
   </div>
+  <hr>
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
-
+    <%= f.submit "Previsualizar en PDF", :class=>"btn btn-default" %>
     <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
   </div>
 </div>
@@ -52,6 +53,6 @@
 <% end %>
 
 <div class="col-md-8 col-sm-8 col-xs-12">
-  <embed src="http://www.it.uc3m.es/spickin/docencia/comsoft/presentations/spanish/doc/Ruby.pdf" type="application/pdf" width="100%" height="300px"></embed>
+  <embed src="/Tiendita 123.pdf" type="application/pdf" width="100%" height="300px"></embed>
   
 </div>

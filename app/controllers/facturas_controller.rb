@@ -298,7 +298,7 @@ class FacturasController < ApplicationController
             FormaPago: @factura.factura_forma_pago.cve_forma_pagoSAT,
             #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
             metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
-            lugarExpedicion: current_user.sucursal.codigo_postal#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+            lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal
             #total: @cantidad_devuelta.to_f * @itemVenta.precio_venta
           })
 
@@ -1628,7 +1628,7 @@ class FacturasController < ApplicationController
         #Método de pago: SIEMPRE debe ser la clave “PUE” (Pago en una sola exhibición); en el caso de que se venda a parcialidades o diferido, se deberá proceder a emitir el CFDI con complemento de pagos, detallando los datos del cliente que los realiza; en pocas palabras, no esta permitido emitir un CFDI global con ventas a parcialidades o diferidas.
         metodoDePago: 'PUE',
         #El código postal de la matriz o sucursal
-        lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
+        lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
         total: '%.2f' % (@ventas.map(&:montoVenta).reduce(:+)).round(2)#96.56
         #Descuento:0 #DESCUENTO RAPPEL
       })
