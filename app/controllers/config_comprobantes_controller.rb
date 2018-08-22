@@ -104,6 +104,20 @@ class ConfigComprobantesController < ApplicationController
         format.js
       end
 
+    elsif params[:commit] == "Configuración recomendada"
+
+      @color_fondo = "#323639"
+      @color_banda = "#525659"
+      @color_titulos = "#ffffff"
+      @tipo_fuente = "Times New Roman, Times, serif"
+      @tam_fuente = "Normal"
+
+      set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
+
+      respond_to do |format|
+        format.html { redirect_to action: "mostrar_plantilla", notice: 'Se ha establecido la configuración recomendada para la plantilla de impresión seleccionada!' }
+        format.js
+      end
 
     elsif params[:commit] == "Guardar cambios"
 
