@@ -7,25 +7,6 @@ module CFDI
     @cadenaOriginal = [:totalDescuento,:ClaveProdServ, :NoIdentificacion, :Cantidad, :ClaveUnidad, :Unidad, :Descripcion,  :ValorUnitario, :Importe, :Descuento]
     # @private
     attr_accessor *@cadenaOriginal
-=begin
-    def initialize (d=0.00)
-      self.Descuento= d
-    end
-=end
-    # @private
-    def cadena_original #aquí se establece el orden de la cadena original! que engañado eh vivido jaja
-      return [
-        @ClaveProdServ,
-        @NoIdentificacion,
-        @Cantidad,
-        @ClaveUnidad,
-        @Unidad,
-        @Descripcion,
-        self.ValorUnitario,
-        self.Importe,
-        @Descuento
-      ]
-    end
 
     def Descuento= (porcentaje)# 50 %
       @Descuento=((@ValorUnitario*@Cantidad)/100)*porcentaje

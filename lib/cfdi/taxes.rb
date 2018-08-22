@@ -1,5 +1,5 @@
 module CFDI
-   class Impuesto #< Base #REVISAR LOS METODOS DE LA CLASE PADRE
+   class Impuesto # < Base 
      @cadenaOriginal =[:traslados]#, :detained
      attr_accessor(*@cadenaOriginal)
      attr_accessor :traslados_cadena_original#,:resummen_traslados_cadena_original
@@ -76,9 +76,6 @@ module CFDI
          @import = importe
        end
 
-       #def cadena_original
-        # [ @base, @tax, @type_factor, @rate, @import] #Se le pasa la función y no el atributo para que sea parte de la cadena_original.
-       #end
      end
 
 #POR SI SE LLEGAN A IMPLEMENTAR LOS IMPUESTOS RETENIDOS

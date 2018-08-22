@@ -793,11 +793,12 @@ class FacturasController < ApplicationController
       nombre_negocio = current_user.negocio.nombre
 
       #Personalización de la plantilla de impresión de una factura de venta. :P
-      tipo_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").tipo_fuente
-      tam_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").tam_fuente
-      color_fondo = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_fondo
-      color_banda = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_banda
-      color_titulos = current_user.negocio.config_comprobantes.find_by(comprobante: "fv").color_titulos
+      plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "f")
+      tipo_fuente = plantilla_impresion.tipo_fuente
+      tam_fuente = plantilla_impresion.tam_fuente
+      color_fondo = plantilla_impresion.color_fondo
+      color_banda = plantilla_impresion.color_banda
+      color_titulos = plantilla_impresion.color_titulos
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
@@ -1804,11 +1805,12 @@ class FacturasController < ApplicationController
       nombre_negocio = current_user.negocio.nombre
 
       #Personalización de la plantilla de impresión de una factura de venta. :P
-      tipo_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fg").tipo_fuente
-      tam_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "fg").tam_fuente
-      color_fondo = current_user.negocio.config_comprobantes.find_by(comprobante: "fg").color_fondo
-      color_banda = current_user.negocio.config_comprobantes.find_by(comprobante: "fg").color_banda
-      color_titulos = current_user.negocio.config_comprobantes.find_by(comprobante: "fg").color_titulos
+      plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "f")
+      tipo_fuente = plantilla_impresion.tipo_fuente
+      tam_fuente = plantilla_impresion.tam_fuente
+      color_fondo = plantilla_impresion.color_fondo
+      color_banda = plantilla_impresion.color_banda
+      color_titulos = plantilla_impresion.color_titulos
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
       hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pagoSAT, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,

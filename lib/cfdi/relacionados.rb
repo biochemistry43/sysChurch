@@ -29,17 +29,3 @@ module CFDI
   end
 
 end
-=begin
-module CFDI
-
-  class CfdiRelacionado < ElementoComprobante
-
-    attr_accessor :uuid
-
-    def uuid= uuid
-      @uuid=uuid
-      @uuid
-    end
-  end
-end
-=end

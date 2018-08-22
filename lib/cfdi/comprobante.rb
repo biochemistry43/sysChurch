@@ -5,6 +5,7 @@ module CFDI
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :uuidsrelacionados, :impuestos, :cfdisrelacionados]
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
+    
     @addenda = nil
     @@options = {
       tasa: 0.16,
@@ -103,21 +104,7 @@ module CFDI
       @cfdisrelacionados = cfdisrelacionado
       @cfdisrelacionados
     end
-=begin
-    def cfdisrelacionados= cfdisrelacionados
-      if cfdisrelacionados.is_a? Array
-        cfdisrelacionados.map! do |cfdi_r|
-        cfdi_r = Cfdirelacionado.new cfdi_r unless cfdi_r.is_a? Cfdirelacionado
-        end
-      elsif cfdisrelacionados.is_a? Hash
-        cfdisrelacionados << Cfdirelacionado.new(cfdi_r)
-      elsif cfdisrelacionados.is_a?
-        cfdisrelacionados << cfdisrelacionados
-      end
-      @cfdisrelacionados = cfdisrelacionados
-      cfdisrelacionados
-    end
-=end
+
     def emisor= emisor
       emisor = Emisor.new emisor unless emisor.is_a? Emisor
       @emisor = emisor;
@@ -125,7 +112,6 @@ module CFDI
 
     # Asigna un receptor
     # @param  receptor [Hash, CFDI::Entidad] Los datos de un receptor
-    #
     # @return [CFDI::Entidad] Una entidad
     def receptor= receptor
       receptor = Rceptor.new receptor unless receptor.is_a? Receptor
@@ -152,8 +138,6 @@ module CFDI
       conceptos
     end
 
-
-
     # Asigna un complemento al comprobante
     # @param  complemento [Hash, CFDI::Complemento] El complemento a agregar
     # @return [CFDI::Complemento]
@@ -172,6 +156,7 @@ module CFDI
       @fecha = fecha
     end
 =end
+
     # El comprobante como XML
     # @return [String] El comprobante namespaceado en versión 3.3
     def comprobante_to_xml
@@ -426,57 +411,6 @@ module CFDI
     end
 
 
-    # La cadena original del CFDI
-    #
-    # @return [String] Separada por pipes, because fuck you that's why
-    def cadena_original
-      params = []
-      @@datosCadena.each {|key| params.push send(key) } #Los atributos a nivel factura
-      params += @emisor.cadena_original  #los datos del emisor
-      params += @receptor.cadena_original # seguido de los del receptor
-
-      cont=0
-      @conceptos.each do |concepto| # Cada concepto con su respectivo impuesto
-      params += concepto.cadena_original
-      if @impuestos.traslados.any?
-        params += @impuestos.traslados_cadena_original[cont]
-      end
-      cont =cont+1
-
-      end
-      if @impuestos.traslados.any?
-        #Se supone que el único impuesto en las facturas electronicas el el IVA trasladado
-        #Si estoy en lo correcto, entonces los valores pueden ser estaticos.
-        tax='002'
-        type_factor='Tasa'
-        rate=0.160000
-        import=@impuestos.total_traslados
-        params += [tax,type_factor,rate,import,@impuestos.total_traslados]
-      end
-=begin
-      if @impuestos.count > 0
-        @impuestos.traslados.each do |traslado|
-          # tasa = traslado.tasa ? traslado.tasa.to_i : (@opciones[:tasa]*100).to_i
-          tasa = (@opciones[:tasa]*100).to_i
-          total = self.subTotal*@opciones[:tasa]
-          params += [traslado.impuesto, tasa, total, total]
-        end
-      end
-=end
-      params.select! { |i| i != nil && i != '' }
-      params.map! do |elem|
-        if elem.is_a? Float
-          elem = sprintf('%.2f', elem)
-        else
-          elem = elem.to_s
-        end
-        elem
-      end
-
-      return "||#{params.join '|'}||"
-    end
-
-
     # Revisa que el timbre de un comprobante sea válido
     # @param [String] El certificado del PAC
     #
@@ -512,15 +446,6 @@ module CFDI
       result
     end
 
-=begin
-    # return string with total in words.
-    # Example: ( UN MIL CIENTO SESENTA PESOS 29/100 M.N. )
-    def total_to_words
-      decimal = format('%.2f', @total).split('.')
-      "( #{@total.to_words.upcase} PESOS #{decimal[1]}/100 M.N. )"
-    end
-
-=end
 
   # Función para formar el Código de Barra Bidimencional
   def qr_code document
