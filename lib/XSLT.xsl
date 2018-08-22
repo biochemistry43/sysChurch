@@ -227,9 +227,9 @@
             <br/>
             <div style="border-top: solid 1px {$color_fondo};" class="firma">(FIRMA DE CONFORMIDAD)</div>
           </xsl:if>
-          <table style="border: solid 1px {$color_fondo}};" id="sellosDig">
+          <table width="100%" style="border: solid 1px {$color_fondo}};" id="sellosDig">
             <td>
-              <table id="tablaInternaSellos">
+              <table width="100%" id="tablaInternaSellos">
 
                 <tr>
                   <td rowspan="6">

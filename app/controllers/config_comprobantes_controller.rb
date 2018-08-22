@@ -303,10 +303,7 @@ class ConfigComprobantesController < ApplicationController
       end
 
       total_letras = comprobante.total_to_words
-      # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
-      certificado.certifica comprobante
-      #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
-      xml_certificado_sellado = llave.sella comprobante
+      xml_certificado_sellado = comprobante.comprobante_to_xml
 
       #La configuración del comprobante
       #codigoQR = comprobante.qr_code xml_certificado_sellado
@@ -327,7 +324,7 @@ class ConfigComprobantesController < ApplicationController
       nombre_negocio = current_user.negocio.nombre
 
       #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: Nokogiri::XML(xml_certificado_sellado),# codigoQR: codigoQR,
+      hash_info = {xml_copia: Nokogiri::XML(xml_certificado_sellado), codigoQR: "",
        logo: logo, cadOrigComplemento: cadOrigComplemento, 
        uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
         tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo:@color_fondo, color_banda:@color_banda, color_titulos:@color_titulos,

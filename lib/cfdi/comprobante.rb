@@ -546,8 +546,8 @@ module CFDI
     #Ocho últimos caracteres del sello digital del emisor del
     #comprobante, precedido por el texto “&fe=”
     sello=document.xpath('//@Sello')
-    s=sello.to_s()
-    last8=s.split('').last(8).join
+    s = sello.to_s()
+    last8 = s.split('').last(8).join
     puts cbb += "&fe=#{last8}"
 
     img = RQRCode::QRCode.new(cbb).to_img
