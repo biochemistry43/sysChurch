@@ -1,52 +1,53 @@
-<%= form_for @config_comprobante, remote: true do |f| %>
 
-  <% if @config_comprobante.errors.any? %>
+ <%= form_tag({ controller: "config_comprobantes", action: "update", id: @config_comprobante.id}, {remote: true, :class=> "form-horizontal", :method => :put}) do %>
+  <!-- if @config_comprobante.errors.any? >
     <div id="error_explanation">
-      <h2><%= pluralize(@config_comprobante.errors.count, "error") %> prohibited this config_comprobante from being saved:</h2>
+      <h2>< pluralize(@config_comprobante.errors.count, "error") > prohibited this config_comprobante from being saved:</h2>
 
       <ul>
-      <% @config_comprobante.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
+      < @config_comprobante.errors.full_messages.each do |message| >
+        <li>< message ></li>
+      < end >
       </ul>
     </div>
-  <% end %>
+  < end -->
 <div class="col-md-4 col-sm-4 col-xs-12" >
   <div class="row" style="padding-bottom:10px;">
-        <%= f.label :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= label_tag :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
             <%= select_tag :tipo_fuente, '<optgroup label="sans-serif"><option value="Arial, Helvetica, sans-serif">Arial</option></optgroup><optgroup label="serif"> <option value= "Times New Roman, Times, serif">Times New Roman</option></optgroup><optgroup label="monospace"> <option value="Courier New, Courier, monospace">Courier New</option></optgroup>'.html_safe,  class: 'form-control' %>
         </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
-        <%= f.label :lbl_tam_fuente, "Tamaño de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= label_tag :lbl_tam_fuente, "Tamaño de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
             <%= select_tag :tam_fuente, "<option>Grande</option><option>Normal</option><option>Pequeña</option>".html_safe,  class: 'form-control' %>
         </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
-        <%= f.label :lbl_color_fondo, "Color de fondo: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= label_tag :lbl_color_fondo, "Color de fondo: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_fondo', @color_fondo, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_fondo"%>
     </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
-        <%= f.label :lbl_color_banda, "Color de línea: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= label_tag :lbl_color_banda, "Color de línea: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_banda', @color_banda, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12",id:"color_banda"%>
     </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
-        <%= f.label :lbl_color_titulos, "Color de títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
+        <%= label_tag :lbl_color_titulos, "Color de títulos: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
     <div class="col-md-7 col-sm-7 col-xs-12">
         <%= color_field_tag 'color_titulos', @color_titulos, style:"height:33px;", class:"control-label col-md-12 col-sm-12 col-xs-12", id:"color_titulos"%>
     </div>
+    
   </div>
   <hr>
   <div class="actions" align="center">
     <input class="btn btn-default" value="Cancelar" type="reset">
-    <%= f.submit "Previsualizar en PDF", :class=>"btn btn-default" %>
-    <%= f.submit "Guardar Cambios", :class=>"btn btn-success active" %>
+    <%= submit_tag "Previsualizar en PDF", :class=>"btn btn-default" %>
+    <%= submit_tag "Guardar cambios", :class=>"btn btn-success active" %>
   </div>
 </div>
 <div>

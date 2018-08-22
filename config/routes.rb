@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   post 'config_comprobantes/mostrar_plantilla'
   get 'config_comprobantes/mostrar_plantilla'
 
-  resources :config_comprobantes
+  #resources :config_comprobantes
 
   resources :impuestos
   #resources :nota_creditos
