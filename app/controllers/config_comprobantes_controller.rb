@@ -79,12 +79,6 @@ class ConfigComprobantesController < ApplicationController
 
     @consulta = true
 
-    @color_fondo = params[:color_fondo]
-    @color_banda = params[:color_banda]
-    @color_titulos = params[:color_titulos]
-    @tipo_fuente = params[:tipo_fuente]
-    @tam_fuente = params[:tam_fuente]
-
     if @config_comprobante.comprobante == "f"
       leyenda = "Facturas"
     elsif @config_comprobante.comprobante == "nc"
@@ -95,16 +89,66 @@ class ConfigComprobantesController < ApplicationController
     @nombre_plantilla = leyenda
     @nomb_negocio = current_user.negocio.nombre
 
-    set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
+    if params[:commit] == "Previsualizar en PDF"
 
-    respond_to do |format|
-    if @config_comprobante.update(tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo: @color_fondo, color_titulos: @color_titulos, color_banda: @color_banda )
-      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
-      format.js
-    else
-      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
+      @color_fondo = params[:color_fondo]
+      @color_banda = params[:color_banda]
+      @color_titulos = params[:color_titulos]
+      @tipo_fuente = params[:tipo_fuente]
+      @tam_fuente = params[:tam_fuente]
+
+      set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
+
+       respond_to do |format|
+        format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión fue actualizada correctamente!' }
+        format.js
+      end
+
+
+    elsif params[:commit] == "Guardar cambios"
+
+      @color_fondo = params[:color_fondo]
+      @color_banda = params[:color_banda]
+      @color_titulos = params[:color_titulos]
+      @tipo_fuente = params[:tipo_fuente]
+
+      @tam_fuente = params[:tam_fuente]
+
+      set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
+
+      respond_to do |format|
+        if @config_comprobante.update(tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo: @color_fondo, color_titulos: @color_titulos, color_banda: @color_banda )
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión fue actualizada correctamente!' }
+          format.js
+        else
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión no se pudo guardar!'}
+        end
+      end
+
+    elsif params[:commit] == "Cancelar"
+        
+      @color_fondo = @config_comprobante.color_fondo
+      @color_banda = @config_comprobante.color_banda
+      @color_titulos = @config_comprobante.color_titulos
+      @tipo_fuente = @config_comprobante.tipo_fuente
+      @tam_fuente = @config_comprobante.tam_fuente
+
+      set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
+        
+      respond_to do |format|
+      #if @config_comprobante.update(tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo: @color_fondo, color_titulos: @color_titulos, color_banda: @color_banda )
+        format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión fue cancelada!' }
+        format.js
+      end
+      #else
+        #format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión no se pudo guardar!'}
+      #end
     end
-  end
+
+    
+
+
+
 =begin
     #@config_comprobante = ConfigComprobante.find_by(negocio_id: current_user.negocio.id)
     respond_to do |format|
@@ -153,7 +197,7 @@ class ConfigComprobantesController < ApplicationController
       consecutivo = 1
       serie = params[:comprobante] == "f" ? current_user.sucursal.clave + "F" : current_user.sucursal.clave + "NC"
       fecha_expedicion = Time.now
-      tipo_comprobante = params[:comprobante] == "f" ? "I" : "E"
+      tipo_comprobante = @config_comprobante.comprobante == "f" ? "I" : "E"
       #Información general del comprobate
       comprobante = CFDI::Comprobante.new({
         serie: serie,
@@ -271,7 +315,7 @@ class ConfigComprobantesController < ApplicationController
       #No hay nececidad de darle a escoger el uso del cfdi al usuario.
       uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
       #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
-      cve_nombre_forma_pago = "#{} - #{}"
+      cve_nombre_forma_pago = "01 - Efectivo"
       #método de pago(clave y descripción)
       #"deberá de ser siempre.. PUE"
       cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"

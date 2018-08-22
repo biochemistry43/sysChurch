@@ -15,7 +15,12 @@
   <div class="row" style="padding-bottom:10px;">
         <%= label_tag :lbl_tipo_fuente, "Tipo de letra: ", class:"control-label col-md-5 col-sm-5 col-xs-12"%>
         <div class="col-md-7 col-sm-7 col-xs-12">
-            <%= select_tag :tipo_fuente, '<optgroup label="sans-serif"><option value="Arial, Helvetica, sans-serif">Arial</option></optgroup><optgroup label="serif"> <option value= "Times New Roman, Times, serif">Times New Roman</option></optgroup><optgroup label="monospace"> <option value="Courier New, Courier, monospace">Courier New</option></optgroup>'.html_safe,  class: 'form-control' %>
+
+
+            
+          <%= select_tag(:tipo_fuente, grouped_options_for_select({ 'sans-serif' => [['Arial', 'Arial, Helvetica, sans-serif']], 'serif' => [['Times', 'Times New Roman, Times, serif']], 'monospace' => [['Courier New', 'Courier New, Courier, monospace']]},  :selected => @tipo_fuente), class: 'form-control')%>
+
+            <!-- select_tag :tipo_fuente, '<optgroup label="sans-serif"><option value="Arial, Helvetica, sans-serif">Arial</option></optgroup><optgroup label="serif"> <option value= "Times New Roman, Times, serif">Times New Roman</option></optgroup><optgroup label="monospace"> <option value="Courier New, Courier, monospace">Courier New</option></optgroup>'.html_safe,  class: 'form-control', selected: 2 %-->
         </div>
   </div>
   <div class="row" style="padding-bottom:10px;">
@@ -45,7 +50,7 @@
   </div>
   <hr>
   <div class="actions" align="center">
-    <input class="btn btn-default" value="Cancelar" type="reset">
+    <%= submit_tag "Cancelar", :class => "btn btn-default" %>
     <%= submit_tag "Previsualizar en PDF", :class=>"btn btn-default" %>
     <%= submit_tag "Guardar cambios", :class=>"btn btn-success active" %>
   </div>
