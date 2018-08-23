@@ -82,6 +82,37 @@ def obtener_consumo(usuario, contrasena)
      </soapenv:Body>
   </soapenv:Envelope>^
 end
+
+#El servicio de “consulta_rfc” puede ser utilizado para verificar si existe un RFC en la lista de RFCs inscritos no cancelados del SAT y si sí existe, se muestra información del mismo. Se necesita de un usuario y contraseña para utilizar el servicio.
+def consultar_rfc (username, password, rfc)
+=begin
+  Nombre  Descripción Requerido
+  username  Usuario del web service Sí
+  password  Contraseña del webservice Sí
+  rfc RFC que se desea consultar, este debe cumplir con el regex:
+  /[A-Z&Ñ]{3,4}[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])[A-Z0-9]{2}[0-9A]/ Sí
+=end
+  envelope = %Q^
+    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <urn:consulta_rfc soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+             <username xsi:type="xsd:string">#{username}</username>
+             <password xsi:type="xsd:string">#{password}</password>
+             <rfc xsi:type="xsd:string">#{rfc}</rfc>
+          </urn:consulta_rfc>
+       </soapenv:Body>
+    </soapenv:Envelope>^
+
+  # Crear un cliente de savon para hacer la conexión al WS, en produccion quital el "log: true"
+  client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
+  # Hacer el llamado al metodo cancelar_cfdi
+  response = client.call(:consulta_rfc, { "xml" => envelope })
+  documento = Nokogiri::XML(response.to_xml)
+end
+
+#-------------------------------------------------------------------------------------------------------------------------
+
 #El servicio de “cancelar_cfdi” se utiliza para cancelar uno o varios comprobantes que ya fueron timbrados. Se requiere de usuario y contraseña para utilizar el servicio.
 def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
 =begin
@@ -112,7 +143,14 @@ def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem,
   client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
   # Hacer el llamado al metodo cancelar_cfdi
   response = client.call(:cancelar_cfdi, { "xml" => envelope })
-  documento = Nokogiri::XML(response.to_xml)   
+  documento = Nokogiri::XML(response.to_xml)
+  # Obenter el acuse de cancelación
+  #acuse = documento.xpath("//acuse_cancelacion").text
+  #puts acuse
+
+  # Obtener los estatus de los comprobantes cancelados
+  #uuids_cancelados = documento.xpath("//comprobantes_cancelados").text
+  #puts uuids_cancelados   
 end
 
 #El servicio de “consultar_estatus” se utiliza para la consulta del estatus del CFDI, este servicio pretende proveer una forma alternativa de consulta que requiera verificar el estado de un comprobante en bases de datos del SAT. Los parámetros que se requieren en la consulta se describen en la siguiente tabla.
