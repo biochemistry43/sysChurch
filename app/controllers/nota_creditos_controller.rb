@@ -472,9 +472,17 @@ class NotaCreditosController < ApplicationController
         destinatario_final = params[:destinatario]
 
         if @nota_credito.estado_nc == "Activa"
-           plantilla_email("nc")
+          if @nota_credito.tipo_factura == "fv"
+            plantilla_email("nc_fv")
+          elsif @nota_credito.tipo_factura== "fg"
+            plantilla_email("nc_fg")
+          end
         elsif @nota_credito.estado_nc == "Cancelada"
-           plantilla_email("ac_nc")
+          if @nota_credito.tipo_factura == "fv"
+            plantilla_email("ac_nc_fv")
+          elsif @nota_credito.tipo_factura== "fg"
+            plantilla_email("ac_nc_fg")
+          end
         end
 
         ruta_storage_nc = @nota_credito.ruta_storage
@@ -535,36 +543,57 @@ class NotaCreditosController < ApplicationController
       @destinatario = @nota_credito.cliente.email
 
       if @nota_credito.estado_nc == "Activa"
-         plantilla_email("nc")
+        if @nota_credito.tipo_factura == "fv"
+          plantilla_email("nc_fv")
+        elsif @nota_credito.tipo_factura== "fg"
+          plantilla_email("nc_fg")
+        end
       elsif @nota_credito.estado_nc == "Cancelada"
-         plantilla_email("ac_nc")
+        if @nota_credito.tipo_factura == "fv"
+          plantilla_email("ac_nc_fv")
+        elsif @nota_credito.tipo_factura== "fg"
+          plantilla_email("ac_nc_fg")
+        end
       end
     end
 
     #Para cancelar una nota de crédito de una perteneciente a una factura.
     def mostrar_email_cancelacion_nc
-      plantilla_email("ac_nc")
+      if @nota_credito.tipo_factura == "fv"
+        plantilla_email("ac_nc_fv")
+      elsif @nota_credito.tipo_factura== "fg"
+        plantilla_email("ac_nc_fg")
+      end
       #@categorias_devolucion = current_user.negocio.cat_venta_canceladas
     end
 
     def cancelar_nota_credito
       require 'timbrado'
-   
-      # Parametros para la conexión al Webservice
-      wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-      usuario = "AAA010101000"
-      contrasena = "h6584D56fVdBbSmmnB"
-      uuid = @nota_credito.folio_fiscal
-      rfc = "AAA010101AAA"
-      pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
-      bin_file = File.binread(pfx_path)
-      pfx_base64 = Base64.strict_encode64(bin_file)
-      pfx_password = "12345678a"
-      #Se cancela
+      require 'base64'
+      #equire 'savon'
+      require 'nokogiri'
+      require 'byebug'
+      require 'openssl'
 
-      xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+      username = "AAA010101000"
+      password = "h6584D56fVdBbSmmnB"
+      rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+
+      folios =  %Q^<folio>
+                  <uuid xsi:type="xsd:string">#{@factura.folio_fiscal}</uuid>
+                  <rfc_receptor xsi:type="xsd:string">#{@factura.cliente.datos_fiscales_cliente.rfc}</rfc_receptor>
+                  <total xsi:type="xsd:string">#{@factura.monto}</total>
+                </folio>^
+
+      cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+      llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+      llave_password = "12345678a"
+
+      #Se cancela 
+      xml_cancelado = cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
       #se extrae el acuse de cancelación del xml cancelado
       acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+
 
       #Se crea un objeto de cloud para descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
@@ -581,7 +610,7 @@ class NotaCreditosController < ApplicationController
       dir_mes = fecha_cancelacion.strftime("%m")
       dir_anno = fecha_cancelacion.strftime("%Y")
 
-      ac_nc_id = NotaCreditoCancelada.last ? NotaCreditoCancelada.last.id + 1 : 1
+      ac_nc_id = AcuseCancelacion.present? ? AcuseCancelacion.last.id + 1 : 1
 
       ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{ac_nc_id}_ac_nc"
       #Se guarda el Acuse en la nube
@@ -613,7 +642,11 @@ class NotaCreditosController < ApplicationController
       #Se envia el acuse de cancelación al correo electrónico del fulano zutano perengano
       destinatario_final = params[:destinatario]
       #Aquí el mensaje de la configuración...
-      plantilla_email("ac_nc")
+      if @nota_credito.tipo_factura == "fv"
+        plantilla_email("ac_nc_fv")
+      elsif @nota_credito.tipo_factura== "fg"
+        plantilla_email("ac_nc_fg")
+      end
       comprobantes = {xml_Ac_nc: "public/#{ac_nc_id}_ac_nc"}
       FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
@@ -650,7 +683,7 @@ class NotaCreditosController < ApplicationController
       asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
       cadena = PlantillaEmail::AsuntoMensaje.new
       
-      if opc == "nc"
+      if opc == "nc_fv" || opc == "nc_fg"
         cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
         
         cadena.fecha = @nota_credito.fecha_expedicion
@@ -667,7 +700,7 @@ class NotaCreditosController < ApplicationController
         @asunto = cadena.reemplazar_texto(asunto)
 
       #Se trata entonces de una cancelación de una nota de crédito y las cancelaciones de las notas de crédito tienen su propia plantilla
-      elsif opc == "ac_nc"
+      elsif opc == "ac_nc_fg" || opc == "ac_nc_fv"
         cadena.nombCliente = @nota_credito.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
         
         #cadena.fecha = @nota_credito.fecha_expedicion#

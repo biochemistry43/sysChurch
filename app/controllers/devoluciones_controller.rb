@@ -517,8 +517,8 @@ class DevolucionesController < ApplicationController
       #Se supone que esto es solo si la venta está facturada
       require 'plantilla_email/plantilla_email.rb'
 
-      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").msg_email
-      asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc").asunto_email
+      mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").msg_email
+      asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").asunto_email
 
       # :( Se tienen que calcular todos los textos variables por que se trata de crear apenas una nota de crédito 
       cadena = PlantillaEmail::AsuntoMensaje.new
@@ -541,16 +541,13 @@ class DevolucionesController < ApplicationController
       serie = claveSucursal + "NC"
       fecha_expedicion_nc = Time.now
       fecha_expedicion_nc = fecha_expedicion_nc.strftime("%Y-%m-%d")
+
+      cadena.nombCliente = @itemVenta.venta.factura.cliente.nombre_completo 
       
-      cadena.fechaNC = fecha_expedicion_nc
-      cadena.numNC = consecutivo
-      cadena.folioNC = serie + consecutivo.to_s
-      cadena.totalNC = "X.XX"#@nota_credito.monto""
-        
-      cadena.fechaFact = @itemVenta.venta.factura.fecha_expedicion
-      cadena.numFact = @itemVenta.venta.factura.consecutivo
-      cadena.folioFact = @itemVenta.venta.factura.folio
-      cadena.totalFact = @itemVenta.venta.factura.venta.montoVenta
+      cadena.fecha = fecha_expedicion_nc
+      cadena.numero = consecutivo
+      cadena.folio = serie + consecutivo.to_s
+      cadena.total = "XX.XX"#@nota_credito.monto""
         
       cadena.nombNegocio = current_user.negocio.nombre 
       cadena.nombSucursal = current_user.sucursal.nombre
@@ -993,11 +990,12 @@ class DevolucionesController < ApplicationController
         nombre_negocio = current_user.negocio.nombre
 
         #Personalización de la plantilla de impresión de una factura de venta. :P
-        tipo_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").tipo_fuente
-        tam_fuente = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").tam_fuente
-        color_fondo = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_fondo
-        color_banda = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_banda
-        color_titulos = current_user.negocio.config_comprobantes.find_by(comprobante: "nc").color_titulos
+        plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "nc")
+        tipo_fuente = plantilla_impresion.tipo_fuente
+        tam_fuente = plantilla_impresion.tam_fuente
+        color_fondo = plantilla_impresion.color_fondo
+        color_banda = plantilla_impresion.color_banda
+        color_titulos = plantilla_impresion.color_titulos
 
         #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
         hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
@@ -1046,12 +1044,10 @@ class DevolucionesController < ApplicationController
         dir_anno = fecha_registroBD.strftime("%Y")
 
         fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
-        if current_user.sucursal
-          dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{nc_id}_nc"
-        else
-          ruta_storage = "#{dir_negocio}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{dir_cliente}/#{nc_id}_nc"
-        end
+
+        dir_sucursal = current_user.sucursal.nombre
+        ruta_storage = "#{dir_negocio}/#{dir_sucursal}//#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{nc_id}_nc"
+
 
         #Los comprobantes de almacenan en google cloud
         #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
@@ -1062,7 +1058,7 @@ class DevolucionesController < ApplicationController
 #========================================================================================================================
       #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
         folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
+        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml, tipo_factura: @factura.tipo_factura)
         #@factura = Factura.find(@venta.factura_id)
 
         if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
@@ -1096,15 +1092,10 @@ class DevolucionesController < ApplicationController
           factura_relacionada_NC = @itemVenta.venta.factura
           cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
           
-          cadena.fechaNC = fecha_expedicion_nc.strftime("%Y-%m-%d")
-          cadena.numNC = consecutivo
-          cadena.folioNC = serie + consecutivo.to_s
-          cadena.totalNC = @cantidad_devuelta.to_f * @itemVenta.precio_venta
-            
-          cadena.fechaFact = @factura.fecha_expedicion
-          cadena.numFact = @factura.consecutivo
-          cadena.folioFact = @factura.folio
-          cadena.totalFact = @factura.venta.montoVenta
+          cadena.fecha = fecha_expedicion_nc.strftime("%Y-%m-%d")
+          cadena.numero = consecutivo
+          cadena.folio = serie + consecutivo.to_s
+          cadena.total = @cantidad_devuelta.to_f * @itemVenta.precio_venta
             
           cadena.nombNegocio = current_user.negocio.nombre 
           cadena.nombSucursal = current_user.sucursal.nombre
