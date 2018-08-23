@@ -212,3 +212,59 @@ def consultar_peticiones_pendientes (username, password, rfc_receptor, cert_pem,
     response = client.call(:consultar_peticiones_pendientes, { "xml" => envelope })
     documento = Nokogiri::XML(response.to_xml) 
 end
+
+
+def procesar_respuesta (username, password, rfc_receptor, respuestas, cert_pem, llave_pem, llave_password)
+=begin
+  Petición al servicio
+  El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT. Los parámetros requeridos para realizar la petición se describen en la siguiente tabla.
+
+  Parámetros de la petición:
+  Nombre  Descripción Requerido
+  username  Usuario del webservice. Sí
+  password  Contraseña del webservice.  Sí
+  rfc_receptor  El rfc que recibió el comprobante que desea cancelar. Sí
+  respuestas  Se manda el arreglo con uno o más objetos del tipo folios_respuestas que se compone del UUID, el RFC Emisor, el Total y la Respuesta (Aceptación o Rechazo). El UUID debe cumplir con la expresión regular de UUIDs.  Sí
+  cert_pem  El certificado, en formato pem, que corresponde al emisor del comprobante.  Sí
+
+  Parámetros del nodo respuestas:
+  Nombre  Descripción Requerido
+  uuid  Folio del comprobante que se va aceptar o rechazar para su cancelación  Sí
+  rfc_emisor  RFC del emisor del comprobante a cancelar Sí
+  total Total del comprobante a cancelar  Sí
+  respuesta Parámetro a enviar para aceptar la solicitud de cancelación. Deberá agregar:
+  A – Aceptar la solicitud
+  R – Rechazar la solicitud
+=end
+
+#Creo q a los señores de Timbox se les olvidaron agregar dos parametros(llave_pem y llave_password)
+  envelope = %Q^
+    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <urn:procesar_respuesta soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+             <username xsi:type="xsd:string">#{username}</username>
+             <password xsi:type="xsd:string">#{password}</password>
+             <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+             <respuestas xsi:type="urn:respuestas">#{respuestas}</respuestas>
+             <cert_pem xsi:type="xsd:string">#{cert_pem}</cert_pem>
+             <llave_pem xsi:type="xsd:string">#{llave_pem}</llave_pem>
+             <llave_password xsi:type="xsd:string">#{llave_password}</llave_password>
+          </urn:procesar_respuesta>
+       </soapenv:Body>
+    </soapenv:Envelope>^
+
+    client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
+    # Hacer el llamado al metodo 'consultar_status'
+    response = client.call(:procesar_respuesta, { "xml" => envelope })
+    documento = Nokogiri::XML(response.to_xml) 
+=begin
+incluir dentro del nodo "respuestas"
+    <folios_respuestas>
+      <uuid>#{uuid}</uuid>
+      <rfc_emisor>#{rfc_emisor}</rfc_emisor>
+      <total>#{total}</total>
+      <respuesta>#{respuesta}</respuesta>
+    </folios_respuestas>
+=end
+end
