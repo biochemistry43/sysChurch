@@ -1002,7 +1002,7 @@ class FacturasController < ApplicationController
       else
         consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
       end
-      folio = "ACFV" + consecutivo.to_s
+      folio = current_user.sucursal.clave + "ACFV" + consecutivo.to_s
     elsif @factura.tipo_factura == "fg"
       #El consecutivo del acuse de cancelación de la factura global
       consecutivo = 0
@@ -1014,7 +1014,7 @@ class FacturasController < ApplicationController
       else
         consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
       end
-      folio = "ACFG" + consecutivo.to_s
+      folio = current_user.sucursal.clave +  "ACFG" + consecutivo.to_s
     end
 
     @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: @factura.tipo_factura, consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
@@ -1038,14 +1038,11 @@ class FacturasController < ApplicationController
       @factura.update( estado_factura: "Cancelada")      
     end
 
-    if @factura.tipo_factura == "fv"
-      plantilla_email("ac_fv")
-    elsif @factura.tipo_factura == "fg"
-      plantilla_email("ac_fg")
-    end
+    plantilla_email("ac_#{@factura.tipo_factura}")
+
 
     destinatario = params[:destinatario]
-    comprobantes = {xml_Ac: "public/#{ac_id}_ac_fv"}
+    comprobantes = {xml_Ac: "public/#{ac_id}_ac_#{@factura.tipo_factura}"}
 
     FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
 
