@@ -115,8 +115,12 @@ class ConfigComprobantesController < ApplicationController
       set_vista_previa(@tipo_fuente, @tam_fuente, @color_fondo, @color_titulos, @color_banda)
 
       respond_to do |format|
-        format.html { redirect_to action: "mostrar_plantilla", notice: 'Se ha establecido la configuración recomendada para la plantilla de impresión seleccionada!' }
-        format.js
+        if @config_comprobante.update(tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo: @color_fondo, color_titulos: @color_titulos, color_banda: @color_banda )
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'Se ha establecido la configuración recomendada para la plantilla de impresión seleccionada!' }
+          format.js
+        else
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de impresión no se pudo guardar!'}
+        end
       end
 
     elsif params[:commit] == "Guardar cambios"
