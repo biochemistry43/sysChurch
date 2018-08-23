@@ -82,12 +82,7 @@ def obtener_consumo(usuario, contrasena)
      </soapenv:Body>
   </soapenv:Envelope>^
 end
-
-=begin
-Parametros de respuesta
-  folios  Información de los comprobantes cancelados, consiste en UUID, código y mensaje.
-  acuse_cancelacion El acuse de cancelación que regresa el SAT.
-=end
+#El servicio de “cancelar_cfdi” se utiliza para cancelar uno o varios comprobantes que ya fueron timbrados. Se requiere de usuario y contraseña para utilizar el servicio.
 def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
 =begin
   username  Usuario del webservice. Sí
@@ -120,6 +115,7 @@ def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem,
   documento = Nokogiri::XML(response.to_xml)   
 end
 
+#El servicio de “consultar_estatus” se utiliza para la consulta del estatus del CFDI, este servicio pretende proveer una forma alternativa de consulta que requiera verificar el estado de un comprobante en bases de datos del SAT. Los parámetros que se requieren en la consulta se describen en la siguiente tabla.
 def consultar_estatus (username, password, rfc_emisor, rfc_receptor, uuid, total)
 =begin
 Parametros para la consulta de status
@@ -151,6 +147,7 @@ Parametros para la consulta de status
   documento = Nokogiri::XML(response.to_xml)   
 end
 
+#El servicio de “consultar_documento_relacionado” se utiliza para realizar la consulta al servicio del SAT para revisar si el documento a consultar tiene documentos relacionados.
 def consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
 =begin
   username  Usuario del webservice  Sí
@@ -180,5 +177,38 @@ def consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert
     client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
     # Hacer el llamado al metodo 'consultar_status'
     response = client.call(:consultar_documento_relacionado, { "xml" => envelope })
+    documento = Nokogiri::XML(response.to_xml) 
+end
+
+#El servicio de “consultar_peticiones_pendientes” se utiliza para realizar la consulta al servicio del SAT para revisar las peticiones que se encuentran en espera de una respuesta por parte del Receptor. Los parámetros requeridos para realizar la petición se describen en la siguiente tabla.
+def consultar_peticiones_pendientes (username, password, rfc_receptor, cert_pem, llave_pem, llave_password)
+=begin
+  Parámetros de la petición:
+  Nombre  Descripción Requerido
+  username  Usuario del webservice. Sí
+  password  Contraseña del webservice.  Sí
+  rfc_receptor  El RFC que recibió el comprobante que desea cancelar. Sí
+  cert_pem  El certificado, en formato pem, que corresponde al emisor del comprobante.  Sí
+  llave_pem La llave, en formato pem, que corresponde al emisor del comprobante.  Sí
+  llave_password  La contraseña de la llave_pem.  Sí
+=end
+  envelope = %Q^
+    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <urn:consultar_peticiones_pendientes soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+            <username xsi:type="xsd:string">#{username}</username>
+            <password xsi:type="xsd:string">#{password}</password>
+            <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+            <cert_pem xsi:type="xsd:string">#{cert_pem}</cert_pem>
+            <llave_pem xsi:type="xsd:string">#{llave_pem}</llave_pem>
+            <llave_password xsi:type="xsd:string">#{llave_password}</llave_password>
+          </urn:consultar_peticiones_pendientes>
+       </soapenv:Body>
+    </soapenv:Envelope>^
+
+    client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
+    # Hacer el llamado al metodo 'consultar_status'
+    response = client.call(:consultar_peticiones_pendientes, { "xml" => envelope })
     documento = Nokogiri::XML(response.to_xml) 
 end
