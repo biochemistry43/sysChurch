@@ -17,7 +17,7 @@ class ConfigComprobantesController < ApplicationController
       require 'cfdi'
       require 'timbrado'
 
-      @consulta =true
+      @consulta = true
       @config_comprobante = current_user.negocio.config_comprobantes.find_by(comprobante: params[:comprobante])
      
       #Se extraen los valores de la plantilla de impresión

@@ -61,20 +61,33 @@ class PlantillasEmailsController < ApplicationController
   def update
     @consulta = true
 
-    asunto = plantillas_email_params[:asunto_email]
-
-    asunto = ActionView::Base.full_sanitizer.sanitize(asunto)
-    mensaje = plantillas_email_params[:summernote]
-
     @plantillas_email = PlantillasEmail.find(plantillas_email_params[:id])
 
-    respond_to do |format|
-    if @plantillas_email.update(asunto_email: asunto, msg_email: mensaje)
-      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
-      format.js
-    else
-      format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
-    end
+    if params[:commit] == "Cancelar"
+      asunto = @plantillas_email.asunto_email
+
+      @asunto = ActionView::Base.full_sanitizer.sanitize(asunto)
+      @mensaje = @plantillas_email.msg_email
+
+      respond_to do |format|
+        format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
+        format.js
+      end
+
+    elsif params[:commit] == "Guardar Cambios"
+      asunto = plantillas_email_params[:asunto_email]
+
+      asunto = ActionView::Base.full_sanitizer.sanitize(asunto)
+      mensaje = plantillas_email_params[:summernote]
+
+      respond_to do |format|
+        if @plantillas_email.update(asunto_email: asunto, msg_email: mensaje)
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email fue actualizada correctamente!' }
+          format.js
+        else
+          format.html { redirect_to action: "mostrar_plantilla", notice: 'La plantilla de email no se pudo guardar!'}
+        end
+      end
   end
 =begin
     respond_to do |format|
