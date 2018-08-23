@@ -933,20 +933,31 @@ class FacturasController < ApplicationController
 
   def cancelaFacturaVenta2
     require 'timbrado'
-    #Primero se procede a cancelar y enviar el acuse de cancelación
-    # Parametros para la conexión al Webservice  
-    wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-    usuario = "AAA010101000"
-    contrasena = "h6584D56fVdBbSmmnB"
-    # Parametros para la cancelación del CFDI
-    uuid = @factura.folio_fiscal
-    rfc = "AAA010101AAA"
-    pfx_path = '/home/daniel/Documentos/timbox-ruby/archivoPfx.pfx'
-    bin_file = File.binread(pfx_path)
-    pfx_base64 = Base64.strict_encode64(bin_file)
-    pfx_password = "12345678a"
+
+    require 'base64'
+    #equire 'savon'
+    require 'nokogiri'
+    require 'byebug'
+
+    require 'openssl'
+
+    username = "AAA010101000"
+    password = "h6584D56fVdBbSmmnB"
+    rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+
+    folios =  %Q^<folio>
+                <uuid xsi:type="xsd:string">#{@factura.folio_fiscal}</uuid>
+                <rfc_receptor xsi:type="xsd:string">#{@factura.cliente.datos_fiscales_cliente.rfc}</rfc_receptor>
+                <total xsi:type="xsd:string">#{@factura.monto}</total>
+              </folio>^
+
+    cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+    llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+    llave_password = "12345678a"
+
     #Se cancela 
-    xml_cancelado = cancelar_cfdis usuario, contrasena, rfc, uuid, pfx_base64, pfx_password, wsdl_url
+    xml_cancelado = cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
+
     #se extrae el acuse de cancelación del xml cancelado
     acuse = xml_cancelado.xpath("//acuse_cancelacion").text
 
@@ -1077,7 +1088,7 @@ class FacturasController < ApplicationController
         end
       ########
       end
-     
+
     respond_to do |format| # Agregar mensajes después de las transacciones
       format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
     end
