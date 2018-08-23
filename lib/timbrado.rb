@@ -1,3 +1,5 @@
+#Todas las urls de timbox son del ambiiente de pruebas(se deben de canbiar al pasar a producción)
+
 require 'base64'
 #equire 'savon'
 require 'nokogiri'
@@ -116,4 +118,67 @@ def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem,
   # Hacer el llamado al metodo cancelar_cfdi
   response = client.call(:cancelar_cfdi, { "xml" => envelope })
   documento = Nokogiri::XML(response.to_xml)   
+end
+
+def consultar_estatus (username, password, rfc_emisor, rfc_receptor, uuid, total)
+=begin
+Parametros para la consulta de status
+  username  Usuario del webservice. Sí
+  password  Contraseña del webservice.  Sí
+  rfc_emisor  El RFC que emitió el comprobante que desea consultar. Sí
+  rfc_receptor  El RFC del receptor del comprobante que desea consultar.  Sí
+  uuid  Se manda el UUID del comprobante que se desea consultar. El UUID debe cumplir con la expresión regular de UUIDs.  Sí
+  total Total del comprobante Sí
+=end
+   envelope = %Q^
+    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+     <soapenv:Header/>
+     <soapenv:Body>
+        <urn:consultar_estatus soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+           <username xsi:type="xsd:string">#{username}</username>
+           <password xsi:type="xsd:string">#{password}</password>
+           <uuid xsi:type="xsd:string">#{uuid}</uuid>
+           <rfc_emisor xsi:type="xsd:string">#{rfc_emisor}</rfc_emisor>
+           <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+           <total xsi:type="xsd:string">#{total}</total>
+        </urn:consultar_estatus>
+     </soapenv:Body>
+  </soapenv:Envelope>^
+
+  client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
+  # Hacer el llamado al metodo 'consultar_status'
+  response = client.call(:consultar_estatus, { "xml" => envelope })
+  documento = Nokogiri::XML(response.to_xml)   
+end
+
+def consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
+=begin
+  username  Usuario del webservice  Sí
+  password  Contraseña del webservice Sí
+  rfc_receptor  El rfc que emitió el comprobante que desea cancelar.  Sí
+  uuid  Se manda el UUID del comprobante que se desea consultar. El UUID debe cumplir con la expresión regular de UUIDs.  Sí
+  cert_pem  El certificado, en formato pem, que corresponde al emisor del comprobante.  Sí
+  llave_pem La llave, en formato pem, que corresponde al emisor del comprobante.  Sí
+  llave_password  La contraseña de la llave_pem.  Sí
+=end
+  envelope = %Q^
+    <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+     <soapenv:Header/>
+     <soapenv:Body>
+       <urn:consultar_documento_relacionado soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <username xsi:type="xsd:string">#{username}</username>
+         <password xsi:type="xsd:string">#{password}</password> 
+         <uuid xsi:type="xsd:string">#{uuid}</uuid>
+         <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+         <cert_pem xsi:type="xsd:string">#{cert_pem}</cert_pem>
+         <llave_pem xsi:type="xsd:string">#{llave_pem}</llave_pem>
+         <llave_password xsi:type="xsd:string">#{llave_password}</llave_password>
+       </urn:consultar_documento_relacionado>
+     </soapenv:Body>
+    </soapenv:Envelope>^
+
+    client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
+    # Hacer el llamado al metodo 'consultar_status'
+    response = client.call(:consultar_documento_relacionado, { "xml" => envelope })
+    documento = Nokogiri::XML(response.to_xml) 
 end

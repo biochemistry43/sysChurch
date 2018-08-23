@@ -995,7 +995,7 @@ class FacturasController < ApplicationController
       #El consecutivo del acuse de cancelación de la factura de venta
       consecutivo = 0
       if current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last
-        consecutivo = current_user.sucursal.acuse_cancelacions.where(tipo_factura: "fv").last.consecutivo
+        consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last.consecutivo
         if consecutivo
           consecutivo += 1
         end
@@ -1007,7 +1007,7 @@ class FacturasController < ApplicationController
       #El consecutivo del acuse de cancelación de la factura global
       consecutivo = 0
       if current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last
-        consecutivo = current_user.sucursal.acuse_cancelacions.where(tipo_factura: "fg").last.consecutivo
+        consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last.consecutivo
         if consecutivo
           consecutivo += 1
         end
