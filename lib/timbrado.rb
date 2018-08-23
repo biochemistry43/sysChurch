@@ -80,3 +80,36 @@ def obtener_consumo(usuario, contrasena)
      </soapenv:Body>
   </soapenv:Envelope>^
 end
+
+def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
+=begin
+username  Usuario del webservice. Sí
+password  Contraseña del webservice.  Sí
+rfc_emisor  El rfc que emitió el comprobante que desea cancelar.  Sí
+folios  Se manda un arreglo con uno o más objetos tipo folio, el cual debe contener los elementos UUID, rfcreceptor y total.  Sí
+cert_pem  El certificado, en formato pem, que corresponde al emisor del comprobante.  Sí
+llave_pem La llave, en formato pem, que corresponde al emisor del comprobante.  Sí
+llave_password  La contraseña de la llave_pem.  Sí
+=end
+ envelope = %Q^
+  <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+    <soapenv:Header/>
+    <soapenv:Body>
+      <urn:cancelar_cfdi soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+        <username xsi:type="xsd:string">#{username}</username>
+        <password xsi:type="xsd:string">#{password}</password>
+        <rfc_emisor xsi:type="xsd:string">#{rfc_emisor}</rfc_emisor>
+        <folios xsi:type="urn:folios">
+          <folio>
+            <uuid xsi:type="xsd:string">folios</uuid>
+            <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+            <total xsi:type="xsd:string">5001</total>
+          </folio>
+        </folios>
+        <cert_pem xsi:type="xsd:string">#{cert_pem}</cert_pem>
+        <llave_pem xsi:type="xsd:string">#{llave_pem}</llave_pem>
+        <llave_password xsi:type="xsd:string">#{llave_password}</llave_password>
+      </urn:cancelar_cfdi>
+    </soapenv:Body>
+  </soapenv:Envelope>^      
+end
