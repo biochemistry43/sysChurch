@@ -14,6 +14,7 @@ class FacturasController < ApplicationController
     if request.get?
       #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
       if can? :create, Negocio
+        
         @facturas = current_user.negocio.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
         #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
@@ -924,168 +925,207 @@ class FacturasController < ApplicationController
   def cancelaFacturaVenta
     @categorias_devolucion = current_user.negocio.cat_venta_canceladas
     #Solo se muestran los datos
-    if @factura.tipo_factura == "fv"
-      plantilla_email("ac_fv")
-    elsif @factura.tipo_factura == "fg"
-      plantilla_email("ac_fg")
+    if (@factura.tipo_factura == "fg") || (@factura.tipo_factura == "fv" && @factura.monto <= 5000.00)
+      @sin_aprobacion = true
+      if @factura.tipo_factura == "fv"
+        plantilla_email("ac_fv")
+      elsif @factura.tipo_factura == "fg"
+        plantilla_email("ac_fg")
+      end
     end
   end
 
   def cancelaFacturaVenta2
-    require 'timbrado'
+=begin
+  Cancelación del CFDI sin aceptación del receptor:
+    De acuerdo a la regla 2.7.1.39 de la Resolución Miscelánea Fiscal para el 2018, los contribuyentes podrán cancelar un CFDI sin que se requiera la aceptación por parte del receptor en los siguientes supuestos:
 
-    require 'base64'
-    #equire 'savon'
-    require 'nokogiri'
-    require 'byebug'
+    # => Que amparen ingresos por un monto de hasta $5,000.00 MXN.
+    Por concepto de nómina.
+    Por concepto de egresos.
+    Por concepto de traslado.
+    Por concepto de ingresos expedidos a contribuyentes del RIF.
+    Emitidos a través de la herramienta electrónica de “Mis cuentas” en el aplicativo “Factura Fácil”.
+    Que amparen retenciones e información de pagos.
+    # => Expedidos en operaciones realizadas con el público en general de conformidad con la regla 2.7.1.24.
+    Emitidos a residentes en el extranjero para efectos fiscales conforme a la regla 2.7.1.26.
+    A través del adquirente y sector primario (reglas 2.4.3 y 2.7.4.1 de la RMF).
+    Cuando la cancelación se realice dentro de los tres días siguientes a su expedición. *
+    *En ambiente de pruebas se considera 10 mins después de generado el CFDI.
 
-    require 'openssl'
+  Cancelación del CFDI con aceptación del receptor:
+    Los anteriores supuestos no son aplicables para la cancelación con aceptación.
 
-    username = "AAA010101000"
-    password = "h6584D56fVdBbSmmnB"
-    rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+    Para realizar la cancelación, el receptor sólo contará con 3 días hábiles* una vez recibida la solicitud de cancelación para que se autorice o no dicho movimiento, en caso que el receptor no responda a la solicitud en el lapso de tiempo antes mencionado, la autoridad fiscal dará por aceptada la solicitud automáticamente.
 
-    folios =  %Q^<folio>
-                <uuid xsi:type="xsd:string">#{@factura.folio_fiscal}</uuid>
-                <rfc_receptor xsi:type="xsd:string">#{@factura.cliente.datos_fiscales_cliente.rfc}</rfc_receptor>
-                <total xsi:type="xsd:string">#{@factura.monto}</total>
-              </folio>^
+    *En ambiente de pruebas se considera 15 mins después de recibida la solicitud de cancelación.
 
-    cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
-    llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
-    llave_password = "12345678a"
+  Cancelación del CFDI con documentos relacionados:
+    Si el CFDI contiene documentos relacionados, el emisor sólo podrá cancelarlo siempre y cuando cancelen los CFDI relacionados y en el mismo momento el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”. 
 
-    #Se cancela 
-    xml_cancelado = cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
+=end    
+    #Los casos anteriormente en los que no se requiere aprobación del cliente
+    if (@factura.tipo_factura == "fg") || (@factura.tipo_factura == "fv" && @factura.monto <= 5000.00)
 
-    #se extrae el acuse de cancelación del xml cancelado
-    acuse = xml_cancelado.xpath("//acuse_cancelacion").text
+      require 'timbrado'
 
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-    bucket = storage.bucket "cfdis"
+      require 'base64'
+      #equire 'savon'
+      require 'nokogiri'
+      require 'byebug'
 
-    #Se realizan las consultas para formar los directorios en cloud
-    dir_negocio = current_user.negocio.nombre
-    dir_sucursal = current_user.sucursal.nombre
-    dir_cliente = @factura.cliente.nombre_completo
+      require 'openssl'
 
-    #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
-    fecha_cancelacion =  DateTime.parse(Nokogiri::XML(acuse).xpath("//@Fecha").to_s) #Es el único atributo llamado Fecha en el acuse :P
-    dir_dia = fecha_cancelacion.strftime("%d")
-    dir_mes = fecha_cancelacion.strftime("%m")
-    dir_anno = fecha_cancelacion.strftime("%Y")
+      username = "AAA010101000"
+      password = "h6584D56fVdBbSmmnB"
+      rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
 
-    ac_id = AcuseCancelacion.present? ? AcuseCancelacion.last.id + 1 : 1
+      #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
+      uuid= @factura.folio_fiscal
+      folios =  %Q^<folio>
+                  <uuid xsi:type="xsd:string">#{uuid}</uuid>
+                  <rfc_receptor xsi:type="xsd:string">#{@factura.cliente.datos_fiscales_cliente.rfc}</rfc_receptor>
+                  <total xsi:type="xsd:string">#{@factura.monto}</total>
+                </folio>^
 
-    ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_id}_ac_#{@factura.tipo_factura}"
-    #Se guarda el Acuse en la nube
-    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
+      cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+      llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+      llave_password = "12345678a"
 
-    acuse = Nokogiri::XML(acuse)
-    a = File.open("public/#{ac_id}_ac_#{@factura.tipo_factura}", "w")
-    a.write (acuse)
-    a.close
+      #Se cancela 
+      xml_cancelado = cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
 
-    #Se guarda el Acuse en la nube
-    file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
-    
-    #El consecutivo para formar el folio del acuse de cancelación
-    if @factura.tipo_factura == "fv"
-      #El consecutivo del acuse de cancelación de la factura de venta
-      consecutivo = 0
-      if current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last
-        consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last.consecutivo
-        if consecutivo
-          consecutivo += 1
-        end
-      else
-        consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
-      end
-      folio = current_user.sucursal.clave + "ACFV" + consecutivo.to_s
-    elsif @factura.tipo_factura == "fg"
-      #El consecutivo del acuse de cancelación de la factura global
-      consecutivo = 0
-      if current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last
-        consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last.consecutivo
-        if consecutivo
-          consecutivo += 1
-        end
-      else
-        consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
-      end
-      folio = current_user.sucursal.clave +  "ACFG" + consecutivo.to_s
-    end
+      #se extrae el acuse de cancelación del xml cancelado
+      acuse = xml_cancelado.xpath("//acuse_cancelacion").text
 
-    @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: @factura.tipo_factura, consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
+      bucket = storage.bucket "cfdis"
 
-    if @factura_cancelada.save
-      current_user.negocio.acuse_cancelacions << @factura_cancelada
-      current_user.sucursal.acuse_cancelacions << @factura_cancelada 
-      current_user.acuse_cancelacions << @factura_cancelada
+      #Se realizan las consultas para formar los directorios en cloud
+      dir_negocio = current_user.negocio.nombre
+      dir_sucursal = current_user.sucursal.nombre
+      dir_cliente = @factura.cliente.nombre_completo
+
+      #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
+      fecha_cancelacion =  DateTime.parse(Nokogiri::XML(acuse).xpath("//@Fecha").to_s) #Es el único atributo llamado Fecha en el acuse :P
+      dir_dia = fecha_cancelacion.strftime("%d")
+      dir_mes = fecha_cancelacion.strftime("%m")
+      dir_anno = fecha_cancelacion.strftime("%Y")
+
+      ac_id = AcuseCancelacion.present? ? AcuseCancelacion.last.id + 1 : 1
+
+      ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{ac_id}_ac_#{@factura.tipo_factura}"
+      #Se guarda el Acuse en la nube
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
+
+      acuse = Nokogiri::XML(acuse)
+      a = File.open("public/#{ac_id}_ac_#{@factura.tipo_factura}", "w")
+      a.write (acuse)
+      a.close
+
+      #Se guarda el Acuse en la nube
+      file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
       
-      #No hay relaciones entre la tabla Acuses y los derefrentes comprobantes, en lugar de ello solo hago referencia 
-      if AcuseCancelacion.present?
-        acuse_cancelacion_id = AcuseCancelacion.last.consecutivo
-        if acuse_cancelacion_id
-          acuse_cancelacion_id += 1
+      #El consecutivo para formar el folio del acuse de cancelación
+      if @factura.tipo_factura == "fv"
+        #El consecutivo del acuse de cancelación de la factura de venta
+        consecutivo = 0
+        if current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last
+          consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fv").last.consecutivo
+          if consecutivo
+            consecutivo += 1
+          end
+        else
+          consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
         end
-      else
-        acuse_cancelacion_id = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+        folio = current_user.sucursal.clave + "ACFV" + consecutivo.to_s
+      elsif @factura.tipo_factura == "fg"
+        #El consecutivo del acuse de cancelación de la factura global
+        consecutivo = 0
+        if current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last
+          consecutivo = current_user.sucursal.acuse_cancelacions.where(comprobante: "fg").last.consecutivo
+          if consecutivo
+            consecutivo += 1
+          end
+        else
+          consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+        end
+        folio = current_user.sucursal.clave +  "ACFG" + consecutivo.to_s
       end
 
-      @factura.ref_acuse_cancelacion =  acuse_cancelacion_id
-      @factura.update( estado_factura: "Cancelada")      
-    end
+      @factura_cancelada = AcuseCancelacion.new(folio: folio, comprobante: @factura.tipo_factura, consecutivo: consecutivo, fecha_cancelacion: fecha_cancelacion, ruta_storage: ruta_storage)#, monto: @venta.montoVenta)
 
-    plantilla_email("ac_#{@factura.tipo_factura}")
+      if @factura_cancelada.save
+        current_user.negocio.acuse_cancelacions << @factura_cancelada
+        current_user.sucursal.acuse_cancelacions << @factura_cancelada 
+        current_user.acuse_cancelacions << @factura_cancelada
+        
+        #No hay relaciones entre la tabla Acuses y los derefrentes comprobantes, en lugar de ello solo hago referencia 
+        if AcuseCancelacion.present?
+          acuse_cancelacion_id = AcuseCancelacion.last.consecutivo
+          if acuse_cancelacion_id
+            acuse_cancelacion_id += 1
+          end
+        else
+          acuse_cancelacion_id = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
+        end
+
+        @factura.ref_acuse_cancelacion =  acuse_cancelacion_id
+        @factura.update( estado_factura: "Cancelada")      
+      end
+
+      plantilla_email("ac_#{@factura.tipo_factura}")
 
 
-    destinatario = params[:destinatario]
-    comprobantes = {xml_Ac: "public/#{ac_id}_ac_#{@factura.tipo_factura}"}
+      destinatario = params[:destinatario]
+      comprobantes = {xml_Ac: "public/#{ac_id}_ac_#{@factura.tipo_factura}"}
 
-    FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
+      FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
 
-    ventas = @factura.ventas #Venta.find_by(factura: @factura.id)
-    #respond_to do |format|
-      #Por si quieren tambien afectar el inventario.
-      if params[:rbtn] == "rbtn_factura_venta"
-        categoria = params[:cat_cancelacion]
-        cat_venta_cancelada = CatVentaCancelada.find(categoria)
-        #venta = params[:venta]
-        observaciones = params[:observaciones]
+      ventas = @factura.ventas #Venta.find_by(factura: @factura.id)
+      #respond_to do |format|
+        #Por si quieren tambien afectar el inventario.
+        if params[:rbtn] == "rbtn_factura_venta"
+          categoria = params[:cat_cancelacion]
+          cat_venta_cancelada = CatVentaCancelada.find(categoria)
+          #venta = params[:venta]
+          observaciones = params[:observaciones]
 
-        #@items = @venta.item_ventas
-        #Si la factura esta compuesta por varias ventas de un mismo cliente, pero que no sea una factura global... se realiza la devolución de cada una de ellas
-        ventas.each do |vta|
-          if vta.update(:observaciones => observaciones, :status => "Cancelada")
-            #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
-            movimiento_caja = vta.movimiento_caja_sucursal
+          #@items = @venta.item_ventas
+          #Si la factura esta compuesta por varias ventas de un mismo cliente, pero que no sea una factura global... se realiza la devolución de cada una de ellas
+          ventas.each do |vta|
+            if vta.update(:observaciones => observaciones, :status => "Cancelada")
+              #Se obtiene el movimiento de caja de sucursal, de la venta que se quiere cancelar
+              movimiento_caja = vta.movimiento_caja_sucursal
 
-            #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
-            if movimiento_caja.tipo_pago.eql?("efectivo")
-              caja_sucursal = vta.caja_sucursal
-              saldo = caja_sucursal.saldo
-              saldoActualizado = saldo - vta.montoVenta
-              caja_sucursal.saldo = saldoActualizado
-              caja_sucursal.save
-            end
+              #Si el pago de la venta se realizó en efectivo, entonces se añade el monto de la venta al saldo de la caja
+              if movimiento_caja.tipo_pago.eql?("efectivo")
+                caja_sucursal = vta.caja_sucursal
+                saldo = caja_sucursal.saldo
+                saldoActualizado = saldo - vta.montoVenta
+                caja_sucursal.saldo = saldoActualizado
+                caja_sucursal.save
+              end
 
-            #Se elimina el movimiento de caja relacionado con la venta
-            movimiento_caja.destroy
+              #Se elimina el movimiento de caja relacionado con la venta
+              movimiento_caja.destroy
 
-            #Por cada item de venta, se crea un registro de venta cancelada.
-            vta.item_ventas.each do |itemVenta|
-              ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => vta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>vta.negocio, :sucursal=>vta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
-              ventaCancelada.save
-              itemVenta.status = "Con devoluciones"
-              itemVenta.save
+              #Por cada item de venta, se crea un registro de venta cancelada.
+              vta.item_ventas.each do |itemVenta|
+                ventaCancelada = VentaCancelada.new(:articulo => itemVenta.articulo, :item_venta => itemVenta, :venta => vta, :cat_venta_cancelada=>cat_venta_cancelada, :user=>current_user, :observaciones=>observaciones, :negocio=>vta.negocio, :sucursal=>vta.sucursal, :cantidad_devuelta=>itemVenta.cantidad, :monto=>itemVenta.monto)
+                ventaCancelada.save
+                itemVenta.status = "Con devoluciones"
+                itemVenta.save
+              end
             end
           end
+        ########
         end
-      ########
-      end
+    #Cuando se requiera la aprovación del cliente.
+    else
 
+    end
     respond_to do |format| # Agregar mensajes después de las transacciones
       format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
     end

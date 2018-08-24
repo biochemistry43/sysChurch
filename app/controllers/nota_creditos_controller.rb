@@ -570,7 +570,7 @@ class NotaCreditosController < ApplicationController
     def cancelar_nota_credito
       #De acuerdo a la regla 2.7.1.39 de la Resolución Miscelánea Fiscal para el 2018, los contribuyentes podrán cancelar un CFDI sin que se requiera la aceptación por parte del receptor en los siguientes supuestos:
       #...
-      #Por concepto de egresos.
+      # => Por concepto de egresos.
       #... sha la la sha la la
       
       require 'timbrado'

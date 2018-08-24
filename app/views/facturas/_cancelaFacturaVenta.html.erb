@@ -1,80 +1,82 @@
 <%= form_tag({ controller: "facturas", action: "cancelaFacturaVenta2", id: @factura.id }, { :method => :post}) do %>
   <div class="col-md-12 col-sm-12 col-xs-12">
+    <% if (@factura.tipo_factura == "fg") || (@factura.tipo_factura == "fv" && @factura.monto <= 5000.00) %>
+      <div class="form_row" style="margin-bottom: 30px;">
+        <div class="btn-group" data-toggle="buttons">
 
-    <div class="form_row" style="margin-bottom: 30px;">
-      <div class="btn-group" data-toggle="buttons">
-
-        <%= label_tag "lbl", "lbl_factura_venta", class: "btn btn-primary btn-sd form-check-label" do %>
-          <%= radio_button_tag 'rbtn', "rbtn_factura_venta", class:"form-check-input"%>Cancelar factura y venta.
-          <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
-        <%end%>
-        <%= label_tag "lbl2", "lbl_rfc", class: "btn btn-primary btn-md form-check-label active" do %>
-          <%= radio_button_tag 'rbtn', "rbtn_factura",  class:"form-check-input "%> Solo cancelar factura.
-          <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
-        <%end%>
-    </div>
-    </div>
-    <!--Los campos de envio del acuse de cancelación solo se muestra si la venta tine una factura relacionada-->
-    <!--%if @venta.factura.present? && @venta.factura.estado_factura == "Activa"%-->
-    <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
-      <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Envío del Acuse:</h2>
-    </div>
-    <!--Campos para el envio del Acuse de cancelación-->
-    <div class="item form-group">
-      <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
-        <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
+          <%= label_tag "lbl", "lbl_factura_venta", class: "btn btn-primary btn-sd form-check-label" do %>
+            <%= radio_button_tag 'rbtn', "rbtn_factura_venta", class:"form-check-input"%>Cancelar factura y venta.
+            <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+          <%end%>
+          <%= label_tag "lbl2", "lbl_rfc", class: "btn btn-primary btn-md form-check-label active" do %>
+            <%= radio_button_tag 'rbtn', "rbtn_factura",  class:"form-check-input "%> Solo cancelar factura.
+            <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+          <%end%>
       </div>
-    </div>
-    <!--El asunto y el mensaje... la que se indique en la configuración del negocio  -->
-    <div class="item form-group">
-      <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-        <!--span class="input-group-addon"><i class="fa fa-pencil"></i></span-->
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'} %>
       </div>
-    </div>
-    <div class="form-group">
-      <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
-
-      <div class="input-group col-md-6 col-sm-6 col-xs-12">
-         <!--textarea id="summernote" name="summernote"></textarea-->
-        <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernoteMensaje_ac_fv"}%>
+      <!--Los campos de envio del acuse de cancelación solo se muestra si la venta tine una factura relacionada-->
+      <!--%if @venta.factura.present? && @venta.factura.estado_factura == "Activa"%-->
+      <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
+        <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Envío del Acuse:</h2>
       </div>
-    </div>
-
-    <div class="" id="cancelacion_factura_venta" style="display:none;">
-      <!--Se muestran los campos para cancelar la venta-->
-      <div class="item form-group col-md-12 col-sm-12 col-xs-12">
-        <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Cancelación de venta:</h2>
-      </div>
-      <!-- grupo de categoría de cancelación -->
+      <!--Campos para el envio del Acuse de cancelación-->
       <div class="item form-group">
-        <%= label_tag :lbl_observaciones, "Categoría de devolución: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
-        <!--%= f.label :observaciones, "Categoria de devolución*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %-->
-        <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-          <%= collection_select(nil, :cat_cancelacion, @categorias_devolucion, :id, :clave, {:prompt => 'Elija una categoría de devolución.'}, { class: "form-control col-md-7 col-xs-12", id: "categoria_devolucion"})%>
+        <%= label_tag :lbl_destinatario, "Para: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+          <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+          <%=email_field_tag :destinatario, @factura.cliente.email, class: 'form-control text_field'%>
+          <!--text_field_tag :destinatario, nil, {class:'form-control text_field'}%-->
+        </div>
+      </div>
+      <!--El asunto y el mensaje... la que se indique en la configuración del negocio  -->
+      <div class="item form-group">
+        <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+          <!--span class="input-group-addon"><i class="fa fa-pencil"></i></span-->
+          <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
+          <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'} %>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+
+        <div class="input-group col-md-6 col-sm-6 col-xs-12">
+           <!--textarea id="summernote" name="summernote"></textarea-->
+          <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernoteMensaje_ac_fv"}%>
         </div>
       </div>
 
-      <div class="item form-group">
-        <%= label_tag :lbl_razon_cancelacion, "Razón de cancelación: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
-        <div class="col-md-6 col-sm-6 col-xs-12 input-group">
-          <%= text_area_tag :observaciones, nil,{class:'form-control text_field', id: "razon_cancelacion"} %>
+      <div class="" id="cancelacion_factura_venta" style="display:none;">
+        <!--Se muestran los campos para cancelar la venta-->
+        <div class="item form-group col-md-12 col-sm-12 col-xs-12">
+          <h2 class="control-label col-md-3 col-sm-3 col-xs-12" style="color: black;">Cancelación de venta:</h2>
         </div>
+        <!-- grupo de categoría de cancelación -->
+        <div class="item form-group">
+          <%= label_tag :lbl_observaciones, "Categoría de devolución: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+          <!--%= f.label :observaciones, "Categoria de devolución*: ", {class: "control-label col-md-3 col-sm-3 col-xs-12"} %-->
+          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+            <%= collection_select(nil, :cat_cancelacion, @categorias_devolucion, :id, :clave, {:prompt => 'Elija una categoría de devolución.'}, { class: "form-control col-md-7 col-xs-12", id: "categoria_devolucion"})%>
+          </div>
+        </div>
+
+        <div class="item form-group">
+          <%= label_tag :lbl_razon_cancelacion, "Razón de cancelación: ", class:"control-label col-md-3 col-sm-3 col-xs-12", style:"text-align:right;"%>
+          <div class="col-md-6 col-sm-6 col-xs-12 input-group">
+            <%= text_area_tag :observaciones, nil,{class:'form-control text_field', id: "razon_cancelacion"} %>
+          </div>
+        </div>
+          <p class="text-danger"> La factura se cancelará al igual que la venta, si desea solo cancelar la factura de clic en el estado del botón "Solo cancelar factura".<i class= "fa fa-exclamation-circle"> </i></p>
+          <p class="text-danger"> El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo).<i class= "fa fa-exclamation-circle"> </i></p>
       </div>
-        <p class="text-danger"> La factura se cancelará al igual que la venta, si desea solo cancelar la factura de clic en el estado del botón "Solo cancelar factura".<i class= "fa fa-exclamation-circle"> </i></p>
-        <p class="text-danger"> El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo).<i class= "fa fa-exclamation-circle"> </i></p>
-    </div>
+
+    <% end %> 
 
     <div class="actions">
       <!--div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3"-->
         <!--p class="purple">El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo) </p-->
-        <%= submit_tag 'Cancelar y enviar Acuse', {:class=>"btn btn btn-success"} %>
+        <%= submit_tag  @sin_aprobacion ? 'Cancelar y enviar Acuse' : 'Realizar la petición de aceptación/rechazo', {:class=>"btn btn btn-success"} %>
       <!--/div-->
     </div>
 
