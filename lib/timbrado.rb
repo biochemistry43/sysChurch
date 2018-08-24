@@ -271,8 +271,8 @@ def procesar_respuesta (username, password, rfc_receptor, respuestas, cert_pem, 
   rfc_emisor  RFC del emisor del comprobante a cancelar Sí
   total Total del comprobante a cancelar  Sí
   respuesta Parámetro a enviar para aceptar la solicitud de cancelación. Deberá agregar:
-  A – Aceptar la solicitud
-  R – Rechazar la solicitud
+    A – Aceptar la solicitud
+    R – Rechazar la solicitud
 =end
 
 #Creo q a los señores de Timbox se les olvidaron agregar dos parametros(llave_pem y llave_password)
