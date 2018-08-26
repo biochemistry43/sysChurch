@@ -413,7 +413,6 @@ module CFDI
 
     # Revisa que el timbre de un comprobante sea válido
     # @param [String] El certificado del PAC
-    #
     # @return [Boolean] El resultado de la validación
     def timbre_valido? cert=nil
       return false unless complemento && complemento.selloSAT

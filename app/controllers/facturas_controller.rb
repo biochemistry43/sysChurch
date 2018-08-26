@@ -1037,8 +1037,9 @@ class FacturasController < ApplicationController
           uuid = Nokogiri::xml_procesar_respuesta(folio.xpath('//uuid').to_s).content
           codigo = Nokogiri::xml_procesar_respuesta(folio.xpath('//codigo').to_s).content
           mensaje = Nokogiri::xml_procesar_respuesta(folio.xpath('//mensaje').to_s).content
-          
-          #El status del comprobante cambia a "PROCESO"
+
+
+          #El status del comprobante cambia a "PROCESO"(No en el sistema, sino en el gran SAT)
           #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
           #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
         elsif estatus_cancelacion == "Cancelable sin aceptación"
@@ -1172,7 +1173,7 @@ class FacturasController < ApplicationController
         elsif estatus_cancelación == "En proceso"
 
         elsif estatus_cancelación == "Solicitud Rechazada"
-          
+
         elsif estatus_cancelacion == "No cancelable"
           #Se revisa si tiene comprobantes relacionados o no y se deben de cancelar antes de cancelar el documento origen
           uuids_documentos_relacionados = consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
