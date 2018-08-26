@@ -32,6 +32,33 @@ def timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
   return document = Nokogiri::XML(xml_timbrado)
 end
 
+#El servicio “recuperar_comprobante” puede ser utilizado para recuperar uno o varios comprobantes completos (xml) usando los UUIDs. Se necesita de un usuario y contraseña para utilizar el servicio.
+def recuperar_cfdi(username, password, uuids)
+  #username  Usuario del web service Sí
+  #password  Contraseña del webservice Sí
+  #uuids Similar al servicio de cancelación de comprobantes, se manda un arreglo de UUIDs para recuperar. Los UUIDs deben cumplir con la expresión regular para ser considerados en la búsqueda, si no, se regresa un error. Sí
+  envelope = 
+    %Q^<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <urn:recuperar_comprobante soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+             <username xsi:type="xsd:string">usuario</username>
+             <password xsi:type="xsd:string">password</password>
+             <uuids xsi:type="urn:uuid">
+                <uuid xsi:type="xsd:string">55169D6D-73B4-4211-9D8B-BA8D86DD08C8</uuid>
+              </uuids>
+          </urn:recuperar_comprobante>
+       </soapenv:Body>
+    </soapenv:Envelope>^
+
+  client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
+  # Hacer el llamado al metodo cancelar_cfdi
+  response = client.call(:recuperar_comprobante, { "xml" => envelope })
+  documento = Nokogiri::XML(response.to_xml)
+
+end
+
+
 #Función para obtener el consumo de timbres e información del plan de Timbox
 def obtener_consumo(usuario, contrasena)
   envelope = %Q^
