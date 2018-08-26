@@ -42,20 +42,55 @@ def recuperar_cfdi(username, password, uuids)
        <soapenv:Header/>
        <soapenv:Body>
           <urn:recuperar_comprobante soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-             <username xsi:type="xsd:string">usuario</username>
-             <password xsi:type="xsd:string">password</password>
+             <username xsi:type="xsd:string">#{username}</username>
+             <password xsi:type="xsd:string">#{password}</password>
              <uuids xsi:type="urn:uuid">
-                <uuid xsi:type="xsd:string">55169D6D-73B4-4211-9D8B-BA8D86DD08C8</uuid>
+               
               </uuids>
           </urn:recuperar_comprobante>
        </soapenv:Body>
     </soapenv:Envelope>^
-
+  #<uuid xsi:type="xsd:string">{uuid}</uuid>
   client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
   # Hacer el llamado al metodo cancelar_cfdi
   response = client.call(:recuperar_comprobante, { "xml" => envelope })
   documento = Nokogiri::XML(response.to_xml)
 
+end
+
+def buscar_acuses_recepcion(username, password, *uuids, *fecha_timbrado_inicio, *fecha_timbrado_fin)
+  #username  Usuario del webservice    Sí
+  #password  Contraseña del webservice   Sí
+  #parametros_acuse
+  #Es un parámetro definido para contener los diferentes filtros que desea usar. Si omite este parámetro el servicio regresará un error de estructura. Sí
+  #uuids Se manda un arreglo de uno o más UUIDs que se desean cancelar. Los UUIDs deben cumplir con la expresión regular de UUIDs. El valor del UUID debe ser válido, si no ingresa valor en la etiqueta se validará contra la expresión regular de UUID. Si ingresa un valor en UUID no debe registrar los parámetros de fechas.  No
+  #fecha_timbrado_inicio Fecha de timbrado inicial que desea consultar. La fecha debe cumplir con el formato YYYY-MM-DD o YYYY-MM-DDTHH:MM:SS  Si ingresa valor en este parámetro debe agregar fecha_timbrado_fin y no registrar UUID. No
+  #fecha_timbrado_fin  Fecha de timbrado final que desea consultar. La fecha debe cumplir con el formato YYYY-MM-DD o YYYY-MM-DDTHH:MM:SS  Si ingresa valor en este parámetro debe agregar fecha_timbrado_inicio y no registrar UUID.  No
+  envelope = 
+    %Q^<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WashOut">
+      <soapenv:Header/>
+      <soapenv:Body>
+          <urn:buscar_acuse_recepcion soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+             <username xsi:type="xsd:string">#{username}</username>
+             <password xsi:type="xsd:string">#{password}</password>
+             <parametros_acuse xsi:type="urn:parametros_acuse">
+                
+             </parametros_acuse>
+          </urn:buscar_acuse_recepcion>
+      </soapenv:Body>
+    </soapenv:Envelope>^
+
+    #<uuids xsi:type="urn:uuid">
+      #<!--Zero or more repetitions:-->
+      #<uuid>#{uuid}</uuid>
+    #</uuids>
+    #<fecha_timbrado_inicio xsi:type="xsd:string">#{fecha_timbrado_inicio}</fecha_timbrado_inicio>
+    #<fecha_timbrado_fin xsi:type="xsd:string">#{fecha_timbrado_fin}</fecha_timbrado_fin>
+
+  client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
+
+  response = client.call(:buscar_acuse_recepcion, { "xml" => envelope })
+  documento = Nokogiri::XML(response.to_xml)
 end
 
 
