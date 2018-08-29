@@ -59,7 +59,7 @@ def recuperar_cfdi(username, password, uuids)
 
 end
 
-def buscar_acuses_recepcion(username, password, uuids, fecha_timbrado_inicio, fecha_timbrado_fin)
+def buscar_acuses_recepcion(username, password,uuids)#*fecha_timbrado_inicio,*fecha_timbrado_fin)
   #username  Usuario del webservice    Sí
   #password  Contraseña del webservice   Sí
   #parametros_acuse
@@ -75,7 +75,7 @@ def buscar_acuses_recepcion(username, password, uuids, fecha_timbrado_inicio, fe
              <username xsi:type="xsd:string">#{username}</username>
              <password xsi:type="xsd:string">#{password}</password>
              <parametros_acuse xsi:type="urn:parametros_acuse">
-                
+                #{uuids unless uuids.empty?}
              </parametros_acuse>
           </urn:buscar_acuse_recepcion>
       </soapenv:Body>
@@ -89,9 +89,14 @@ def buscar_acuses_recepcion(username, password, uuids, fecha_timbrado_inicio, fe
     #<fecha_timbrado_fin xsi:type="xsd:string">#{fecha_timbrado_fin}</fecha_timbrado_fin>
 
   client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
-
   response = client.call(:buscar_acuse_recepcion, { "xml" => envelope })
-  documento = Nokogiri::XML(response.to_xml)
+
+  response = response.to_hash
+  #xml_timbrado = response[:buscar_acuse_recepcion][:timbrar_cfdi_result][:xml]#xml sin alteraciones listo para entregar al cliente.
+
+  #return document = Nokogiri::XML(xml_timbrado)
+
+  #documento = Nokogiri::XML(response.to_xml)
 end
 
 

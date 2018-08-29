@@ -1186,7 +1186,7 @@ class FacturasController < ApplicationController
           #2002  El folio fiscal no pertenece al receptor. Este código de respuesta se presentará cuando el RFC del receptor no corresponda al UUID consultado.
           #1101  No existen peticiones para el RFC Receptor. Este código se regresa cuando la consulta se realizó de manera exitosa, pero no se encontraron solicitudes de cancelación para el rfc receptor.
           ['Clave: 2000', 'Clave: 2001', 'Clave: 2002', 'Clave: 1101'].each { |cve| @mensaje = "mensaje" && @clave = cve if resultado_documentos_relacionados.include? cve }
-          
+
           #Solo si se encontraron documentos relacionados
           if 'Clave: 2000' == @clave 
             if xml_documentos_relacionados.xpath('//relacionados_padres')
@@ -1205,7 +1205,7 @@ class FacturasController < ApplicationController
               rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//rfc_receptor').to_s).content 
             end
           end
-          
+
           #Cada documento relacionado necesita solicitud decancelación?
           if 
             respuestas =  %Q^<folios_respuestas>
@@ -1367,19 +1367,62 @@ class FacturasController < ApplicationController
   end
 
   def descargar_cfdis
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-    bucket = storage.bucket "cfdis"
-    ruta_storage = @factura.ruta_storage
+    #Si cambio de parecer, quitaré las condiciones del estado de facturas
+    if @factura.estado_factura == "Activa"
+      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+      storage=gcloud.storage
+      bucket = storage.bucket "cfdis"
+      ruta_storage = @factura.ruta_storage
 
-    file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
+      file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
 
-    file_download_storage_xml.download "public/#{@factura.id}.xml"
+      file_download_storage_xml.download "public/#{@factura.folio_fiscal}.xml"
+    elsif @factura.estado_factura == "Cancelada"
+=begin      
+      require 'timbrado'
 
-    xml = File.open( "public/#{@factura.id}.xml")
+      username = "AAA010101000" # Usuario del webservice    Sí
+      password = "h6584D56fVdBbSmmnB" # Contraseña del webservice   Sí
+      #Parametros de búsqueda opcionales
+      uuid = @factura.folio_fiscal
+      uuids =  %Q^<uuids xsi:type="urn:uuid">
+                  <!--Zero or more repetitions:-->
+                    <uuid>#{uuid}</uuid>
+                  </uuids>^
+      #<fecha_timbrado_inicio xsi:type="xsd:string">#{fecha_timbrado_inicio}</fecha_timbrado_inicio>
+      #<fecha_timbrado_fin xsi:type="xsd:string">#{fecha_timbrado_fin}</fecha_timbrado_fin>
+      hash_acuse_timbox = buscar_acuses_recepcion(username, password, uuids)
+      #En plural porq e puede regresar hasta 500 acuses, pero jaja da igual esta acción solo es para obtener un solo acuse.
+      #Si hubo un error con alguno de los parámetros o en el servicio de buscar acuses, se le notificará por medio de un mensaje de error, de lo contrario recibirá la estructura “buscar_acuse_recepcion_result” compuesta de lo siguiente:         
+      if hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result]
+        #Parámetros de la respuesta
+          #acuses El acuse de recepción que regresa el SAT.
+          #uuids_erroneos  Información de los uuid’s que no son válidos o no cumplen con la expresión regular.
+          #uuids_no_encontrados  Información de los uuid’s que no fueron encontrados en BD.
+        acuses = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:acuses]
+        uuids_erroneos = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:uuids_erroneos]
+        uuids_no_encontrados = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:uuids_no_encontrados] 
+        #El contenido del nodo <acuses> es una cadena q incluye elementos hijos y que al convertirla conserva las etiquetas xml:
+        #<acuse> </acuse>
+        acuse = acuses.slice!(7..-9)
+        acuse = Nokogiri::XML(acuse)
+
+        archivo = File.open("public/#{uuid}.xml", "w")
+        archivo.write (acuse)
+        archivo.close
+ 
+        else
+          #Desirle lo siento queridisimo usuriatooo jaja
+        end
+      end
+=end         
+    end
+
+    if File.exist?("public/#{uuid}.xml")
+    xml = File.open("public/#{uuid}.xml")
     send_file(
       xml,
-      filename: "CFDI.xml",
+      filename: "Acuse de cancelación.xml",
       type: "application/xml"
     )
   end

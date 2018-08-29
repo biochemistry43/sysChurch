@@ -416,20 +416,25 @@
                 <!--Imprimir factura-->
                 <% if can? :read, factura %>
     
-                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
+                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir o descargar representación impresa', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                     <i class="fa fa-print"></i>
                   <% end %>
 
                 <% unless factura.estado_factura.eql?("Borrador") %>
-                  <%= link_to url={action: "enviar_email", controller: "facturas", id: factura}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <%= link_to url={action: "enviar_email", controller: "facturas", id: factura}, html_options={ class: "btn btn-warning", remote: true , title: 'Enviar a email', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <i class="fa fa-envelope"></i>
                   <% end %>
                 <% end%>
 
-
-                <%= link_to url={action: "descargar_cfdis", controller: "facturas",id:factura}, html_options={ class: "btn btn-success",  title: 'Descargar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
-                  <i class="fa fa-cloud-download"></i>
-                <% end %>
+                <%if (factura.estado_factura == "Activa")%>
+                  <%= link_to url={action: "descargar_cfdis", controller: "facturas",id:factura}, html_options={ class: "btn btn-default",  title: 'Descargar CFDI (xml)', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <i class="fa fa-cloud-download"></i>
+                  <% end %>
+                <%elsif (factura.estado_factura == "Cancelada")%>
+                  <%= link_to url={action: "descargar_cfdis", controller: "facturas",id:factura}, html_options={ class: "btn btn-dark Secondary",  title: 'Descargar acuse de cancelación (xml)', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                    <i class="fa fa-cloud-download"></i>
+                  <% end %>
+                <%end%>
 
                 <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                 <i class="fa fa-info-circle"></i>
