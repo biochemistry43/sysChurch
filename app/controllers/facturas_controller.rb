@@ -1367,19 +1367,42 @@ class FacturasController < ApplicationController
   end
 
   def descargar_cfdis
+
+    require 'timbrado'
+    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+    storage=gcloud.storage
+    bucket = storage.bucket "cfdis"
+
     #Si cambio de parecer, quitaré las condiciones del estado de facturas
     if @factura.estado_factura == "Activa"
-      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-      storage=gcloud.storage
-      bucket = storage.bucket "cfdis"
       ruta_storage = @factura.ruta_storage
-
       file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
+      file_download_storage_xml.download "public/#{@factura.id}_#{@factura.tipo_factura}.xml"
 
-      file_download_storage_xml.download "public/#{@factura.folio_fiscal}.xml"
+      if File.exist?("public/#{@factura.id}_#{@factura.tipo_factura}.xml")
+        xml = File.open("public/#{@factura.id}_#{@factura.tipo_factura}.xml")
+        send_file(
+          xml,
+          filename: "CFDI.xml",
+          type: "application/xml"
+        )
+      end
+
     elsif @factura.estado_factura == "Cancelada"
+      acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
+      file_download_storage_xml = bucket.file "#{acuse_cancelacion.ruta_storage}.xml"
+      file_download_storage_xml.download "public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml"
+
+      if File.exist?("public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml")
+        xml = File.open("public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml")
+        send_file(
+          xml,
+          filename: "Acuse de cancelación.xml",
+          type: "application/xml"
+        )
+      end
 =begin      
-      require 'timbrado'
+      
 
       username = "AAA010101000" # Usuario del webservice    Sí
       password = "h6584D56fVdBbSmmnB" # Contraseña del webservice   Sí
@@ -1417,14 +1440,6 @@ class FacturasController < ApplicationController
       end
 =end         
     end
-
-    if File.exist?("public/#{uuid}.xml")
-    xml = File.open("public/#{uuid}.xml")
-    send_file(
-      xml,
-      filename: "Acuse de cancelación.xml",
-      type: "application/xml"
-    )
   end
 
   def consulta_facturas

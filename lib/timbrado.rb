@@ -43,11 +43,11 @@ def recuperar_cfdi(username, password, uuids)
        <soapenv:Header/>
        <soapenv:Body>
           <urn:recuperar_comprobante soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-             <username xsi:type="xsd:string">#{username}</username>
-             <password xsi:type="xsd:string">#{password}</password>
-             <uuids xsi:type="urn:uuid">
+            <username xsi:type="xsd:string">#{username}</username>
+            <password xsi:type="xsd:string">#{password}</password>
+            <uuids xsi:type="urn:uuid">
                
-              </uuids>
+            </uuids>
           </urn:recuperar_comprobante>
        </soapenv:Body>
     </soapenv:Envelope>^
