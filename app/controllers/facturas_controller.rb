@@ -1016,7 +1016,8 @@ class FacturasController < ApplicationController
 =end
     xml_consultar_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
 
-    codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content
+    cadena_codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content
+
     estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content
     estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content
 
@@ -1034,12 +1035,11 @@ class FacturasController < ApplicationController
                           </folios_respuestas>^
           #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
           xml_procesar_respuesta = procesar_respuesta(username, password, rfc_receptor, respuestas, cert_pem, llave_pem, llave_password)
-          uuid = Nokogiri::xml_procesar_respuesta(folio.xpath('//uuid').to_s).content
-          codigo = Nokogiri::xml_procesar_respuesta(folio.xpath('//codigo').to_s).content
-          mensaje = Nokogiri::xml_procesar_respuesta(folio.xpath('//mensaje').to_s).content
+          uuid = Nokogiri::XML(xml_procesar_respuesta.xpath('//uuid').to_s).content
+          codigo = Nokogiri::XML(xml_procesar_respuesta.xpath('//codigo').to_s).content
+          mensaje = Nokogiri::XML(xml_procesar_respuesta.xpath('//mensaje').to_s).content
 
-
-          #El status del comprobante cambia a "PROCESO"(No en el sistema, sino en el gran SAT)
+          #El status del comprobante cambia a "PROCESO"(No en el sistema, sino en el proveedor)
           #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
           #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
         elsif estatus_cancelacion == "Cancelable sin aceptación"
@@ -1171,15 +1171,60 @@ class FacturasController < ApplicationController
             end
           end
         elsif estatus_cancelación == "En proceso"
-
+          #@mensaje = 
         elsif estatus_cancelación == "Solicitud Rechazada"
-
+          #@mensaje = 
         elsif estatus_cancelacion == "No cancelable"
           #Se revisa si tiene comprobantes relacionados o no y se deben de cancelar antes de cancelar el documento origen
-          uuids_documentos_relacionados = consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
-          #Se obtienen todos los folios de 
-          #Recibir como parametro si desea cancelar los documentos relacionados...
-              
+          xml_documentos_relacionados = consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
+          #Se obtienen todos los folios de los comprobantes
+          resultado_documentos_relacionados = Nokogiri::XML(xml_documentos_relacionados.xpath('//resultado').to_s).content
+          #Obtener el código del mensaje, lo demás no me importa q diga.
+  
+          #2000  Existen cfdi relacionados al folio fiscal.  Este código de respuesta se presentará cuando la petición de consulta encuentre documentos relacionados al UUID consultado.
+          #2001  No existen cfdi relacionados al folio fiscal. Este código de respuesta se presentará cuando el UUID consultado no contenga documentos relacionados a el.
+          #2002  El folio fiscal no pertenece al receptor. Este código de respuesta se presentará cuando el RFC del receptor no corresponda al UUID consultado.
+          #1101  No existen peticiones para el RFC Receptor. Este código se regresa cuando la consulta se realizó de manera exitosa, pero no se encontraron solicitudes de cancelación para el rfc receptor.
+          ['Clave: 2000', 'Clave: 2001', 'Clave: 2002', 'Clave: 1101'].each { |cve| @mensaje = "mensaje" && @clave = cve if resultado_documentos_relacionados.include? cve }
+          
+          #Solo si se encontraron documentos relacionados
+          if 'Clave: 2000' == @clave 
+            if xml_documentos_relacionados.xpath('//relacionados_padres')
+              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//uuid').to_s).content
+              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//rfc_emisor').to_s).content
+              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//rfc_receptor').to_s).content
+            end
+            if xml_documentos_relacionados.xpath('//relacionados_hijos')
+              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//uuid').to_s).content
+              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//rfc_emisor').to_s).content
+              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//rfc_receptor').to_s).content       
+            end
+            if xml_documentos_relacionados.xpath('//relacionados_abuelos')
+              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//uuid').to_s).content
+              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//rfc_emisor').to_s).content
+              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//rfc_receptor').to_s).content 
+            end
+          end
+          
+          #Cada documento relacionado necesita solicitud decancelación?
+          if 
+            respuestas =  %Q^<folios_respuestas>
+                            <uuid>#{uuid}</uuid>
+                            <rfc_emisor>#{rfc_emisor}</rfc_emisor>
+                            <total>#{total}</total>
+                            <respuesta>#{respuesta}</respuesta>
+                          </folios_respuestas>^
+
+            #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
+            xml_procesar_respuesta_doc_relacionado = procesar_respuesta(username, password, rfc_receptor_documento_relacionado, respuestas, cert_pem, llave_pem, llave_password)
+            uuid_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//uuid').to_s).content
+            codigo_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//codigo').to_s).content
+            mensaje_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//mensaje').to_s).content
+          else
+          end
+
+
+
           #¿Aplica cancelación sin ACEPTACIÓN?
           #Probablemente sirva para cuando se hagan ventas en parcialidades poor los comprobantes de recepción de pago, porque para las N.C. se pueden cancelar sin aceptación del receptor
           #xml_consulta_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)

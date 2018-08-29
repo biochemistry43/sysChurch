@@ -5,6 +5,7 @@ require 'base64'
 require 'nokogiri'
 require 'byebug'
 
+#Al 100%
 def timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
   # Generar el Envelope
   envelope = %Q^
@@ -58,7 +59,7 @@ def recuperar_cfdi(username, password, uuids)
 
 end
 
-def buscar_acuses_recepcion(username, password, *uuids, *fecha_timbrado_inicio, *fecha_timbrado_fin)
+def buscar_acuses_recepcion(username, password, uuids, fecha_timbrado_inicio, fecha_timbrado_fin)
   #username  Usuario del webservice    Sí
   #password  Contraseña del webservice   Sí
   #parametros_acuse
@@ -137,7 +138,7 @@ def consultar_rfc (username, password, rfc)
 end
 
 #-------------------------------------------------------------------------------------------------------------------------
-
+#Al 100%
 #El servicio de “cancelar_cfdi” se utiliza para cancelar uno o varios comprobantes que ya fueron timbrados. Se requiere de usuario y contraseña para utilizar el servicio.
 def cancelar_CFDIs (username, password, rfc_emisor, folios, cert_pem, llave_pem, llave_password)
 =begin
