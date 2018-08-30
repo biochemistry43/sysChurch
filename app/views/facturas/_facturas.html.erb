@@ -440,7 +440,7 @@
                 <i class="fa fa-info-circle"></i>
                 <% end %>
 
-                <% unless factura.factura_nota_creditos.present? || factura.estado_factura.eql?("Cancelada") %>
+                <% unless  factura.estado_factura.eql?("Cancelada") %>
                   <!--Se le manda su id :)-->
                   <!--%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %-->
                   <%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>

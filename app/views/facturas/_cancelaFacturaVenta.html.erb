@@ -1,9 +1,8 @@
 <%= form_tag({ controller: "facturas", action: "cancelaFacturaVenta2", id: @factura.id }, { :method => :post}) do %>
   <div class="col-md-12 col-sm-12 col-xs-12">
-    <% if (@factura.tipo_factura == "fg") || (@factura.tipo_factura == "fv" && @factura.monto <= 5000.00) %>
+    <% if @factura.tipo_factura == "fv" && @estatus_cancelacion == "Cancelable sin Aceptación".upcase%>
       <div class="form_row" style="margin-bottom: 30px;">
         <div class="btn-group" data-toggle="buttons">
-
           <%= label_tag "lbl", "lbl_factura_venta", class: "btn btn-primary btn-sd form-check-label" do %>
             <%= radio_button_tag 'rbtn', "rbtn_factura_venta", class:"form-check-input"%>Cancelar factura y venta.
             <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
@@ -14,6 +13,8 @@
           <%end%>
       </div>
       </div>
+    <%end%>
+    <% if (@factura.tipo_factura == "fg" || @estatus_cancelacion == "Cancelable sin Aceptación".upcase)%>
       <!--Los campos de envio del acuse de cancelación solo se muestra si la venta tine una factura relacionada-->
       <!--%if @venta.factura.present? && @venta.factura.estado_factura == "Activa"%-->
       <div class="item form-group col-md-12 col-sm-12 col-xs-12" >
@@ -47,6 +48,8 @@
         </div>
       </div>
 
+    <%elsif @factura.tipo_factura == "fv" && @estatus_cancelacion == "Cancelable sin Aceptación".upcase%> 
+      <!--En la cancelación se permite cancelar tambien la venta solo para las facturas de ventas.-->
       <div class="" id="cancelacion_factura_venta" style="display:none;">
         <!--Se muestran los campos para cancelar la venta-->
         <div class="item form-group col-md-12 col-sm-12 col-xs-12">
@@ -70,13 +73,18 @@
           <p class="text-danger"> La factura se cancelará al igual que la venta, si desea solo cancelar la factura de clic en el estado del botón "Solo cancelar factura".<i class= "fa fa-exclamation-circle"> </i></p>
           <p class="text-danger"> El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo).<i class= "fa fa-exclamation-circle"> </i></p>
       </div>
+    <%end%> 
 
-    <% end %> 
+    <% if @mensaje_cancelacion_timbox %>
+      <h2 class="text-danger" > <%= @mensaje_cancelacion_timbox %><i class= "fa fa-exclamation-circle"> </i></h2>
+    <%end%>
 
     <div class="actions">
       <!--div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3"-->
         <!--p class="purple">El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo) </p-->
-        <%= submit_tag  @sin_aprobacion ? 'Cancelar y enviar Acuse' : 'Realizar la petición de aceptación/rechazo', {:class=>"btn btn btn-success"} %>
+      <% if @descripcion_submit %>  
+        <%= submit_tag  @descripcion_submit, {:class=>"btn btn btn-success"} %>
+      <%end%>
       <!--/div-->
     </div>
 

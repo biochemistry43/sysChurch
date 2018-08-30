@@ -923,15 +923,135 @@ class FacturasController < ApplicationController
 
   #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
   def cancelaFacturaVenta
-    @categorias_devolucion = current_user.negocio.cat_venta_canceladas
-    #Solo se muestran los datos
-    if (@factura.tipo_factura == "fg") || (@factura.tipo_factura == "fv" && @factura.monto <= 5000.00)
-      @sin_aprobacion = true
-      if @factura.tipo_factura == "fv"
-        plantilla_email("ac_fv")
-      elsif @factura.tipo_factura == "fg"
-        plantilla_email("ac_fg")
+    #Sola las facturas de ventas son especiales como yo.
+    if @factura.tipo_factura == "fv"
+=begin
+    Cancelación del CFDI sin aceptación del receptor:
+      De acuerdo a la regla 2.7.1.39 de la Resolución Miscelánea Fiscal para el 2018, los contribuyentes podrán cancelar un CFDI sin que se requiera la aceptación por parte del receptor en los siguientes supuestos:
+
+      Que amparen ingresos por un monto de hasta $5,000.00 MXN.
+      Por concepto de nómina.
+      Por concepto de egresos.
+      Por concepto de traslado.
+      #Por concepto de ingresos expedidos a contribuyentes del RIF.
+      Emitidos a través de la herramienta electrónica de “Mis cuentas” en el aplicativo “Factura Fácil”.
+      Que amparen retenciones e información de pagos.
+      Expedidos en operaciones realizadas con el público en general de conformidad con la regla 2.7.1.24.
+      Emitidos a residentes en el extranjero para efectos fiscales conforme a la regla 2.7.1.26.
+      A través del adquirente y sector primario (reglas 2.4.3 y 2.7.4.1 de la RMF).
+      Cuando la cancelación se realice dentro de los tres días siguientes a su expedición. *
+      En ambiente de pruebas se considera 10 mins después de generado el CFDI.
+
+    Cancelación del CFDI con aceptación del receptor:
+      Los anteriores supuestos no son aplicables para la cancelación con aceptación.
+
+      Para realizar la cancelación, el receptor sólo contará con 3 días hábiles* una vez recibida la solicitud de cancelación para que se autorice o no dicho movimiento, en caso que el receptor no responda a la solicitud en el lapso de tiempo antes mencionado, la autoridad fiscal dará por aceptada la solicitud automáticamente.
+
+      *En ambiente de pruebas se considera 15 mins después de recibida la solicitud de cancelación.
+
+    Cancelación del CFDI con documentos relacionados:
+      Si el CFDI contiene documentos relacionados, el emisor sólo podrá cancelarlo siempre y cuando cancelen los CFDI relacionados y en el mismo momento el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”. 
+=end
+      require 'timbrado'
+
+      username = "AAA010101000"
+      password = "h6584D56fVdBbSmmnB"
+      rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+      rfc_receptor = @factura.tipo_factura == "fg" ? "XAXX010101000" : @factura.cliente.datos_fiscales_cliente.rfc
+      #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
+      uuid = @factura.folio_fiscal
+=begin    
+      folios =  %Q^<folio>
+                    <uuid xsi:type="xsd:string">#{uuid}</uuid>
+                    <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+                    <total xsi:type="xsd:string">#{@factura.monto}</total>
+                  </folio>^
+
+      cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+      llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+      llave_password = "12345678a"
+=end      
+      total = @factura.monto
+
+      #El servicio de “consultar_estatus” se utiliza para la consulta del estatus del CFDI, este servicio pretende proveer una forma alternativa de consulta que requiera verificar el estado de un comprobante en bases de datos del SAT. Los parámetros que se requieren en la consulta se describen en la siguiente tabla.  
+=begin      
+        Cuando el emisor del CFDI requiera cancelarlo, tendrá que consultar el estado del comprobante, si es cancelable, le enviará al receptor del mismo una “Solicitud de Cancelación” ya sea a través del Portal del SAT o del Webservice del PAC, es decir, el contribuyente que requiera cancelar una factura deberá primero solicitar autorización a su cliente.
+        La función de este servicio es consultar los estatus de los comprobantes contemplando los siguientes: 
+        Esta tabla muestra los estados posibles que puede regresar la consulta de un comprobante.
+
+        Los ESTATUS POSIBLES que puede regresar la consulta de un comprobante => Corresponde al estado del xml
+          No Encontrado: El comprobante no fue encontrado
+          Vigente: El comprobante fue encontrado y no ha sido cancelado
+          Cancelado: El comprobante fue encontrado y ha sido cancelado con anterioridad
+
+        Los TIPOS DE CANCELACIÓN que el comprobante puede tener
+          Cancelable con Aceptación: El comprobante puede ser cancelado enviando una solicitud la cual puede ser aceptada o rechazada
+          Cancelable sin Aceptación: El comprobante puede ser cancelado automáticamente
+          No Cancelable: El comprobante no puede ser cancelado*
+          *No significa que no se pueda cancelar, si no que serán aquellos que cuenten con al menos un documento relacionado con estatus “Vigente”, el emisor sólo podrá cancelarlo siempre y cuando los comprobantes relacionados se cancelen en el mismo momento que el comprobante origen y tenga estatus de “Cancelable con o sin aceptación”.
+        
+        Los STATUS DE CANCELACIÓN que se pueden obtener al hacer la consulta
+          Cancelado sin aceptación: El comprobante fue cancelado exitosamente sin requerir aceptación
+          Cancelado con aceptación:  El comprobante fue cancelado aceptando la solicitud de cancelación
+          En proceso:  El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada
+          Solicitud Rechazada: El comprobante no se cancelo porque se rechazo la solicitud de cancelación
+          Plazo Vencido: El comprobante fue cancelado ya que no se recibió respuesta del receptor en el tiempo límite.
+
+        TIMBOX LOCO!!! Todo lo anterior asi está en su documentación, pero a la hora de probar el nodo "estatus_cancelación" puede tener los valores del "TIPOS DE CANCELACIÓN" y "ESTATUS DE CANCELACIÓN" 
+=end
+      xml_consultar_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
+
+      @codigo_descripcion_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content.upcase
+      @es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
+      @estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content.upcase
+      @estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content.upcase
+      p "RESPUESTAS DE TIMBOX:"
+      p @codigo_descripcion_estatus
+      p @es_cancelable
+      p @estado
+      p @estatus_cancelacion
+
+      if @codigo_descripcion_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase#YEAH!
+        if @estado == "Vigente".upcase
+          if @es_cancelable == "Cancelable con Aceptación".upcase
+            @mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
+            @descripcion_submit = "Realizar la petición de aceptación/rechazo"
+          elsif @es_cancelable == "Cancelable sin Aceptación".upcase
+            @categorias_devolucion = current_user.negocio.cat_venta_canceladas
+            @descripcion_submit = "Cancelar factura"
+            plantilla_email("ac_fv")
+          #elsif @estatus_cancelacion == "En proceso".upcase #*
+            #@mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada"
+          #elsif @estatus_cancelacion == "Solicitud Rechazada".upcase#*
+            #@mensaje_cancelacion_timbox = "El comprobante no se canceló porque se rechaó la solicitud de cancelación"
+          elsif @es_cancelable == "No Cancelable".upcase
+            #El comprobante no puede ser cancelado
+            @mensaje_cancelacion_timbox = "El comprobante no se puede cancelar a menos que se cancelen los CFDIs relacionados e inmediatamente el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”."
+            @descripcion_submit = "Cancelar los documentos relacionados y la factura"
+          end
+        elsif @estado == "Cancelado".upcase #YEAH!
+          #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
+          if @estatus_cancelacion == "Cancelado sin aceptación".upcase #YEAH!
+            @mensaje_cancelacion_timbox = "El comprobante fue cancelado exitosamente sin requerir aceptación"
+          elsif @estatus_cancelacion = "Cancelado con aceptación".upcase
+            @mensaje_cancelacion_timbox = "El comprobante fue cancelado aceptando la solicitud de cancelación"
+          elsif @estatus_cancelacion == "Plazo Vencido".upcase
+            @mensaje_cancelacion_timbox = "El comprobante fue cancelado ya que no se recibió respuesta del receptor en el tiempo límite."
+          end
+        elsif @estado == "No Encontrado".upcase
+          #mensaje_cancelacion_timbox = ""
+          @mensaje_cancelacion_timbox = "El comprobante no fue encontrado"
+        end
+      elsif @codigo_descripcion_estatus == "N 601 - Comprobante no encontrado".upcase
+        @mensaje_cancelacion_timbox = "El comprobante no fue encontrado"
+      elsif @codigo_descripcion_estatus == "N 602 - La expresión impresa proporcionada no es válida".upcase
+         @mensaje_cancelacion_timbox = "La expresión impresa proporcionada no es válida"
       end
+    #Con esto me evito consultar el estatus del comprobante. Las facturas globales se pueden cancelar al momento.
+    elsif @factura.tipo_factura == "fg"
+      @descripcion_submit = "Cancelar factura"
+      @categorias_devolucion = current_user.negocio.cat_venta_canceladas
+      plantilla_email("ac_fg")
     end
   end
 
@@ -1016,12 +1136,12 @@ class FacturasController < ApplicationController
 =end
     xml_consultar_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
 
-    cadena_codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content
+    codigo_descripcion_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content
 
     estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content
     estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content
 
-    if codigo_estatus == "S - Comprobante obtenido satisfactoriamente"
+    if codigo_descripcion_estatus == "S - Comprobante obtenido satisfactoriamente"
       if estado == "Vigente"
 
         if estatus_cancelacion == "Cancelable con aceptación"
@@ -1239,7 +1359,6 @@ class FacturasController < ApplicationController
             end 
           end
         end
-
       elsif stado == "Cancelado"
         #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
         if estatus_cancelacion =="Cancelado sin aceptación"
@@ -1253,9 +1372,9 @@ class FacturasController < ApplicationController
         #Suena raro que no se encuentre, pero... 
       end
 
-    elsif codigo_estatus == "N 601 - Comprobante no encontrado"
+    elsif codigo_descripcion_estatus == "N 601 - Comprobante no encontrado"
 
-    elsif codigo_estatus == "N 602 - La expresión impresa proporcionada no es válida"
+    elsif codigo_descripcion_estatus == "N 602 - La expresión impresa proporcionada no es válida"
 
     end
         
@@ -1386,6 +1505,7 @@ class FacturasController < ApplicationController
           filename: "CFDI.xml",
           type: "application/xml"
         )
+
       end
 
     elsif @factura.estado_factura == "Cancelada"
