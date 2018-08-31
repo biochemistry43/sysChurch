@@ -37,7 +37,7 @@ module CFDI
 
   class Receptor < DatosComunes
      #UsoCFDI=[:UsoCFDI]
-     @cadenaOriginal = @@cadenaComun+[:UsoCFDI]#  + [:UsoCFDI]
+     @cadenaOriginal = @@cadenaComun+[:UsoCFDI] #residenciaFiscal, numRegIdTrib
      attr_accessor(@cadenaOriginal[2])
      def UsoCFDI=(usoCFDI)
        @UsoCFDI=usoCFDI.squish

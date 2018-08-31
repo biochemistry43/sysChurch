@@ -804,7 +804,7 @@ class DevolucionesController < ApplicationController
           #Forma de pago, opciones de registro:
             #La que se registró en el comprobante de tipo ingreso.
             #Con la que se está efectuando el descuento, devolución o bonificación en su caso.
-          FormaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
+          formaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
           #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
           metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
           lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,

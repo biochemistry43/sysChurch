@@ -1,146 +1,122 @@
 module CFDI
-
-
   # Crea un CFDI::Comprobante desde un string XML
   # @ param  data [String, IO] El XML a parsear, según acepte Nokogiri
   #
   # @ return [CFDI::Comprobante] El comprobante parseado
-  def self.from_xml(data)
-    xml = Nokogiri::XML(data);
+  #Va a ser necesario agregar las direcciones fiscales del emisor y resceptor despues de crear el objeto del CFDI, porque el xml(orignal sin alteraciones) q se pasará como parametro no contine esos datos por la nueva versión. 
+  def self.from_xml(string_xml)
+    xml = Nokogiri::XML(string_xml);
     xml.remove_namespaces!
-    factura = Comprobante.new
+    cfdi = Comprobante.new
+    
+    #|Mismo nombre de atributo de la clase CFDI (métodos accesores) - Mismo nombre de atributos del XML según el ANEXO 20 del SAT (Se carácterizan por iniciar en mayúsculas) - Comentarios o pendientes|
+    comprobante = xml.at_xpath('//Comprobante') # => si
 
-    comprobante = xml.at_xpath('//Comprobante')
-    emisor = xml.at_xpath('//Emisor')
-    de = emisor.at_xpath('//DomicilioFiscal')
-    exp = emisor.at_xpath('//ExpedidoEn')
-    receptor = xml.at_xpath('//Receptor')
-    dr = receptor.at_xpath('//Domicilio')
+    #====================NODO COMPROBANTE====================
+    cfdi.version = comprobante.attr('Version') # => yes - si
+    cfdi.serie = comprobante.attr('Serie') if comprobante.attr('Serie') # => yes - si
+    cfdi.folio = comprobante.attr('Folio') if comprobante.attr('Folio')# => yes - si
+    cfdi.fecha = Time.parse(comprobante.attr('Fecha')) # => yes - si 
+    cfdi.sello = comprobante.attr('Sello') # => yes - si - CONDICIONADO? SOLO PARA FACTURAS EN BORRADOR(PENDIENTES DE TIMBRAR)
+    cfdi.formaPago = comprobante.attr('FormaDePago') if comprobante.attr('FormaDePago')# => yes - si
+    cfdi.noCertificado = comprobante.attr('NoCertificado') # => yes - si - CONDICIONADO? SOLO PARA FACTURAS EN BORRADOR(PENDIENTES DE TIMBRAR) 
+    cfdi.certificado = comprobante.attr('Certificado') # => yes - si - CONDICIONADO? SOLO PARA FACTURAS EN BORRADOR(PENDIENTES DE TIMBRAR) 
+    cfdi.condicionesDePago = comprobante.attr('CondicionesDePago') if comprobante.attr('CondicionesDePago') # => yes - si
+    cfdi.subTotal = comprobante.attr('SubTotal') # => yes - si 
+    cfdi.descuento = comprobante.attr('Descuento') if comprobante.attr('Descuento')# => yes - si
+    cfdi.moneda = comprobante.attr('Moneda') #....................... => yes - si
+    cfdi.tipoCambio = comprobante.attr('tipoCambio') if comprobante.attr('Moneda') != 'MXN'# => Es opcional o amm... solo requerido cuando la moneda sea diferente a 'MXN'
+    cfdi.total = comprobante.attr('Total') # => yes - si
+    cfdi.tipoDeComprobante = comprobante.attr('TipoDeComprobante') # => yes - si 
+    cfdi.metodoDePago = comprobante.attr('MetodoDePago') if comprobante.attr('MetodoDePago')# => yes - si
+    cfdi.lugarExpedicion = comprobante.attr('LugarExpedicion') # => yes - si
+    #cfdi.confirmacion = comprobante.attr('Confirmacion') # => Es requerido cuando se agrega un cambio o total fuera del establecido. El codigo lo agrega el PAC.
 
-    factura.version = comprobante.attr('version')
-    factura.serie = comprobante.attr('serie')
-    factura.folio = comprobante.attr('folio')
-    factura.fecha = Time.parse(comprobante.attr('fecha'))
-    factura.noCertificado = comprobante.attr('noCertificado')
-    factura.certificado = comprobante.attr('certificado')
-    factura.sello = comprobante.attr('sello')
-    factura.formaDePago = comprobante.attr('formaDePago')
-    factura.condicionesDePago = comprobante.attr('condicionesDePago')
-    factura.tipoDeComprobante = comprobante.attr('tipoDeComprobante')
-    factura.lugarExpedicion = comprobante.attr('LugarExpedicion')
-    factura.metodoDePago = comprobante.attr('metodoDePago')
-    factura.moneda = comprobante.attr('Moneda')
-    factura.NumCtaPago = comprobante.attr('NumCtaPago')
-    factura.total = comprobante.attr('total').to_f
-    factura.subTotal = comprobante.attr('subTotal').to_f
-
-
-    rf = emisor.at_xpath('//RegimenFiscal')
-
+    #====================NODO EMISOR====================
+    emisor = xml.at_xpath('//Emisor') # => si
     emisor = {
-      rfc: emisor.attr('rfc'),
-      nombre: emisor.attr('nombre'),
-      regimenFiscal: rf  && rf.attr('Regimen'),
-      domicilioFiscal: {
-        calle: de.attr('calle'),
-        noExterior: de.attr('noExterior'),
-        noInterior: de.attr('noInterior'),
-        colonia: de.attr('colonia'),
-        localidad: de.attr('localidad'),
-        referencia: de.attr('referencia'),
-        municipio: de.attr('municipio'),
-        estado: de.attr('estado'),
-        pais: de.attr('pais'),
-        codigoPostal: de.attr('codigoPostal')
-      }
+      rfc: emisor.attr('Rfc'), # => yes - si
+      nombre: emisor.attr('Nombre'), # => yes - si
+      regimenFiscal: emisor.attr('RegimenFiscal') # => yes - si     
     }
+    cfdi.emisor = emisor
 
-    if exp
-      emisor[:expedidoEn] = {
-        calle: exp.attr('calle'),
-        noExterior: exp.attr('noExterior'),
-        no_int: exp.attr('noInterior'),
-        colonia: exp.attr('colonia'),
-        localidad: exp.attr('localidad'),
-        referencia: exp.attr('referencia'),
-        municipio: exp.attr('municipio'),
-        estado: exp.attr('estado'),
-        pais: exp.attr('pais'),
-        codigoPostal: exp.attr('codigoPostal')
-      }
-    end
-
-    factura.emisor = emisor;
-
-    factura.receptor = {
-      rfc: receptor.attr('rfc'),
-      nombre: receptor.attr('nombre')
+    #====================NODO RECEPTOR====================
+    receptor = xml.at_xpath('//Receptor') # => si
+    receptor = {
+      rfc: receptor.attr('Rfc'), # => yes - si
+      nombre: receptor.attr('Nombre'), # => yes - si
+      #residenciaFiscal: comprobante.attr('Descuento') # => Cuando se trate de un extranjero se deve de registrar la clave del pais de residencia
+      #numRegIdTrib: receptor.attr('NumRegIdTrib') # => Requerido cuando se incluya el complemento de comercio exterior. Es el número de registro de identidad fiscal del receptor(extranjero)
+      UsoCFDI: receptor.attr('UsoCFDI')
     }
+    cfdi.receptor = receptor
 
-    if dr
-      factura.receptor.domicilioFiscal = {
-        calle: dr.attr('calle'),
-        noExterior: dr.attr('noExterior'),
-        noInterior: dr.attr('noInterior'),
-        colonia: dr.attr('colonia'),
-        localidad: dr.attr('localidad'),
-        referencia: dr.attr('referencia'),
-        municipio: dr.attr('municipio'),
-        estado: dr.attr('estado'),
-        pais: dr.attr('pais'),
-        codigoPostal: dr.attr('codigoPostal')
-      }
-    end
-
-    factura.conceptos = []
-    #puts "conceptos: #{factura.conceptos.length}"
-    xml.xpath('//Concepto').each do |concepto|
+    #====================NODO CONCEPTOS====================
+    cfdi.conceptos = []
+    #puts "conceptos: #{cfdi.conceptos.length}"
+    xml.xpath('//Concepto').each_with_index do |concepto, index|
       hash = {
-        cantidad: concepto.attr('cantidad').to_f,
-        unidad: concepto.attr('unidad'),
-        noIdentificacion: concepto.attr('noIdentificacion'),
-        descripcion: concepto.attr('descripcion'),
-        valorUnitario: concepto.attr('valorUnitario').to_f
+        ClaveProdServ: concepto.attr('ClaveProdServ'), # => yes - si
+        NoIdentificacion: concepto.attr('NoIdentificacion'), # => yes - si
+        #Cantidad: concepto.attr('Cantidad'), # => yes - si 
+        ClaveUnidad: concepto.attr('ClaveUnidad'), # => yes - si
+        Unidad: concepto.attr('Unidad'), # => yes - si
+        Descripcion: concepto.attr('Descripcion'), # => yes - si
+        #ValorUnitario: concepto.attr('ValorUnitario'), # => yes - si
+        #Importe: concepto.attr('Importe'), # => yes - si
+        #Descuento: concepto.attr('Descuento') # => yes - si       
       }
-      factura.conceptos << Concepto.new(hash)
+      
+      #Guardo el index del concepto en un atributo del impuesto para poder relaionarlo... no se me ocurrió otra cosa.
+      impuestos_conceptos = concepto.at_xpath('//Impuestos')
+
+      #if impuestos_conceptos.empty? para los traslados y retenciones
+
+      traslados_conceptos = impuestos_conceptos.xpath('//Traslados')
+      unless traslados_conceptos.empty?
+        #cfdi.impuestos.totalImpuestosTrasladados = impuestos_node.attr('TotalImpuestosTrasladados') #... => Modifiqué la gema para que el total de impuestos se calcule.
+        traslados = []
+        traslado_concepto = traslados_conceptos.xpath('//Traslado')
+        traslado = Impuesto::Traslado.new
+        #traslado.base =  traslado_concepto.attr('Base') # => yes -  si - No solo lo convierto a flotante, sino q conservo los ceros no significativos truncando y sin redondear por  luego por 0.000001 se pone chocosito
+        traslado.tax = traslado_concepto.attr('Impuesto') # => yes - si
+        traslado.type_factor = traslado_concepto.attr('TipoFactor') # => yes - si
+        #traslado.rate = traslado_concepto.attr('TasaOCuota') # => yes - si
+        #traslado.import = traslado_concepto.attr('Importe')  # => yes - si
+        traslado.concepto_id = index # => Lo uso solo como referencia 
+        traslados << traslado
+        cfdi.impuestos.traslados = traslados
+      end
+      #Ey ejele el producto o servicio también puede tener un nodo retenciones 
+      cfdi.conceptos << Concepto.new(hash)
     end
 
-    timbre = xml.at_xpath('//TimbreFiscalDigital')
-    if timbre
-      version = timbre.attr('version');
-      uuid = timbre.attr('UUID')
-      fecha = timbre.attr('FechaTimbrado')
-      sello = timbre.attr('selloCFD')
-      certificado = timbre.attr('noCertificadoSAT')
-      factura.complemento = {
-        UUID: uuid,
-        selloCFD: sello,
-        FechaTimbrado: fecha,
-        noCertificadoSAT: certificado,
-        version: version,
-        selloSAT: timbre.attr('selloSAT')
-      }
-    end
-
-    impuestos_node = comprobante.at_xpath('//Impuestos')
-
-    traslados_node = impuestos_node.xpath('//Traslados')
-    unless traslados_node.empty?
-      factura.impuestos.totalImpuestosTrasladados = impuestos_node.attr('totalImpuestosTrasladados')
+    #====================NODO IMPUESTOS====================
+    #Llega la hora de hacer un resumen de todos los impuestos, resumen para los traslados y también para las retenciones
+    impuestos_resumen = xml.at_xpath('//Impuestos')
+    #cfdi.impuestos.totalImpuestosTrasladados = impuestos_resumen.attr('TotalImpuestosTrasladados') #... => Modifiqué la gema para que el total de impuestos se calcule, pero ahora q lo veo...
+    #cfdi.impuestos.totalImpuestosRetenidos = impuestos_resumen.attr('TotalImpuestosRetenidos')
+    traslados_resumen = impuestos_resumen.xpath('//Traslados')
+    unless traslados_resumen.empty?
       traslados = []
-      traslados_node.xpath('//Traslado').each do |traslado_node|
-        traslado = Impuestos::Traslado.new
-        traslado.impuesto = traslado_node.attr('impuesto') if traslado_node.attr('impuesto')
-        traslado.tasa = traslado_node.attr('tasa').to_f if traslado_node.attr('tasa')
-        traslado.importe = traslado_node.attr('importe').to_f if traslado_node.attr('importe')
+
+      traslados_resumen.xpath('//Traslado').each do |traslado_resumen|
+        traslado = Impuesto::Traslado.new
+        traslado.tax = traslado_resumen.attr('Impuesto') 
+        #traslado.type_factor = traslado_resumen.attr('TipoFactor')
+        #traslado.rate = traslado_resumen.attr('TasaOCuota')
+        #traslado.import = traslado_resumen.attr('Importe')
         traslados << traslado
       end
-      factura.impuestos.traslados = traslados
+      cfdi.impuestos.traslados = traslados
     end
 
+    #Las retenciones no por ahora jaja suficiente tengo con los traslados
+=begin
     retenciones_node = impuestos_node.xpath('//Retenciones')
     unless retenciones_node.empty?
-      factura.impuestos.totalImpuestosRetenidos = impuestos_node.attr('totalImpuestosRetenidos')
+      cfdi.impuestos.totalImpuestosRetenidos = impuestos_node.attr('totalImpuestosRetenidos')
       retenciones = []
       retenciones_node.xpath('//Retencion').each do |retencion_node|
         retencion = Impuestos::Retencion.new
@@ -149,11 +125,27 @@ module CFDI
         retencion.importe = retencion_node.attr('importe').to_f if retencion_node.attr('importe')
         retenciones << retencion
       end
-      factura.impuestos.retenciones = retenciones
+      cfdi.impuestos.retenciones = retenciones
+    end
+=end
+
+    #====================NODO COMPLEMENTO====================
+    #Si el xml ya cuenta con el timbre q le asigna el PAC entoonces tal vez lo unico que necesiten generar una representtaciones impresas. eso sería geniial
+    #Para el fin que lo quiero se deberá de actualizar el sello fecha y bla bla... pero para los comprobantes de captura manual si q será de gran utilidad.
+    timbre = xml.at_xpath('//TimbreFiscalDigital')
+    if timbre
+      cfdi.complemento = {
+        Version: timbre.attr('Version'), #........................... => yes - si
+        uuid: timbre.attr('UUID'), #................................. => yes - si
+        FechaTimbrado: timbre.attr('FechaTimbrado'), #............... => yes - si
+        RfcProvCertif: timbre.attr('RfcProvCertif'), #............... => yes - si 
+        SelloCFD: timbre.attr('SelloCFD'), #......................... => yes - si
+        NoCertificadoSAT: timbre.attr('NoCertificadoSAT'), #......... => yes - si
+        #SelloSAT: timbre.attr('SelloSAT') #.......................... => yes - si
+      }
     end
 
-    factura
-
+    cfdi
+    #Lo que resta es agregarle la información extra(dirección fiscal de la matriz, sucursal, receptor y sha la la sha la la)
   end
-
 end

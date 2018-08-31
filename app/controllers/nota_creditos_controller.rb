@@ -12,6 +12,11 @@ class NotaCreditosController < ApplicationController
 
     if request.get?
       if can? :create, Negocio
+        require 'cfdi'
+         #certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
+        string_xml = File.read('public/72_fv.xml')
+        p CFDI.from_xml(string_xml)
+
         @nota_creditos = current_user.negocio.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
         @nota_creditos = current_user.sucursal.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)

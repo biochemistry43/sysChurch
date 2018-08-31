@@ -296,7 +296,7 @@ class FacturasController < ApplicationController
             #Forma de pago, opciones de registro:
               #La que se registró en el comprobante de tipo ingreso.
               #Con la que se está efectuando el descuento, devolución o bonificación en su caso.
-            FormaPago: @factura.factura_forma_pago.cve_forma_pagoSAT,
+            formaPago: @factura.factura_forma_pago.cve_forma_pagoSAT,
             #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
             metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
             lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal
@@ -621,7 +621,7 @@ class FacturasController < ApplicationController
         folio: consecutivo,
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #La moneda por default es MXN
-        FormaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
+        formaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
         condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
         metodoDePago: metodo_pago_f, #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
@@ -1056,6 +1056,9 @@ class FacturasController < ApplicationController
   end
 
   def cancelaFacturaVenta2
+
+    #4 MANERAS DE CANCELAR UNA FACTURA ELECTRÓNICA 3.3 son:
+      #Solicitud de autorización vía buzón tributario o con el PAC, sin autorización, nota de crédito y por sustitución.
 =begin
   Cancelación del CFDI sin aceptación del receptor:
     De acuerdo a la regla 2.7.1.39 de la Resolución Miscelánea Fiscal para el 2018, los contribuyentes podrán cancelar un CFDI sin que se requiera la aceptación por parte del receptor en los siguientes supuestos:
@@ -1983,7 +1986,7 @@ class FacturasController < ApplicationController
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #Moneda: MXN Peso Mexicano, USD Dólar Americano, Etc…
         #La moneda por default es MXN
-        FormaPago: cve_forma_pagoSAT,
+        formaPago: cve_forma_pagoSAT,
         #El campo Condiciones de pago no debe de existir
         #Método de pago: SIEMPRE debe ser la clave “PUE” (Pago en una sola exhibición); en el caso de que se venda a parcialidades o diferido, se deberá proceder a emitir el CFDI con complemento de pagos, detallando los datos del cliente que los realiza; en pocas palabras, no esta permitido emitir un CFDI global con ventas a parcialidades o diferidas.
         metodoDePago: 'PUE',

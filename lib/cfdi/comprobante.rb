@@ -1,7 +1,7 @@
 module CFDI
   class Comprobante # La clase principal para crear Comprobantes
     #Los datos del comprobante en el orden correcto.
-    @@datosCadena =[:version,:serie,:folio, :fecha, :FormaPago, :noCertificado,:condicionesDePago, :subTotal, :Descuento, :moneda,:total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
+    @@datosCadena =[:version,:serie,:folio, :fecha, :formaPago, :noCertificado,:condicionesDePago, :subTotal, :descuento, :moneda, :tipoCambio, :total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :uuidsrelacionados, :impuestos, :cfdisrelacionados]
 
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
@@ -114,7 +114,7 @@ module CFDI
     # @param  receptor [Hash, CFDI::Entidad] Los datos de un receptor
     # @return [CFDI::Entidad] Una entidad
     def receptor= receptor
-      receptor = Rceptor.new receptor unless receptor.is_a? Receptor
+      receptor = Receptor.new receptor unless receptor.is_a? Receptor
       @receptor = receptor;
       #receptor
     end
@@ -168,7 +168,7 @@ module CFDI
         Serie: @serie,
         Folio: @folio,
         #Fecha: @fecha,
-        FormaPago: @FormaPago,
+        FormaPago: @formaPago,
         SubTotal: sprintf('%.2f', self.subTotal),
         Moneda: @moneda,
         Total: sprintf('%.2f', @total),
