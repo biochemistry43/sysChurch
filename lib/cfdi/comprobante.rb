@@ -3,7 +3,7 @@ module CFDI
     #Los datos del comprobante en el orden correcto.
     @@datosCadena =[:version,:serie,:folio, :fecha, :formaPago, :noCertificado,:condicionesDePago, :subTotal, :descuento, :moneda, :tipoCambio, :total, :tipoDeComprobante, :metodoDePago, :lugarExpedicion]
     @@data = @@datosCadena+[:emisor, :receptor, :conceptos, :sello, :certificado,:complemento, :uuidsrelacionados, :impuestos, :cfdisrelacionados]
-
+    #Más datos para la cancelación.
     attr_accessor(*@@data) #sirve para generar metodos de acceso get y set de forma rapida.
     
     @addenda = nil
