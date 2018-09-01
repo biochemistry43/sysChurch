@@ -9,8 +9,20 @@
    <link rel="stylesheet"  type="text/css" href="/home/daniel/Documentos/sysChurch/lib/factura.css"/>
    <title>Factura Electrónica <xsl:value-of select="@serie"/><xsl:value-of select="@folio"/></title>
    <!--link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"/-->
+      <script>
+        function number_pages() {
+          var vars={};
+          var x=document.location.search.substring(1).split('&');
+          for(var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}
+          var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
+          for(var i in x) {
+            var y = document.getElementsByClassName(x[i]);
+            for(var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
+          }
+        }
+      </script>
    </head>
-   <body>
+   <body onload="number_pages()">
    <!--Se obtienen los valores  -->
    <xsl:variable name="tipo_fuente"><xsl:value-of select="//cfdi:DatosPlantilla/@TipoFuente"/></xsl:variable>
    <xsl:variable name="tam_fuente"><xsl:value-of select="//cfdi:DatosPlantilla/@TamFuente"/></xsl:variable>
@@ -278,6 +290,7 @@
               ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.
             </center>
           </div>
+          Page <span class="page"></span> of <span class="topage"></span>
       </body>
       </html>
    </div>

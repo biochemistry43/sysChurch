@@ -383,7 +383,7 @@ module CFDI
                 if v.is_a? Hash
                   xml[@addenda.nombre].send(k, v)
                 elsif v.is_a? Array
-                  xml[@addenda.nombre].send(Regimenk, v)
+                  xml[@addenda.nombre].send(k, v)
                 else
                   xml[@addenda.nombre].send(k, v)
                 end

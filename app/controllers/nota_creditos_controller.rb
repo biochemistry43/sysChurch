@@ -12,10 +12,50 @@ class NotaCreditosController < ApplicationController
 
     if request.get?
       if can? :create, Negocio
+
         #require 'cfdi'
-         #certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
-        #string_xml = File.read('public/72_fv.xml')
-        #p CFDI.from_xml(string_xml)
+           #certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
+          #string_xml = File.read('public/72_fv.xml')
+          #p CFDI.from_xml(string_xml)
+
+
+        fecha_expedicion = Time.now
+
+        plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "ac")
+        tipo_fuente = plantilla_impresion.tipo_fuente
+        tam_fuente = plantilla_impresion.tam_fuente
+        color_fondo = plantilla_impresion.color_fondo
+        color_banda = plantilla_impresion.color_banda
+        color_titulos = plantilla_impresion.color_titulos
+
+        xml_acuse = Nokogiri::XML(open('public/2_ac_fv.xml'))
+        Nokogiri::XML::Builder.with(xml_acuse.at('Acuse')) do |xml|
+          # ... Use normal builder methods here ...
+          xml.RepresentacionImpresa { 
+            xml.Plantilla({TipoFuente: tipo_fuente, TamFuente: tam_fuente, ColorFondo: color_fondo, ColorBanda: color_banda, ColorTitulos: color_titulos})
+            xml.DatosInternosSistema({Folio: 934287, Serie: "ACFV", FechaExpedicion: fecha_expedicion, Comprobante: "Factura de venta"})
+          } # add the "awesome" tag below "some_tag"
+        end
+
+        a = File.open("public/acuse_prueba", "w")
+        a.write (xml_acuse)
+        a.close
+
+        #puts xml_rep_impresa
+        template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de acuse de cancelación.xsl'))
+        html_document = template.transform(xml_acuse)
+        #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
+        pdf = WickedPdf.new.pdf_from_string(html_document)
+        #Se guarda el pdf 
+        nombre_pdf="representación de un acuse.pdf"
+        save_path = Rails.root.join('public',nombre_pdf)
+        File.open(save_path, 'wb') do |file|
+            file << pdf
+        end
+
+
+
+
 
         @nota_creditos = current_user.negocio.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
