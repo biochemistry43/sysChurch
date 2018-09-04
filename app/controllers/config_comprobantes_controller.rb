@@ -354,7 +354,9 @@ class ConfigComprobantesController < ApplicationController
         
       #Se genera el pdf paramostrarlo al pulsar el botón de la vista previa
       xml_rep_impresa = comprobante.add_elements_to_xml(hash_info)
-      template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
+      #template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
+      template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas globales.xsl'))
+
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)

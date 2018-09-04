@@ -1,13 +1,16 @@
 
-
 table {
-	font-size: 12px;
-	border-collapse:collapse
-	width: 100%;
+
+		font-size: 12px; /*Solo por ahora.*/
+	  	border-collapse:collapse;
+		margin: 5px 0px 5px 0px;
+		padding: 0px;
+
+
 }
 table thead{
-	/*background-color: #204D74;*/
-	/*color:white;*/
+
+
 	text-align: center;
 }
 
@@ -19,25 +22,20 @@ th{
 	text-transform: uppercase;
 	border:none;
 }
-hr{
-	/*border:4px solid #EC971F;*/
-}
+
 .leyenda{
 	line-height: 25px;
-	color:white;
 	font-size: 12px;
-	/*background-color: #204D74;*/
+
 }
 .firma{
 	width: 30%;
-	/*border-top:1px solid #204D74;*/
+	
 	font-size: 12px;
 	text-align: center;
 
 }
-.conceptos{
-   /*border-bottom: solid 1px #204D74 ;*/
-}
+
 .serieFolio{
 	margin-top: 0px;
 
@@ -47,7 +45,7 @@ hr{
 	border:none;
 }
 .concep :nth-child(even){
-	
+
 	text-align: center;
 
 }
@@ -57,13 +55,12 @@ hr{
 }
 .paddingTablas{
 	padding-left: 10px;
+	padding-right: 10px;
 	padding-bottom: 10px;
 }
 #negocio{
 	  border:none;
 		margin-top: 0px;
-		word-break: break-all;
-    text-align: center;
 }
 #tablaRaiz{
 	border:none;
@@ -85,12 +82,8 @@ hr{
 	width: 100%;
 	align:left;
 	margin: 0px !important;
-	border-collapse:collapse;
 }
-.folioFiscal{
-	/*background-color: #204D74;*/
-	/*color: white;*/
-}
+
 .condicionesDePago{
 	font-size: 10px;
 }

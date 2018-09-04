@@ -89,7 +89,7 @@
                 </tr>
                 </thead>
                 <tbody class="emisor">
-                  <tr><td style="text-align:center;"><big><xsl:value-of select="//Folios/UUID"/></big></td>
+                  <tr><td style="text-align:center;"><xsl:value-of select="//Folios/UUID"/></td>
                       <xsl:if test="//Folios/EstatusUUID = '201'">
                         <td style="border-left: solid 1px {$color_fondo}; text-align:center;">Cancelado</td>
                       </xsl:if>
