@@ -29,8 +29,8 @@
    <xsl:variable name="color_fondo"><xsl:value-of select="//cfdi:DatosPlantilla/@ColorFondo"/></xsl:variable>
    <xsl:variable name="color_banda"><xsl:value-of select="//cfdi:DatosPlantilla/@ColorBanda"/></xsl:variable>
    <xsl:variable name="color_titulos"><xsl:value-of select="//cfdi:DatosPlantilla/@ColorTitulos"/></xsl:variable>
-   <div style="font-family: {$tipo_fuente}">
-     <table width="100%" id="tablaRaiz">
+   <div style="font-family: {$tipo_fuente};">
+     <table style="width: 100%; border: solid 1px {$color_fondo};">
         <tr>
           <td>
             <xsl:element name="img">

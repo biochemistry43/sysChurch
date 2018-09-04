@@ -5,7 +5,7 @@
   <xsl:template match="//Acuse">
      <html>
      <head>
-     <link rel="stylesheet"  type="text/css" href="/home/daniel/Documentos/sysChurch/lib/factura.css"/>
+     <link rel="stylesheet"  type="text/css" href="/home/daniel/Vídeos/sysChurch/lib/acuses de cancelación.css"/>
      <!--Para acuses de cancelación de facturas de ventas, globales, notas de crédito y todo lo habido y por haber-->
      <title>Acuse de cancelación de CFDI</title>
      <!--link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"/-->

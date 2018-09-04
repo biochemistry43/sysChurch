@@ -1,0 +1,92 @@
+
+table {
+
+		font-size: 12px; /*Solo por ahora.*/
+	  	border-collapse:collapse;
+		margin: 5px 0px 5px 0px;
+		padding: 0px;
+
+
+}
+table thead{
+
+
+	text-align: center;
+}
+
+td {
+  border:none;
+}
+
+th{
+	text-transform: uppercase;
+	border:none;
+}
+
+.leyenda{
+	line-height: 25px;
+	font-size: 12px;
+
+}
+.firma{
+	width: 30%;
+	
+	font-size: 12px;
+	text-align: center;
+
+}
+
+.serieFolio{
+	margin-top: 0px;
+
+}
+
+.emisor{
+	border:none;
+}
+.concep :nth-child(even){
+
+	text-align: center;
+
+}
+.concep :nth-child(odd){
+
+	text-align: center;
+}
+.paddingTablas{
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+#negocio{
+	  border:none;
+		margin-top: 0px;
+}
+#tablaRaiz{
+	border:none;
+}
+#total{
+	font-size: 18 !important;
+}
+#sellosDig{
+	font-size: 10;
+	word-break: break-all;
+
+}
+#text-transform{
+	text-transform: none !important;
+}
+#tablaInternaSellos{
+	font-size: 10;
+	border:none;
+	width: 100%;
+	align:left;
+	margin: 0px !important;
+}
+
+.condicionesDePago{
+	font-size: 10px;
+}
+
+
+/*Todo este show de colores y fuentes será remplazado por la configuración del usuario*/

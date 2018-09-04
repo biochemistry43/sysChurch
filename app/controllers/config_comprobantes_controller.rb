@@ -27,8 +27,10 @@ class ConfigComprobantesController < ApplicationController
       @color_titulos = @config_comprobante.color_titulos
       @color_banda = @config_comprobante.color_banda
 
-      if @config_comprobante.comprobante == "f"
-        leyenda = "Facturas"
+      if @config_comprobante.comprobante == "fv"
+        leyenda = "Facturas de ventas"
+      elsif @config_comprobante.comprobante == "fg"
+        leyenda = "Facturas globales"
       elsif @config_comprobante.comprobante == "nc"
         leyenda = "Notas de crédito"
       elsif @config_comprobante.comprobante == "ac"
@@ -79,8 +81,10 @@ class ConfigComprobantesController < ApplicationController
 
     @consulta = true
 
-    if @config_comprobante.comprobante == "f"
-      leyenda = "Facturas"
+    if @config_comprobante.comprobante == "fv"
+      leyenda = "Facturas de ventas"
+    elsif @config_comprobante.comprobante == "fg"
+      leyenda = "Facturas globales"
     elsif @config_comprobante.comprobante == "nc"
       leyenda = "Notas de crédito"
     elsif @config_comprobante.comprobante == "ac"
@@ -201,161 +205,255 @@ class ConfigComprobantesController < ApplicationController
     end
 
     def set_vista_previa(tipo_fuente, tam_fuente, color_fondo, color_titulos, color_banda)
-      #1.-Certificados, llave y clave
-      certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
-      # Esta se convierte de un archivo .key con:
-      # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-      path_llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-      password_llave = "12345678a"
-      #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-      llave = CFDI::Key.new path_llave, password_llave
-
       #Lo siguiente no aplica en la configuración de un acuse de cancelación.
       #Se arma el xml con la configuración de la plantilla
-      consecutivo = 1
-      serie = params[:comprobante] == "f" ? current_user.sucursal.clave + "F" : current_user.sucursal.clave + "NC"
-      fecha_expedicion = Time.now
-      tipo_comprobante = @config_comprobante.comprobante == "f" ? "I" : "E"
-      #Información general del comprobate
-      comprobante = CFDI::Comprobante.new({
-        serie: serie,
-            folio: consecutivo,
-            fecha: fecha_expedicion,
-            #Deberá ser de tipo Egreso
-            tipoDeComprobante: tipo_comprobante,
-            #La moneda por default es MXN
-            FormaPago: "01",
-            #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-            metodoDePago: "PUE", #Deberá ser PUE- Pago en una sola exhibición
-            lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
-            total: 2200.00
-      })
-
-      #Dirección del negocio
-      datos_fiscales_negocio = current_user.negocio.datos_fiscales_negocio
-      direccion_negocio = CFDI::DatosComunes::Domicilio.new({
-        calle: datos_fiscales_negocio.calle,
-        noExterior: datos_fiscales_negocio.numExterior,
-        noInterior: datos_fiscales_negocio.numInterior,
-        colonia: datos_fiscales_negocio.colonia,
-        localidad: datos_fiscales_negocio.localidad,
-        referencia: datos_fiscales_negocio.referencia,
-        municipio: datos_fiscales_negocio.municipio,
-        estado: datos_fiscales_negocio.estado,
-        codigoPostal: datos_fiscales_negocio.codigo_postal
-      })
-
-      #Dirección de la sucursal
-      datos_fiscales_sucursal = current_user.sucursal.datos_fiscales_sucursal
-      if  current_user.sucursal
-        direccion_sucursal = CFDI::DatosComunes::Domicilio.new({
-          calle: datos_fiscales_sucursal.calle,
-          noExterior: datos_fiscales_sucursal.numExt,
-          noInterior: datos_fiscales_sucursal.numInt,
-          colonia: datos_fiscales_sucursal.colonia,
-          localidad: datos_fiscales_sucursal.localidad,
-          referencia: datos_fiscales_sucursal.referencia,
-          municipio: datos_fiscales_sucursal.municipio,
-          estado: datos_fiscales_sucursal.estado,
-          codigoPostal: datos_fiscales_sucursal.codigo_postal,
-      })
-      else
-        expedidoEn= CFDI::DatosComunes::Domicilio.new({})
+      tipo_documento = params[:comprobante]
+      if tipo_documento == "fv"
+          serie = current_user.sucursal.clave + "FV" 
+          tipo_comprobante = "I"
+      elsif tipo_documento == "fg"
+          serie = current_user.sucursal.clave + "FG" 
+          tipo_comprobante = "I"
+      elsif tipo_documento == "nc"
+          serie = current_user.sucursal.clave + "NC"
+          tipo_comprobante = "E"
+      elsif tipo_documento == "ac"
+          serie = current_user.sucursal.clave + "AC" 
+          tipo_comprobante = "I"
       end
-
-      comprobante.emisor = CFDI::Emisor.new({
-        rfc: datos_fiscales_negocio.rfc,
-        nombre: datos_fiscales_negocio.nombreFiscal,
-        regimenFiscal: datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT,
-        domicilioFiscal: direccion_negocio,
-        expedidoEn: direccion_sucursal
-      })
-
-      #Se cargan los mismo datos del receptor, aquí solo se trata de devolución y no de una nota de crédito para enmendar un error.
-      #Atributos del receptor
-      rfc_receptor = "XAXX010101000"
-      nombre_fiscal_receptor = "Juan Pérez Martínez"
-      #Al tratarse de un CFDI de egresos, no será un comprobante de deducción para el receptor, ya que se está emitiendo para disminuir el importe de un CFDI relacionado.
-      #Por lo tanto el uso sera: G02 - Devoluciones, descuentos o bonificaciones
-
-      comprobante.receptor = CFDI::Receptor.new({
-        rfc: rfc_receptor,
-        nombre: nombre_fiscal_receptor,
-        UsoCFDI: "G02" #G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
-        #domicilioFiscal: domicilioReceptor
-      })
-
-      #Se le hace al cuento de mostrar unos cuantos conceptos con impuestos.
-      comprobante.conceptos << CFDI::Concepto.new({
-                        ClaveProdServ: "01010101", #Catálogo
-                        NoIdentificacion: "PS01",
-                        Cantidad: 1,
-                        ClaveUnidad: "H87",#Catálogo
-                        Unidad: "Pieza", #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
-                        Descripcion: "Producto ejemplo # 1", 
-                        ValorUnitario: 1500.00,
-                        Importe: 1500.00
-                        })
-      comprobante.conceptos << CFDI::Concepto.new({
-                        ClaveProdServ: "01010101", #Catálogo
-                        NoIdentificacion: "PS02",
-                        Cantidad: 1,
-                        ClaveUnidad: "H87",#Catálogo
-                        Unidad: "Pieza", #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
-                        Descripcion: "Producto ejemplo # 2", 
-                        ValorUnitario: 700.00,
-                        Importe: 700.00
-                        })
-
-          #nota_credito.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-
-           #       tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
-
-      if @config_comprobante.comprobante == "nc"
-        comprobante.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-          uuid: "BC326044-500A-46AB-871A-A6649FCB4F20" #solo para hacerle al chango uaaa uaaa jaja
-          })
-        comprobante.cfdisrelacionados = CFDI::CfdiRelacionados.new({
-          tipoRelacion: "03" # Devolución de mercancías sobre facturas o traslados previos
+     
+      unless tipo_documento == "ac"
+        consecutivo = 1
+        fecha_expedicion = Time.now
+        #Información general del comprobate
+        comprobante = CFDI::Comprobante.new({
+          serie: serie,
+              folio: consecutivo,
+              fecha: fecha_expedicion,
+              tipoDeComprobante: tipo_comprobante,
+              #La moneda por default es MXN
+              FormaPago: "01",
+              #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+              metodoDePago: "PUE", #Deberá ser PUE- Pago en una sola exhibición
+              lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
+              total: 2200.00
         })
+
+        #Dirección del negocio
+        datos_fiscales_negocio = current_user.negocio.datos_fiscales_negocio
+        direccion_negocio = CFDI::DatosComunes::Domicilio.new({
+          calle: datos_fiscales_negocio.calle,
+          noExterior: datos_fiscales_negocio.numExterior,
+          noInterior: datos_fiscales_negocio.numInterior,
+          colonia: datos_fiscales_negocio.colonia,
+          localidad: datos_fiscales_negocio.localidad,
+          referencia: datos_fiscales_negocio.referencia,
+          municipio: datos_fiscales_negocio.municipio,
+          estado: datos_fiscales_negocio.estado,
+          codigoPostal: datos_fiscales_negocio.codigo_postal
+        })
+
+        #Dirección de la sucursal
+        datos_fiscales_sucursal = current_user.sucursal.datos_fiscales_sucursal
+        if  current_user.sucursal
+          direccion_sucursal = CFDI::DatosComunes::Domicilio.new({
+            calle: datos_fiscales_sucursal.calle,
+            noExterior: datos_fiscales_sucursal.numExt,
+            noInterior: datos_fiscales_sucursal.numInt,
+            colonia: datos_fiscales_sucursal.colonia,
+            localidad: datos_fiscales_sucursal.localidad,
+            referencia: datos_fiscales_sucursal.referencia,
+            municipio: datos_fiscales_sucursal.municipio,
+            estado: datos_fiscales_sucursal.estado,
+            codigoPostal: datos_fiscales_sucursal.codigo_postal,
+        })
+        else
+          expedidoEn= CFDI::DatosComunes::Domicilio.new({})
+        end
+
+        comprobante.emisor = CFDI::Emisor.new({
+          rfc: datos_fiscales_negocio.rfc,
+          nombre: datos_fiscales_negocio.nombreFiscal,
+          regimenFiscal: datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT,
+          domicilioFiscal: direccion_negocio,
+          expedidoEn: direccion_sucursal
+        })
+
+        rfc_receptor = "XAXX010101000"
+        nombre_fiscal_receptor = tipo_documento == "fg" ? "Público en general" : "Juan Pérez Martínez" 
+        uso_cfdi = tipo_comprobante == "I" ? "P01 - Por definir" : "G02 - Devoluciones, descuentos o bonificaciones"
+        comprobante.receptor = CFDI::Receptor.new({
+          rfc: rfc_receptor,
+          nombre: nombre_fiscal_receptor,
+          UsoCFDI: uso_cfdi #G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
+          #domicilioFiscal: domicilioReceptor
+        })
+
+        #Se le hace al cuento de mostrar unos cuantos conceptos con impuestos
+        if tipo_documento == "fg" 
+          comprobante.conceptos << CFDI::Concepto.new({
+            #Clave de Producto o Servicio: 01010101 (Por Definir)
+            ClaveProdServ: "01010101", #CATALOGO
+            #En un CFDI normal es la clave interna que se le asigna a los productos pero que ni la ocupo por el momento...
+            #Peo para un comprobante simplificado ess el Número de Identificación: En él se pondrá el número de folio del ticket de venta o número de operación del comprobante, este puede ser un valor alfanumérico de 1 a 20 dígitos.
+            NoIdentificacion: "FV52887",
+            #Cantidad: Se debe incluir el valor “1″.
+            Cantidad: 1 ,
+            #Clave Unidad de Medida: Se debe incluir la clave “ACT” (Actividad).
+            ClaveUnidad: "ACT",
+            #Unidad de medida: No debe existir el campo.
+            #Descripción: Debe tener el texto “Venta“.
+            Descripcion: "Venta",
+            ValorUnitario: 1500.00,
+            Importe: 1500.00
+            })
+
+            comprobante.conceptos << CFDI::Concepto.new({
+            ClaveProdServ: "01010101", #CATALOGO
+            NoIdentificacion: "FV76839",
+            Cantidad: 1 ,
+            ClaveUnidad: "ACT",
+            Descripcion: "Venta",
+            ValorUnitario: 700.00,
+            Importe: 700.00
+            })
+
+        else
+          comprobante.conceptos << CFDI::Concepto.new({
+                            ClaveProdServ: "01010101",
+                            NoIdentificacion: "PS01",
+                            Cantidad: 1,
+                            ClaveUnidad: "H87",
+                            Unidad: "Pieza", 
+                            Descripcion: "Producto ejemplo # 1", 
+                            ValorUnitario: 1500.00,
+                            Importe: 1500.00
+                            })
+
+          comprobante.conceptos << CFDI::Concepto.new({
+                            ClaveProdServ: "01010101",
+                            NoIdentificacion: "PS02",
+                            Cantidad: 1,
+                            ClaveUnidad: "H87",
+                            Unidad: "Pieza",
+                            Descripcion: "Producto ejemplo # 2", 
+                            ValorUnitario: 700.00,
+                            Importe: 700.00
+                            })
+        end
+
+        #nota_credito.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+             #tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
+
+        if @config_comprobante.comprobante == "nc"
+          comprobante.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+            uuid: "BC326044-500A-46AB-871A-A6649FCB4F20" #solo para hacerle al chango uaaa uaaa jaja
+            })
+          comprobante.cfdisrelacionados = CFDI::CfdiRelacionados.new({
+            tipoRelacion: "03" # Devolución de mercancías sobre facturas o traslados previos
+          })
+        end
+
+        total_letras = comprobante.total_to_words
+        xml_certificado_sellado = comprobante.comprobante_to_xml
+
+        #La configuración del comprobante
+        #codigoQR = comprobante.qr_code xml_certificado_sellado
+        cadOrigComplemento = " "#nota_credito.complemento.cadena_TimbreFiscalDigital
+        logo = current_user.negocio.logo
+        #No hay nececidad de darle a escoger el uso del cfdi al usuario.
+        uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
+        #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
+        cve_nombre_forma_pago = "01 - Efectivo"
+        #método de pago(clave y descripción)
+        #"deberá de ser siempre.. PUE"
+        cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"
+        #Regimen fiscal
+        cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
+        nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
+        cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
+        #Para el nombre del changarro feo jajaja
+        nombre_negocio = current_user.negocio.nombre
+
+        #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
+        hash_info = {xml_copia: Nokogiri::XML(xml_certificado_sellado), codigoQR: "",
+         logo: logo, cadOrigComplemento: cadOrigComplemento, 
+         uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
+          tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo:@color_fondo, color_banda:@color_banda, color_titulos:@color_titulos,
+          tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
+        }
+           
+        hash_info[:tel_sucursal] = current_user.sucursal.telefono
+        hash_info[:email_sucursal] = current_user.sucursal.email
+          
+
+        #Se genera el pdf paramostrarlo al pulsar el botón de la vista previa
+        xml_rep_impresa = comprobante.add_elements_to_xml(hash_info)
+        if tipo_documento == "fv"
+          template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas de ventas.xsl'))
+        elsif tipo_documento == "fg"
+          template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas globales.xsl'))
+        elsif tipo_documento == "nc"
+          template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de notas de crédito.xsl'))
+        end
+      else
+        #Un ejemplo de acuse del ambiente de prueba de TIMBOX para poder generar la represenación impresa del
+        acuse = %Q^<Acuse Fecha="2018-08-16T22:56:10" RfcEmisor="AAA010101AAA">
+                      <Folios>
+                      <UUID>8C366672-968E-4DF9-A089-4FADB0DE27DC</UUID>
+                      <EstatusUUID>201</EstatusUUID>
+                      </Folios>
+                      <Signature xmlns="http://www.w3.org/2000/09/xmldsig#" Id="SelloSAT">
+                      <SignedInfo>
+                      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                      <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha512"/>
+                      <Reference URI="">
+                      <Transforms>
+                      <Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+                      <XPath>not(ancestor-or-self::*[local-name()='Signature'])</XPath>
+                      </Transform>
+                      </Transforms>
+                      <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"/>
+                      <DigestValue>
+                      ML2rVJ79GS6cQNjRI7wmoRu5aFykTgian5alYvohYhR5Dh3QB43LX1RadDFutgMIM3q60LozLGdtmLVDdnhZsg==
+                      </DigestValue>
+                      </Reference>
+                      </SignedInfo>
+                      <SignatureValue>
+                      lO73l44krAoObyw+HGI/ychDJa3PpxiqDWZ0tLqUrhDj0E4Dv5mWE1t4wzOST26zJENixF4ZBGAk8Jj+fM8Kuw==
+                      </SignatureValue>
+                      <KeyInfo>
+                      <KeyName>00001088888800000016</KeyName>
+                      <KeyValue>
+                      <RSAKeyValue>
+                      <Modulus>
+                      xnL2zDPtH5jDsAZDTIfMqbKGrve+At8Kyx2EZvbfXbpK9uVExWS874oMelFzNq69/YqSReT3I7I8wr+joy5O7ouZH+4KWdIGp4Si6lHe0kntxzNmuuKyOPkJ9tMcntnFmQ4bfxFxlg/Ud2hCtuoy3j2xYkIXu5O4pGM98Nz8pAM=
+                      </Modulus>
+                      <Exponent>AQAB</Exponent>
+                      </RSAKeyValue>
+                      </KeyValue>
+                      </KeyInfo>
+                      </Signature>
+                      </Acuse>
+        ^
+
+        fecha_expedicion = Time.now
+
+        xml_acuse = Nokogiri::XML(acuse)
+        Nokogiri::XML::Builder.with(xml_acuse.at('Acuse')) do |xml|
+          # ... Use normal builder methods here ...
+          xml.RepresentacionImpresa { 
+            xml.Plantilla({TipoFuente: tipo_fuente, TamFuente: tam_fuente, ColorFondo: color_fondo, ColorBanda: color_banda, ColorTitulos: color_titulos})
+            xml.DatosInternosSistema({Folio: 934287, Serie: "ACFV", FechaExpedicion: fecha_expedicion, Comprobante: "Factura de venta"})
+          } # add the "awesome" tag below "some_tag"
+        end
+
+        template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de acuses de cancelación.xsl'))
+
+        xml_rep_impresa = Nokogiri::XML(acuse)
+        #Un acuse no necesita demaciada información(direcciones o desglose de la factura cancelada), almenos que algún cliente feo lo solicite, sería raro, pero en este mundo hay de todo jajaja.
+        template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de acuses de cancelación.xsl'))
       end
-
-      total_letras = comprobante.total_to_words
-      xml_certificado_sellado = comprobante.comprobante_to_xml
-
-      #La configuración del comprobante
-      #codigoQR = comprobante.qr_code xml_certificado_sellado
-      cadOrigComplemento = " "#nota_credito.complemento.cadena_TimbreFiscalDigital
-      logo = current_user.negocio.logo
-      #No hay nececidad de darle a escoger el uso del cfdi al usuario.
-      uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
-      #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
-      cve_nombre_forma_pago = "01 - Efectivo"
-      #método de pago(clave y descripción)
-      #"deberá de ser siempre.. PUE"
-      cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"
-      #Regimen fiscal
-      cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
-      nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
-      cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
-      #Para el nombre del changarro feo jajaja
-      nombre_negocio = current_user.negocio.nombre
-
-      #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-      hash_info = {xml_copia: Nokogiri::XML(xml_certificado_sellado), codigoQR: "",
-       logo: logo, cadOrigComplemento: cadOrigComplemento, 
-       uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
-        tipo_fuente: @tipo_fuente, tam_fuente: @tam_fuente, color_fondo:@color_fondo, color_banda:@color_banda, color_titulos:@color_titulos,
-        tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
-      }
-         
-      hash_info[:tel_sucursal] = current_user.sucursal.telefono
-      hash_info[:email_sucursal] = current_user.sucursal.email
-        
-      #Se genera el pdf paramostrarlo al pulsar el botón de la vista previa
-      xml_rep_impresa = comprobante.add_elements_to_xml(hash_info)
-      #template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
-      template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas globales.xsl'))
 
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
