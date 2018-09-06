@@ -1006,17 +1006,17 @@ class FacturasController < ApplicationController
       @estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content.upcase
       @estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content.upcase
       p "RESPUESTAS DE TIMBOX:"
-      p @codigo_descripcion_estatus
-      p @es_cancelable
-      p @estado
-      p @estatus_cancelacion
+      p "codigo_estatus - #{@codigo_descripcion_estatus}"
+      p "es_cancelable - #{@es_cancelable}"
+      p "estado - #{@estado}"
+      p "estatus_cancelacion - #{@estatus_cancelacion}"
 
-      if @codigo_descripcion_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase#YEAH!
-        if @estado == "Vigente".upcase
+      if @codigo_descripcion_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase #YEAH!
+        if @estado == "Vigente".upcase # YEAH!
           if @es_cancelable == "Cancelable con Aceptación".upcase
             @mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
             @descripcion_submit = "Realizar la petición de aceptación/rechazo"
-          elsif @es_cancelable == "Cancelable sin Aceptación".upcase
+          elsif @es_cancelable == "Cancelable sin Aceptación".upcase # YEAH!
             @categorias_devolucion = current_user.negocio.cat_venta_canceladas
             @descripcion_submit = "Cancelar factura"
             plantilla_email("ac_fv")
