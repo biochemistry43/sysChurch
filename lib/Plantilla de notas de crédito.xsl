@@ -63,14 +63,15 @@
                     </thead>
                     <tbody>
                       <td  style="color: {$color_titulos}; background-color: {$color_fondo};">
-                        <table style="width: 230px; height: 100%;" class="serieFolio">
-                          <tr><th style="color: {$color_titulos};">Serie: <xsl:value-of select="@Serie"/></th></tr>
-                          <tr><th style="color: {$color_titulos};">Folio: <xsl:value-of select="@Folio"/></th></tr>
-                          <tr><th style="color: {$color_titulos};">Fecha y hora de expedición: <xsl:value-of select="@Fecha"/></th></tr>
+                        <table style="height: 100%; text-align: center; border-top: solid 1px #fff;" class="serieFolio">
+                          <tr><td style="color: {$color_titulos};"><b>SERIE: </b><xsl:value-of select="@Serie"/></td></tr>
+                          <tr><td style="color: {$color_titulos};"><b>FOLIO: </b><xsl:value-of select="@Folio"/></td></tr>
+                          <tr><th style="color: {$color_titulos};">Fecha y hora de expedición:</th></tr>
+                          <tr><td style="color: {$color_titulos};"><xsl:value-of select="@Fecha"/></td></tr>
                         </table>
                       </td>
                       <td style="text-align: justify;">
-                        <table style="height: 100%;">
+                        <table style="height: 100%; text-align: justify;">
                           <tr>
                             <td><b>FOLIO FISCAL: </b><xsl:value-of select="//@UUID"/>
                             </td>
@@ -100,11 +101,11 @@
 
         <!--DIRECCIÓN FISCAL DEL NEGOCIO Y DE LA SUCURSSAL -->
         <tr>
-          <table>
+          <table style="text-align: justify;">
             <thead>
-              <th style="color: {$color_titulos}; background-color: {$color_fondo};"></th>
-              <th style="color: {$color_titulos}; background-color: {$color_fondo};">Negocio</th>
-              <th style="color: {$color_titulos}; background-color: {$color_fondo};">Sucursal</th>
+              <th style="color: {$color_titulos}; background-color: {$color_fondo}; width: 12%;"></th>
+              <th style="color: {$color_titulos}; background-color: {$color_fondo}; width: 44%;">Negocio</th>
+              <th style="color: {$color_titulos}; background-color: {$color_fondo}; width: 44%;">Sucursal</th>
             </thead>
             <tbody>
               <tr style="border-bottom: solid 1px {$color_fondo};">
@@ -156,19 +157,18 @@
 
         <!--DATOS DEL RECEPTOR-->
         <tr>
-            <table width="100%" border="1" class="texto_izquierda">
+            <table border="1" style="text-align: justify;">
                <thead>
-               <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};" colspan="4" >Receptor</th></tr>
+               <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};" colspan="2" >Receptor</th></tr>
                </thead>
                <tbody>
 
                     <tr style="border-bottom: solid 1px {$color_fondo};">
-                      <th >R.F.C.: </th><td><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
-                      <th >Nombre:  </th><td><xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
+                      <td style="width: 50%;"><b>R.F.C.: </b><xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
+                      <td style="width: 50%;"><b>NOMBRE</b><xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
                     </tr>
                     <tr style="border-bottom: solid 1px {$color_fondo};">
-                      <th >Dirección:  </th>
-                      <td colspan="3">
+                      <td colspan="2"><b>DIRECCIÓN: </b>
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@calle"/>, No.
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@noExterior"/>
                         <xsl:if test="//cfdi:DomicilioReceptor/@noInterior">, No. Int.
@@ -184,10 +184,12 @@
                         <xsl:value-of select="//cfdi:DomicilioReceptor/@estado"/>.
                       </td>
                     </tr>
-                    <tr style="border-bottom: solid 1px {$color_fondo};"><th >Uso CFDI:  </th><td  colspan="3"><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td></tr>
+                    <tr style="border-bottom: solid 1px {$color_fondo};">
+                      <td  colspan="2"><b>USO DEL CFDI: </b><xsl:value-of select="cfdi:Receptor/@UsoCFDI"/> - <xsl:value-of select="cfdi:RepresentacionImpresa/@UsoCfdiDescripcion"/></td>
+                    </tr>
                     <tr>
-                      <th >Teléfono: </th> <td><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td>
-                      <th >Email: </th> <td><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td>
+                      <td style="width: 50%;" ><b>TELÉFONO: </b><xsl:value-of select="//cfdi:DatosReceptor/@Telefono1Receptor"/></td>
+                      <td style="width: 50%;"><b>EMAIL: </b><xsl:value-of select="//cfdi:DatosReceptor/@EmailReceptor"/></td>
                     </tr>
              </tbody>
              </table>
@@ -275,7 +277,7 @@
             </table>  
           </tr>
 
-           <div style="color: {$color_titulos}; background-color: {$color_fondo}" class="leyenda">
+           <div style="color: {$color_titulos}; background-color: {$color_banda}" class="leyenda">
             <center>
               ESTE DOCUMENTO ES UNA REPRESENTACIÓN IMPRESA DE UN CFDI.
             </center>

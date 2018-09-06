@@ -1,4 +1,3 @@
-
 table {
 
 		font-size: 12px; /*Solo por ahora.*/
@@ -10,44 +9,41 @@ table {
 		border-left: none;
 		border-right: none;
 		width: 100%;
+		word-break: break-all;
 
 }
 table thead{
-
-
 	text-align: center;
 }
 
 td {
   border:none;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 th{
 	text-transform: uppercase;
 	border:none;
+	padding-left: 2px;
+  	padding-right: 2px;
 }
 .texto_izquierda{
 	text-align: left;
-
 }
 
 .leyenda{
 	line-height: 25px;
 	font-size: 12px;
-
-
 }
 .firma{
 	width: 30%;
-	
 	font-size: 12px;
 	text-align: center;
-
 }
 
 .serieFolio{
 	margin-top: 0px;
-
 }
 
 .emisor{

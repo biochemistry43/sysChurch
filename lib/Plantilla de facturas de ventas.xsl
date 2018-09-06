@@ -104,7 +104,7 @@
                  </tr>
                  <tr>
                    <td style="width: 50%;"><b>TELÉFONO: </b><xsl:value-of select="//cfdi:DatosSucursal/@TelefonoSucursal"/> </td>
-                   <td style="width: 50%;">EMAIL: <xsl:value-of select="//cfdi:DatosSucursal/@EmailSucursal"/> </td></tr>
+                   <td style="width: 50%;"><b>EMAIL: </b><xsl:value-of select="//cfdi:DatosSucursal/@EmailSucursal"/> </td></tr>
                </tbody>
             </table>
         </tr>
