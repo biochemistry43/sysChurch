@@ -263,17 +263,10 @@
                     </xsl:element>
                   </td>
                   <td>
-                    <table>
-                      <tr><td><b>SELLO DIGITAL DEL CFDI: </b><small><xsl:value-of select="@Sello"/>eXDsJQJbPAW6HBDKtCAyfdD9n61t75JwglLcMZo9zrFk7FbpGgl5PiztPJsVkhHRusaZsMorKhCUmAlD6Ni+9TH7rk7/J/dTrQvMLgIy3crFw0HwwuK1O/LibjJMBqzEAGLw+b7SIt
-+HlH9Y1VtPEB9hSdcyoEFXnzKJ0WnW3PWrpOpq7XX34rubJfCaod5QVDbUipj5ze3kyrh8yeCR5fHGwMUw0mMtW6xKu0bhNGfktUsiwhT/Jnklm1nDK9cWjinqpHFMgDscQGKE7PR9
-VhBxbkAMOBSIF6x5x9Vweeb2hwy4LI526vEw12+QrjKqwQ0vItptbXhAowhbh2hh2Q==</small></td></tr>
-                      <tr><td><b>SELLO DIGITAL DEL SAT: </b><small><xsl:value-of select="//@SelloSAT"/>mzvoBoMdpLUODingtlU7maQEBmXxeRMsCee/cJXIv0MBaSne7L9FHDoUP33q0cB0NSl/+apwp7dQ40VX35zgEZBFSRzpvJzLRLnNOv2faoCb0PWuplzpLqDtc02gcYGxpMmsNVhn5f
-7oUw2q8RS1WH9/KgYUQcqg8tvC7+PBKKyvvAHoL/6Oj5cuDqNU/WwE5jWyfOf8TeZgL3GxcojXCq39kcI3AhCFfp6EdRrlzaMcRaY//wpBJthj3hI446IVVuxuoJ+NsyFRaTKSovLf
-LS/daTHg+faVakYXFk7SPlYVVrwR2GUIYfzUuNhfGU5Nfi4vKvgq/2XLHMC+/l8z0A==</small></td></tr>
-                      <tr><td><b>CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT: </b><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/>||1.1|82F74B84-9B4E-47DC-9BE2-4D259D2456E6|2018-08-22T03:37:05|IAD121214B34|eXDsJQJbPAW6HBDKtCAyfdD9n61t75JwglLcMZo9zrFk7FbpGgl5PiztPJsVkh
-HRusaZsMorKhCUmAlD6Ni+9TH7rk7/J/dTrQvMLgIy3crFw0HwwuK1O/LibjJMBqzEAGLw+b7SIt+HlH9Y1VtPEB9hSdcyoEFXnzKJ0WnW3PWrpOpq7XX34rubJfCaod5QVDbUipj5
-ze3kyrh8yeCR5fHGwMUw0mMtW6xKu0bhNGfktUsiwhT/Jnklm1nDK9cWjinqpHFMgDscQGKE7PR9VhBxbkAMOBSIF6x5x9Vweeb2hwy4LI526vEw12+QrjKqwQ0vItptbXhAowhbh2
-hh2Q==|20001000000300022323||</small></td>
+                    <table style="word-break: break-all;">
+                      <tr><td><b>SELLO DIGITAL DEL CFDI: </b><small><xsl:value-of select="@Sello"/></small></td></tr>
+                      <tr><td><b>SELLO DIGITAL DEL SAT: </b><small><xsl:value-of select="//@SelloSAT"/></small></td></tr>
+                      <tr><td><b>CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICACIÓN DIGITAL DEL SAT: </b><small><xsl:value-of select="cfdi:RepresentacionImpresa/@CadOrigComplemento"/></small></td>
                       </tr>
                     </table>
                   </td>

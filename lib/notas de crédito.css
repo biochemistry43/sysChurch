@@ -34,7 +34,7 @@ th{
 .leyenda{
 	line-height: 25px;
 	font-size: 12px;
-	
+
 
 }
 .firma{
@@ -78,9 +78,7 @@ th{
 	font-size: 18 !important;
 }
 #sellosDig{
-	font-size: 10;
 	word-break: break-all;
-
 }
 #text-transform{
 	text-transform: none !important;
