@@ -66,17 +66,18 @@
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@codigoPostal"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@municipio"/>,
                 <xsl:value-of select="//cfdi:DomicilioEmisor/@estado"/>.</td></tr>
-              <tr><td><b>TELÉFONO: </b> <xsl:value-of select="//cfdi:DatosEmisor/@TelefonoNegocio"/></td></tr>
-              <tr><td><b>Email: </b> <xsl:value-of select="//cfdi:DatosEmisor/@EmailNegocio"/></td></tr>
+              <tr><td><b>TELÉFONO: </b> <xsl:value-of select="//cfdi:DatosEmisor/@TelefonoNegocio"/><b> EMAIL: </b> <xsl:value-of select="//cfdi:DatosEmisor/@EmailNegocio"/></td></tr>
               <tr><td><b>PÁGINA WEB: </b> <xsl:value-of select="//cfdi:DatosEmisor/@PagWebNegocio"/></td></tr>
             </table>
           </td>
           <td align="right" >
-            <table width="230px" style="border: solid 1px {$color_fondo};" class="serieFolio">
+            <table width="230px" style="border: solid 1px {$color_fondo}; text-align: center;" class="serieFolio">
               <tr><th style="color: {$color_titulos}; background-color: {$color_fondo}; font-size:18px;" >Datos internos</th></tr>
-              <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};">Serie: <xsl:value-of select="@Serie"/></th></tr>
-              <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};">Folio: <xsl:value-of select="@Folio"/></th></tr>
-              <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};">Fecha y hora: <xsl:value-of select="@Fecha"/></th></tr>
+              <tr><td style="color: {$color_titulos}; background-color: {$color_fondo};"><b>SERIE: </b><xsl:value-of select="@Serie"/></td></tr>
+              <tr><td style="color: {$color_titulos}; background-color: {$color_fondo};"><b>FOLIO: </b><xsl:value-of select="@Folio"/></td></tr>
+              <tr><th style="color: {$color_titulos}; background-color: {$color_fondo};">Fecha y hora de expedición: </th></tr>
+              <tr><td style="color: {$color_titulos}; background-color: {$color_fondo};"><xsl:value-of select="@Fecha"/></td></tr>
+
             </table>
           </td>
         </tr>
@@ -116,7 +117,7 @@
                </thead>
                <tbody>
                     <tr>
-                      <td style="width: 50%;"> <b>Nombre: </b> <xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
+                      <td style="width: 50%;"> <b>NOMBRE: </b> <xsl:value-of select="cfdi:Receptor/@Nombre"/></td>
                       <td style="width: 50%;"> <b>R.F.C.: </b> <xsl:value-of select="cfdi:Receptor/@Rfc"/></td>
                     </tr>
                     <tr>

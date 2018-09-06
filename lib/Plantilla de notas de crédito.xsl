@@ -77,15 +77,15 @@
                             </td>
                           </tr>
                           <tr>
-                            <td><b>FECHA Y HORA DE CERTIFICACIÓN: </b>2018-08-13T18:21:14<xsl:value-of select="//@FechaTimbrado"/>
+                            <td><b>FECHA Y HORA DE CERTIFICACIÓN: </b><xsl:value-of select="//@FechaTimbrado"/>
                             </td>
                           </tr>
                           <tr>
-                            <td><b>NO. DE SERIE DEL CSD: </b>30001000000300023708<xsl:value-of select="@NoCertificado"/>
+                            <td><b>NO. DE SERIE DEL CSD: </b><xsl:value-of select="@NoCertificado"/>
                             </td>
                           </tr>
                           <tr>
-                            <td><b>NO. DE SERIE DEL CSD DEL SAT: </b>20001000000300022323<xsl:value-of select="//@NoCertificadoSAT"/>
+                            <td><b>NO. DE SERIE DEL CSD DEL SAT: </b><xsl:value-of select="//@NoCertificadoSAT"/>
                             </td>
                           </tr>
                         </table>
@@ -287,7 +287,7 @@
             <table style="border:none;">
               <tr>
                 <td>
-                  Esta representación impresa de una factura global fue expedida por el sistema OMILOS (punto de venta) de KODIKAS. Pág web: kodikas.com.mx
+                  Esta representación impresa de una nota de crédito fue expedida por el sistema OMILOS (punto de venta) de KODIKAS. Pág web: kodikas.com.mx
                 </td>
                   <td>
                      <xsl:element name="img">
