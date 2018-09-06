@@ -5,7 +5,11 @@ table {
 	  	border-collapse:collapse;
 		margin: 5px 0px 5px 0px;
 		padding: 0px;
-
+		border-top: none;
+		border-bottom: none;
+		border-left: none;
+		border-right: none;
+		width: 100%;
 
 }
 table thead{
@@ -22,10 +26,15 @@ th{
 	text-transform: uppercase;
 	border:none;
 }
+.texto_izquierda{
+	text-align: left;
+
+}
 
 .leyenda{
 	line-height: 25px;
 	font-size: 12px;
+	
 
 }
 .firma{

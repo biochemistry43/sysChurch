@@ -207,7 +207,7 @@ class ConfigComprobantesController < ApplicationController
     def set_vista_previa(tipo_fuente, tam_fuente, color_fondo, color_titulos, color_banda)
       #Lo siguiente no aplica en la configuración de un acuse de cancelación.
       #Se arma el xml con la configuración de la plantilla
-      tipo_documento = params[:comprobante]
+      tipo_documento = @config_comprobante.comprobante || params[:comprobante]
       if tipo_documento == "fv"
           serie = current_user.sucursal.clave + "FV" 
           tipo_comprobante = "I"
