@@ -78,14 +78,17 @@
 
       <%end%>
     <%end%>
+
     <% if @mensaje_cancelacion_timbox %>
       <h2 class="text-danger" > <%= @mensaje_cancelacion_timbox %><i class= "fa fa-exclamation-circle"> </i></h2>
     <%end%>
-
     <div class="actions">
       <!--div class="actions col-md-9 col-sm-9 col-xs-12 col-md-offset-3"-->
         <!--p class="purple">El monto de la venta será deducido al saldo de la caja que realizó la venta (en el caso de pagos en efectivo) </p-->
       <% if @descripcion_submit %>  
+        <!--Solo se enviarán los siguientes parametros si el submit es visible, si es visible quiere decir que el comprobante es vigente y ńo solo eso sino que se puede cancelar con o sin aceptación, poque tambien puede estar vigente pero en cambio pude estar en proceso de aceptación-->
+        <% hidden_field_tag :es_cancelable, @es_cancelable%>
+     
         <%= submit_tag  @descripcion_submit, {:class=>"btn btn btn-success"} %>
       <%end%>
       <!--/div-->
