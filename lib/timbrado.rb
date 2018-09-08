@@ -327,15 +327,7 @@ def procesar_respuesta (username, password, rfc_receptor, respuestas, cert_pem, 
     # Hacer el llamado al metodo 'consultar_status'
     response = client.call(:procesar_respuesta, { "xml" => envelope })
     documento = Nokogiri::XML(response.to_xml) 
-=begin
-incluir dentro del nodo "respuestas"
-    <folios_respuestas>
-      <uuid>#{uuid}</uuid>
-      <rfc_emisor>#{rfc_emisor}</rfc_emisor>
-      <total>#{total}</total>
-      <respuesta>#{respuesta}</respuesta>
-    </folios_respuestas>
-=end
+
 end
 
 module Timbox

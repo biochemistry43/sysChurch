@@ -1079,6 +1079,7 @@ class FacturasController < ApplicationController
 
     username = "AAA010101000"
     password = "h6584D56fVdBbSmmnB"
+    
     rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
     rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
     #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
