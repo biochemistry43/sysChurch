@@ -12,6 +12,7 @@ class NotaCreditosController < ApplicationController
 
     if request.get?
       if can? :create, Negocio
+
         @nota_creditos = current_user.negocio.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
         @nota_creditos = current_user.sucursal.nota_creditos.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)

@@ -946,6 +946,7 @@ class FacturasController < ApplicationController
       Si el CFDI contiene documentos relacionados, el emisor sólo podrá cancelarlo siempre y cuando cancelen los CFDI relacionados y en el mismo momento el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”. 
 =end
       require 'timbrado'
+      servicio = Timbox::Servicios.new
 
       username = "AAA010101000"
       password = "h6584D56fVdBbSmmnB"
@@ -992,7 +993,7 @@ class FacturasController < ApplicationController
 
         TIMBOX LOCO!!! Todo lo anterior asi está en su documentación, pero a la hora de probar el nodo "estatus_cancelación" puede tener los valores del "TIPOS DE CANCELACIÓN" y "ESTATUS DE CANCELACIÓN" 
 =end
-      xml_consultar_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
+      xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
 
       @codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content.upcase
       @es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
@@ -1077,6 +1078,8 @@ class FacturasController < ApplicationController
 
     require 'timbrado'
 
+    servicio = Timbox::Servicios.new
+
     username = "AAA010101000"
     password = "h6584D56fVdBbSmmnB"
     
@@ -1096,14 +1099,13 @@ class FacturasController < ApplicationController
     total = @factura.monto
 
     #Solo se recibe como parametro el resultado de la consulta 'es_cancelable' por que se supone que el comprobante se obtubo satisfactoriamente y está vigente
-
     if params[:commit] == "Realizar la petición de aceptación/rechazo" # => "Cancelable con Aceptación".upcase
       #Para la otra debo de poner mayor atención, en este servicio se necesita el CSD  del reseptor y no del emisor.
       cert_pem_receptor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
       llave_pem_receptor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
       llave_password = "12345678a" 
 
-      respuesta = "A"
+      respuesta = "R"
       respuestas =  %Q^<folios_respuestas>
                           <uuid>#{uuid}</uuid>
                           <rfc_emisor>#{rfc_emisor}</rfc_emisor>
@@ -1112,14 +1114,19 @@ class FacturasController < ApplicationController
                         </folios_respuestas>^
 
       #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
-      xml_procesar_respuesta = procesar_respuesta(username, password, rfc_receptor, respuestas, cert_pem_receptor, llave_pem_receptor, llave_password)
-      uuid = Nokogiri::XML(xml_procesar_respuesta.xpath('//uuid').to_s).content
-      codigo = Nokogiri::XML(xml_procesar_respuesta.xpath('//codigo').to_s).content
-      mensaje = Nokogiri::XML(xml_procesar_respuesta.xpath('//mensaje').to_s).content
+      hash_procesar_respuesta =  servicio.procesar_respuesta(username, password, rfc_receptor, respuestas, cert_pem_receptor, llave_pem_receptor, llave_password)
+      folios_respuesta = hash_procesar_respuesta[:procesar_respuesta_response][:procesar_respuesta_result][:folios]
+      xml_folios_respuesta = Nokogiri::XML(folios_respuesta.to_s)
+      uuid = xml_folios_respuesta.xpath('//uuid').text
+      codigo = xml_folios_respuesta.xpath('//codigo').text
+      mensaje = xml_folios_respuesta.xpath('//mensaje').text
 
       p "uuid - #{uuid}"
       p "codigo - #{codigo}"
       p "mensaje - #{mensaje}"
+
+      erorr_procesar_respuesta = Timbox::Errores::ERRORES_PROCESADO_RESPUESTA[uuid]
+
       #El status del comprobante cambia a "PROCESO"(No en el sistema, sino en el proveedor)
       #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
       #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
@@ -1130,7 +1137,7 @@ class FacturasController < ApplicationController
                         <total xsi:type="xsd:string">#{@factura.monto}</total>
                       </folio>^
           #Se procede a cancelar en el mismo momento. Se cancela como se solia hacer antes, es decir directamente sin tantos rollos
-          xml_cancelado = cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem_emisor, llave_pem_emisor, llave_password)
+          xml_cancelado =  servicio.cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem_emisor, llave_pem_emisor, llave_password)
           #se extrae el acuse de cancelación del xml cancelado
           acuse = xml_cancelado.xpath("//acuse_cancelacion").text
 
@@ -1260,7 +1267,7 @@ class FacturasController < ApplicationController
     #elsif estatus_cancelación == "Solicitud Rechazada"
     elsif es_cancelable == "No Cancelable".upcase
           #Se revisa si tiene comprobantes relacionados o no y se deben de cancelar antes de cancelar el documento origen
-          xml_documentos_relacionados = consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
+          xml_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
           #Se obtienen todos los folios de los comprobantes
           resultado_documentos_relacionados = Nokogiri::XML(xml_documentos_relacionados.xpath('//resultado').to_s).content
           #Obtener el código del mensaje, lo demás no me importa q diga.
@@ -1300,7 +1307,7 @@ class FacturasController < ApplicationController
                           </folios_respuestas>^
 
             #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
-            xml_procesar_respuesta_doc_relacionado = procesar_respuesta(username, password, rfc_receptor_documento_relacionado, respuestas, cert_pem, llave_pem, llave_password)
+            xml_procesar_respuesta_doc_relacionado = servicio.procesar_respuesta(username, password, rfc_receptor_documento_relacionado, respuestas, cert_pem, llave_pem, llave_password)
             uuid_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//uuid').to_s).content
             codigo_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//codigo').to_s).content
             mensaje_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//mensaje').to_s).content
