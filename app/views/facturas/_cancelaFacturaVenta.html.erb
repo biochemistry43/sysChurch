@@ -79,6 +79,9 @@
       <%end%>
     <%end%>
 
+    <!--= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: @factura}, html_options={ class: "btn btn-success", remote: true} do >Cancelar
+    <end-->
+
     <% if @mensaje_cancelacion_timbox %>
       <h2 class="text-danger" > <%= @mensaje_cancelacion_timbox %><i class= "fa fa-exclamation-circle"> </i></h2>
     <%end%>
@@ -88,8 +91,8 @@
       <% if @descripcion_submit %>  
         <!--Solo se enviarán los siguientes parametros si el submit es visible, si es visible quiere decir que el comprobante es vigente y ńo solo eso sino que se puede cancelar con o sin aceptación, poque tambien puede estar vigente pero en cambio pude estar en proceso de aceptación-->
         <% hidden_field_tag :es_cancelable, @es_cancelable%>
-     
         <%= submit_tag  @descripcion_submit, {:class=>"btn btn btn-success"} %>
+
       <%end%>
       <!--/div-->
     </div>

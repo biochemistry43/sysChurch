@@ -250,6 +250,7 @@ class FacturasController < ApplicationController
     if request.post?
       require 'cfdi'
       require 'timbrado'
+      servicio = Timbox::Servicios.new
 
       if params[:commit] == "Cancelar"
         @venta=nil #Se borran los datos por si el usuario le da "atras" en el navegador.
@@ -424,7 +425,7 @@ class FacturasController < ApplicationController
           usuario = "AAA010101000"
           contrasena = "h6584D56fVdBbSmmnB"
 
-          xml_timbox_nc_fg = timbrar_xml(usuario, contrasena, xml_base64_nc_fg, wsdl_url)
+          xml_timbox_nc_fg = servicio.timbrar_xml(usuario, contrasena, xml_base64_nc_fg, wsdl_url)
 
           #Guardo el xml recien timbradito de timbox, calientito
           nc_id = NotaCredito.last ? NotaCredito.last.id + 1 : 1
@@ -754,7 +755,7 @@ class FacturasController < ApplicationController
       usuario = "AAA010101000"
       contrasena = "h6584D56fVdBbSmmnB"
       #Se obtiene el xml timbrado
-      xml_timbox= timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+      xml_timbox= servicio.timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
       #Guardo el xml recien timbradito de timbox, calientito
       fv_id = Factura.where(tipo_factura: "fv").last ? Factura.where(tipo_factura: "fv").last.id + 1 : 1
       archivo = File.open("public/#{fv_id}_fv.xml", "w")
@@ -1011,14 +1012,18 @@ class FacturasController < ApplicationController
           if @es_cancelable == "Cancelable con Aceptación".upcase #YEAH!
             @mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
             @descripcion_submit = "Realizar la petición de aceptación/rechazo"
+            
+            if @estatus_cancelacion == "En proceso".upcase 
+              @mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada, por favor espere a que el receptor responda, hasta en un máximo de 72 hrs o de no ser así se podrá cancelar por plazo vencido."
+            elsif @estatus_cancelacion == "Solicitud Rechazada".upcase # => YEAH!
+              @mensaje_cancelacion_timbox = "El comprobante no se canceló porque el receptor rechazó la solicitud de cancelación"
+              #@mensaje_cancelacion_timbox = "El comprobante no se canceló porque se rechazó la solicitud de cancelación"
+            end
+
           elsif @es_cancelable == "Cancelable sin Aceptación".upcase #YEAH!
             @categorias_devolucion = current_user.negocio.cat_venta_canceladas
             @descripcion_submit = "Cancelar factura"
             plantilla_email("ac_fv")
-          #elsif @estatus_cancelacion == "En proceso".upcase #*
-            #@mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada, por favor espere a que el receptor responda, hasta en un máximo de 72 hrs o de no ser así se podrá cancelar por plazo vencido."
-          #elsif @estatus_cancelacion == "Solicitud Rechazada".upcase#*
-            #@mensaje_cancelacion_timbox = "El comprobante no se canceló porque se rechaó la solicitud de cancelación"
           elsif @es_cancelable == "No Cancelable".upcase
             #El comprobante no puede ser cancelado
             @mensaje_cancelacion_timbox = "El comprobante no se puede cancelar a menos que se cancelen los CFDIs relacionados e inmediatamente el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”."
@@ -1079,10 +1084,8 @@ class FacturasController < ApplicationController
     require 'timbrado'
 
     servicio = Timbox::Servicios.new
-
     username = "AAA010101000"
     password = "h6584D56fVdBbSmmnB"
-    
     rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
     rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
     #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
@@ -1124,10 +1127,41 @@ class FacturasController < ApplicationController
       p "uuid - #{uuid}"
       p "codigo - #{codigo}"
       p "mensaje - #{mensaje}"
+=begin
+      Erores de validación:
+        CANC108 El CFDI ha sido cancelado previamente por plazo vencido, no puede ser aceptado.
+        CANC109 El CFDI ha sido cancelado previamente, no puede ser aceptado.
+        CANC110 El CFDI ha sido cancelado previamente por plazo vencido, no puede ser rechazado.
+        CANC111 El CFDI ha sido cancelado previamente, no puede ser rechazado
 
-      erorr_procesar_respuesta = Timbox::Errores::ERRORES_PROCESADO_RESPUESTA[uuid]
-
-      #El status del comprobante cambia a "PROCESO"(No en el sistema, sino en el proveedor)
+      Pasos para replicar cada error
+        CANC108 
+          Generar un comprobante
+          Esperar 10 minutos
+          Realizar la solicitud de cancelacion como emisor
+          Esperar 15 minutos
+          Aceptar la solicitud de cancelacion como receptor
+        CANC109 
+          Generar un comprobante
+          Esperar 10 minutos
+          Realizar la solicitud de cancelacion como emisor
+          Aceptar la solicitud de cancelacion como receptor
+          Volver a aceptar la solicitud de cancelacion
+        CANC110 
+          Generar un comprobante
+          Esperar 10 minutos
+          Realizar la solicitud de cancelacion como emisor
+          Esperar 15 minutos
+          Rechazar la solicitud de cancelacion como receptor
+        CANC111 
+          Generar un comprobante
+          Esperar 10 minutos
+          Realizar la solicitud de cancelacion como emisor
+          Rechazar la solicitud de cancelacion como receptor
+          Volver a rechazar la solicitud de cancelacion
+=end
+      @erorr_procesar_respuesta = Timbox::Errores::ERRORES_PROCESADO_RESPUESTA[codigo.to_s]      
+      redirect_to :back, notice: "Se ha relizado una solicitud de cancelación al receptor de la factura. Ahora debe de esperar a que responda o a que trascurran 72 hrs para poder cancelar por plazo vencido"
       #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
       #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
     elsif params[:commit] == "Cancelar factura"# => "Cancelable sin Aceptación".upcase #YEAH!
@@ -1263,8 +1297,8 @@ class FacturasController < ApplicationController
               end
             end
           end
-    #elsif estatus_cancelación == "En proceso"
-    #elsif estatus_cancelación == "Solicitud Rechazada"
+
+    redirect_to :back, notice: "La factura fué cancelada correctamente sin aceptación del receptor"
     elsif es_cancelable == "No Cancelable".upcase
           #Se revisa si tiene comprobantes relacionados o no y se deben de cancelar antes de cancelar el documento origen
           xml_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
@@ -1330,13 +1364,7 @@ class FacturasController < ApplicationController
             end 
           end
     end
-  
 
-
-        
-    respond_to do |format| # Agregar mensajes después de las transacciones
-      format.html { redirect_to facturas_index_path, notice: 'La factura ha sido cancelada exitosamente!' }
-    end
   end
 
 
