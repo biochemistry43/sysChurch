@@ -87,10 +87,7 @@ module Timbox
         #<fecha_timbrado_inicio xsi:type="xsd:string">#{fecha_timbrado_inicio}</f#echa_timbrado_inicio>
         #<fecha_timbrado_fin xsi:type="xsd:string">#{fecha_timbrado_fin}</fecha_timbrado_fin>
 
-      client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl", log: true)
-      response = client.call(:buscar_acuse_recepcion, { "xml" => envelope })
-
-      response = response.to_hash
+#
       #xml_timbrado = response[:buscar_acuse_recepcion][:timbrar_cfdi_result][:xml]#xml sin alteraciones listo para entregar al cliente.
 
       #return document = Nokogiri::XML(xml_timbrado)
@@ -242,10 +239,13 @@ module Timbox
          </soapenv:Body>
         </soapenv:Envelope>^
 
-        client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
+        #client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
         # Hacer el llamado al metodo 'consultar_status'
+        #response = client.call(:consultar_documento_relacionado, { "xml" => envelope })
+        #documento = Nokogiri::XML(response.to_xml) 
+        client = Savon.client(wsdl: "https://staging.ws.timbox.com.mx/cancelacion/wsdl", log: true)
         response = client.call(:consultar_documento_relacionado, { "xml" => envelope })
-        documento = Nokogiri::XML(response.to_xml) 
+        response = response.to_hash
     end
 
     #El servicio de “consultar_peticiones_pendientes” se utiliza para realizar la consulta al servicio del SAT para revisar las peticiones que se encuentran en espera de una respuesta por parte del Receptor. Los parámetros requeridos para realizar la petición se describen en la siguiente tabla.

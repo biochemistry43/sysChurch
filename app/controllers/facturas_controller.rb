@@ -954,7 +954,16 @@ class FacturasController < ApplicationController
       rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
       rfc_receptor = @factura.tipo_factura == "fg" ? "XAXX010101000" : @factura.cliente.datos_fiscales_cliente.rfc
       #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
-      uuid = @factura.folio_fiscal
+=begin
+      Se usa solo en ambiente de pruebas para simular un comprobante con cfdis relacionados con los siguientes UUIDs:
+        Documento Hija, es el primer comprobante y este no tiene nodo de documentos relacionados.
+          AAAA0101-AAAA-AA01-0101-AAAAAA010101
+        Documento Padre, documento al que se le agrega como relacionado el documento Hija.
+          BBBB0202-BBBB-BB02-0202-BBBBBB020202
+        Documento Abuelo, tercer documento al que se le relaciona el folio del CFDI identificado como Padre
+          CCCC0303-CCCC-CC03-0303-CCCCCC030303
+=end
+      uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" #@factura.folio_fiscal
 =begin    
       folios =  %Q^<folio>
                     <uuid xsi:type="xsd:string">#{uuid}</uuid>
@@ -1007,6 +1016,7 @@ class FacturasController < ApplicationController
       p "estado - #{@estado}"
       p "estatus_cancelacion - #{@estatus_cancelacion}"
 
+
       if @codigo_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase #YEAH!
         if @estado == "Vigente".upcase #YEAH!
           if @es_cancelable == "Cancelable con Aceptación".upcase #YEAH!
@@ -1027,7 +1037,7 @@ class FacturasController < ApplicationController
           elsif @es_cancelable == "No Cancelable".upcase
             #El comprobante no puede ser cancelado
             @mensaje_cancelacion_timbox = "El comprobante no se puede cancelar a menos que se cancelen los CFDIs relacionados e inmediatamente el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”."
-            @descripcion_submit = "Cancelar los documentos relacionados y la factura"
+            @descripcion_submit = "Cancelar los documentos relacionados"
           end
         elsif @estado == "Cancelado".upcase #YEAH!
           #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
@@ -1042,9 +1052,11 @@ class FacturasController < ApplicationController
           #mensaje_cancelacion_timbox = ""
           @mensaje_cancelacion_timbox = "El comprobante no fue encontrado"
         end
-      elsif @codigo_estatus == "N 601 - Comprobante no encontrado".upcase
-        @mensaje_cancelacion_timbox = "El comprobante no fue encontrado"
-      elsif @codigo_estatus == "N 602 - La expresión impresa proporcionada no es válida".upcase
+      #Este código de respuesta se presentará cuando el UUID del comprobante no se encuentre en la Base de Datos del SAT.
+      elsif @codigo_estatus == "N - 602: Comprobante no encontrado.".upcase #YEAH!
+        #:3 dudo pero da igual, sería un caso terrible jaja
+        @mensaje_cancelacion_timbox = "El comprobante no fue encontrado y esto se debe a que el UUID del comprobante no existe en la Base de Datos del SAT, porfavor pongase en contacto con nosotros para que podamos ayudarle" if @estado == "No Encontrado".upcase
+      elsif @codigo_estatus == "N 601 - La expresión impresa proporcionada no es válida".upcase
          @mensaje_cancelacion_timbox = "La expresión impresa proporcionada no es válida"
       end
     #Con esto me evito consultar el estatus del comprobante. Las facturas globales se pueden cancelar al momento.
@@ -1086,20 +1098,6 @@ class FacturasController < ApplicationController
     servicio = Timbox::Servicios.new
     username = "AAA010101000"
     password = "h6584D56fVdBbSmmnB"
-    rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
-    rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
-    #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
-    uuid = @factura.folio_fiscal
-
-    p "LOCURAS DE TIMBOX"
-    p "UUID - #{uuid}"
-    p "RFC EMISOR - #{rfc_emisor}"
-    p "RFC RECEPTOR - #{rfc_receptor}"
-
-    cert_pem_emisor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
-    llave_pem_emisor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
-    llave_password = "12345678a"  
-    total = @factura.monto
 
     #Solo se recibe como parametro el resultado de la consulta 'es_cancelable' por que se supone que el comprobante se obtubo satisfactoriamente y está vigente
     if params[:commit] == "Realizar la petición de aceptación/rechazo" # => "Cancelable con Aceptación".upcase
@@ -1107,8 +1105,13 @@ class FacturasController < ApplicationController
       cert_pem_receptor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
       llave_pem_receptor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
       llave_password = "12345678a" 
+      rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
+      rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+      total = @factura.monto
+      uuid = @factura.folio_fiscal
 
       respuesta = "R"
+      #Se supone que el método acepta muchos folios, pero para esta acción solo aplica para la factura seleccionada
       respuestas =  %Q^<folios_respuestas>
                           <uuid>#{uuid}</uuid>
                           <rfc_emisor>#{rfc_emisor}</rfc_emisor>
@@ -1165,11 +1168,18 @@ class FacturasController < ApplicationController
       #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
       #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
     elsif params[:commit] == "Cancelar factura"# => "Cancelable sin Aceptación".upcase #YEAH!
-          folios =  %Q^<folio>
-                        <uuid xsi:type="xsd:string">#{uuid}</uuid>
-                        <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
-                        <total xsi:type="xsd:string">#{@factura.monto}</total>
-                      </folio>^
+
+      cert_pem_emisor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+      llave_pem_emisor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+      llave_password = "12345678a"
+      rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
+
+       
+      folios =  %Q^<folio>
+                    <uuid xsi:type="xsd:string">#{uuid}</uuid>
+                    <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
+                    <total xsi:type="xsd:string">#{@factura.monto}</total>
+                  </folio>^
           #Se procede a cancelar en el mismo momento. Se cancela como se solia hacer antes, es decir directamente sin tantos rollos
           xml_cancelado =  servicio.cancelar_CFDIs(username, password, rfc_emisor, folios, cert_pem_emisor, llave_pem_emisor, llave_password)
           #se extrae el acuse de cancelación del xml cancelado
@@ -1297,82 +1307,113 @@ class FacturasController < ApplicationController
               end
             end
           end
-
     redirect_to :back, notice: "La factura fué cancelada correctamente sin aceptación del receptor"
-    elsif es_cancelable == "No Cancelable".upcase
-          #Se revisa si tiene comprobantes relacionados o no y se deben de cancelar antes de cancelar el documento origen
-          xml_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem, llave_pem, llave_password)
+    elsif params[:commit] == "Cancelar los documentos relacionados"
+      
+      cert_pem_emisor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
+      llave_pem_emisor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
+      llave_password = "12345678a"
+
+      rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
+=begin
+      Se usa solo en ambiente de pruebas para simular un comprobante con cfdis relacionados con los siguientes UUIDs:
+        Documento Hija, es el primer comprobante y este no tiene nodo de documentos relacionados.
+          AAAA0101-AAAA-AA01-0101-AAAAAA010101
+        Documento Padre, documento al que se le agrega como relacionado el documento Hija.
+          BBBB0202-BBBB-BB02-0202-BBBBBB020202
+        Documento Abuelo, tercer documento al que se le relaciona el folio del CFDI identificado como Padre
+          CCCC0303-CCCC-CC03-0303-CCCCCC030303
+=end
+      uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" # => Se debe de cambiar por el UUID real en producción @factura.folio_fiscal 
+
+          rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
+          #Se obtienen los docuemnetos relacionados por  medio del siguiente servicio antes de cancelar el documento origen
+          hash_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem_emisor, llave_pem_emisor, llave_password)
           #Se obtienen todos los folios de los comprobantes
-          resultado_documentos_relacionados = Nokogiri::XML(xml_documentos_relacionados.xpath('//resultado').to_s).content
+          p hash_documentos_relacionados
+          #No tendría que hacer todo este rollo, por que las notas de credito no requieren aceptación del receptor, pero si se lanza el sistema sin que relice venttas en parcialidades hay riesgo de que eso... o  amm que alguién haga un comprobante en otro sistema      
+          hash_documentos_relacionados = hash_documentos_relacionados[:consultar_documento_relacionado_response][:consultar_documento_relacionado_result]
+          resultado_documentos_relacionados = hash_documentos_relacionados[:resultado]
+          p "DOCUMENTOS RELACIONADOS"
+          p resultado_documentos_relacionados
           #Obtener el código del mensaje, lo demás no me importa q diga.
   
           #2000  Existen cfdi relacionados al folio fiscal.  Este código de respuesta se presentará cuando la petición de consulta encuentre documentos relacionados al UUID consultado.
           #2001  No existen cfdi relacionados al folio fiscal. Este código de respuesta se presentará cuando el UUID consultado no contenga documentos relacionados a el.
           #2002  El folio fiscal no pertenece al receptor. Este código de respuesta se presentará cuando el RFC del receptor no corresponda al UUID consultado.
           #1101  No existen peticiones para el RFC Receptor. Este código se regresa cuando la consulta se realizó de manera exitosa, pero no se encontraron solicitudes de cancelación para el rfc receptor.
-          ['Clave: 2000', 'Clave: 2001', 'Clave: 2002', 'Clave: 1101'].each { |cve| @mensaje = "mensaje" && @clave = cve if resultado_documentos_relacionados.include? cve }
-
+          ['Clave: 2000', 'Clave: 2001', 'Clave: 2002', 'Clave: 1101'].each { |cve| @clave = cve if resultado_documentos_relacionados.include? cve }
           #Solo si se encontraron documentos relacionados
           if 'Clave: 2000' == @clave 
-            if xml_documentos_relacionados.xpath('//relacionados_padres')
-              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//uuid').to_s).content
-              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//rfc_emisor').to_s).content
-              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_padres//rfc_receptor').to_s).content
-            end
-            if xml_documentos_relacionados.xpath('//relacionados_hijos')
-              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//uuid').to_s).content
-              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//rfc_emisor').to_s).content
-              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_hijos//rfc_receptor').to_s).content       
-            end
-            if xml_documentos_relacionados.xpath('//relacionados_abuelos')
-              uuid_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//uuid').to_s).content
-              rfc_emisor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//rfc_emisor').to_s).content
-              rfc_receptor_documento_relacionado = Nokogiri::XML(xml_documentos_relacionados.xpath('//relacionados_abuelos//rfc_receptor').to_s).content 
-            end
-          end
-
-          #Cada documento relacionado necesita solicitud decancelación?
-          if 
-            respuestas =  %Q^<folios_respuestas>
-                            <uuid>#{uuid}</uuid>
-                            <rfc_emisor>#{rfc_emisor}</rfc_emisor>
-                            <total>#{total}</total>
-                            <respuesta>#{respuesta}</respuesta>
-                          </folios_respuestas>^
-
-            #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
-            xml_procesar_respuesta_doc_relacionado = servicio.procesar_respuesta(username, password, rfc_receptor_documento_relacionado, respuestas, cert_pem, llave_pem, llave_password)
-            uuid_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//uuid').to_s).content
-            codigo_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//codigo').to_s).content
-            mensaje_procesar_respuesta_doc_relacionado = Nokogiri::XML(xml_procesar_respuesta_dr.xpath('//mensaje').to_s).content
-          else
-          end
-
-
-
-          #¿Aplica cancelación sin ACEPTACIÓN?
-          #Probablemente sirva para cuando se hagan ventas en parcialidades poor los comprobantes de recepción de pago, porque para las N.C. se pueden cancelar sin aceptación del receptor
-          #xml_consulta_status = consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
-
-          uuids_documentos_relacionados = []
-          #Para cada comprobante se solicita el TIPO DE CANCELACIÓN, pero como ahora solo son notas de credito dentro del sistema, pues... aunque... Si un emisor llegase a emitir un 
-          uuids_documentos_relacionados.each do |uuid_dr|
-            if uuids_documentos_relacionados 
-
-            else
+            if hash_documentos_relacionados.key?(:relacionados_padres)
+              relacionados_padres = hash_documentos_relacionados[:relacionados_padres]
+              
+              Nokogiri::XML(relacionados_padres.to_s).xpath('//uuid_padre').each do |doc_padre|
+                uuid_documento_relacionado = doc_padre.xpath('//uuid').text
+                rfc_emisor_documento_relacionado = doc_padre.xpath('//rfc_emisor').text
+                rfc_receptor_documento_relacionado = doc_padre.xpath('//rfc_receptor').text
                 
-            end 
-          end
+                #1.-Se consulta el estatus por cada documento padre
+                #Entons... a consumir otro servicio para los detalles del comprobante
+                total = @factura.monto #El total debe deser del comprobante 
+                
+                xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor_documento_relacionado, rfc_receptor_documento_relacionado, uuid_documento_relacionado, total)
+              
+                codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content.upcase
+                es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
+                estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content.upcase
+                estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content.upcase
+                p "DEL RELACIONADO (DOC PADRE)"
+                p codigo_estatus
+                p es_cancelable
+                p estado
+                p estatus_cancelacion
+
+                #Para mostrar un mensaje para cualquier caso que pudiera suceder por cada 
+                if codigo_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase #YEAH!
+                  if estado == "Vigente".upcase #YEAH!
+                    if es_cancelable == "Cancelable con Aceptación".upcase #YEAH!
+                      mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
+                      if estatus_cancelacion == "En proceso".upcase 
+                        mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada, por favor espere a que el receptor responda, hasta en un máximo de 72 hrs o de no ser así se podrá cancelar por plazo vencido."
+                      elsif estatus_cancelacion == "Solicitud Rechazada".upcase # => YEAH!
+                        mensaje_cancelacion_timbox = "El comprobante no se canceló porque el receptor rechazó la solicitud de cancelación"
+                        #@mensaje_cancelacion_timbox = "El comprobante no se canceló porque se rechazó la solicitud de cancelación"
+                      end
+                    elsif es_cancelable == "Cancelable sin Aceptación".upcase #YEAH!
+                    elsif es_cancelable == "No Cancelable".upcase
+                      #El comprobante no puede ser cancelado
+                      mensaje_cancelacion_timbox = "El comprobante no se puede cancelar a menos que se cancelen los CFDIs relacionados e inmediatamente el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”."
+                    end
+                  elsif estado == "Cancelado".upcase #YEAH!
+                    #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
+                    if estatus_cancelacion == "Cancelado sin aceptación".upcase #YEAH!
+                      mensaje_cancelacion_timbox = "El comprobante fue cancelado exitosamente sin requerir aceptación"
+                    elsif estatus_cancelacion = "Cancelado con aceptación".upcase
+                      mensaje_cancelacion_timbox = "El comprobante fue cancelado aceptando la solicitud de cancelación"
+                    elsif estatus_cancelacion == "Plazo Vencido".upcase
+                      mensaje_cancelacion_timbox = "El comprobante fue cancelado ya que no se recibió respuesta del receptor en el tiempo límite."
+                    end
+                  elsif estado == "No Encontrado".upcase
+                    #mensaje_cancelacion_timbox = ""
+                    mensaje_cancelacion_timbox = "El comprobante no fue encontrado"
+                  end
+                #Este código de respuesta se presentará cuando el UUID del comprobante no se encuentre en la Base de Datos del SAT.
+                elsif codigo_estatus == "N - 602: Comprobante no encontrado.".upcase #YEAH!
+                  #:3 dudo pero da igual, sería un caso terrible jaja
+                  mensaje_cancelacion_timbox = "El comprobante no fue encontrado y esto se debe a que el UUID del comprobante no existe en la Base de Datos del SAT, porfavor pongase en contacto con nosotros para que podamos ayudarle" if @estado == "No Encontrado".upcase
+                elsif codigo_estatus == "N 601 - La expresión impresa proporcionada no es válida".upcase
+                   mensaje_cancelacion_timbox = "La expresión impresa proporcionada no es válida"
+                end
+              end
+              #2.-Se consulta el eststus del doc relacionado
+              #3.-Se cancelan los doc relacionados
+            end
+            
+          end          
     end
 
   end
-
-
-
-
-
-
-
 
 
 
