@@ -54,6 +54,7 @@ class FacturasController < ApplicationController
   end
 
     # GET /facturas/new
+
   def new
     @factura = Factura.new
   end
@@ -620,7 +621,7 @@ class FacturasController < ApplicationController
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #La moneda por default es MXN
         formaPago: forma_pago_f.cve_forma_pagoSAT,#CATALOGO Es de tipo string
-        condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+        #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
         metodoDePago: metodo_pago_f, #CATALOGO
         lugarExpedicion: current_user.sucursal.codigo_postal,#current_user.negocio.datos_fiscales_negocio.codigo_postal,#, #CATALOGO
         total: '%.2f' % @venta.montoVenta.round(2)
@@ -757,16 +758,17 @@ class FacturasController < ApplicationController
       #Se obtiene el xml timbrado
       xml_timbox= servicio.timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
       #Guardo el xml recien timbradito de timbox, calientito
-      fv_id = Factura.where(tipo_factura: "fv").last ? Factura.where(tipo_factura: "fv").last.id + 1 : 1
-      archivo = File.open("public/#{fv_id}_fv.xml", "w")
+      uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+      archivo = File.open("public/#{uuid_cfdi}.xml", "w")
       archivo.write (xml_timbox)
       archivo.close
 
       #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
+      
       factura.complemento=CFDI::Complemento.new(
         {
           Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-          uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+          uuid: uuid_cfdi,
           FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
           RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
           SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
@@ -827,7 +829,7 @@ class FacturasController < ApplicationController
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
       #Se guarda el pdf 
-      nombre_pdf="#{fv_id}_fv.pdf"
+      nombre_pdf = "#{uuid_cfdi}.pdf"
       save_path = Rails.root.join('public',nombre_pdf)
       File.open(save_path, 'wb') do |file|
           file << pdf
@@ -849,29 +851,21 @@ class FacturasController < ApplicationController
       dir_anno = fecha_registroBD.strftime("%Y")
 
       fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
-      #Nomenclatura para el nombre del archivo: consecutivo + fecha + extención
-
-      #Cosas a tener en cuenta antes de indicarle una ruta:
-        #1.-Un negocio puede o no tener sucursales
-      if current_user.sucursal
-        dir_sucursal = current_user.sucursal.nombre
-        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{fv_id}_fv"
-      else
-        ruta_storage = "#{dir_negocio}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{fv_id}_fv"
-      end
+      #Nomenclatura para el nombre del archivo: consecutivo + fecha + extenció
+      dir_sucursal = current_user.sucursal.nombre
+      ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
 
       #Los comprobantes de almacenan en google cloud
       #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
       #file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}_CFDI.xml"
-      file = bucket.create_file "public/#{fv_id}_fv.pdf", "#{ruta_storage}.pdf"
-      file = bucket.create_file "public/#{fv_id}_fv.xml", "#{ruta_storage}.xml"
+      file = bucket.create_file "public/#{uuid_cfdi}.pdf", "#{ruta_storage}#{uuid_cfdi}.pdf"
+      file = bucket.create_file "public/#{uuid_cfdi}.xml", "#{ruta_storage}#{uuid_cfdi}.xml"
 
 #========================================================================================================================
 
       #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
       #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
-      folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: folio_fiscal_xml, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
+      @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: uuid_cfdi, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
       
       if @factura.save
          current_user.facturas<<@factura
@@ -892,14 +886,14 @@ class FacturasController < ApplicationController
         destinatario_final = params[:destinatario]
         #Se asignan los valores del texto variable de la configuración de las plantillas de email.
         plantilla_email("fv")
-        comprobantes = {pdf:"public/#{fv_id}_fv.pdf", xml: "public/#{fv_id}_fv.xml"}
+        comprobantes = {pdf:"public/#{uuid_cfdi}.pdf", xml: "public/#{uuid_cfdi}.xml"}
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
         FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
 #=======================================================================================================================
         #9.- SE MUESTRA EL PDF, SE REDIRIGE AL INDEX O ALGUNA EXCEPCIÓN
         if "yes" == params[:imprimir]
-          send_file( File.open( "public/#{fv_id}_fv.pdf"), :disposition => "inline", :type => "application/pdf")
+          send_file( File.open( "public/#{uuid_cfdi}.pdf"), :disposition => "inline", :type => "application/pdf")
         else
           #respond_to do |format|
             #format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
@@ -907,7 +901,7 @@ class FacturasController < ApplicationController
           respond_to do |format|
             format.html
             format.pdf do
-              render pdf: "public/#{fv_id}_fv.pdf" , header: { right: '[page] of [topage]' }   # Excluding ".pdf" extension.
+              render pdf: "public/#{uuid_cfdi}.pdf" , header: { right: '[page] of [topage]' }   # Excluding ".pdf" extension.
             end
           end
         end
@@ -1015,7 +1009,6 @@ class FacturasController < ApplicationController
       p "es_cancelable - #{@es_cancelable}"
       p "estado - #{@estado}"
       p "estatus_cancelacion - #{@estatus_cancelacion}"
-
 
       if @codigo_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase #YEAH!
         if @estado == "Vigente".upcase #YEAH!
@@ -1326,7 +1319,6 @@ class FacturasController < ApplicationController
 =end
       uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" # => Se debe de cambiar por el UUID real en producción @factura.folio_fiscal 
 
-          rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
           #Se obtienen los docuemnetos relacionados por  medio del siguiente servicio antes de cancelar el documento origen
           hash_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem_emisor, llave_pem_emisor, llave_password)
           #Se obtienen todos los folios de los comprobantes
@@ -1350,14 +1342,14 @@ class FacturasController < ApplicationController
               
               Nokogiri::XML(relacionados_padres.to_s).xpath('//uuid_padre').each do |doc_padre|
                 uuid_documento_relacionado = doc_padre.xpath('//uuid').text
-                rfc_emisor_documento_relacionado = doc_padre.xpath('//rfc_emisor').text
-                rfc_receptor_documento_relacionado = doc_padre.xpath('//rfc_receptor').text
+                rfc_emisor_documento_relacionado = doc_padre.xpath('//rfc-emisor').text
+                rfc_receptor_documento_relacionado = doc_padre.xpath('//rfc-receptor').text
                 
                 #1.-Se consulta el estatus por cada documento padre
                 #Entons... a consumir otro servicio para los detalles del comprobante
                 total = @factura.monto #El total debe deser del comprobante 
                 
-                xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor_documento_relacionado, rfc_receptor_documento_relacionado, uuid_documento_relacionado, total)
+                xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor_documento_relacionado.to_s, rfc_receptor_documento_relacionado.to_s, uuid_documento_relacionado.to_s, total)
               
                 codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content.upcase
                 es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
@@ -1429,28 +1421,23 @@ class FacturasController < ApplicationController
 
 
 
-
-
-
-
-
   def readpdf
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
     bucket = storage.bucket "cfdis"
     ruta_storage = @factura.ruta_storage
+    uuid = @factura.folio_fiscal
     #Se descarga el pdf de la nube y se guarda en el disco
 
-    file_download_storage = bucket.file "#{ruta_storage}.pdf"
-    file_download_storage.download "public/#{@factura.id}.pdf"
+    file_download_storage = bucket.file "#{ruta_storage}#{uuid}.pdf"
+    file_download_storage.download "public/#{uuid}.pdf"
 
 
     #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?( "public/#{@factura.id}.pdf")
-      file=File.open( "public/#{@factura.id}.pdf")
+    if File::exists?( "public/#{uuid}.pdf")
+      file=File.open( "public/#{uuid}.pdf")
       send_file( file, :disposition => "inline", :type => "application/pdf")
-      #File.delete("public/#{file_name}")
     else
       respond_to do |format|
         format.html { redirect_to action: "index" }
@@ -1467,6 +1454,7 @@ class FacturasController < ApplicationController
       destinatario_final = params[:destinatario]
 
       ruta_storage = @factura.ruta_storage
+      uuid = @factura.folio_fiscal
       #Se crea un objeto de cloud para poder descargar los comprobantes
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
@@ -1475,21 +1463,23 @@ class FacturasController < ApplicationController
       comprobantes = {}
       tipo_factura = @factura.tipo_factura
       if params[:pdf] == "yes"
-        comprobantes[:pdf] = "public/#{@factura.id}_#{tipo_factura}.pdf"
-        file_download_storage_xml = bucket.file "#{ruta_storage}.pdf"
-        file_download_storage_xml.download "public/#{@factura.id}_#{tipo_factura}.pdf"
+        comprobantes[:pdf] = "public/#{uuid}.pdf"
+
+        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.pdf"
+        file_download_storage_xml.download "public/#{uuid}.pdf"
+
       end
       if params[:xml] == "yes"
-        comprobantes[:xml] = "public/#{@factura.id}_#{tipo_factura}.xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-        file_download_storage_xml.download "public/#{@factura.id}_#{tipo_factura}.xml"
+        comprobantes[:xml] = "public/#{uuid}.xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.xml"
+        file_download_storage_xml.download "public/#{uuid}.xml"
       end
      
       #Solo es posible si la factura de venta está cancelada
       if params[:xml_Ac] == "yes"
-        comprobantes[:xml_Ac] = "public/#{@factura.factura_cancelada.id}_ac_#{tipo_factura}.xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-        file_download_storage_xml.download "public/#{@factura.factura_cancelada.id}_ac_#{tipo_factura}.xml"
+        comprobantes[:xml_Ac] = "public/#{uuid}(cancelado).xml"
+        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}(cancelado).xml"
+        file_download_storage_xml.download "public/#{uuid}(cancelado).xml"
       end
 
       if @factura.tipo_factura == "fv"
@@ -1518,7 +1508,6 @@ class FacturasController < ApplicationController
   end
 
   def enviar_email 
-
     if @factura.tipo_factura == "fv"
       if @factura.estado_factura == "Activa"
         plantilla_email("fv")
@@ -1532,7 +1521,6 @@ class FacturasController < ApplicationController
         plantilla_email("ac_fg")
       end
     end
-
   end
 
   def descargar_cfdis
@@ -1540,16 +1528,17 @@ class FacturasController < ApplicationController
     require 'timbrado'
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
+    uuid = @factura.folio_fiscal
     bucket = storage.bucket "cfdis"
 
     #Si cambio de parecer, quitaré las condiciones del estado de facturas
     if @factura.estado_factura == "Activa"
       ruta_storage = @factura.ruta_storage
-      file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-      file_download_storage_xml.download "public/#{@factura.id}_#{@factura.tipo_factura}.xml"
+      file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.xml"
+      file_download_storage_xml.download "public/#{uuid}.xml"
 
-      if File.exist?("public/#{@factura.id}_#{@factura.tipo_factura}.xml")
-        xml = File.open("public/#{@factura.id}_#{@factura.tipo_factura}.xml")
+      if File.exist?("public/#{uuid}.xml")
+        xml = File.open("public/#{uuid}.xml")
         send_file(
           xml,
           filename: "CFDI.xml",
@@ -1557,14 +1546,13 @@ class FacturasController < ApplicationController
         )
 
       end
-
     elsif @factura.estado_factura == "Cancelada"
       acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
-      file_download_storage_xml = bucket.file "#{acuse_cancelacion.ruta_storage}.xml"
-      file_download_storage_xml.download "public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml"
+      file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}(cancelado).xml"
+      file_download_storage_xml.download "public/#{uuid}(cancelado).xml"
 
-      if File.exist?("public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml")
-        xml = File.open("public/#{acuse_cancelacion.id}_ac_#{acuse_cancelacion.comprobante}.xml")
+      if File.exist?("public/#{uuid}(cancelado).xml")
+        xml = File.open("public/#{uuid}(cancelado).xml")
         send_file(
           xml,
           filename: "Acuse de cancelación.xml",
