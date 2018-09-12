@@ -389,5 +389,53 @@ module Timbox
       'CANC110' => 'El CFDI ha sido cancelado previamente por plazo vencido, no puede ser rechazado.',
       'CANC111' => 'El CFDI ha sido cancelado previamente, no puede ser rechazado'
     }
+
+
+    ERRORES_VARIOS = {
+      '404' => 'Los datos de autentificación enviados son incorrectos', # El campo Username y Password no coinciden Todos
+      '405' => 'El parametro xml debe contener un valor válido', #  El parametro xml que envio tiene estructura invalida o viene vacio  servicios de timbrado
+      '405' => 'La codificación del XML no esta en UTF-8',    #servicios de timbrado
+      '408' => 'Su plan a caducado, favor de contratar uno nuevo',  #El plan contratado caducó timbrado y cancelación
+      '408' => 'Se han agotado la cantidad de timbres, favor de contratar un nuevo plan', #Se agotaron los timbres de su plan  timbrado y cancelación
+      '406' => 'Parámetro x inválido', # Uno de los parametros que envío tiene estructura inválida o viene vacío servicios de cancelación
+      '410' => 'Problema con el PFX', #   No se pudo abrir el archivo PFX, posiblemente está corrupto o no se generó bien el PFX  cancelar_cfdi
+      '410' => 'No se ha podido obtener el la clave privada del usuario para firmar la cancelación', #  No se incluyó la llave privada en el archivo PFX  cancelar_cfdi
+      '410' => 'Password Invalido para este PFX', # La contraseña utilizada no corresponde con la del PFX cancelar_cfdi
+      '410' => 'Al decodificar el PFX se encontro que este no es archivo PFX válido', # El PFX en base64 no corresponde a un PFX válido cancelar_cfdi
+      '701' => 'La llave_pem es una llave invalida', # La llave_pem está corrupta  
+      '702' => 'Error en el certificado, el certificado es inválido', #El pem del certificado no corresponde a uno válido  cancelar_cfdi_certs
+      '703' => 'Hay 500 o más UUIDS en una sola petición', # Se incluyeron más de 500 uuids para cancelar  cancelar_cfdi_certs
+      '407' => 'Error de comunicación con el servicio de x',  #Hubo un error de timeout, interno o de comunicación con el SAT, intente denuevo (aplica para todos los servicios) Todos
+      '2000' => 'Por el momento solo se acepta 1 comprobante en el zip', # Se mandó más de un archivo en el zip  timbrar_zip
+      '2001' => 'Archivo zip corrupto, no se pudieron recuperar los comprobantes',# El zip en base64 no corresponde a un zip válido timbrar_zip
+      '2002' => 'No se debe omitir el campo fecha_timbrado_inicio si el campo fecha_timbrado_fin existe', #  Se omitio el campo fecha_timbrado_inicio  buscar_cfdis
+      '2003' => 'No se debe omitir el campo fecha_timbrado_fin si el campo fecha_timbrado_inicio existe', #  Se omitio el campo fecha_timbrado_fin buscar_cfdis
+      '2004' => 'El campo fecha_timbrado_inicio no cumple con el formato YYYY-MM-DD', #  La fecha no cumple con el formato YYYY-MM-DD  buscar_cfdis
+      '2005' => 'El campo fecha_timbrado_fin no cumple con el formato YYYY-MM-DD', # La fecha no cumple con el formato YYYY-MM-DD  buscar_cfdis
+      '2006' => 'No se debe omitir el campo fecha_emision_inicio si el campo fecha_emision_fin existe', #  Se omitió el campo fecha_emision_inicio buscar_cfdis
+      '2007' => 'No se debe omitir el campo fecha_emision_fin si el campo fecha_emision_inicio existe', #  Se omitió el campo fecha_emision_fin  buscar_cfdis
+      '2008' => 'El campo fecha_emision_inicio no cumple con el formato YYYY-MM-DD', # La fecha no cumple con el formato YYYY-MM-DD  buscar_cfdis
+      '2009' => 'El campo fecha_emision_fin no cumple con el formato YYYY-MM-DD', #  La fecha no cumple con el formato YYYY-MM-DD  buscar_cfdis
+      '2010' => 'El UUID no cumple con el formato de UUIDs', # El UUID no cumple con el formato de UUIDs buscar_cfdis
+      '2011' => 'El valor de external_id no es un valor valido, debe ser un entero', #El valor de external_id no es un entero (int) buscar_cfdis
+      '2012' => 'La estructura del RFCEmisor es incorrecta', # El rfc_emisor no cumple con el formato de rfcs  buscar_cfdis
+      '2013' => 'La estructura del RFCreceptor es incorrecta', # El rfc_receptor no cumple con el formato de rfcs  buscar_cfdis
+      '2014' => 'El parametro "cancelado" solo puede tener valor de "true", "false" y nulo', # El valor debe ser un string buscar_cfdis
+      '2015' => 'El campo uuids está vacio', # No se deben omitir los uuids  recuperar_comprobante
+      '2016' => 'No se pueden recuperar mas de 200 comprobantes en una sola peticion', # La petición contiene más de 200 uuids recuperar_comprobante
+      '2017' => 'El uuid no tiene una estructura válida', #  El UUID no cumple con el formato de UUIDs recuperar_comprobante
+      '2018' => 'No se pueden recuperar mas de 200 comprobantes en una sola peticion', # La petición contiene más de 200 external_ids  recuperar_comprobante_external_id
+      '2019' => 'El valor de external_id no es un valor valido', # external_id debe ser un entero (int)  recuperar_comprobante_external_id
+      '2020' => 'No se encontro actividad para este usuario', # No existe actividad para el usuario, vuelva a intentar  obtener_consumo
+      '2021' => 'El rfc no tiene una estructura válida', # El rfc no cumple con el formato de rfcs consulta_rfc
+      '301' => 'El xml recibido no contiene una estructura válida', #   servicios de timbrado
+      '303' => 'Sello no corresponde a emisor', # El certificado no corresponde con el rfc  servicios de cancelación
+      '304' => 'El Certificado revocado o caduco', #  El certificado está vencido servicios de cancelación
+      '305' => 'La fecha de cancelación no esta dentro de la vigencia del CSD del Emisor', #  El certificado se vence antes de que pueda ser cancelado el comprobante servicios de cancelación
+      '306' => 'El certificado ultizado es de tipo FIEL. No es un CSD', # El certificado no corresponde a un CSD  servicios de cancelación
+      '308' => 'El Certificado no fue expedido por el SAT' # El certificado no lo emitió el SAT  servicios de cancelación
+
+    }
+
   end
 end
