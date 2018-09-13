@@ -448,24 +448,41 @@ class NotaCreditosController < ApplicationController
   end
 
 
-    def descargar_nota_credito
+  def descargar_nota_credito
       gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
       storage=gcloud.storage
       bucket = storage.bucket "cfdis"
 
       ruta_storage = @nota_credito.ruta_storage
+      uuid_cfdi = @nota_credito.folio_fiscal
 
       #Se descarga el pdf de la nube y se guarda en el disco
-      file_download_storage_xml = bucket.file "#{ruta_storage}.xml"
-      file_download_storage_xml.download "public/#{@nota_credito.id}.xml"
-
-      xml = File.open( "public/#{@nota_credito.id}.xml")
-      send_file(
-        xml,
-        filename: "CFDI.xml",
-        type: "application/xml"
-      )
-    end
+      file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid_cfdi}.xml"
+      file_download_storage_xml.download "public/#{uuid_cfdi}.xml"
+      if @nota_credito.estado_nc == "Activa"
+        if File::exists?("public/#{uuid_cfdi}.ml")
+          xml = File.open("public/#{uuid_cfdi}.xml")
+          send_file(
+            xml,
+            filename: "CFDI.xml",
+            type: "application/xml"
+          )
+        else
+          redirect_to nota_creditos_index_path, notice: "No se pudo descargar el CFDI, por favor vuelva a intentar nuevamente"
+        end
+      elsif @nota_credito.estado_nc == "Cancelada"
+        if File::exists?("public/#{uuid_cfdi}(cancelado).xml")
+          xml = File.open( "public/#{uuid_cfdi}(cancelado).xml")
+          send_file(
+            xml,
+            filename: "Acuse de cancelación.xml",
+            type: "application/xml"
+          )
+        else
+            redirect_to nota_creditos_index_path, notice: "No se pudo descargar el acuse de cancelación de la nota de crédito, por favor vuelva a intentar nuevamente"
+        end
+      end 
+  end
 
     def enviar_nota_credito
       #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.

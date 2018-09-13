@@ -1539,7 +1539,12 @@ class FacturasController < ApplicationController
           filename: "CFDI.xml",
           type: "application/xml"
         )
-
+      else
+        respond_to do |format|
+          format.html { redirect_to action: "index" }
+          flash[:notice] = "No se pudo descargar el CFDI, por favor vuelva a intentar nuevamente"
+          #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+        end
       end
     elsif @factura.estado_factura == "Cancelada"
       acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
@@ -1553,6 +1558,12 @@ class FacturasController < ApplicationController
           filename: "Acuse de cancelación.xml",
           type: "application/xml"
         )
+      else
+        respond_to do |format|
+          format.html { redirect_to action: "index" }
+          flash[:notice] = "No se pudo descargar el acuse de cancelación de la factura, por favor vuelva a intentar nuevamente"
+          #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+        end
       end
 =begin      
       
