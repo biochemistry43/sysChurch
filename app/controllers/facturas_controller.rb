@@ -1436,7 +1436,7 @@ class FacturasController < ApplicationController
     else
       respond_to do |format|
         format.html { redirect_to action: "index" }
-        flash[:notice] = "No se encontró la factura, vuelva a intentarlo!"
+        flash[:notice] = "No se pudo mostrar la factura, vuelva a intentarlo por favor!"
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
     end

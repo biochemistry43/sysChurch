@@ -420,7 +420,6 @@ class NotaCreditosController < ApplicationController
   end
 
 
-
   #Acción para imprimir la nota de crédito
   def imprimirpdf
 
@@ -428,20 +427,21 @@ class NotaCreditosController < ApplicationController
     storage=gcloud.storage
     bucket = storage.bucket "cfdis"
     ruta_storage = @nota_credito.ruta_storage
+    uuid_cfdi = @nota_credito.folio_fiscal
 
-    file_download_storage = bucket.file "#{ruta_storage}.pdf"
-    file_download_storage.download "public/#{@nota_credito.id}.pdf"
+    file_download_storage = bucket.file "#{ruta_storage}#{uuid_cfdi}.pdf"
+    file_download_storage.download "public/#{uuid_cfdi}.pdf"
 
 
     #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?( "public/#{@nota_credito.id}.pdf")
-      file=File.open( "public/#{@nota_credito.id}.pdf")
+    if File::exists?( "public/#{uuid_cfdi}.pdf")
+      file=File.open( "public/#{uuid_cfdi}.pdf")
       send_file( file, :disposition => "inline", :type => "application/pdf")
       #File.delete("public/#{file_name}")
     else
       respond_to do |format|
         format.html { redirect_to action: "index" }
-        flash[:notice] = "No se encontró la nota de crédito, vuelva a intentarlo por favor."
+        flash[:notice] = "No se pudo mostrar la nota de crédito, vuelva a intentarlo por favor."
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
       end
     end
