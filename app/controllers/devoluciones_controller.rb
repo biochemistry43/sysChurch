@@ -643,9 +643,8 @@ class DevolucionesController < ApplicationController
 
 #========================================================================================================================
         #1.- CERTIFICADOS,  LLAVES Y CLAVES
-        if File::exists?( 'public/certificado.er') && File::exists?( 'public/llave.pem')
+        if File::exists?( 'public/certificado.cer') && File::exists?( 'public/llave.pem')
           
-
           certificado = CFDI::Certificado.new 'public/certificado.cer'
           # Esta se convierte de un archivo .key con:
           # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
@@ -670,7 +669,6 @@ class DevolucionesController < ApplicationController
           #El folio de las facturas se forma por defecto por la clave de las sucursales
           claveSucursal = current_user.sucursal.clave
           serie = claveSucursal + "NC"
-   
           fecha_expedicion_nc = Time.now
           #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
           #La informacion de la nota de crédito debe de ser la misma que la del comprobante de ingreso a la que se le realizará el descuento, devolucion...
@@ -694,29 +692,31 @@ class DevolucionesController < ApplicationController
           #La dirección fiscal ya no es requerida por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
           #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor para las NC
           @factura = @venta.factura
+          datos_fiscales_negocio = current_user.negocio.datos_fiscales_negocio
           domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-            calle: current_user.negocio.datos_fiscales_negocio.calle,
-            noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
-            noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
-            colonia: current_user.negocio.datos_fiscales_negocio.colonia,
-            localidad: current_user.negocio.datos_fiscales_negocio.localidad,
-            referencia: current_user.negocio.datos_fiscales_negocio.referencia,
-            municipio: current_user.negocio.datos_fiscales_negocio.municipio,
-            estado: current_user.negocio.datos_fiscales_negocio.estado,
-            codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
+            calle: datos_fiscales_negocio.calle,
+            noExterior: datos_fiscales_negocio.numExterior,
+            noInterior: datos_fiscales_negocio.numInterior,
+            colonia: datos_fiscales_negocio.colonia,
+            localidad: datos_fiscales_negocio.localidad,
+            referencia: datos_fiscales_negocio.referencia,
+            municipio: datos_fiscales_negocio.municipio,
+            estado: datos_fiscales_negocio.estado,
+            codigoPostal: datos_fiscales_negocio.codigo_postal
             })
           #Dirección de la sucursal(es la misma que la de la factura)
           if  current_user.sucursal
+            datos_fiscales_sucursal = current_user.sucursal.datos_fiscales_sucursal
             expedidoEn= CFDI::DatosComunes::Domicilio.new({
-              calle: current_user.sucursal.datos_fiscales_sucursal.calle,
-              noExterior: current_user.sucursal.datos_fiscales_sucursal.numExt,
-              noInterior: current_user.sucursal.datos_fiscales_sucursal.numInt,
-              colonia: current_user.sucursal.datos_fiscales_sucursal.colonia,
-              localidad: current_user.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
-              referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
-              municipio: current_user.sucursal.datos_fiscales_sucursal.municipio,
-              estado: current_user.sucursal.datos_fiscales_sucursal.estado,
-              codigoPostal: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
+              calle: datos_fiscales_sucursal.calle,
+              noExterior: datos_fiscales_sucursal.numExt,
+              noInterior: datos_fiscales_sucursal.numInt,
+              colonia: datos_fiscales_sucursal.colonia,
+              localidad: datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
+              referencia: datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
+              municipio: datos_fiscales_sucursal.municipio,
+              estado: datos_fiscales_sucursal.estado,
+              codigoPostal: datos_fiscales_sucursal.codigo_postal,
             })
           else
             expedidoEn= CFDI::DatosComunes::Domicilio.new({})
@@ -731,17 +731,18 @@ class DevolucionesController < ApplicationController
           })
 
           #La dirección fiscal del cliente a quien fue expedida la factura
+          datos_fiscales_cliente = @factura.cliente.datos_fiscales_cliente
           domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-            calle: @factura.cliente.datos_fiscales_cliente.calle,
-            noExterior: @factura.cliente.datos_fiscales_cliente.numExterior,
-            noInterior: @factura.cliente.datos_fiscales_cliente.numInterior,
-            colonia: @factura.cliente.datos_fiscales_cliente.colonia,
-            localidad: @factura.cliente.datos_fiscales_cliente.localidad,
-            municipio: @factura.cliente.datos_fiscales_cliente.municipio,
-            referencia: @factura.cliente.datos_fiscales_cliente.referencia,
-            estado: @factura.cliente.datos_fiscales_cliente.estado,
-            codigoPostal: @factura.cliente.datos_fiscales_cliente.codigo_postal,
-            pais: @factura.cliente.datos_fiscales_cliente.pais
+            calle: datos_fiscales_cliente.calle,
+            noExterior: datos_fiscales_cliente.numExterior,
+            noInterior: datos_fiscales_cliente.numInterior,
+            colonia: datos_fiscales_cliente.colonia,
+            localidad: datos_fiscales_cliente.localidad,
+            municipio: datos_fiscales_cliente.municipio,
+            referencia: datos_fiscales_cliente.referencia,
+            estado: datos_fiscales_cliente.estado,
+            codigoPostal: datos_fiscales_cliente.codigo_postal,
+            pais: datos_fiscales_cliente.pais
             })
 
           #Se cargan los mismo datos del receptor, aquí solo se trata de devolución y no de una nota de crédito para enmendar un error.
@@ -831,9 +832,10 @@ class DevolucionesController < ApplicationController
 
           xml_timbox = servicio.timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
 
+          uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
           #Guardo el xml recien timbradito de timbox, calientito
           nc_id = NotaCredito.last ? NotaCredito.last.id + 1 : 1
-          archivo = File.open("public/#{nc_id}_nc.xml", "w")
+          archivo = File.open("public/#{uuid_cfdi}.xml", "w")
           archivo.write (xml_timbox)
           archivo.close
 
@@ -850,6 +852,41 @@ class DevolucionesController < ApplicationController
           )
           #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
           xml_copia = xml_timbox
+
+          #Se realizan las consultas para formar los directorios en cloud
+          dir_negocio = current_user.negocio.nombre
+          dir_cliente = nombre_fiscal_receptor_nc
+          #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
+          fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('/cfdi:Comprobante/@Fecha').to_s) 
+          dir_dia = fecha_registroBD.strftime("%d")
+          dir_mes = fecha_registroBD.strftime("%m")
+          dir_anno = fecha_registroBD.strftime("%Y")
+          fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
+          dir_sucursal = current_user.sucursal.nombre
+
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
+
+#========================================================================================================================
+          #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
+          @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: uuid_cfdi, tipo_factura: @factura.tipo_factura)
+          #@factura = Factura.find(@venta.factura_id)
+
+          if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
+            current_user.nota_creditos << @nota_credito
+            current_user.negocio.nota_creditos << @nota_credito
+            current_user.sucursal.nota_creditos << @nota_credito
+            Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
+            #@factura.nota_creditos <<  @nota_credito
+            FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
+
+            #Esto se hace debido a que se permite crear comprobantes con captura manual de datos(Sin depender de una venta del sistema)
+            @factura_nota_credito = FacturaNotaCredito.new(estado_nc: "Activa", estado_fv: "Activa") #El monto esa pendiente
+            @factura.factura_nota_creditos << @factura_nota_credito
+            @nota_credito.factura_nota_creditos << @factura_nota_credito
+            @factura_nota_credito.save
+
+            nota_credito_exito = true
+          end
 
 #========================================================================================================================
           #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
@@ -903,7 +940,7 @@ class DevolucionesController < ApplicationController
           #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
           pdf = WickedPdf.new.pdf_from_string(html_document)
           #Se guarda el pdf 
-          save_path = Rails.root.join('public',"#{nc_id}_nc.pdf")
+          save_path = Rails.root.join('public',"#{uuid_cfdi}.pdf")
           File.open(save_path, 'wb') do |file|
               file << pdf
           end
@@ -913,51 +950,11 @@ class DevolucionesController < ApplicationController
           gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
           storage=gcloud.storage
           bucket = storage.bucket "cfdis"
-
-          #Se realizan las consultas para formar los directorios en cloud
-          dir_negocio = current_user.negocio.nombre
-          dir_cliente = nombre_fiscal_receptor_nc
-
-          #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
-          fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado').to_s) 
-          dir_dia = fecha_registroBD.strftime("%d")
-          dir_mes = fecha_registroBD.strftime("%m")
-          dir_anno = fecha_registroBD.strftime("%Y")
-
-          fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
-
-          dir_sucursal = current_user.sucursal.nombre
-          ruta_storage = "#{dir_negocio}/#{dir_sucursal}//#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{nc_id}_nc"
-
-
           #Los comprobantes de almacenan en google cloud
           #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
           #file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_NotaCrédito.xml"
-          file = bucket.create_file "public/#{nc_id}_nc.pdf", "#{ruta_storage}.pdf"
-          file = bucket.create_file "public/#{nc_id}_nc.xml", "#{ruta_storage}.xml"
-
-#========================================================================================================================
-          #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
-          folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-          @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml, tipo_factura: @factura.tipo_factura)
-          #@factura = Factura.find(@venta.factura_id)
-
-          if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
-            current_user.nota_creditos << @nota_credito
-            current_user.negocio.nota_creditos << @nota_credito
-            current_user.sucursal.nota_creditos << @nota_credito
-            Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
-            #@factura.nota_creditos <<  @nota_credito
-            FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
-
-            #Esto se hace debido a que se permite crear comprobantes con captura manual de datos(Sin depender de una venta del sistema)
-            @factura_nota_credito = FacturaNotaCredito.new(estado_nc: "Activa", estado_fv: "Activa") #El monto esa pendiente
-            @factura.factura_nota_creditos << @factura_nota_credito
-            @nota_credito.factura_nota_creditos << @factura_nota_credito
-            @factura_nota_credito.save
-
-            nota_credito_exito = true
-          end
+          file = bucket.create_file "public/#{uuid_cfdi}.pdf", "#{ruta_storage}#{uuid_cfdi}.pdf"
+          file = bucket.create_file "public/#{uuid_cfdi}.xml", "#{ruta_storage}#{uuid_cfdi}.xml"
 
 #========================================================================================================================
           #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
@@ -987,7 +984,7 @@ class DevolucionesController < ApplicationController
             @mensaje = cadena.reemplazar_texto(mensaje)
             @asunto = cadena.reemplazar_texto(asunto)
           
-            comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
+            comprobantes = {pdf_nc:"public/#{uuid_cfdi}.pdf", xml_nc:"public/#{uuid_cfdi}.xml"}
 
             FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
           #En cambio si la factura es una factura global, la plantilla que se es diferente... usada para enviarla probablemente al contador
@@ -995,7 +992,7 @@ class DevolucionesController < ApplicationController
           elsif @factura.tipo_factura == "fg"
           end
         else
-          redirect_to :back, notice: "Los Certificados de Sello Digital no se encontraron, por favor intente nuevamente para poder realizar la Nota de crédito por devolución."
+          redirect_to :back, notice: "Los Certificados de Sello Digital no se encontraron, por favor intente nuevamente para poder realizar la nota de crédito por devolución."
         end
       end # Fin de @venta.factura.present?
 
@@ -1131,19 +1128,19 @@ class DevolucionesController < ApplicationController
     	      if @devolucion.save && @itemVenta.save && @venta.save
 
               if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
-    	          #if @venta.factura.present?
-                  #send_file( File.open( "public/#{nc_id}_nc.xml"), :disposition => "inline", :type => "application/pdf")
-                #else
+    	          if @venta.factura.present? && nota_credito_exito
+                  send_file( File.open( "public/#{uuid_cfdi}.pdf"), :disposition => "inline", :type => "application/pdf")
+                else
                   flash[:notice] = "La devolución se realizó con éxito"
       	          format.html { redirect_to action: "devolucion" }
-                #end
+                end
               elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save
-                #if @venta.factura.present?
-                  #send_file( File.open( "public/#{nc_id}_nc.xml"), :disposition => "inline", :type => "application/pdf")
-                #else
+                if @venta.factura.present? && nota_credito_exito
+                  send_file( File.open( "public/#{uuid_cfdi}.pdf"), :disposition => "inline", :type => "application/pdf")
+                else
                   flash[:notice] = "La devolución se realizó con éxito"
                   format.html { redirect_to action: "devolucion" }
-                #end
+                end
               end
     	      else
     	        format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
