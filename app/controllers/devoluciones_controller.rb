@@ -625,130 +625,7 @@ class DevolucionesController < ApplicationController
       #Se obtienen las observaciones que el usuario introdujo para realizar la devolución
       @observaciones = params[:observaciones]
 
-      #Los status del item de la venta y de la venta en general, es cambiado a "Con devoluciones"
-      @venta.status = "Con devoluciones"
-      @itemVenta.status = "Con devoluciones"
-
-      #Se crea el registro de una venta cancelada y se relaciona con su categoría de devolución
-      @devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones, :monto=>@itemVenta.precio_venta)
-      @categoriaCancelacion.venta_canceladas << @devolucion
-
-      #Dado que se hizo una devolución, se aumenta la existencia en inventarios de dicho producto.
-      @itemVenta.articulo.existencia += @cantidad_devuelta.to_f
-
-      #Se disminuye la cantidad devuelta, respecto del item de venta.
-      #@itemVenta.cantidad -= @cantidad_devuelta.to_f
-
-      #################################################################################################################
-      #################  creando los registros por concepto de gastos por devolucion de productos #####################
-      #################################################################################################################
-
-      @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Devoluciones").take
-
-      #Esta variable recoge el parámetro del origen del recurso con el que se va a pagar la devolución.
-      #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
-      origen = params[:select_origen_recurso]
-
-      #almacena el importe monetario que será devuelto al cliente.
-      importe_devolucion = params[:importe_devolucion]
-
-      #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas
-      #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
-      if origen.include? "caja_venta"
-        tamano_cadena_origen = origen.length
-
-        #aquí extraigo el id de la caja de venta contenido en la cadena de texto
-        #el número "11" corresponde a la cantidad de caracteres de la cadena "caja_venta_"
-        id_caja_sucursal = origen[11..tamano_cadena_origen]
-
-        #En base al id extraido de la cadena, busco la Caja de Venta en la base de datos
-        @cajaVenta = CajaSucursal.find(id_caja_sucursal)
-
-        #Verifico que la caja tenga el saldo necesario para realizar la operación de devolución.
-        if @cajaVenta.saldo >= importe_devolucion.to_f
-          @gasto = Gasto.new(:monto=>importe_devolucion, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
-
-          #creación y relación del registro de pago de devolución
-          @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
-          @gasto.pago_devolucion = @pagoDevolucion
-          @devolucion.pago_devolucions << @pagoDevolucion
-          current_user.pago_devolucions << @pagoDevolucion
-          current_user.sucursal.pago_devolucions << @pagoDevolucion
-          current_user.negocio.pago_devolucions << @pagoDevolucion
-
-          #relaciones del registro de gasto
-          @categoriaGasto.gastos << @gasto
-          @cajaVenta.gastos << @gasto
-          current_user.gastos << @gasto
-          current_user.sucursal.gastos << @gasto
-          current_user.negocio.gastos << @gasto
-
-          #Se actualiza el saldo de la caja de venta
-          saldo = @cajaVenta.saldo - importe_devolucion.to_f
-          @cajaVenta.saldo = saldo
-
-          #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
-          @movimientoCaja = MovimientoCajaSucursal.new(:salida=>importe_devolucion.to_f, :caja_sucursal=>@cajaVenta)
-          current_user.movimiento_caja_sucursals << @movimientoCaja
-          current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
-          current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
-
-        else
-          flash[:notice] = "No hay saldo suficiente en esta caja para hacer la devolución"
-        end
-
-      end
-
-      #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
-      if origen.include? "caja_chica"
-        #Verifica si existen registros de caja chica para esta sucursal
-        if current_user.sucursal.caja_chicas
-          #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
-          #dicho registro. En esto se determina si hay saldo suficiente para cubrir la devolución.
-          entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
-          salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
-          @saldoCajaChica = entradas - salidas
-
-
-          #@cajaChicaLast = sucursal.caja_chicas.last
-          if @saldoCajaChica >= importe_devolucion.to_f
-
-            saldo_en_caja_chica = @saldoCajaChica
-
-            @gasto = Gasto.new(:monto=>importe_devolucion.to_f, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
-
-            #creación y relación del registro de pago de devolución
-            @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
-            @gasto.pago_devolucion = @pagoDevolucion
-            @devolucion.pago_devolucions << @pagoDevolucion
-            current_user.pago_devolucions << @pagoDevolucion
-            current_user.sucursal.pago_devolucions << @pagoDevolucion
-            current_user.negocio.pago_devolucions << @pagoDevolucion
-
-            #relaciones del registro de gasto
-            @categoriaGasto.gastos << @gasto
-            current_user.gastos << @gasto
-            current_user.sucursal.gastos << @gasto
-            current_user.negocio.gastos << @gasto
-
-            #Se hace un registro en caja chica y se relaciona con el gasto
-            @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion.to_f)
-            @cajaChica.gasto = @gasto
-            #Se actualiza el saldo de la caja chica
-            #nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
-            #@cajaChica.saldo = nvo_saldo_caja_chica
-
-            #Se hacen las relaciones de pertenencia para la caja chica.
-            current_user.caja_chicas << @cajaChica
-            current_user.sucursal.caja_chicas << @cajaChica
-            current_user.negocio.caja_chicas << @cajaChica
-
-          else
-            flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la devolución"
-          end
-        end
-      end
-
+#........
       #Se crea una nota de crédito(Solo para las ventas que tengan una factura relacionada)
       if @venta.factura.present?
         #Comprobante de Egreso.- Amparan devoluciones, descuentos y bonificaciones
@@ -766,371 +643,516 @@ class DevolucionesController < ApplicationController
 
 #========================================================================================================================
         #1.- CERTIFICADOS,  LLAVES Y CLAVES
-        certificado = CFDI::Certificado.new '/home/daniel/Documentos/prueba/CSD01_AAA010101AAA.cer'
-        # Esta se convierte de un archivo .key con:
-        # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-        path_llave = "/home/daniel/Documentos/timbox-ruby/CSD01_AAA010101AAA.key.pem"
-        password_llave = "12345678a"
-        #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
-        llave = CFDI::Key.new path_llave, password_llave
+        if File::exists?( 'public/certificado.er') && File::exists?( 'public/llave.pem')
+          
+
+          certificado = CFDI::Certificado.new 'public/certificado.cer'
+          # Esta se convierte de un archivo .key con:
+          # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
+          path_llave = "public/llave.pem"
+          password_llave = "12345678a"
+          #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
+          llave = CFDI::Key.new path_llave, password_llave
 
 #========================================================================================================================
-        #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
-        #Para obtener el numero consecutivo a partir de la ultima NC o de lo contrario asignarle por primera vez un número
-        consecutivo = 0
-        if current_user.sucursal.nota_creditos.last
-          consecutivo = current_user.sucursal.nota_creditos.last.consecutivo
-          if consecutivo
-            consecutivo += 1
-          end
-        else
-          consecutivo = 1 
-        end
-
-        #El folio de las facturas se forma por defecto por la clave de las sucursales
-        claveSucursal = current_user.sucursal.clave
-        serie = claveSucursal + "NC"
- 
-        fecha_expedicion_nc = Time.now
-        #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
-        #La informacion de la nota de crédito debe de ser la misma que la del comprobante de ingreso a la que se le realizará el descuento, devolucion...
-        nota_credito = CFDI::Comprobante.new({
-          serie: serie,
-          folio: consecutivo,
-          #fecha: fecha_expedicion_nc,
-          #Deberá ser de tipo Egreso
-          tipoDeComprobante: "E",
-          #La moneda por default es MXN
-          #Forma de pago, opciones de registro:
-            #La que se registró en el comprobante de tipo ingreso.
-            #Con la que se está efectuando el descuento, devolución o bonificación en su caso.
-          formaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
-          #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-          metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
-          lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
-          total: @cantidad_devuelta.to_f * @itemVenta.precio_venta#'%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
-        })
-
-        #La dirección fiscal ya no es requerida por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
-        #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor para las NC
-        @factura = @venta.factura
-        domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-          calle: current_user.negocio.datos_fiscales_negocio.calle,
-          noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
-          noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
-          colonia: current_user.negocio.datos_fiscales_negocio.colonia,
-          localidad: current_user.negocio.datos_fiscales_negocio.localidad,
-          referencia: current_user.negocio.datos_fiscales_negocio.referencia,
-          municipio: current_user.negocio.datos_fiscales_negocio.municipio,
-          estado: current_user.negocio.datos_fiscales_negocio.estado,
-          codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
-          })
-        #Dirección de la sucursal(es la misma que la de la factura)
-        if  current_user.sucursal
-          expedidoEn= CFDI::DatosComunes::Domicilio.new({
-            calle: current_user.sucursal.datos_fiscales_sucursal.calle,
-            noExterior: current_user.sucursal.datos_fiscales_sucursal.numExt,
-            noInterior: current_user.sucursal.datos_fiscales_sucursal.numInt,
-            colonia: current_user.sucursal.datos_fiscales_sucursal.colonia,
-            localidad: current_user.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
-            referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
-            municipio: current_user.sucursal.datos_fiscales_sucursal.municipio,
-            estado: current_user.sucursal.datos_fiscales_sucursal.estado,
-            codigoPostal: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
-          })
-        else
-          expedidoEn= CFDI::DatosComunes::Domicilio.new({})
-        end
-
-        nota_credito.emisor = CFDI::Emisor.new({
-          rfc: current_user.negocio.datos_fiscales_negocio.rfc,
-          nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
-          regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
-          domicilioFiscal: domicilioEmisor,
-          expedidoEn: expedidoEn
-        })
-
-        #La dirección fiscal del cliente a quien fue expedida la factura
-        domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-          calle: @factura.cliente.datos_fiscales_cliente.calle,
-          noExterior: @factura.cliente.datos_fiscales_cliente.numExterior,
-          noInterior: @factura.cliente.datos_fiscales_cliente.numInterior,
-          colonia: @factura.cliente.datos_fiscales_cliente.colonia,
-          localidad: @factura.cliente.datos_fiscales_cliente.localidad,
-          municipio: @factura.cliente.datos_fiscales_cliente.municipio,
-          referencia: @factura.cliente.datos_fiscales_cliente.referencia,
-          estado: @factura.cliente.datos_fiscales_cliente.estado,
-          codigoPostal: @factura.cliente.datos_fiscales_cliente.codigo_postal,
-          pais: @factura.cliente.datos_fiscales_cliente.pais
-          })
-
-        #Se cargan los mismo datos del receptor, aquí solo se trata de devolución y no de una nota de crédito para enmendar un error.
-        #Atributos del receptor
-        rfc_receptor_nc = @factura.cliente.datos_fiscales_cliente.rfc
-        nombre_fiscal_receptor_nc = @factura.cliente.datos_fiscales_cliente.nombreFiscal
-        #Al tratarse de un CFDI de egresos, no será un comprobante de deducción para el receptor, ya que se está emitiendo para disminuir el importe de un CFDI relacionado.
-        #Por lo tanto el uso sera: G02 - Devoluciones, descuentos o bonificaciones
-
-        nota_credito.receptor = CFDI::Receptor.new({
-           rfc: rfc_receptor_nc,
-           nombre: nombre_fiscal_receptor_nc,
-           UsoCFDI: params[:uso_nc],#G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
-           domicilioFiscal: domicilioReceptor
-          })
-        #Cuando se realiza una nota de crédito por devolución, el comprobante de egreso(nota de crédito) debe de contener solo los productos devueltos.
-        items = []
-        items << @itemVenta
-        cont=0
-        items.each do |c|
-          hash_conceptos={ClaveProdServ: c.articulo.clave_prod_serv.clave, #Catálogo
-                          NoIdentificacion: c.articulo.clave,
-                          Cantidad: @cantidad_devuelta.to_f,
-                          ClaveUnidad:c.articulo.unidad_medida.clave,#Catálogo
-                          Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
-                          Descripcion: c.articulo.nombre
-                          }
-
-          importe_concepto = (c.precio_venta * @cantidad_devuelta.to_f)#Incluye impuestos(si esq), descuentos(si esq)...
-          if c.articulo.impuesto.present? #Impuestos a la inversa
-            tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
-            #Se calcula el precio bruto de cada concepto
-            base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
-            importe_impuesto_concepto = (base_gravable * tasaOCuota)
-
-            valorUnitario = base_gravable / @cantidad_devuelta.to_f
-
-            if c.articulo.impuesto.tipo == "Federal"
-              if c.articulo.impuesto.nombre == "IVA"
-                clave_impuesto = "002"
-              elsif c.articulo.impuesto.nombre == "IEPS"
-                clave_impuesto =  "003"
-              end
-              nota_credito.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
-            #end
-            #elsif c.articulo.impuesto.tipo == "Local"
-              #Para el complemento de impuestos locales.
+          #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+          #Para obtener el numero consecutivo a partir de la ultima NC o de lo contrario asignarle por primera vez un número
+          consecutivo = 0
+          if current_user.sucursal.nota_creditos.last
+            consecutivo = current_user.sucursal.nota_creditos.last.consecutivo
+            if consecutivo
+              consecutivo += 1
             end
-            hash_conceptos[:ValorUnitario] = valorUnitario
-            hash_conceptos[:Importe] = base_gravable
           else
-            hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
-            hash_conceptos[:Importe] = importe_concepto
+            consecutivo = 1 
           end
-          nota_credito.conceptos << CFDI::Concepto.new(hash_conceptos)
-          cont += 1
-        end
 
-        nota_credito.uuidsrelacionados << CFDI::Cfdirelacionado.new({
-          uuid: params[:uuid_factura] #@factura.folio_fiscal #Aquí se relaciona el comprobante de ingreso por la que se realizará la nota de crŕedito
+          #El folio de las facturas se forma por defecto por la clave de las sucursales
+          claveSucursal = current_user.sucursal.clave
+          serie = claveSucursal + "NC"
+   
+          fecha_expedicion_nc = Time.now
+          #2.- LLENADO DEL XML DIRECTAMENTE DE LA BASE DE DATOS
+          #La informacion de la nota de crédito debe de ser la misma que la del comprobante de ingreso a la que se le realizará el descuento, devolucion...
+          nota_credito = CFDI::Comprobante.new({
+            serie: serie,
+            folio: consecutivo,
+            #fecha: fecha_expedicion_nc,
+            #Deberá ser de tipo Egreso
+            tipoDeComprobante: "E",
+            #La moneda por default es MXN
+            #Forma de pago, opciones de registro:
+              #La que se registró en el comprobante de tipo ingreso.
+              #Con la que se está efectuando el descuento, devolución o bonificación en su caso.
+            formaPago: FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT,
+            #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+            metodoDePago: 'PUE', #Deberá ser PUE- Pago en una sola exhibición
+            lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
+            total: @cantidad_devuelta.to_f * @itemVenta.precio_venta#'%.2f' % (@cantidad_devuelta.to_f * @itemVenta.precio_venta).round(2) #La cantidad devuelta apartir de la cantidad po item de venta
           })
-        nota_credito.cfdisrelacionados = CFDI::CfdiRelacionados.new({
-          tipoRelacion: params[:tipo_relacion]#{}"03"# Devolución de mercancías sobre facturas o traslados previos
-        })
 
-#========================================================================================================================
-        #3.- SE AGREGA EL CERTIFICADO Y EL SELLO DIGITAL
-        @total_to_w = nota_credito.total_to_words
-        # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
-        certificado.certifica nota_credito
-        #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
-        xml_certificado_sellado = llave.sella nota_credito
-
-#========================================================================================================================
-      #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
-        #Se obtiene el xml timbrado
-
-        # Convertir la cadena del xml en base64
-        xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
-
-        # Parametros para conexion al Webservice (URL de Pruebas)
-        wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-        usuario = "AAA010101000"
-        contrasena = "h6584D56fVdBbSmmnB"
-
-        xml_timbox = timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
-
-        #Guardo el xml recien timbradito de timbox, calientito
-        nc_id = NotaCredito.last ? NotaCredito.last.id + 1 : 1
-        archivo = File.open("public/#{nc_id}_nc.xml", "w")
-        archivo.write (xml_timbox)
-        archivo.close
-
-        #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
-        nota_credito.complemento=CFDI::Complemento.new(
-          {
-            Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-            uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
-            FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-            RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-            SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-            NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
-          }
-        )
-        #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-        xml_copia = xml_timbox
-
-#========================================================================================================================
-        #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
-        codigoQR = nota_credito.qr_code xml_timbox
-        cadOrigComplemento = nota_credito.complemento.cadena_TimbreFiscalDigital
-        logo=current_user.negocio.logo
-        #No hay nececidad de darle a escoger el uso del cfdi al usuario.
-        uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
-        #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
-        cve_nombre_forma_pago = "#{FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT } - #{FacturaFormaPago.find(params[:forma_pago_nc]).nombre_forma_pagoSAT}"
-        #método de pago(clave y descripción)
-        #"deberá de ser siempre.. PUE"
-        cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"
-        #Regimen fiscal
-        cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
-        nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
-        cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
-        #Para el nombre del changarro feo jajaja
-        nombre_negocio = current_user.negocio.nombre
-
-        #Personalización de la plantilla de impresión de una factura de venta. :P
-        plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "nc")
-        tipo_fuente = plantilla_impresion.tipo_fuente
-        tam_fuente = plantilla_impresion.tam_fuente
-        color_fondo = plantilla_impresion.color_fondo
-        color_banda = plantilla_impresion.color_banda
-        color_titulos = plantilla_impresion.color_titulos
-
-        #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-        hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
-          tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
-          tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
-        }
-
-        unless @factura.cliente.telefono1.to_s.strip.empty?
-          hash_info[:Telefono1Receptor] =  @factura.cliente.telefono1
-        else
-          hash_info[:Telefono1Receptor] =  @factura.cliente.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
-        end
-        hash_info[:EmailReceptor]= @factura.cliente.email unless @factura.cliente.email.to_s.strip.empty?
-        #Solo si tiene más de un establecimiento el negocio...
-        if current_user.sucursal
-          hash_info[:tel_sucursal] = current_user.sucursal.telefono
-          hash_info[:email_sucursal] = current_user.sucursal.email
-        end
-
-        xml_rep_impresa = nota_credito.add_elements_to_xml(hash_info)
-        template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/XSLT.xsl'))
-
-        html_document = template.transform(xml_rep_impresa)
-        #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
-        pdf = WickedPdf.new.pdf_from_string(html_document)
-        #Se guarda el pdf 
-        save_path = Rails.root.join('public',"#{nc_id}_nc.pdf")
-        File.open(save_path, 'wb') do |file|
-            file << pdf
-        end
-
-#========================================================================================================================
-        #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-        gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-        storage=gcloud.storage
-        bucket = storage.bucket "cfdis"
-
-        #Se realizan las consultas para formar los directorios en cloud
-        dir_negocio = current_user.negocio.nombre
-        dir_cliente = nombre_fiscal_receptor_nc
-
-        #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
-        fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado').to_s) 
-        dir_dia = fecha_registroBD.strftime("%d")
-        dir_mes = fecha_registroBD.strftime("%m")
-        dir_anno = fecha_registroBD.strftime("%Y")
-
-        fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
-
-        dir_sucursal = current_user.sucursal.nombre
-        ruta_storage = "#{dir_negocio}/#{dir_sucursal}//#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{nc_id}_nc"
-
-
-        #Los comprobantes de almacenan en google cloud
-        #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
-        #file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_NotaCrédito.xml"
-        file = bucket.create_file "public/#{nc_id}_nc.pdf", "#{ruta_storage}.pdf"
-        file = bucket.create_file "public/#{nc_id}_nc.xml", "#{ruta_storage}.xml"
-
-#========================================================================================================================
-      #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
-        folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-        @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml, tipo_factura: @factura.tipo_factura)
-        #@factura = Factura.find(@venta.factura_id)
-
-        if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
-          current_user.nota_creditos << @nota_credito
-          current_user.negocio.nota_creditos << @nota_credito
-          current_user.sucursal.nota_creditos << @nota_credito
-          Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
-          #@factura.nota_creditos <<  @nota_credito
-          FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
-
-          #Esto se hace debido a que se permite crear comprobantes con captura manual de datos(Sin depender de una venta del sistema)
-          @factura_nota_credito = FacturaNotaCredito.new(estado_nc: "Activa", estado_fv: "Activa") #El monto esa pendiente
-          @factura.factura_nota_creditos << @factura_nota_credito
-          @nota_credito.factura_nota_creditos << @factura_nota_credito
-          @factura_nota_credito.save
-
-        end
-
-#========================================================================================================================
-        #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
-        #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-       
-        #Si la factura es una factura comun y correiente, se usa la plantilla de notas de crédito para las facturas de ventas
-        if @factura.tipo_factura == "fv"
-          destinatario = params[:destinatario]
-
-          mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").msg_email
-          asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").asunto_email
-
-          cadena = PlantillaEmail::AsuntoMensaje.new
-          factura_relacionada_NC = @itemVenta.venta.factura
-          cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
-          
-          cadena.fecha = fecha_expedicion_nc.strftime("%Y-%m-%d")
-          cadena.numero = consecutivo
-          cadena.folio = serie + consecutivo.to_s
-          cadena.total = @cantidad_devuelta.to_f * @itemVenta.precio_venta
-            
-          cadena.nombNegocio = current_user.negocio.nombre 
-          cadena.nombSucursal = current_user.sucursal.nombre
-          cadena.emailContacto = current_user.sucursal.email
-          cadena.telContacto = current_user.sucursal.telefono
-
-          @mensaje = cadena.reemplazar_texto(mensaje)
-          @asunto = cadena.reemplazar_texto(asunto)
-          
-          comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
-
-          FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
-        end #Fin de @venta.factura.present?
-
-      #En cambio si la factura es una factura global, la plantilla que se es diferente... usada para enviarla probablemente al contador
-      elsif @factura.tipo_factura == "fg"
-      end
-      respond_to do |format|
-	    if @devolucion.valid?
-	      if @devolucion.save && @itemVenta.save && @venta.save
-
-          if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
-	          flash[:notice] = "La devolución se realizó con éxito"
-	          format.html { redirect_to action: "devolucion" }
-          elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save
-            flash[:notice] = "La devolución se realizó con éxito"
-            format.html { redirect_to action: "devolucion" }
+          #La dirección fiscal ya no es requerida por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs si esque los proporciona el cliente jaja.*
+          #Son datos que ya existen en el sistema por haber realizado la factura y no tienen por que asignarse otro valor para las NC
+          @factura = @venta.factura
+          domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
+            calle: current_user.negocio.datos_fiscales_negocio.calle,
+            noExterior: current_user.negocio.datos_fiscales_negocio.numExterior,
+            noInterior: current_user.negocio.datos_fiscales_negocio.numInterior,
+            colonia: current_user.negocio.datos_fiscales_negocio.colonia,
+            localidad: current_user.negocio.datos_fiscales_negocio.localidad,
+            referencia: current_user.negocio.datos_fiscales_negocio.referencia,
+            municipio: current_user.negocio.datos_fiscales_negocio.municipio,
+            estado: current_user.negocio.datos_fiscales_negocio.estado,
+            codigoPostal: current_user.negocio.datos_fiscales_negocio.codigo_postal
+            })
+          #Dirección de la sucursal(es la misma que la de la factura)
+          if  current_user.sucursal
+            expedidoEn= CFDI::DatosComunes::Domicilio.new({
+              calle: current_user.sucursal.datos_fiscales_sucursal.calle,
+              noExterior: current_user.sucursal.datos_fiscales_sucursal.numExt,
+              noInterior: current_user.sucursal.datos_fiscales_sucursal.numInt,
+              colonia: current_user.sucursal.datos_fiscales_sucursal.colonia,
+              localidad: current_user.sucursal.datos_fiscales_sucursal.localidad,#current_user.negocio.datos_fiscales_negocio.,
+              referencia: current_user.sucursal.datos_fiscales_sucursal.referencia,#current_user.negocio.datos_fiscalecurrent_user.sucursal.codigo_postals_negocio.,
+              municipio: current_user.sucursal.datos_fiscales_sucursal.municipio,
+              estado: current_user.sucursal.datos_fiscales_sucursal.estado,
+              codigoPostal: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
+            })
+          else
+            expedidoEn= CFDI::DatosComunes::Domicilio.new({})
           end
-	      else
-	        format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
-	      end
-	    else
-	      format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
+
+          nota_credito.emisor = CFDI::Emisor.new({
+            rfc: current_user.negocio.datos_fiscales_negocio.rfc,
+            nombre: current_user.negocio.datos_fiscales_negocio.nombreFiscal,
+            regimenFiscal: current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT, #CATALOGO
+            domicilioFiscal: domicilioEmisor,
+            expedidoEn: expedidoEn
+          })
+
+          #La dirección fiscal del cliente a quien fue expedida la factura
+          domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
+            calle: @factura.cliente.datos_fiscales_cliente.calle,
+            noExterior: @factura.cliente.datos_fiscales_cliente.numExterior,
+            noInterior: @factura.cliente.datos_fiscales_cliente.numInterior,
+            colonia: @factura.cliente.datos_fiscales_cliente.colonia,
+            localidad: @factura.cliente.datos_fiscales_cliente.localidad,
+            municipio: @factura.cliente.datos_fiscales_cliente.municipio,
+            referencia: @factura.cliente.datos_fiscales_cliente.referencia,
+            estado: @factura.cliente.datos_fiscales_cliente.estado,
+            codigoPostal: @factura.cliente.datos_fiscales_cliente.codigo_postal,
+            pais: @factura.cliente.datos_fiscales_cliente.pais
+            })
+
+          #Se cargan los mismo datos del receptor, aquí solo se trata de devolución y no de una nota de crédito para enmendar un error.
+          #Atributos del receptor
+          rfc_receptor_nc = @factura.cliente.datos_fiscales_cliente.rfc
+          nombre_fiscal_receptor_nc = @factura.cliente.datos_fiscales_cliente.nombreFiscal
+          #Al tratarse de un CFDI de egresos, no será un comprobante de deducción para el receptor, ya que se está emitiendo para disminuir el importe de un CFDI relacionado.
+          #Por lo tanto el uso sera: G02 - Devoluciones, descuentos o bonificaciones
+
+          nota_credito.receptor = CFDI::Receptor.new({
+             rfc: rfc_receptor_nc,
+             nombre: nombre_fiscal_receptor_nc,
+             UsoCFDI: params[:uso_nc],#G02", #"Devoluciones, descuentos o bonificaciones" Aplica para persona fisica y moral
+             domicilioFiscal: domicilioReceptor
+            })
+          #Cuando se realiza una nota de crédito por devolución, el comprobante de egreso(nota de crédito) debe de contener solo los productos devueltos.
+          items = []
+          items << @itemVenta
+          cont=0
+          items.each do |c|
+            hash_conceptos={ClaveProdServ: c.articulo.clave_prod_serv.clave, #Catálogo
+                            NoIdentificacion: c.articulo.clave,
+                            Cantidad: @cantidad_devuelta.to_f,
+                            ClaveUnidad:c.articulo.unidad_medida.clave,#Catálogo
+                            Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
+                            Descripcion: c.articulo.nombre
+                            }
+
+            importe_concepto = (c.precio_venta * @cantidad_devuelta.to_f)#Incluye impuestos(si esq), descuentos(si esq)...
+            if c.articulo.impuesto.present? #Impuestos a la inversa
+              tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
+              #Se calcula el precio bruto de cada concepto
+              base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+              importe_impuesto_concepto = (base_gravable * tasaOCuota)
+
+              valorUnitario = base_gravable / @cantidad_devuelta.to_f
+
+              if c.articulo.impuesto.tipo == "Federal"
+                if c.articulo.impuesto.nombre == "IVA"
+                  clave_impuesto = "002"
+                elsif c.articulo.impuesto.nombre == "IEPS"
+                  clave_impuesto =  "003"
+                end
+                nota_credito.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+                  tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
+              #end
+              #elsif c.articulo.impuesto.tipo == "Local"
+                #Para el complemento de impuestos locales.
+              end
+              hash_conceptos[:ValorUnitario] = valorUnitario
+              hash_conceptos[:Importe] = base_gravable
+            else
+              hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
+              hash_conceptos[:Importe] = importe_concepto
+            end
+            nota_credito.conceptos << CFDI::Concepto.new(hash_conceptos)
+            cont += 1
+          end
+
+          nota_credito.uuidsrelacionados << CFDI::Cfdirelacionado.new({
+            uuid: params[:uuid_factura] #@factura.folio_fiscal #Aquí se relaciona el comprobante de ingreso por la que se realizará la nota de crŕedito
+            })
+          nota_credito.cfdisrelacionados = CFDI::CfdiRelacionados.new({
+            tipoRelacion: params[:tipo_relacion]#{}"03"# Devolución de mercancías sobre facturas o traslados previos
+          })
+
+#========================================================================================================================
+          #3.- SE AGREGA EL CERTIFICADO Y EL SELLO DIGITAL
+          @total_to_w = nota_credito.total_to_words
+          # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+          certificado.certifica nota_credito
+          #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
+          xml_certificado_sellado = llave.sella nota_credito
+
+#========================================================================================================================
+          #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
+          #Se obtiene el xml timbrado
+
+          # Convertir la cadena del xml en base64
+          xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
+
+          # Parametros para conexion al Webservice (URL de Pruebas)
+          wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
+          usuario = "AAA010101000"
+          contrasena = "h6584D56fVdBbSmmnB"
+          servicio = Timbox::Servicios.new
+
+          xml_timbox = servicio.timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+
+          #Guardo el xml recien timbradito de timbox, calientito
+          nc_id = NotaCredito.last ? NotaCredito.last.id + 1 : 1
+          archivo = File.open("public/#{nc_id}_nc.xml", "w")
+          archivo.write (xml_timbox)
+          archivo.close
+
+          #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
+          nota_credito.complemento=CFDI::Complemento.new(
+            {
+              Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+              uuid:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID'),
+              FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+              RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+              SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+              NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+            }
+          )
+          #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
+          xml_copia = xml_timbox
+
+#========================================================================================================================
+          #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
+          codigoQR = nota_credito.qr_code xml_timbox
+          cadOrigComplemento = nota_credito.complemento.cadena_TimbreFiscalDigital
+          logo=current_user.negocio.logo
+          #No hay nececidad de darle a escoger el uso del cfdi al usuario.
+          uso_cfdi_descripcion = "Devoluciones, descuentos o bonificaciones"
+          #cve_descripcion_uso_cfdi_fg = "G02 - Devoluciones, descuentos o bonificaciones"
+          cve_nombre_forma_pago = "#{FacturaFormaPago.find(params[:forma_pago_nc]).cve_forma_pagoSAT } - #{FacturaFormaPago.find(params[:forma_pago_nc]).nombre_forma_pagoSAT}"
+          #método de pago(clave y descripción)
+          #"deberá de ser siempre.. PUE"
+          cve_nombre_metodo_pago = "PUE - Pago en una sola exhibición"
+          #Regimen fiscal
+          cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
+          nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
+          cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
+          #Para el nombre del changarro feo jajaja
+          nombre_negocio = current_user.negocio.nombre
+
+          #Personalización de la plantilla de impresión de una factura de venta. :P
+          plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "nc")
+          tipo_fuente = plantilla_impresion.tipo_fuente
+          tam_fuente = plantilla_impresion.tam_fuente
+          color_fondo = plantilla_impresion.color_fondo
+          color_banda = plantilla_impresion.color_banda
+          color_titulos = plantilla_impresion.color_titulos
+
+          #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
+          hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
+            tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
+            tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
+          }
+
+          unless @factura.cliente.telefono1.to_s.strip.empty?
+            hash_info[:Telefono1Receptor] =  @factura.cliente.telefono1
+          else
+            hash_info[:Telefono1Receptor] =  @factura.cliente.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
+          end
+          hash_info[:EmailReceptor]= @factura.cliente.email unless @factura.cliente.email.to_s.strip.empty?
+          #Solo si tiene más de un establecimiento el negocio...
+          if current_user.sucursal
+            hash_info[:tel_sucursal] = current_user.sucursal.telefono
+            hash_info[:email_sucursal] = current_user.sucursal.email
+          end
+
+          xml_rep_impresa = nota_credito.add_elements_to_xml(hash_info)
+          template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de notas de crédito.xsl'))
+
+          html_document = template.transform(xml_rep_impresa)
+          #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
+          pdf = WickedPdf.new.pdf_from_string(html_document)
+          #Se guarda el pdf 
+          save_path = Rails.root.join('public',"#{nc_id}_nc.pdf")
+          File.open(save_path, 'wb') do |file|
+              file << pdf
+          end
+
+#========================================================================================================================
+          #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
+          gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
+          storage=gcloud.storage
+          bucket = storage.bucket "cfdis"
+
+          #Se realizan las consultas para formar los directorios en cloud
+          dir_negocio = current_user.negocio.nombre
+          dir_cliente = nombre_fiscal_receptor_nc
+
+          #Se obtiene la fecha del xml timbrado para que no difiera de los comprobantes y del registro de la BD.
+          fecha_registroBD = fecha_registroBD = DateTime.parse(xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado').to_s) 
+          dir_dia = fecha_registroBD.strftime("%d")
+          dir_mes = fecha_registroBD.strftime("%m")
+          dir_anno = fecha_registroBD.strftime("%Y")
+
+          fecha_file = fecha_registroBD.strftime("%Y-%m-%d")
+
+          dir_sucursal = current_user.sucursal.nombre
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}//#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/#{nc_id}_nc"
+
+
+          #Los comprobantes de almacenan en google cloud
+          #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_NotaCrédito.pdf"
+          #file = bucket.create_file StringIO.new(xml_timbrado_storage.to_s), "#{ruta_storage}_NotaCrédito.xml"
+          file = bucket.create_file "public/#{nc_id}_nc.pdf", "#{ruta_storage}.pdf"
+          file = bucket.create_file "public/#{nc_id}_nc.xml", "#{ruta_storage}.xml"
+
+#========================================================================================================================
+          #7.- SE REGISTRA LA NUEVA NOTA DE CRÉDITO EN LA BASE DE DATOS
+          folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+          @nota_credito = NotaCredito.new( consecutivo: consecutivo, folio: serie + consecutivo.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml, tipo_factura: @factura.tipo_factura)
+          #@factura = Factura.find(@venta.factura_id)
+
+          if @nota_credito.save #ps ps haz una =TRANSACCIÓN=
+            current_user.nota_creditos << @nota_credito
+            current_user.negocio.nota_creditos << @nota_credito
+            current_user.sucursal.nota_creditos << @nota_credito
+            Cliente.find(@factura.cliente.id).nota_creditos << @nota_credito
+            #@factura.nota_creditos <<  @nota_credito
+            FacturaFormaPago.find(params[:forma_pago_nc]).nota_creditos << @nota_credito
+
+            #Esto se hace debido a que se permite crear comprobantes con captura manual de datos(Sin depender de una venta del sistema)
+            @factura_nota_credito = FacturaNotaCredito.new(estado_nc: "Activa", estado_fv: "Activa") #El monto esa pendiente
+            @factura.factura_nota_creditos << @factura_nota_credito
+            @nota_credito.factura_nota_creditos << @factura_nota_credito
+            @factura_nota_credito.save
+
+            nota_credito_exito = true
+          end
+
+#========================================================================================================================
+          #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
+          #Se asignan los valores del texto variable de la configuración de las plantillas de email.
+         
+          #Si la factura es una factura comun y correiente, se usa la plantilla de notas de crédito para las facturas de ventas
+          if @factura.tipo_factura == "fv"
+            destinatario = params[:destinatario]
+
+            mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").msg_email
+            asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fv").asunto_email
+
+            cadena = PlantillaEmail::AsuntoMensaje.new
+            factura_relacionada_NC = @itemVenta.venta.factura
+            cadena.nombCliente = factura_relacionada_NC.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
+            
+            cadena.fecha = fecha_expedicion_nc.strftime("%Y-%m-%d")
+            cadena.numero = consecutivo
+            cadena.folio = serie + consecutivo.to_s
+            cadena.total = @cantidad_devuelta.to_f * @itemVenta.precio_venta
+              
+            cadena.nombNegocio = current_user.negocio.nombre 
+            cadena.nombSucursal = current_user.sucursal.nombre
+            cadena.emailContacto = current_user.sucursal.email
+            cadena.telContacto = current_user.sucursal.telefono
+
+            @mensaje = cadena.reemplazar_texto(mensaje)
+            @asunto = cadena.reemplazar_texto(asunto)
+          
+            comprobantes = {pdf_nc:"public/#{nc_id}_nc.pdf", xml_nc:"public/#{nc_id}_nc.xml"}
+
+            FacturasEmail.factura_email(destinatario, @mensaje, @asunto, comprobantes).deliver_now
+          #En cambio si la factura es una factura global, la plantilla que se es diferente... usada para enviarla probablemente al contador
+          
+          elsif @factura.tipo_factura == "fg"
+          end
+        else
+          redirect_to :back, notice: "Los Certificados de Sello Digital no se encontraron, por favor intente nuevamente para poder realizar la Nota de crédito por devolución."
+        end
+      end # Fin de @venta.factura.present?
+
+#........
+      if (@venta.factura.present? && nota_credito_exito == true) || (@venta.factura.blank?)
+
+        #Los status del item de la venta y de la venta en general, es cambiado a "Con devoluciones"
+        @venta.status = "Con devoluciones"
+        @itemVenta.status = "Con devoluciones"
+
+        #Se crea el registro de una venta cancelada y se relaciona con su categoría de devolución
+        @devolucion = VentaCancelada.new(:articulo=>@itemVenta.articulo, :item_venta=>@itemVenta, :venta=>@venta, :user=>current_user, :negocio=>current_user.negocio, :sucursal=>@itemVenta.articulo.sucursal, :cantidad_devuelta=>@cantidad_devuelta, :observaciones=>@observaciones, :monto=>@itemVenta.precio_venta)
+        @categoriaCancelacion.venta_canceladas << @devolucion
+
+        #Dado que se hizo una devolución, se aumenta la existencia en inventarios de dicho producto.
+        @itemVenta.articulo.existencia += @cantidad_devuelta.to_f
+
+        #Se disminuye la cantidad devuelta, respecto del item de venta.
+        #@itemVenta.cantidad -= @cantidad_devuelta.to_f
+
+        #################################################################################################################
+        #################  creando los registros por concepto de gastos por devolucion de productos #####################
+        #################################################################################################################
+
+        @categoriaGasto = current_user.negocio.categoria_gastos.where("nombre_categoria = ?", "Devoluciones").take
+
+        #Esta variable recoge el parámetro del origen del recurso con el que se va a pagar la devolución.
+        #El origen puede ser las cajas de venta, la caja chica o alguna cuenta bancaria.
+        origen = params[:select_origen_recurso]
+
+        #almacena el importe monetario que será devuelto al cliente.
+        importe_devolucion = params[:importe_devolucion]
+
+        #Si se cumple esta condición, significa que el recurso para la devolución, provendrá de alguna de las cajas
+        #de venta que tiene la sucursal. La cadena contiene el id de la caja de venta seleccionada.
+        if origen.include? "caja_venta"
+          tamano_cadena_origen = origen.length
+
+          #aquí extraigo el id de la caja de venta contenido en la cadena de texto
+          #el número "11" corresponde a la cantidad de caracteres de la cadena "caja_venta_"
+          id_caja_sucursal = origen[11..tamano_cadena_origen]
+
+          #En base al id extraido de la cadena, busco la Caja de Venta en la base de datos
+          @cajaVenta = CajaSucursal.find(id_caja_sucursal)
+
+          #Verifico que la caja tenga el saldo necesario para realizar la operación de devolución.
+          if @cajaVenta.saldo >= importe_devolucion.to_f
+            @gasto = Gasto.new(:monto=>importe_devolucion, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
+
+            #creación y relación del registro de pago de devolución
+            @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
+            @gasto.pago_devolucion = @pagoDevolucion
+            @devolucion.pago_devolucions << @pagoDevolucion
+            current_user.pago_devolucions << @pagoDevolucion
+            current_user.sucursal.pago_devolucions << @pagoDevolucion
+            current_user.negocio.pago_devolucions << @pagoDevolucion
+
+            #relaciones del registro de gasto
+            @categoriaGasto.gastos << @gasto
+            @cajaVenta.gastos << @gasto
+            current_user.gastos << @gasto
+            current_user.sucursal.gastos << @gasto
+            current_user.negocio.gastos << @gasto
+
+            #Se actualiza el saldo de la caja de venta
+            saldo = @cajaVenta.saldo - importe_devolucion.to_f
+            @cajaVenta.saldo = saldo
+
+            #Se registra el movimiento de caja de venta. En este caso, es un movimiento de salida
+            @movimientoCaja = MovimientoCajaSucursal.new(:salida=>importe_devolucion.to_f, :caja_sucursal=>@cajaVenta)
+            current_user.movimiento_caja_sucursals << @movimientoCaja
+            current_user.sucursal.movimiento_caja_sucursals << @movimientoCaja
+            current_user.negocio.movimiento_caja_sucursals << @movimientoCaja
+
+          else
+            flash[:notice] = "No hay saldo suficiente en esta caja para hacer la devolución"
+          end
+
+        end
+
+        #Si se cumple esta condición, significa que el recurso provendrá de la caja chica que tiene la sucursal.
+        if origen.include? "caja_chica"
+          #Verifica si existen registros de caja chica para esta sucursal
+          if current_user.sucursal.caja_chicas
+            #Si existen registros de caja chica, toma el último registro de la tabla y se obtiene el importe de
+            #dicho registro. En esto se determina si hay saldo suficiente para cubrir la devolución.
+            entradas = CajaChica.sum(:entrada, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+            salidas = CajaChica.sum(:salida, :conditions=>["sucursal_id=?", current_user.sucursal.id])
+            @saldoCajaChica = entradas - salidas
+
+
+            #@cajaChicaLast = sucursal.caja_chicas.last
+            if @saldoCajaChica >= importe_devolucion.to_f
+
+              saldo_en_caja_chica = @saldoCajaChica
+
+              @gasto = Gasto.new(:monto=>importe_devolucion.to_f, :concepto=>"devolucion: #{@observaciones}", :tipo=>"devolucion")
+
+              #creación y relación del registro de pago de devolución
+              @pagoDevolucion = PagoDevolucion.new(:monto=>importe_devolucion.to_f)
+              @gasto.pago_devolucion = @pagoDevolucion
+              @devolucion.pago_devolucions << @pagoDevolucion
+              current_user.pago_devolucions << @pagoDevolucion
+              current_user.sucursal.pago_devolucions << @pagoDevolucion
+              current_user.negocio.pago_devolucions << @pagoDevolucion
+
+              #relaciones del registro de gasto
+              @categoriaGasto.gastos << @gasto
+              current_user.gastos << @gasto
+              current_user.sucursal.gastos << @gasto
+              current_user.negocio.gastos << @gasto
+
+              #Se hace un registro en caja chica y se relaciona con el gasto
+              @cajaChica = CajaChica.new(:concepto=>"devolucion: #{@observaciones}", :salida=>importe_devolucion.to_f)
+              @cajaChica.gasto = @gasto
+              #Se actualiza el saldo de la caja chica
+              #nvo_saldo_caja_chica = saldo_en_caja_chica - importe_devolucion.to_f
+              #@cajaChica.saldo = nvo_saldo_caja_chica
+
+              #Se hacen las relaciones de pertenencia para la caja chica.
+              current_user.caja_chicas << @cajaChica
+              current_user.sucursal.caja_chicas << @cajaChica
+              current_user.negocio.caja_chicas << @cajaChica
+
+            else
+              flash[:notice] = "No hay saldo suficiente en la caja chica para hacer la devolución"
+            end
+          end
+        end
+  
+        respond_to do |format|
+    	    if @devolucion.valid?
+    	      if @devolucion.save && @itemVenta.save && @venta.save
+
+              if @cajaVenta && @cajaVenta.save && @gasto.save && @pagoDevolucion.save && @movimientoCaja && @movimientoCaja.save
+    	          #if @venta.factura.present?
+                  #send_file( File.open( "public/#{nc_id}_nc.xml"), :disposition => "inline", :type => "application/pdf")
+                #else
+                  flash[:notice] = "La devolución se realizó con éxito"
+      	          format.html { redirect_to action: "devolucion" }
+                #end
+              elsif @cajaChica && @cajaChica.save && @gasto.save && @pagoDevolucion.save
+                #if @venta.factura.present?
+                  #send_file( File.open( "public/#{nc_id}_nc.xml"), :disposition => "inline", :type => "application/pdf")
+                #else
+                  flash[:notice] = "La devolución se realizó con éxito"
+                  format.html { redirect_to action: "devolucion" }
+                #end
+              end
+    	      else
+    	        format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
+    	      end
+    	    else
+    	      format.html { redirect_to devoluciones_devolucion_path, notice: 'Ocurrió un error al realizar la devolución' }
+    	    end
+        end
 	    end
-	  end
   	end
   end
 

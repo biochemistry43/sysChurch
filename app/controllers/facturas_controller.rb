@@ -737,7 +737,7 @@ class FacturasController < ApplicationController
           cont += 1
         end
 
-  #========================================================================================================================
+#========================================================================================================================
         #3.- SE AGREGA EL CERTIFICADO Y EL SELLO DIGITAL
         @total_to_w= factura.total_to_words
         # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
@@ -746,7 +746,7 @@ class FacturasController < ApplicationController
         xml_certificado_sellado = llave.sella factura
         #p xml_certificado_sellado
 
-  #========================================================================================================================
+#========================================================================================================================
         #4.- ALTERNATIVA DE CONEXIÓN PARA CONSUMIR EL WEBSERVICE DE TIMBRADO CON TIMBOX
         #Se convierte el xml en base64 para mandarselo a TIMBOX
         xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
@@ -777,7 +777,7 @@ class FacturasController < ApplicationController
         #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
         xml_copia = xml_timbox
  
-  #========================================================================================================================
+#========================================================================================================================
         #7.- SE REGISTRA LA NUEVA FACTURA EN LA BASE DE DATOS
         #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
         fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
@@ -893,14 +893,8 @@ class FacturasController < ApplicationController
           if "yes" == params[:imprimir]
             send_file( File.open( "public/#{uuid_cfdi}.pdf"), :disposition => "inline", :type => "application/pdf")
           else
-            #respond_to do |format|
-              #format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
-            #end
             respond_to do |format|
-              format.html
-              format.pdf do
-                render pdf: "public/#{uuid_cfdi}.pdf" , header: { right: '[page] of [topage]' }   # Excluding ".pdf" extension.
-              end
+              format.html { redirect_to facturas_index_path, notice: 'La factura fue registrada existoxamente!' }
             end
           end
         else
