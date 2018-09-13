@@ -487,6 +487,7 @@ class NotaCreditosController < ApplicationController
         end
 
         ruta_storage_nc = @nota_credito.ruta_storage
+        uuid_cfdi = @nota_credito.folio_fiscal
         #ruta_storage_fv = @nota_credito.factura.ruta_storage
         #Se descargan los archivos que el usuario haya indicado que se enviarán como archivos adjuntos
         gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
@@ -496,36 +497,24 @@ class NotaCreditosController < ApplicationController
         #Se dice que cundo se envia una nota de credito también se debe de enviar los comprobates de ingreso(facturas de vetas), para que el cliente compruebe la diferencia entre los montos.
         comprobantes = {}
         if params[:pdf_nc] == "yes"
-          comprobantes[:pdf_nc] = "public/#{@nota_credito.id}.pdf"
-          file_download_storage_xml = bucket.file "#{ruta_storage_nc}.pdf"
-          file_download_storage_xml.download "public/#{@nota_credito.id}.pdf"
+          comprobantes[:pdf_nc] = "public/#{uuid_cfdi}.pdf"
+          file_download_storage_xml = bucket.file "#{ruta_storage_nc}#{uuid_cfdi}.pdf"
+          file_download_storage_xml.download "public/#{uuid_cfdi}.pdf"
         end
 
         if params[:xml_nc] == "yes"
-          comprobantes[:xml_nc] = "public/#{@nota_credito.id}.xml"
-          file_download_storage_xml = bucket.file "#{ruta_storage_nc}.xml"
-          file_download_storage_xml.download "public/#{@nota_credito.id}.xml"
+          comprobantes[:xml_nc] = "public/#{uuid_cfdi}.xml"
+          file_download_storage_xml = bucket.file "#{ruta_storage_nc}#{uuid_cfdi}.xml"
+          file_download_storage_xml.download "public/#{uuid_cfdi}.xml"
         end
         #Solo cuando este cancelada
         if @nota_credito.estado_nc == "Cancelada"
           ruta_storage_ac_nc = @nota_credito.nota_credito_cancelada.ruta_storage
           if params[:xml_Ac_nc] == "yes"
-            comprobantes[:xml_Ac_nc] = "public/#{@nota_credito.nota_credito_cancelada.id}.xml"
-            file_download_storage_xml = bucket.file "#{ruta_storage_ac_nc}.xml"
-            file_download_storage_xml.download "public/#{@nota_credito.nota_credito_cancelada.id}.xml"
+            comprobantes[:xml_Ac_nc] = "public/#{uuid_cfdi}(cancelado).xml"
+            file_download_storage_xml = bucket.file "#{ruta_storage_ac_nc}#{uuid_cfdi}(cancelado).xml"
+            file_download_storage_xml.download "public/#{uuid_cfdi}(cancelado).xml"
           end
-        end
-
-        #Por si el usuario también desea enviar la factura de venta relacionada a la nota de crédito
-        if params[:pdf] == "yes"
-          comprobantes[:pdf] = "public/#{@nota_credito.factura.id}.pdf"
-          file_download_storage_xml = bucket.file "#{ruta_storage_fv}.pdf"
-          file_download_storage_xml.download "public/#{@nota_credito.factura.id}.pdf"
-        end
-        if params[:xml] == "yes"
-          comprobantes[:xml] = "public/#{@nota_credito.factura.id}.xml"
-          file_download_storage_xml = bucket.file "#{ruta_storage_fv}.xml"
-          file_download_storage_xml.download "public/#{@nota_credito.factura.id}.xml"
         end
 
         #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
@@ -533,7 +522,7 @@ class NotaCreditosController < ApplicationController
 
         respond_to do |format|
           format.html { redirect_to action: "index"}
-          flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
+          flash[:notice] = "La nota de crédito se ha enviado al email: #{destinatario_final}"
           #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
         end
       end
@@ -574,11 +563,7 @@ class NotaCreditosController < ApplicationController
       # => Por concepto de egresos.
       #... sha la la sha la la
       require 'timbrado'
-      require 'base64'
-      #equire 'savon'
-      require 'nokogiri'
-      require 'byebug'
-      require 'openssl'
+
 
       username = "AAA010101000"
       password = "h6584D56fVdBbSmmnB"

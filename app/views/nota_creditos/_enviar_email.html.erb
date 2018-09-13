@@ -75,30 +75,7 @@
         <% end %>
       </div>
     </div>
-    <div class="row">
-      <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_pdf, "Factura (.pdf)", class:"control-label"%>
-      </div>
-      <div class="col-md-2 col-sm-2 col-xs-2">
-        <% if  @nota_credito.estado_nc == "Activa" %>
-          <%=check_box_tag(:pdf, "yes", false, {class:" checked check",  checked:"checked"})%>
-        <% else %>
-          <%=check_box_tag(:pdf, "yes", false, {class:" checked check"})%>
-        <% end %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_xml, "Factura (.xml)", class:"control-label"%>
-      </div>
-      <div class="col-md-2 col-sm-2 col-xs-2">
-        <% if  @nota_credito.estado_nc == "Activa" %>
-          <%=check_box_tag(:xml, "yes", false, {class:" checked check",  checked:"checked"})%>
-        <% else %>
-          <%=check_box_tag(:xml, "yes", false, {class:" checked check"})%>
-        <% end %>
-      </div>
-    </div>
+
   </div>
 </div>
       <%= submit_tag 'Enviar comprobantes', {:class=>"btn btn btn-success"} %>
