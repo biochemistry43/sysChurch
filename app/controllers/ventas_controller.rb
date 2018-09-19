@@ -246,7 +246,7 @@ class VentasController < ApplicationController
 
         #usuario elige status
         if @forma_pago.empty?
-          unless @cajero && @sucursal & @status.eql?("Todas")
+          unless @cajero && @sucursal && @status.eql?("Todas")
             @ventas = current_user.negocio.ventas.where(fechaVenta: @fechaInicial..@fechaFinal, status: @status)            
           end
         end
