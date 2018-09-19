@@ -1493,11 +1493,14 @@ class FacturasController < ApplicationController
 
       FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
 
-      respond_to do |format|
-        format.html { redirect_to action: "index"}
-        flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
+      #respond_to do |format|
+        #format.html { redirect_to action: "index"}
+        #flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
         #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-      end
+      #end
+      
+      redirect_to :back, notice: "Los comprobantes se han enviado a #{destinatario_final}!"
+
 
     end
   end
