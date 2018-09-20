@@ -10,9 +10,9 @@ class VentasController < ApplicationController
     @avanzada = false
     if request.get?
       if can? :create, Negocio
-        @ventas = current_user.negocio.ventas.order(created_at: :desc)
+        @ventas = current_user.negocio.ventas.order(created_at: :desc).limit(500)
       else
-        @ventas = current_user.sucursal.ventas.order(created_at: :desc)
+        @ventas = current_user.sucursal.ventas.order(created_at: :desc).limit(500)
       end
     end
   end
