@@ -389,7 +389,7 @@ function completarVenta(){
     if(i!=0){
     //El código del producto se encuentra en la primer columna de 
     //de la tabla de venta actual.
-      var codigoProd = $(this).find("td").eq(0).text();
+      var codigoProd = $(this).find("td").eq(0).attr("id");
       //La cantidad vendida del producto se encuentra en la tercera
       //columna de la tabla de venta actual.
       var cantidadProd = $(this).find("td").eq(3).text();
@@ -523,9 +523,9 @@ function addProduct(elem){
             var esAgregado = guardarIdAgregado(element);
 
             if (esAgregado){
-              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td>"+element.clave+"</td>"+
+              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td id='"+element.id+"'>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
-                                    "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
+                                    "<td>"+element.precioVenta+"</td><td id='cantidadProducto' style='text-align:center;''>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
                                     "<td id='existenciaProducto' style='visibility:hidden;'>"+element.existencia+"</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+

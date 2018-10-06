@@ -248,7 +248,7 @@ class PuntoVentaController < ApplicationController
 
             itemV = ItemVenta.new
 
-            itemV.articulo = Articulo.find_by clave: itemVenta["codigo"]
+            itemV.articulo = Articulo.find(itemVenta["codigo"])
             itemV.precio_venta = itemV.articulo.precioVenta
             itemV.cantidad = itemVenta["cantidad"]
             monto_item = itemV.cantidad * itemV.precio_venta
