@@ -100,7 +100,7 @@
     </button>
     <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
-      <%= form_tag({ controller: "facturas", action: "consulta_facturas", :tipo_factura => "fg"}, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_por_fecha", :tipo_factura => "fg"}, {:class=> "form-horizontal", :method => :post}) do %>
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
             Búsqueda por fechas:
@@ -327,7 +327,7 @@
                 <!--Imprimir factura-->
                 <% if can? :read, factura %>
     
-                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
+                  <%= link_to url={action: "visualizar_pdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                     <i class="fa fa-print"></i>
                   <% end %>
 
@@ -341,14 +341,14 @@
                   <i class="fa fa-cloud-download"></i>
                 <% end %>
 
-                <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                <%= link_to url={action: "mostrar_detalles", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                 <i class="fa fa-info-circle"></i>
                 <% end %>
 
                 <% unless factura.factura_nota_creditos.present? || factura.estado_factura.eql?("Cancelada") %>
                   <!--Se le manda su id :)-->
                   <!--%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %-->
-                  <%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <%= link_to url={action: "cancelar_factura", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <!--%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura},  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar"}, data: { confirm: "¿Desea cancelar esta venta?"} do %-->
                    <i class="fa fa-close"></i>
                   <% end %>

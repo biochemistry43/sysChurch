@@ -26,6 +26,9 @@ gem 'google-cloud-storage'
 
 gem 'gmail', '~> 0.6.0'
 
+#Una biblioteca de Ruby para tratar con el dinero y la conversión de moneda.
+gem 'money', '~> 6.13', '>= 6.13.1'
+
 #Editor de texto basado en bootstrap
 gem 'summernote-rails'
 

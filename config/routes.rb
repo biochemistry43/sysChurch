@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   #resources :plantillas_emails
+  #actualizar, mostrar
   put 'plantillas_emails/update'
   post 'plantillas_emails/mostrar_plantilla'
   get 'plantillas_emails/mostrar_plantilla'
@@ -40,39 +41,37 @@ Rails.application.routes.draw do
   post 'factura_recurrentes/facturaRecurrentes'
   get 'factura_recurrentes/facturaRecurrentes'
 
+  #-------FACTURAS-------
+
   #resources :facturas
-  get 'facturas/index'
-  get 'facturas/index_facturas_globales'
-  get 'facturas/show'
-  get 'facturas/new'
-  get 'facturas/create'
-  get 'facturas/edit'
-  get 'facturas/update'
-  get 'facturas/destroy'
+  get 'facturas/index_facturas_ventas'
+  
+  get 'facturas/mostrar_detalles'
+  post 'facturas/buscar_venta'
+  get 'facturas/buscar_venta' #
 
-  post 'facturas/buscarVentaFacturar'
-  get 'facturas/buscarVentaFacturar'
-
-  post 'facturas/consulta_facturas'
+  post 'facturas/consulta_por_fecha'
   post 'facturas/consulta_por_folio'
   post 'facturas/consulta_por_cliente'
   post 'facturas/consulta_avanzada'
   #get 'facturas/mostrarDetallesVenta'
-  post 'facturas/facturarVenta'
-  get 'facturas/readpdf'
-  get 'facturas/enviar_email'
-  post 'facturas/enviar_email_post'
-  get 'facturas/descargar_cfdis'
-  get 'facturas/cancelar_cfdi'
+  post 'facturas/facturar_venta'
+  get 'facturas/visualizar_pdf'
+  get 'facturas/enviar_email' 
+  post 'facturas/enviar_email_post' #confirmar_envio
+  get 'facturas/descargar_cfdis' #En formato .xml (de facturas activas o canceladas)
+  #get 'facturas/cancelar_cfdi'
+
+  get 'facturas/cancelar_factura' #mostrar_mensaje_cancelar
+  post 'facturas/cancelaFacturaVenta2' #confirmar_cancelacion
+
+  get 'facturas/index_facturas_globales'
   get 'facturas/factura_global_publico_gral'
   post 'facturas/factura_global_publico_gral'
 
-  get 'facturas/cancelaFacturaVenta'
-  post 'facturas/cancelaFacturaVenta2'
-  #resources :facturas
-
   get 'facturas/generarFacturaGlobal'
   post 'facturas/mostrarVentas_FacturaGlobal'
+
 
 
 

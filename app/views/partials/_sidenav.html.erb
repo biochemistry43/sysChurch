@@ -216,14 +216,14 @@
                     </a>
                     <ul class="nav child_menu" style="display: none">
                       <%if can? :create, Factura%>
-                        <li><%= link_to "Facturas de ventas", facturas_index_path(:tipo_factura => "fv")%>
+                        <li><%= link_to "Facturas de ventas", facturas_index_facturas_ventas_path(:tipo_factura => "fv")%>
                         </li>
                       <%end%>
 
-                      <%if can? :create, Articulo%>
-                        <li><%= link_to "Facturas recurrentes", factura_recurrentes_index_path %>
+                      <!--if can? :create, Articulo>
+                        <li><= link_to "Facturas recurrentes", factura_recurrentes_index_path >
                         </li>
-                      <%end%>
+                      <end-->
 
                       <%if can? :create, PresentacionProducto%>
                         <li><%= link_to "Notas de crédito", nota_creditos_index_path%>

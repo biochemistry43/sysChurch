@@ -1,24 +1,21 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: [:show, :edit, :update, :destroy, :readpdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelaFacturaVenta, :cancelaFacturaVenta2]
+  before_action :set_factura, only: [:mostrar_detalles, :edit, :update, :destroy, :visualizar_pdf, :enviar_email,:enviar_email_post, :descargar_cfdis, :cancelar_factura, :cancelaFacturaVenta2]
   #before_action :set_facturaDeVentas, only: [:show]
   #before_action :set_cajeros, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
-  before_action :set_sucursales, only: [:index, :index_facturas_globales, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal]
-  before_action :set_clientes, only: [:index, :consulta_facturas, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
+  before_action :set_sucursales, only: [:index_facturas_ventas, :index_facturas_globales, :consulta_por_fecha, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente, :generarFacturaGlobal, :mostrarVentas_FacturaGlobal]
+  before_action :set_clientes, only: [:index_facturas_ventas, :consulta_por_fecha, :consulta_avanzada, :consulta_por_folio, :consulta_por_cliente]
 
   # GET /facturas
   # GET /facturas.json
-  def index
+  def index_facturas_ventas
     @consulta = false
     @avanzada = false
 
     if request.get?
-      #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
+      #Con tipo_facura = "fv" obtengo solo las facturas de ventas
       if can? :create, Negocio
-        
-        @facturas = current_user.negocio.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-        #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
+        @facturas = current_user.negocio.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :asc)
       else
-        #@facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
         @facturas = current_user.sucursal.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       end
     end
@@ -30,12 +27,10 @@ class FacturasController < ApplicationController
 
     if request.get?
       @tipo_factura = params[:tipo_factura]
-      #el tipo_facura lo uso para discriminar las facturas de ventas entre las facturas globales
+      #Con tipo_facura = "fg" obtenengo solo las facturas globales
       if can? :create, Negocio
         @facturas = current_user.negocio.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
-        #@facturas = current_user.negocio.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       else
-        #@facturas = current_user.sucursal.facturas.where(created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
         @facturas = current_user.sucursal.facturas.where(tipo_factura: params[:tipo_factura], created_at: Date.today.beginning_of_month..Date.today.end_of_month).order(created_at: :desc)
       end
     end
@@ -43,8 +38,7 @@ class FacturasController < ApplicationController
 
   # GET /facturas/1
   # GET /facturas/1.json
-  def show
-    
+  def mostrar_detalles
       @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Público general"
       @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
       cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
@@ -54,57 +48,8 @@ class FacturasController < ApplicationController
       @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
   end
 
-  # GET /facturas/new
-  def new
-    @factura = Factura.new
-  end
-
-  # GET /facturas/1/edit
-  def edit
-  end
-
-  # POST /facturas
-  # POST /facturas.json
-  def create
-    @factura = Factura.new(factura_params)
-
-    respond_to do |format|
-      if @factura.save
-        format.html { redirect_to @factura, notice: 'Factura was successfully created.' }
-        format.json { render :show, estado_factura: :created, location: @factura }
-      else
-        format.html { render :new }
-        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /facturas/1
-  # PATCH/PUT /facturas/1.json
-  def update
-    respond_to do |format|
-      if @factura.update(factura_params)
-        format.html { redirect_to @factura, notice: 'Factura was successfully updated.' }
-        format.json { render :show, estado_factura: :ok, location: @factura }
-      else
-        format.html { render :edit }
-        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /facturas/1
-  # DELETE /facturas/1.json
-  def destroy
-    @factura.destroy
-    respond_to do |format|
-      format.html { redirect_to facturas_url, notice: 'Factura was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
-
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
-  def buscarVentaFacturar
+  def buscar_venta
     @consulta = false
     #if request.post?
       #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
@@ -246,7 +191,7 @@ class FacturasController < ApplicationController
     #end
   end
 
-  def facturarVenta
+  def facturar_venta
 
     if request.post?
       require 'cfdi'
@@ -905,7 +850,8 @@ class FacturasController < ApplicationController
   end #Fin del controlador
 
   #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
-  def cancelaFacturaVenta
+  #cancelaFacturaVenta
+  def cancelar_factura
     #Sola las facturas de ventas son especiales como yo.
     if @factura.tipo_factura == "fv"
 =begin
@@ -1416,7 +1362,7 @@ class FacturasController < ApplicationController
 
 
 
-  def readpdf
+  def visualizar_pdf
 
     gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
     storage=gcloud.storage
@@ -1500,7 +1446,6 @@ class FacturasController < ApplicationController
       #end
       
       redirect_to :back, notice: "Los comprobantes se han enviado a #{destinatario_final}!"
-
 
     end
   end
@@ -1609,7 +1554,7 @@ class FacturasController < ApplicationController
     end
   end
 
-  def consulta_facturas
+  def consulta_por_fecha
     @consulta = true
     @fechas=true
     @por_folio=false
@@ -2449,4 +2394,56 @@ class FacturasController < ApplicationController
       params.require(:factura).permit(:uso_cfdi_id)
       #params.require(:factura).permit(:folio, :fecha_expedicion, :estado_factura,:venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id,:forma_pago_id, :folio_fiscal, :consecutivo)
     end
+
+=begin
+  # GET /facturas/new
+  def new
+    @factura = Factura.new
+  end
+
+  # GET /facturas/1/edit
+  def edit
+  end
+
+  # POST /facturas
+  # POST /facturas.json
+  def create
+    @factura = Factura.new(factura_params)
+
+    respond_to do |format|
+      if @factura.save
+        format.html { redirect_to @factura, notice: 'Factura was successfully created.' }
+        format.json { render :show, estado_factura: :created, location: @factura }
+      else
+        format.html { render :new }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /facturas/1
+  # PATCH/PUT /facturas/1.json
+  def update
+    respond_to do |format|
+      if @factura.update(factura_params)
+        format.html { redirect_to @factura, notice: 'Factura was successfully updated.' }
+        format.json { render :show, estado_factura: :ok, location: @factura }
+      else
+        format.html { render :edit }
+        format.json { render json: @factura.errors, estado_factura: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /facturas/1
+  # DELETE /facturas/1.json
+  def destroy
+    @factura.destroy
+    respond_to do |format|
+      format.html { redirect_to facturas_url, notice: 'Factura was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+=end
+
 end

@@ -24,20 +24,14 @@ class Ability
          can :cru, CampoFormaPago
          can :ru, CampoFormaPagoItem
          can :ru, CatArticulo
-         can :cru, Cliente
-         can :cru, DatosFiscalesCliente
-         can :r, DatosFiscalesNegocio
-         can :r, DatosFiscalesSucursal
          can :ru, FormaPago
          can :crud, ItemVenta
          can :r, MarcaProducto
          can :cru, MovimientoCajaSucursal
-         can :ru, Negocio
          can :cru, Perfil
          can :r, PresentacionProducto
          can :ru, Proveedor
          can :crud, RetiroCajaVenta
-         can :r, Sucursal
          can :crud, TelefonoPersona
          can :ru, User
          can :crud, Venta
@@ -46,6 +40,29 @@ class Ability
          can :consulta_avanzada, Venta
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+
+         #MÓDULO DE FACTURACIÓN
+         can :cru, Cliente
+         can :cru, DatosFiscalesCliente
+         can :r, Negocio #No, no, nou, actulizar no!.
+         can :r, DatosFiscalesNegocio
+         can :r, Sucursal
+         can :r, DatosFiscalesSucursal
+
+         can :index_facturas_ventas, Factura
+         can :mostrar_detalles, Factura
+         can :buscar_venta, Factura
+         can :consulta_por_fecha, Factura
+         can :consulta_por_folio, Factura
+         can :consulta_por_cliente, Factura
+         can :consulta_avanzada, Factura
+         can :facturar_venta, Factura
+         can :visualizar_pdf, Factura
+         can :enviar_email, Factura
+         can :descargar_cfdis, Factura
+
+         can :index_facturas_globales, Factura
+
          
        elsif user.role == "administrador"
 
@@ -66,7 +83,7 @@ class Ability
          can :crud, CatVentaCancelada
          can :crud, CategoriaGasto
          can :crud, CategoriaPerdida
-         can :crud, Cliente
+         
          can :crud, Compra 
          can :consulta_compra_factura, Compra
          can :consulta_compras, Compra
@@ -75,9 +92,7 @@ class Ability
          can :actualizar, Compra
          can :crud, CompraArticulosDevuelto
          can :crud, CompraCancelada
-         can :crud, DatosFiscalesCliente
-         can :ru, DatosFiscalesNegocio
-         can :crud, DatosFiscalesSucursal
+
          can :crud, DetalleCompra
          can :crud, EntradaAlmacen
          can :ru, FormaPago
@@ -87,7 +102,7 @@ class Ability
          can :crud, ItemVenta
          can :crud, MarcaProducto
          can :crud, MovimientoCajaSucursal
-         can :cru, Negocio
+         
          can :updateDatosFiscales, Negocio
          can :crud, PagoDevolucion
          can :crud, PagoPendiente
@@ -96,7 +111,7 @@ class Ability
          can :crud, PresentacionProducto
          can :crud, Proveedor
          can :crud, RetiroCajaVenta
-         can :cru, Sucursal
+         
          can :crud, TelefonoPersona
          can :ru, User
          can :crud, Venta
@@ -117,6 +132,35 @@ class Ability
          can :hacerDevolucion, DevolucionesController
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
+
+
+         #MÓDULO DE FACTURACIÓN
+         can :crud, Cliente
+         can :crud, DatosFiscalesCliente
+         can :cru, Negocio #Puede crear un negocio?* En un futuro si.
+         can :cru, DatosFiscalesNegocio
+         can :cru, Sucursal
+         can :cru, DatosFiscalesSucursal
+         can :crud, Impuesto
+         can :update, PlantillasEmail
+         can :update, ConfigComprobante
+
+         can :index_facturas_ventas, Factura
+         can :mostrar_detalles, Factura
+         can :buscar_venta, Factura
+         can :consulta_por_fecha, Factura
+         can :consulta_por_folio, Factura
+         can :consulta_por_cliente, Factura
+         can :consulta_avanzada, Factura
+         can :facturar_venta, Factura
+         can :visualizar_pdf, Factura
+         can :enviar_email, Factura
+         can :descargar_cfdis, Factura
+         can :cancelar_factura, Factura
+
+
+         can :index_facturas_globales, Factura
+
 
          
 
@@ -191,6 +235,32 @@ class Ability
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
 
+         #MÓDULO DE FACTURACIÓN
+         can :crud, Cliente
+         can :crud, DatosFiscalesCliente
+         can :cru, Negocio #Puede crear un negocio?* En un futuro si.
+         can :cru, DatosFiscalesNegocio
+         can :cru, Sucursal
+         can :cru, DatosFiscalesSucursal
+         can :crud, Impuesto
+         can :update, PlantillasEmail
+         can :update, ConfigComprobante
+
+         can :index_facturas_ventas, Factura
+         can :mostrar_detalles, Factura
+         can :buscar_venta, Factura
+         can :consulta_por_fecha, Factura
+         can :consulta_por_folio, Factura
+         can :consulta_por_cliente, Factura
+         can :consulta_avanzada, Factura
+         can :facturar_venta, Factura
+         can :visualizar_pdf, Factura
+         can :enviar_email, Factura
+         can :descargar_cfdis, Factura
+         can :cancelar_factura, Factura
+
+
+         can :index_facturas_globales, Factura
 
 
        elsif user.role == "gerente"
@@ -261,8 +331,6 @@ class Ability
 
          can :crud, VentaFormaPago
          can :crud, VentaFormaPagoCampo
-
-         
 
 
        elsif user.role == "auxiliar"
@@ -365,6 +433,8 @@ class Ability
          can :crud, TelefonoPersona
          can :ru, User
          can :buscarUltimoFolio, Venta
+
+         #MÓDULO DE FACTURACIÓN
 
          
        end

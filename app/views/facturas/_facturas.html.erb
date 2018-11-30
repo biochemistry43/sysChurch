@@ -2,7 +2,6 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-
       <h1>Facturas de ventas</h1>
     </div>
   </div>
@@ -11,7 +10,7 @@
   <hr>
   <div class="row">
     <div class="div-add-button">
-        <%= link_to url={controller: "facturas", action: "buscarVentaFacturar"}, html_options={class: "btn btn-primary active btn-lg btn-add",id: "anadir-factura-btn"} do%>
+        <%= link_to url={controller: "facturas", action: "buscar_venta"}, html_options={class: "btn btn-primary active btn-lg btn-add",id: "anadir-factura-btn"} do%>
           <i class="fa fa-file-text-o"></i> Facturar una venta
         <%end%>
     </div>
@@ -100,7 +99,7 @@
     </button>
     <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
-      <%= form_tag({ controller: "facturas", action: "consulta_facturas", :tipo_factura => "fv"}, {:class=> "form-horizontal", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_por_fecha", :tipo_factura => "fv"}, {:class=> "form-horizontal", :method => :post}) do %>
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
             Búsqueda por fechas:
@@ -232,9 +231,6 @@
       <% end %>
     </div>
     <!-- Termina buscador por atributos del cliente-->
-
-
-
 
 
     <!-- Este botón despliega el div con las opciones para filtros avanzados -->
@@ -416,7 +412,7 @@
                 <!--Imprimir factura-->
                 <% if can? :read, factura %>
     
-                  <%= link_to url={action: "readpdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir o descargar representación impresa', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
+                  <%= link_to url={action: "visualizar_pdf", controller: "facturas",id:factura}, html_options={class: "btn btn-primary",  title: 'Imprimir o descargar representación impresa', 'data-toggle' => 'tooltip', 'data-placement' => 'top', :target => '_blank'} do %>
                     <i class="fa fa-print"></i>
                   <% end %>
 
@@ -436,14 +432,14 @@
                   <% end %>
                 <%end%>
 
-                <%= link_to url={action: "show", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                <%= link_to url={action: "mostrar_detalles", controller: "facturas", id: factura}, html_options = {class: "btn btn-info", remote: true , title: 'Detalles', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                 <i class="fa fa-info-circle"></i>
                 <% end %>
 
                 <% unless  factura.estado_factura.eql?("Cancelada") %>
                   <!--Se le manda su id :)-->
                   <!--%venta_id = current_user.negocio.ventas.find_by(factura: factura.id).id %-->
-                  <%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
+                  <%= link_to url={action: "cancelar_factura", controller: "facturas", id: factura}, html_options={ class: "btn btn-danger", remote: true , title: 'Cancelar', 'data-toggle' => 'tooltip', 'data-placement' => 'top'} do %>
                   <!--%= link_to url={action: "cancelaFacturaVenta", controller: "facturas", id: factura},  html_options = {class: "btn btn-danger", remote: true, title: "Cancelar"}, data: { confirm: "¿Desea cancelar esta venta?"} do %-->
                    <i class="fa fa-close"></i>
                   <% end %>

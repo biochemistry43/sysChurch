@@ -299,6 +299,8 @@ GEM
     mini_magick (4.7.0)
     mini_portile2 (2.0.0)
     minitest (5.8.3)
+    money (6.13.1)
+      i18n (>= 0.6.4, <= 2)
     multi_json (1.11.2)
     multipart-post (2.0.0)
     nokogiri (1.6.7.1)
@@ -447,6 +449,7 @@ DEPENDENCIES
   jquery-rails
   jspdf-rails
   mini_magick
+  money (~> 6.13, >= 6.13.1)
   nokogiri (~> 1.6, >= 1.6.7.1)
   number_to_words
   pg
