@@ -1555,14 +1555,15 @@ class FacturasController < ApplicationController
   end
 
   def consulta_por_fecha
-    @consulta = true
-    @fechas=true
-    @por_folio=false
-    @avanzada = false
-    @por_cliente= false
+    
     if request.post?
-      @fechaInicial = DateTime.parse(params[:fecha_inicial]).to_date
-      @fechaFinal = DateTime.parse(params[:fecha_final]).to_date
+      @consulta = true
+      @fechas=true
+      @por_folio=false
+      @avanzada = false
+      @por_cliente= false
+      @fechaInicial = (params[:fecha_inicial]).to_date
+      @fechaFinal = (params[:fecha_final]).to_date
       @tipo_factura = params[:tipo_factura]
       if can? :create, Negocio
         @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal)
@@ -1572,14 +1573,13 @@ class FacturasController < ApplicationController
 
       respond_to do |format|
         if @tipo_factura == "fv"
-          format.html { render 'index'}
+          format.html { render 'index_facturas_ventas'}
         elsif @tipo_factura == "fg"
           format.html { render 'index_facturas_globales'}
         end
       end
     end
   end
-
 
   def consulta_por_folio
     @consulta = true
@@ -1600,7 +1600,7 @@ class FacturasController < ApplicationController
       end
       respond_to do |format|
         if @tipo_factura == "fv"
-          format.html { render 'index'}
+          format.html { render 'index_facturas_ventas'}
         elsif @tipo_factura == "fg"
           format.html { render 'index_facturas_globales'}
         end
@@ -1619,53 +1619,40 @@ class FacturasController < ApplicationController
 
     if request.post?
       if can? :create, Negocio
-        #@facturas = current_user.negocio.facturas.where(cliente_id: current_user.negocio.clientes.where(id:(DatosFiscalesCliente.find_by rfc: @rfc).cliente_id))
         if params[:rbtn] == "rbtn_rfc"
-          #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
-          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000 pero solo para las realizads a un solo cliente)
           @rfc = params[:rfc]
-          datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
-          clientes_ids = []
-          datos_fiscales_cliente.each do |dfc|
-            clientes_ids << dfc.cliente_id
-          end
-          #Se le pasa un arreglo con los ids para obtener las facturas de todos los clientes con el RFC =
-          @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: clientes_ids)
-          #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+          @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: DatosFiscalesCliente.find_by(rfc: @rfc).cliente_id)
         elsif params[:rbtn] == "rbtn_nombreFiscal"
-          #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
-          datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
-          @nombreFiscal = datos_fiscales_cliente.nombreFiscal
-          cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
+          cliente_id = params[:cliente_id]
+          unless cliente_id.empty?
+            datos_fiscales_cliente = DatosFiscalesCliente.find(cliente_id)
+            @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+            cliente = datos_fiscales_cliente.cliente_id
+          else
+            cliente =nil
+            @nombreFiscal = ""
+          end
           @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: cliente)
         end
-
       else
         if params[:rbtn] == "rbtn_rfc"
-          #Se puede presentar el caso en el que un negocio tenga clientes con el mismo RFC y/o nombres fiscales iguales como datos de facturción.
-          #El resultado de la búsqueda serían todas las facturas de los diferentes clientes con el RFC igual. (incluyendo el XAXX010101000)
           @rfc = params[:rfc]
-          datos_fiscales_cliente = DatosFiscalesCliente.where rfc: @rfc
-          clientes_ids = []
-          datos_fiscales_cliente.each do |dfc|
-            clientes_ids << dfc.cliente_id
+          @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: DatosFiscalesCliente.find_by(rfc: @rfc).cliente_id)
+        elsif params[:rbtn] == "rbtn_nombreFiscal"
+          cliente_id = params[:cliente_id]
+          unless cliente_id.empty?
+            datos_fiscales_cliente = DatosFiscalesCliente.find(cliente_id)
+            @nombreFiscal = datos_fiscales_cliente.nombreFiscal
+            cliente = datos_fiscales_cliente.cliente_id
+          else
+            cliente = nil
+            @nombreFiscal = ""
           end
           @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: clientes_ids)
-          #@facturas = current_user.sucursal.facturas.where(cliente_id: clientes_ids)
-          #cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
-        elsif params[:rbtn] == "rbtn_nombreFiscal"
-          #En el caso de la búsqueda por nombre fiscal... el resutado serán todas las facturas de un único cliente.
-          datos_fiscales_cliente = DatosFiscalesCliente.find params[:cliente_id]
-          @nombreFiscal = datos_fiscales_cliente.nombreFiscal
-          cliente = datos_fiscales_cliente.cliente_id if datos_fiscales_cliente
-
-          @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: clientes_ids)
-          #@facturas = current_user.sucursal.facturas.where(cliente_id: cliente)
         end
-
       end
       respond_to do |format|
-        format.html { render 'index'}
+        format.html { render 'index_facturas_ventas'}
       end
     end
   end
@@ -1872,7 +1859,7 @@ class FacturasController < ApplicationController
 
       respond_to do |format|
         if @tipo_factura == "fv"
-          format.html { render 'index'}
+          format.html { render 'index_facturas_ventas'}
         elsif @tipo_factura == "fg"
           format.html { render 'index_facturas_globales'}
         end

@@ -1,3 +1,4 @@
+/*
 (function(){
       //Función para validar un RFC
       // Devuelve el RFC sin espacios ni guiones si es correcto
@@ -67,3 +68,4 @@
 
     }()
     )
+*/

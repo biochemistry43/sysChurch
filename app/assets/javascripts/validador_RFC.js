@@ -1,3 +1,4 @@
+/*
 (function(){
 
       //Función para validar un RFC
@@ -66,3 +67,4 @@
 
     }()
     )
+*/

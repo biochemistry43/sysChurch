@@ -386,6 +386,7 @@
       </div>
 
       <script>
+        
         $(document).ready(function(){
 
           $('.data-table').DataTable({
@@ -472,7 +473,7 @@
             $("#opciones_filtros_por_fecha").slideToggle("fast");
           });
 
-        });
+
 
         $('select#condicion_monto_nc').on('change',function(){
           var valor = $(this).val();
@@ -487,7 +488,76 @@
         });
 
 
-        $(document).ready(function(){
+         
+        //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
+        $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
+            if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
+              $('#errorRFC').removeClass(" has-error has-feedback");
+              $('.rfc_input').hide().val("");
+              $('#nombreFiscalCliente').show();
+              $('#leyenda_filtro_cliente').html("Nombre:");
+            }else if ($("#rbtn_rbtn_rfc").is(":checked")) {
+              //Handler para el evento cuando cambia el input
+              // -Lleva la RFC a mayúsculas para validarlo
+              // -Elimina los espacios que pueda tener antes o después
+              var validador_RFC_Obligatorio = function(e){
+                var input = document.getElementById("rfc_input");
+                var rfc = input.value.trim().toUpperCase()
+                var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+                var colorearRojo=document.getElementById("errorRFC");
+
+                if (!rfcCorrecto) {
+                  colorearRojo.className+=" has-error has-feedback";
+                  e.preventDefault();
+                }
+              };
+              //Se pone a la escucha el sumit del formulario
+              var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
+              facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
+
+              $('#nombreFiscalCliente').hide().val("");
+              $('.rfc_input').show();
+              $('#leyenda_filtro_cliente').html("R.F.C.:");
+            }
+        });
+
+        $('select#opcion_busqueda_cliente').on('change',function(){
+            var valor = $(this).val();
+
+            if (valor == "Buscar por R.F.C."){
+              //Handler para el evento cuando cambia el input
+              // -Lleva la RFC a mayúsculas para validarlo
+              // -Elimina los espacios que pueda tener antes o después
+            var validador_RFC_Obligatorio2 = function(e){
+              var input = document.getElementById("rfc_input2");
+              var rfc = input.value.trim().toUpperCase()
+              var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
+              var colorearRojo=document.getElementById("errorRFC2");
+
+              if (!rfcCorrecto) {
+
+                colorearRojo.className+=" has-error has-feedback";
+
+                e.preventDefault();
+
+              }
+
+            };
+            //Se pone a la escucha el sumit del formulario
+            var facturarYCrearNueva=document.getElementById("RFC_Obligatorio2");
+            facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio2);
+
+            $('.nombre_collection_select').hide().val("");
+            $('.rfc_text_field').show().val("");
+
+            }else if (valor == "Buscar por nombre fiscal") {
+              $('#errorRFC2').removeClass(" has-error has-feedback");
+              $('.nombre_collection_select').show().val("");
+              $('.rfc_text_field').hide().val("");
+            }
+        //Ocultar cuando no este seleccionado ninguno
+        });
+
           //Función para validar un RFC
           // Devuelve el RFC sin espacios ni guiones si es correcto
           // Devuelve false si es inválido
@@ -528,83 +598,8 @@
                 return false;
             return rfcSinDigito + digitoVerificador;
           }
-         
-            //Para el filtro por cliente.. permite elegir la busqueda por nombre fisca o por RFC
-            $("#rbtn_rbtn_nombreFiscal, #rbtn_rbtn_rfc").change(function () {
-                if ($("#rbtn_rbtn_nombreFiscal").is(":checked")) {
-                  $('#errorRFC').removeClass(" has-error has-feedback");
-                  $('.rfc_input').hide().val("");
-                  $('#nombreFiscalCliente').show();
-                  $('#leyenda_filtro_cliente').html("Nombre:");
-                }
-                else if ($("#rbtn_rbtn_rfc").is(":checked")) {
-                    //Handler para el evento cuando cambia el input
-                    // -Lleva la RFC a mayúsculas para validarlo
-                    // -Elimina los espacios que pueda tener antes o después
-                  var validador_RFC_Obligatorio = function(e){
-                    var input = document.getElementById("rfc_input");
-                    var rfc = input.value.trim().toUpperCase()
-                    var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
-                    var colorearRojo=document.getElementById("errorRFC");
-
-                    if (!rfcCorrecto) {
-
-                      colorearRojo.className+=" has-error has-feedback";
-
-                      e.preventDefault();
-
-                    }
-
-                  };
-                    //Se pone a la escucha el sumit del formulario
-                    var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
-                    facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio);
-
-                  $('#nombreFiscalCliente').hide().val("");
-                  $('.rfc_input').show();
-                  $('#leyenda_filtro_cliente').html("R.F.C.:");
-
-                }
-            });
-             $('select#opcion_busqueda_cliente').on('change',function(){
-          var valor = $(this).val();
-          if (valor == "Buscar por R.F.C."){
-            //Handler para el evento cuando cambia el input
-            // -Lleva la RFC a mayúsculas para validarlo
-            // -Elimina los espacios que pueda tener antes o después
-          var validador_RFC_Obligatorio2 = function(e){
-            var input = document.getElementById("rfc_input2");
-            var rfc = input.value.trim().toUpperCase()
-            var rfcCorrecto = rfcValido(rfc);   // ⬅️ Acá se comprueba
-            var colorearRojo=document.getElementById("errorRFC2");
-
-            if (!rfcCorrecto) {
-
-              colorearRojo.className+=" has-error has-feedback";
-
-              e.preventDefault();
-
-            }
-
-          };
-            //Se pone a la escucha el sumit del formulario
-            var facturarYCrearNueva=document.getElementById("RFC_Obligatorio2");
-            facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio2);
-
-            $('.nombre_collection_select').hide().val("");
-            $('.rfc_text_field').show().val("");
-
-          }else if (valor == "Buscar por nombre fiscal") {
-            $('#errorRFC2').removeClass(" has-error has-feedback");
-            $('.nombre_collection_select').show().val("");
-            $('.rfc_text_field').hide().val("");
-          }
-
-          //Ocultar cuando no este seleccionado ninguno
-      });
 
 
         });
       </script>
-
 </div>

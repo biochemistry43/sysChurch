@@ -6,7 +6,6 @@ Rails.application.routes.draw do
   post 'plantillas_emails/mostrar_plantilla'
   get 'plantillas_emails/mostrar_plantilla'
 
-
   put 'config_comprobantes/update'
   post 'config_comprobantes/mostrar_plantilla'
   get 'config_comprobantes/mostrar_plantilla'
@@ -51,6 +50,9 @@ Rails.application.routes.draw do
   get 'facturas/buscar_venta' #
 
   post 'facturas/consulta_por_fecha'
+  #get 'facturas/consulta_por_fecha'
+
+
   post 'facturas/consulta_por_folio'
   post 'facturas/consulta_por_cliente'
   post 'facturas/consulta_avanzada'
