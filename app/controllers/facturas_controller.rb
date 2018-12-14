@@ -36,18 +36,6 @@ class FacturasController < ApplicationController
     end
   end
 
-  # GET /facturas/1
-  # GET /facturas/1.json
-  def mostrar_detalles
-      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Público general"
-      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
-      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
-      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
-      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
-      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
-      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
-  end
-
   #sirve para buscar la venta y mostrar los resultados antes de facturar.
   def buscar_venta
     @consulta = false
@@ -849,6 +837,20 @@ class FacturasController < ApplicationController
     end #Fin del méodo post
   end #Fin del controlador
 
+  #ACCIONES PARA LAS FACTURAS
+
+  # GET /facturas/1
+  # GET /facturas/1.json
+  def mostrar_detalles
+      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Público general"
+      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
+      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
+      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
+      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
+      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
+      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
+  end
+
   #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
   #cancelaFacturaVenta
   def cancelar_factura
@@ -1342,51 +1344,57 @@ class FacturasController < ApplicationController
               #2.-Se consulta el eststus del doc relacionado
               #3.-Se cancelan los doc relacionados
             end
-            
-          end          
+      end          
     end
-
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   def visualizar_pdf
-
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-    bucket = storage.bucket "cfdis"
-    ruta_storage = @factura.ruta_storage
+    # bucket_name = "Su nombre de depósito de Google Cloud Storage"
+    # project_id = "cfdis-196902","public/CFDIs-0fd739cbe697.json"# project_id = "Su ID de proyecto de Google Cloud"
+    project_id = "cfdis-196902"
     uuid = @factura.folio_fiscal
-    #Se descarga el pdf de la nube y se guarda en el disco
-
-    file_download_storage = bucket.file "#{ruta_storage}#{uuid}.pdf"
-    file_download_storage.download "public/#{uuid}.pdf"
-
-
-    #Se comprueba que el archivo exista en la carpeta publica de la aplicación
-    if File::exists?( "public/#{uuid}.pdf")
-      file=File.open( "public/#{uuid}.pdf")
-      send_file( file, :disposition => "inline", :type => "application/pdf")
-    else
+    begin
+      credentials = File.open("public/CFDIs-0fd739cbe697.json")
+      gcloud = Google::Cloud.new project_id, credentials
+        
+      storage = gcloud.storage
+      bucket = storage.bucket "cfdis"
+      storage_file_path = @factura.ruta_storage
+      #Se descarga el pdf de la nube y se guarda en el disco
+      #Daría un error si el archivo no se encuentra en google cloud
+      file_download_storage = bucket.file "#{storage_file_path}#{uuid}.pdf"
+      file_download_storage.download "public/#{uuid}.pdf"
+    rescue
       respond_to do |format|
-        format.html { redirect_to action: "index" }
-        flash[:notice] = "No se pudo mostrar la factura, vuelva a intentarlo por favor!"
-        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
+        if @factura.tipo_factura == "fv"
+          format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+          flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+        elsif @factura.tipo_factura == "fg"
+          format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+          flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+        end
       end
+    else
+      #Para esto el archivo debió haber sido guardado en la carpeta "Public".
+      #Aun hay algo... no se cada cuando se borran los archivos en Heroku. Creo es por demás, pero =. Es muy inmediato.
+      if File::exists?( "public/#{uuid}.pdf")
+        file=File.open( "public/#{uuid}.pdf")
+        send_file( file, :disposition => "inline", :type => "application/pdf")
+      else
+        respond_to do |format|
+          if @factura.tipo_factura == "fv"
+            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          elsif @factura.tipo_factura == "fg"
+            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          end
+        end
+      end 
     end
   end
+
+
 
   def enviar_email_post
     #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
