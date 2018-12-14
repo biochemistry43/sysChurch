@@ -1352,14 +1352,14 @@ class FacturasController < ApplicationController
     # bucket_name = "Su nombre de depósito de Google Cloud Storage"
     # project_id = "cfdis-196902","public/CFDIs-0fd739cbe697.json"# project_id = "Su ID de proyecto de Google Cloud"
     project_id = "cfdis-196902"
+    credentials = File.open("public/CFDIs-0fd739cbe697.json")
+    gcloud = Google::Cloud.new project_id, credentials
+    storage = gcloud.storage
+    bucket = storage.bucket "cfdis"
+
     uuid = @factura.folio_fiscal
+    storage_file_path = @factura.ruta_storage
     begin
-      credentials = File.open("public/CFDIs-0fd739cbe697.json")
-      gcloud = Google::Cloud.new project_id, credentials
-        
-      storage = gcloud.storage
-      bucket = storage.bucket "cfdis"
-      storage_file_path = @factura.ruta_storage
       #Se descarga el pdf de la nube y se guarda en el disco
       #Daría un error si el archivo no se encuentra en google cloud
       file_download_storage = bucket.file "#{storage_file_path}#{uuid}.pdf"
@@ -1368,10 +1368,10 @@ class FacturasController < ApplicationController
       respond_to do |format|
         if @factura.tipo_factura == "fv"
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-          flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          flash[:notice] = "Lo siento, pero la factura no existe"
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-          flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          flash[:notice] = "Lo siento, pero la factura no existe"
         end
       end
     else
@@ -1394,14 +1394,11 @@ class FacturasController < ApplicationController
     end
   end
 
-
-
   def enviar_email_post
     #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
     if request.post?
 
       destinatario_final = params[:destinatario]
-
       ruta_storage = @factura.ruta_storage
       uuid = @factura.folio_fiscal
       #Se crea un objeto de cloud para poder descargar los comprobantes
@@ -1454,7 +1451,6 @@ class FacturasController < ApplicationController
       #end
       
       redirect_to :back, notice: "Los comprobantes se han enviado a #{destinatario_final}!"
-
     end
   end
 
@@ -1475,95 +1471,86 @@ class FacturasController < ApplicationController
   end
 
   def descargar_cfdis
-
-    require 'timbrado'
-    gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-    storage=gcloud.storage
-    uuid = @factura.folio_fiscal
+    # bucket_name = "Su nombre de depósito de Google Cloud Storage"
+    # project_id = "cfdis-196902","public/CFDIs-0fd739cbe697.json"# project_id = "Su ID de proyecto de Google Cloud"
+    project_id = "cfdis-196902"
+    credentials = File.open("public/CFDIs-0fd739cbe697.json") #Esto debe de existir siempre si o si.
+    gcloud = Google::Cloud.new project_id, credentials 
+    storage = gcloud.storage
     bucket = storage.bucket "cfdis"
 
-    #Si cambio de parecer, quitaré las condiciones del estado de facturas
-    if @factura.estado_factura == "Activa"
-      ruta_storage = @factura.ruta_storage
-      file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.xml"
-      file_download_storage_xml.download "public/#{uuid}.xml"
-
-      if File.exist?("public/#{uuid}.xml")
-        xml = File.open("public/#{uuid}.xml")
-        send_file(
-          xml,
-          filename: "CFDI.xml",
-          type: "application/xml"
-        )
-      else
-        respond_to do |format|
-          format.html { redirect_to action: "index" }
-          flash[:notice] = "No se pudo descargar el CFDI, por favor vuelva a intentar nuevamente"
-          #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-        end
-      end
-    elsif @factura.estado_factura == "Cancelada"
-      acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
-      file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}(cancelado).xml"
-      file_download_storage_xml.download "public/#{uuid}(cancelado).xml"
-
-      if File.exist?("public/#{uuid}(cancelado).xml")
-        xml = File.open("public/#{uuid}(cancelado).xml")
-        send_file(
-          xml,
-          filename: "Acuse de cancelación.xml",
-          type: "application/xml"
-        )
-      else
-        respond_to do |format|
-          format.html { redirect_to action: "index" }
-          flash[:notice] = "No se pudo descargar el acuse de cancelación de la factura, por favor vuelva a intentar nuevamente"
-          #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-        end
-      end
-=begin      
-      
-
-      username = "AAA010101000" # Usuario del webservice    Sí
-      password = "h6584D56fVdBbSmmnB" # Contraseña del webservice   Sí
-      #Parametros de búsqueda opcionales
+    #Si la factura está activa, se descarga el xml timbrado
+    if @factura.estado_factura == "Activa" 
       uuid = @factura.folio_fiscal
-      uuids =  %Q^<uuids xsi:type="urn:uuid">
-                  <!--Zero or more repetitions:-->
-                    <uuid>#{uuid}</uuid>
-                  </uuids>^
-      #<fecha_timbrado_inicio xsi:type="xsd:string">#{fecha_timbrado_inicio}</fecha_timbrado_inicio>
-      #<fecha_timbrado_fin xsi:type="xsd:string">#{fecha_timbrado_fin}</fecha_timbrado_fin>
-      hash_acuse_timbox = buscar_acuses_recepcion(username, password, uuids)
-      #En plural porq e puede regresar hasta 500 acuses, pero jaja da igual esta acción solo es para obtener un solo acuse.
-      #Si hubo un error con alguno de los parámetros o en el servicio de buscar acuses, se le notificará por medio de un mensaje de error, de lo contrario recibirá la estructura “buscar_acuse_recepcion_result” compuesta de lo siguiente:         
-      if hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result]
-        #Parámetros de la respuesta
-          #acuses El acuse de recepción que regresa el SAT.
-          #uuids_erroneos  Información de los uuid’s que no son válidos o no cumplen con la expresión regular.
-          #uuids_no_encontrados  Información de los uuid’s que no fueron encontrados en BD.
-        acuses = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:acuses]
-        uuids_erroneos = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:uuids_erroneos]
-        uuids_no_encontrados = hash_acuse_timbox[:buscar_acuse_recepcion_response][:buscar_acuse_recepcion_result][:uuids_no_encontrados] 
-        #El contenido del nodo <acuses> es una cadena q incluye elementos hijos y que al convertirla conserva las etiquetas xml:
-        #<acuse> </acuse>
-        acuse = acuses.slice!(7..-9)
-        acuse = Nokogiri::XML(acuse)
-
-        archivo = File.open("public/#{uuid}.xml", "w")
-        archivo.write (acuse)
-        archivo.close
- 
+      storage_file_path = @factura.ruta_storage
+      begin
+        file_download_storage_xml = bucket.file "#{storage_file_path}#{uuid}.xml"
+        file_download_storage_xml.download "public/#{uuid}.xml"
+      rescue
+        respond_to do |format|
+          if @factura.tipo_factura == "fv"
+            flash[:notice] = "Lo siento, pero el CFDI no existe"
+            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+          elsif @factura.tipo_factura == "fg"
+            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+            flash[:notice] = "Lo siento, pero el CFDI no existe"
+          end
+        end
+      else
+        if File.exist?("public/#{uuid}.xml")
+          xml = File.open("public/#{uuid}.xml")
+          send_file(xml,filename: "CFDI.xml", type: "application/xml")
         else
-          #Desirle lo siento queridisimo usuriatooo jaja
+          respond_to do |format|
+            if @factura.tipo_factura == "fv"
+              format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            elsif @factura.tipo_factura == "fg"
+              format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            end
+          end
         end
       end
-=end         
+    #Pendiente
+    #Si la factura está cancelada, se descarga el acuse de cancelación en la que está incluida.
+    elsif @factura.estado_factura == "Cancelada"
+      uuid = @factura.folio_fiscal
+      storage_file_path = @factura.ruta_storage
+      acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
+      begin
+        file_download_storage_xml = bucket.file "#{storage_file_path}#{uuid}(cancelado).xml"
+        file_download_storage_xml.download "public/#{uuid}(cancelado).xml"
+      rescue
+        respond_to do |format|
+          if @factura.tipo_factura == "fv"
+            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          elsif @factura.tipo_factura == "fg"
+            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+          end
+        end
+      else
+        if File.exist?("public/#{uuid}(cancelado).xml")
+          xml = File.open("public/#{uuid}(cancelado).xml")
+          send_file(xml, filename: "Acuse de cancelación.xml", type: "application/xml")
+        else
+          respond_to do |format|
+            if @factura.tipo_factura == "fv"
+              format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
+              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            elsif @factura.tipo_factura == "fg"
+              format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
+              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            end
+          end
+        end
+      end
     end
   end
 
   def consulta_por_fecha
-    
     if request.post?
       @consulta = true
       @fechas=true
