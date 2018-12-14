@@ -55,21 +55,31 @@
             <div class="col-md-12">
               Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
             </div>
+            <%if @criterio_cliente%>
+              <div class="col-md-12">
+                <%if @rfc%>
+                  RFC del cliente: <span style="color:#5B7ECC; font-size: 16px;"><%=@rfc%></span>
+                <%elsif @nombreFiscal%>
+                  Nombre fiscal del cliente: <span style="color:#5B7ECC; font-size: 16px;"><%=@nombreFiscal%></span>
+                <%end%>
+              </div>
+            <%else%>
+              <div class="col-md-12">
+                Cliente:<span style="color:#5B7ECC; font-size: 16px;"> Cualquiera </span>
+              </div>
+            <%end%>
             <div class="col-md-12">
-            <% if @montoFactura %>
-              <%if @condicion_monto_factura%>
-                  <%if @monto_factura%>
-                    Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
-                    </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
-                    <%end%>
-                  <%if @monto_factura && @monto_factura2%>
-                    a <span style="color:#5B7ECC; font-size: 16px;"> $ <%= @monto_factura2.to_f %></span>
-                  <% end %>
+            <% if @criterio_monto %>
+              <%if @condicion_monto_factura != "rango desde"%>
+                Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
+                </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
+              <% elsif @condicion_monto_factura == "rango desde" %>
+                Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
+                </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
+                a <span style="color:#5B7ECC; font-size: 16px;"> $ <%= @monto_factura2.to_f %></span>
               <%end%>
-            <!--% else %>
-              Monto: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span-->
             <% else %>
-                Monto:<span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+                Monto:<span style="color:#5B7ECC; font-size: 16px;"> Cualquiera </span>
             <% end %>
             </div>
             <div class="col-md-12"> <!--poner condiciones de status-->
@@ -210,7 +220,7 @@
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center" id="errorRFC">
 
-              <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija el nombre del cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
+              <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija el cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
 
               <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input",id:"rfc_input", :placeholder=>"RFC del cliente..."} do%>
                 <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
@@ -239,7 +249,7 @@
 
     <!-- Los filtros avanzados permiten al usuario "filtrar ventas" dependiendo de uno o más criterios, pudiendo estos ser combinables entre sí. -->
     <div id="opciones_filtros_avanzados" class="opciones_filtros row">
-      <%= form_tag({ controller: "facturas", action: "consulta_avanzada", :tipo_factura => "fv"}, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
+      <%= form_tag({ controller: "facturas", action: "consulta_avanzada", :tipo_factura => "fv" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post}) do %>
         <div class="item form-group">
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div style="text-align: left; color: black;">

@@ -134,22 +134,6 @@ $(document).ready(function(){
               $('#nombreFiscalCliente').show();
               $('#leyenda_filtro_cliente').html("Nombre:");
 
-              var buu = function(e){
-
-                var nombre_cliente = "noo";
- 
-
-                if (nombre_cliente == "noo") {
-                  //colorearRojo.className+=" has-error has-feedback";
-                  e.preventDefault();
-                }
-
-              };
-              //Se pone a la escucha el sumit del formulario
-              var facturarYCrearNueva=document.getElementById("RFC_Obligatorio");
-              facturarYCrearNueva.addEventListener("click",buu);
-
-
             }else if ($("#rbtn_rbtn_rfc").is(":checked")) {
               //Handler para el evento cuando cambia el input
               // -Lleva la RFC a mayúsculas para validarlo
@@ -184,6 +168,7 @@ $(document).ready(function(){
             //Handler para el evento cuando cambia el input
             // -Lleva la RFC a mayúsculas para validarlo
             // -Elimina los espacios que pueda tener antes o después
+            /*
           var validador_RFC_Obligatorio2 = function(e){
             var input = document.getElementById("rfc_input2");
             var rfc = input.value.trim().toUpperCase()
@@ -197,7 +182,7 @@ $(document).ready(function(){
             //Se pone a la escucha el sumit del formulario
             var facturarYCrearNueva=document.getElementById("RFC_Obligatorio2");
             facturarYCrearNueva.addEventListener("click",validador_RFC_Obligatorio2);
-
+          */
             $('.nombre_collection_select').hide().val("");
             $('.rfc_text_field').show().val("");
 
@@ -210,7 +195,7 @@ $(document).ready(function(){
           //Ocultar cuando no este seleccionado ninguno
       });
 
-
+/*
       $('select#opcion_busqueda_cliente').on('change',function(){
             var valor = $(this).val();
 
@@ -248,7 +233,7 @@ $(document).ready(function(){
         //Ocultar cuando no este seleccionado ninguno
       });
 
-
+*/
       //Consulta avanzada
       $('select#condicion_monto_factura').on('change',function(){
           var valor = $(this).val();
