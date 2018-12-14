@@ -16,83 +16,66 @@
     </div>
   </div> <!--Fin de botón -->
 
-  <% if @consulta %>
+ <% if @consulta %>
   <div class="row">
     <div class="col-md-12" style="color: gray;">
         <%if @facturas%>
-          <%if @facturas.size >= 1%>
-            Se <% if @facturas.size == 1%>encontró<% else %>encontraron<% end %> 
-            <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %>.
-          <%end%>
-        <%else%>
+          <%if @facturas.count >= 1 %> 
+            Se <% if @facturas.size == 1%>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %> con:
+          <%else%>
             No se encontró ninguna factura con:
+          <%end%>
         <%end%>
     </div>
   </div>
     <div class="row">
       <div class="col-md-12" style="color: gray;">
-        <%if @fechas%>
-        <div class="col-md-12">
-          Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
-        </div>
-        <%end%>
-        <% if @por_folio%>
-          <div class="col-md-12">
-            Folio de factura: <span style="color:#5B7ECC; font-size: 16px;"> <%=@folio_fact%></span>
-          </div>
-        <%end%>
-        <% if @por_cliente%>
-          <%if @rfc%>
-          <div class="col-md-12">
-            RFC del cliente: <span style="color:#5B7ECC; font-size: 16px;"> <%=@rfc%></span>
-          </div>
-          <%elsif @nombreFiscal%>
-          <div class="col-md-12">
-            Nombre fiscal del cliente: <span style="color:#5B7ECC; font-size: 16px;"> <%=@nombreFiscal%></span>
-          </div>
-          <%else%>
-            <div class="col-md-12">
-            Cliente: <span style="color:#5B7ECC; font-size: 16px;"> Todos </span>
-            </div>
-          <%end%>
-        <%end%>
-        <% if @avanzada %>
+        <%if @facturas%>
+          <%if @fechas%>
           <div class="col-md-12">
             Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
           </div>
-          <div class="col-md-12">
-          <% if @montoFactura %>
-            <%if @condicion_monto_factura%>
-                <%if @monto_factura%>
-                  Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
-                  </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
-                  <%end%>
-                <%if @monto_factura && @monto_factura2%>
-                  a <span style="color:#5B7ECC; font-size: 16px;"> $ <%= @monto_factura2.to_f %></span>
-                <% end %>
-            <%end%>
-          <!--% else %>
-            Monto: <span style="color:#5B7ECC; font-size: 16px;"> Todos</span-->
-          <% else %>
-              Monto:<span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
-          <% end %>
-          </div>
-          <div class="col-md-12"> <!--poner condiciones de status-->
-            Status: <span style="color:#5B7ECC; font-size: 16px;"> <%= @estado_factura %></span>
-          </div>
-          <% if can? :create, Negocio %>
+          <%end%>
+          <% if @por_folio%>
             <div class="col-md-12">
-              <% if @sucursal %>
-                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>
-              <% else %>
-                Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
-              <% end %>
+              Folio: <span style="color:#5B7ECC; font-size: 16px;"> <%=@folio_fact%></span>
             </div>
+          <%end%>
+          <% if @avanzada %>
+            <div class="col-md-12">
+              Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
+            </div>
+            <div class="col-md-12">
+            <% if @criterio_monto %>
+              <%if @condicion_monto_factura != "rango desde"%>
+                Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
+                </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
+              <% elsif @condicion_monto_factura == "rango desde" %>
+                Monto: <span style="color:#5B7ECC; font-size: 16px;"> <%= @condicion_monto_factura.capitalize! %>
+                </span> <span style="color:#5B7ECC; font-size: 16px;">  $ <%= @monto_factura.to_f %></span>
+                a <span style="color:#5B7ECC; font-size: 16px;"> $ <%= @monto_factura2.to_f %></span>
+              <%end%>
+            <% else %>
+                Monto:<span style="color:#5B7ECC; font-size: 16px;"> Cualquiera </span>
+            <% end %>
+            </div>
+            <div class="col-md-12"> <!--poner condiciones de status-->
+              Status: <span style="color:#5B7ECC; font-size: 16px;"> <%= @estado_factura %></span>
+            </div>
+            <% if can? :create, Negocio %>
+              <div class="col-md-12">
+                <% if @sucursal %>
+                  Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> <%= @sucursal.nombre %></span>
+                <% else %>
+                  Sucursal: <span style="color:#5B7ECC; font-size: 16px;"> Todas </span>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
-        <% end %>
+          <% end %>
       </div>
     </div>
-    <%end%>
+   <%end%>
 
   <hr style="border-style: solid; border-width: 2px;">
 
@@ -114,7 +97,7 @@
           </div>
         </div>
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
             <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
           </div>
@@ -126,7 +109,7 @@
           </div>
         </div>
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
             <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
 
@@ -135,7 +118,7 @@
 
         <div class="col-md-1 col-sm-5 col-xs-12">
           <div class="text-center">
-            <%= submit_tag 'Consultar facturas', {:class=>"btn btn-info"} %>
+            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
           </div>
         </div>
       <% end %>
@@ -152,7 +135,7 @@
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
-            Filtro por folio de factura:
+            Búsqueda por folio:
           </div>
         </div>
 
@@ -162,9 +145,9 @@
           </div>
         </div>
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= text_field_tag :folio_fact, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Folio de factura..."} do%>
+            <%= text_field_tag :folio_fact, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Serie + Número de factura"} do%>
               <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
             <%end%>
           </div>
@@ -172,7 +155,7 @@
 
         <div class="col-md-1 col-sm-5 col-xs-12">
           <div class="text-center">
-            <%= submit_tag 'Filtrar por folio', {:class=>"btn btn-info"} %>
+            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
           </div>
         </div>
 
@@ -276,7 +259,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-left">
-              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
+              <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
             </div>
           </div>
         </div>

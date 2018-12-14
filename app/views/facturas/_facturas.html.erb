@@ -121,7 +121,7 @@
           </div>
         </div>
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
             <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
           </div>
@@ -133,7 +133,7 @@
           </div>
         </div>
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
+        <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
             <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
 
@@ -142,7 +142,7 @@
 
         <div class="col-md-1 col-sm-5 col-xs-12">
           <div class="text-center">
-            <%= submit_tag 'Consultar facturas', {:class=>"btn btn-info"} %>
+            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
           </div>
         </div>
       <% end %>
@@ -159,7 +159,7 @@
 
         <div class="col-md-2 col-sm-6 col-xs-12">
           <div class="text-center">
-            Filtro por folio:
+            Búsqueda por folio:
           </div>
         </div>
 
@@ -179,7 +179,7 @@
 
         <div class="col-md-1 col-sm-5 col-xs-12">
           <div class="text-center">
-            <%= submit_tag 'Filtrar por folio', {:class=>"btn btn-info"} %>
+            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
           </div>
         </div>
 
@@ -209,7 +209,7 @@
         <div class="item form-group">
           <div class="col-md-2 col-sm-6 col-xs-12">
             <div class="text-center">
-              Filtro por cliente:
+              Búsqueda por cliente:
             </div>
           </div>
           <div class="col-md-1 col-sm-1 col-xs-1">
@@ -217,7 +217,7 @@
               <%= label_tag "lbl", "Nombre:", class: "control-label", id: "leyenda_filtro_cliente"%>
             </div>
           </div>
-          <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="text-center" id="errorRFC">
 
               <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija el cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
@@ -230,13 +230,10 @@
 
           <div class="col-md-1 col-sm-5 col-xs-12">
             <div class="text-center">
-              <%= submit_tag 'Filtrar por cliente', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
+              <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
             </div>
           </div>
         </div>
-
-
-
       <% end %>
     </div>
     <!-- Termina buscador por atributos del cliente-->
@@ -358,7 +355,7 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-left">
-              <%= submit_tag 'Consulta avanzada', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
+              <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
             </div>
           </div>
         </div>
