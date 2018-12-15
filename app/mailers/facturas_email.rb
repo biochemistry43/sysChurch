@@ -2,9 +2,9 @@ class FacturasEmail < ApplicationMailer
 
   default from: "leinadlm95@gmail.com" #Cambiarlo por el correo del negocio
 
-  def factura_email (destinatario, mensaje, asunto, comprobantes)
-    #Tengo pendiente comprobar que los archivos existan en la carpeta para evitar un error al intentar leer un archivo.***
+  def factura_email (destinatario, mensaje, asunto)
 
+=begin
     #Para enviar las facturas en formato xml y/o pdf
     attachments['RepresentaciónImpresa.pdf'] =  open( comprobantes.fetch(:pdf) ).read if comprobantes.key?(:pdf)
     attachments['CFDI.xml'] =  open( comprobantes.fetch(:xml) ).read if comprobantes.key?(:xml)
@@ -15,6 +15,7 @@ class FacturasEmail < ApplicationMailer
     attachments['AcuseCancelación.xml'] =  open( comprobantes.fetch(:xml_Ac) ).read if comprobantes.key?(:xml_Ac)
     #Las notas de crédito también
     attachments['AcuseDeCancelaciónNotaCrédito.xml'] =  open( comprobantes.fetch(:xml_Ac_nc) ).read if comprobantes.key?(:xml_Ac_nc)
+=end
 
 =begin
     mail(headers = {}, &block) public
@@ -29,9 +30,7 @@ class FacturasEmail < ApplicationMailer
 
     #Tan simple :( como responder en formato html para que muestre el texto con sus estilos y no como texto plano.
     mail(to: destinatario, body:mensaje,  subject: asunto) do |format|
-      #format.text { render plain: "Hello Mikel!" }
       format.html { render html: "#{mensaje}".html_safe }
     end
-    #fix_mixed_attachments
   end
 end

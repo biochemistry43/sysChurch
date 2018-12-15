@@ -847,7 +847,7 @@ class FacturasController < ApplicationController
     @uuid = @factura.folio_fiscal
     @folio = @factura.consecutivo
     @serie = @factura.folio.delete(@folio.to_s)
-    
+
     if @factura.tipo_factura == "fv"
       @nombreFiscal = @factura.cliente.datos_fiscales_cliente.nombreFiscal
       @rfc = @factura.cliente.datos_fiscales_cliente.rfc 
@@ -1369,6 +1369,7 @@ class FacturasController < ApplicationController
 
     uuid = @factura.folio_fiscal
     storage_file_path = @factura.ruta_storage
+    #Por supuesto que los comprobantes no estarán toda la vida ocupando espaci. Son "5 años" los que deben de conservarse... 
     begin
       #Se descarga el pdf de la nube y se guarda en el disco
       #Daría un error si el archivo no se encuentra en google cloud
@@ -1413,35 +1414,9 @@ class FacturasController < ApplicationController
     if request.post?
 
       destinatario_final = params[:destinatario]
-      ruta_storage = @factura.ruta_storage
-      uuid = @factura.folio_fiscal
-      #Se crea un objeto de cloud para poder descargar los comprobantes
-      gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-      storage=gcloud.storage
-      bucket = storage.bucket "cfdis"
-
-      comprobantes = {}
       tipo_factura = @factura.tipo_factura
-      if params[:pdf] == "yes"
-        comprobantes[:pdf] = "public/#{uuid}.pdf"
 
-        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.pdf"
-        file_download_storage_xml.download "public/#{uuid}.pdf"
-
-      end
-      if params[:xml] == "yes"
-        comprobantes[:xml] = "public/#{uuid}.xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}.xml"
-        file_download_storage_xml.download "public/#{uuid}.xml"
-      end
-     
-      #Solo es posible si la factura de venta está cancelada
-      if params[:xml_Ac] == "yes"
-        comprobantes[:xml_Ac] = "public/#{uuid}(cancelado).xml"
-        file_download_storage_xml = bucket.file "#{ruta_storage}#{uuid}(cancelado).xml"
-        file_download_storage_xml.download "public/#{uuid}(cancelado).xml"
-      end
-
+      #Se obtiene la plantilla de email según el tipo de factura.
       if @factura.tipo_factura == "fv"
         if @factura.estado_factura == "Activa"
           plantilla_email("fv")
@@ -1456,15 +1431,54 @@ class FacturasController < ApplicationController
         end
       end
 
-      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
+      project_id = "cfdis-196902"
+      credentials = File.open("public/CFDIs-0fd739cbe697.json")
+      gcloud = Google::Cloud.new project_id, credentials
+      storage = gcloud.storage
+      bucket = storage.bucket "cfdis"
 
-      #respond_to do |format|
-        #format.html { redirect_to action: "index"}
-        #flash[:notice] = "Los comprobantes se han enviado a #{destinatario_final}!"
-        #format.html { redirect_to facturas_index_path, notice: 'No se encontró la factura, vuelva a intentarlo!' }
-      #end
-      
-      redirect_to :back, notice: "Los comprobantes se han enviado a #{destinatario_final}!"
+      if @factura.estado_factura == "Activa"
+        uuid = @factura.folio_fiscal
+        storage_file_path = @factura.ruta_storage
+        #Si selecciona la casilla de pdf 
+        if params[:xml_factura_activa] == "yes"
+          file = bucket.file "#{storage_file_path}#{uuid}.xml"
+          url = file.signed_url #Da error si no existe el archivo
+
+          link = "<a href=\"#{url}\">CFDI - #{uuid}</a>"
+          @mensaje = @mensaje << link
+        end
+        if params[:pdf_factura_activa] == "yes"
+          file = bucket.file "#{storage_file_path}#{uuid}.pdf"
+          url = file.signed_url
+
+          link = "<a href=\"#{url}\">Representación impresa del CFDI>"
+          @mensaje = @mensaje << link
+        end
+      elsif @factura.estado_factura == "Cancelada"
+        #Solo es posible si la factura de venta está cancelada
+        #Pendiente
+        if params[:xml_acuse_cancelacion] == "yes"
+          uuid = @factura.folio_fiscal
+          storage_file_path = @factura.ruta_storage
+          file = bucket.file "#{storage_file_path}#{uuid}.xml"
+          url = file.signed_url
+
+          link = "<a href=\"#{url}\">factura de venta</a>"
+          @mensaje = @mensaje << link
+        end
+      end
+  
+      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto).deliver_now
+
+      if @factura.tipo_factura == "fv"
+        redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
+        flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
+      elsif @factura.tipo_factura == "fg"
+        redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")
+        flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
+      end
+
     end
   end
 

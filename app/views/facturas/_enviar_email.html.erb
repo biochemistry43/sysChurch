@@ -31,48 +31,45 @@
   </div>
   </div>
 </div>
+
   <div class="col-md-2 col-sm-2 col-xs-12">
     <div class="row">
-      <div class="control-label col-md-12 col-sm-12 col-xs-12">
-        <%= label_tag :lbl_adjuntar, "Adjuntar archivo: ", class:"control-label"%>
+      <div class="control-label col-md-12 col-sm-12 col-xs-12" style="color: black;">
+        <%= label_tag :lbl_adjuntar, "Enviar: ", class:"control-label"%>
       </div>
     </div>
-    <div class="row">
-      <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_pdf, "Factura (.pdf)", class:"control-label"%>
-      </div>
-      <div class="col-md-2 col-sm-2 col-xs-2">
-        <% if  @factura.estado_factura == "Cancelada" %>
-          <%=check_box_tag(:pdf, "yes", false, {class:" checked check"})%>
-        <% else %>
-          <%=check_box_tag(:pdf, "yes", false, {class:" checked check", checked:"checked"})%>
-        <% end %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_xml, "CFDI (.xml)", class:"control-label"%>
-      </div>
-      <div class="col-md-2 col-sm-2 col-xs-2">
-        <% if  @factura.estado_factura == "Cancelada" %>
-          <%=check_box_tag(:xml, "yes", false, {class:" checked check"})%>
-        <% else %>
-          <%=check_box_tag(:xml, "yes", false, {class:" checked check", checked:"checked"})%>
-        <% end %>
-      </div>
-    </div>
-    <% if @factura.estado_factura == "Cancelada" %>
-    <div class="row">
-      <div class="control-label col-md-10 col-sm-10 col-xs-10">
-        <%= label_tag :lbl_xml_Ac, "Acuse (.xml)", class:"control-label"%>
-      </div>
-      <div class="col-md-2 col-sm-2 col-xs-2">
-        <%=check_box_tag(:xml_Ac, "yes", false, {class:" checked check", checked:"checked"})%>
-      </div>
-    </div>
-    <% end %>
 
+    <%if @factura.estado_factura == "Activa"%>
+      <div class="row">
+        <div class="control-label col-md-10 col-sm-10 col-xs-10">
+          <%= label_tag :lbl_pdf, "Factura (.pdf)", class:"control-label"%>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+           <%=check_box_tag(:pdf_factura_activa, "yes", false, {class:" checked check", checked:"checked"})%>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="control-label col-md-10 col-sm-10 col-xs-10">
+          <%= label_tag :lbl_xml, "CFDI (.xml)", class:"control-label"%>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <%=check_box_tag(:xml_factura_activa, "yes", false, {class:" checked check", checked:"checked"})%>
+        </div>
+      </div>
+    <% elsif @factura.estado_factura == "Cancelada" %>
+      <div class="row">
+        <div class="control-label col-md-10 col-sm-10 col-xs-10">
+          <%= label_tag :lbl_xml_Ac, "Acuse (.xml)", class:"control-label"%>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <%=check_box_tag(:xml_acuse_cancelacion, "yes", false, {class:" checked check", checked:"checked"})%>
+        </div>
+      </div>
+    <% end %>
   </div>
+
+
 </div>
       <%= submit_tag 'Enviar comprobantes', {:class=>"btn btn btn-success"} %>
   </div>
