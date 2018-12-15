@@ -5,9 +5,18 @@
       <h1>Facturas de ventas</h1>
     </div>
   </div>
-
   <div class="clearfix"></div>
   <hr>
+
+  <div class="row">
+    <% flash.each do |name, msg| %>
+        <div class="alert alert-<%=name%> alert-dismissable notice">
+          <button type="button" class="close" data-dismiss="alert" >&times;</button>
+            <span ><%= msg %></span>
+        </div>      
+    <%end%>
+  </div>
+
   <div class="row">
     <div class="div-add-button">
         <%= link_to url={controller: "facturas", action: "buscar_venta"}, html_options={class: "btn btn-primary active btn-lg btn-add",id: "anadir-factura-btn"} do%>
@@ -123,7 +132,7 @@
 
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control", selectMonths: :true}, {})%>
+            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text-center", selectMonths: :true}, {})%>
           </div>
         </div>
 
@@ -135,7 +144,7 @@
 
         <div class="col-md-3 col-sm-6 col-xs-12">
           <div class="text-center">
-            <%= date_picker_tag("fecha_final", nil, {class: "form-control"}, {})%>
+            <%= date_picker_tag("fecha_final", nil, {class: "form-control text-center"}, {})%>
 
           </div>
         </div>
@@ -263,13 +272,13 @@
 
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center">
-              <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field", selectMonths: :true}, {})%>
+              <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field text-center", selectMonths: :true}, {})%>
             </div>
           </div>
 
           <div class="col-md-3 col-sm-6 col-xs-12">
             <div class="text-center">
-              <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field"}, {})%>
+              <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field text-center"}, {})%>
 
             </div>
           </div>
@@ -476,3 +485,11 @@
   <!--%= javascript_include_tag "ventas" %-->
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    setTimeout(function() {
+        $(".notice").fadeOut(1500);
+    },10000);
+  });
+</script>

@@ -6,6 +6,9 @@ class ApplicationController < ActionController::Base
   layout :layout_by_resource
   protect_from_forgery with: :exception
 
+  #peligro, información, advertencia, éxito, secundario, primario
+  add_flash_types :danger, :info, :warning, :success, :secondary, :primary
+
   rescue_from CanCan::AccessDenied do |exception|
     
     redirect_to root_url

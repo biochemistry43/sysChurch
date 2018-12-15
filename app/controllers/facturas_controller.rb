@@ -1368,26 +1368,30 @@ class FacturasController < ApplicationController
       respond_to do |format|
         if @factura.tipo_factura == "fv"
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-          flash[:notice] = "Lo siento, pero la factura no existe"
+          flash[:danger] = "Lo siento, pero la factura no existe"
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-          flash[:notice] = "Lo siento, pero la factura no existe"
+          flash[:danger] = "Lo siento, pero la factura no existe"
         end
       end
     else
       #Para esto el archivo debió haber sido guardado en la carpeta "Public".
       #Aun hay algo... no se cada cuando se borran los archivos en Heroku. Creo es por demás, pero =. Es muy inmediato.
       if File::exists?( "public/#{uuid}.pdf")
-        file=File.open( "public/#{uuid}.pdf")
-        send_file( file, :disposition => "inline", :type => "application/pdf")
+        if @factura.estado_factura == "Activa"
+          file=File.open( "public/#{uuid}.pdf")
+          send_file( file, :disposition => "inline", :type => "application/pdf")
+        else
+          #Tengo que ponerle una marca de agua al pdf que diga CANCELADA.
+        end
       else
         respond_to do |format|
           if @factura.tipo_factura == "fv"
             format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
           elsif @factura.tipo_factura == "fg"
             format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-            flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+            flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
           end
         end
       end 
@@ -1489,11 +1493,11 @@ class FacturasController < ApplicationController
       rescue
         respond_to do |format|
           if @factura.tipo_factura == "fv"
-            flash[:notice] = "Lo siento, pero el CFDI no existe"
+            flash[:danger] = "Lo siento, pero el CFDI no existe"
             format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
           elsif @factura.tipo_factura == "fg"
             format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-            flash[:notice] = "Lo siento, pero el CFDI no existe"
+            flash[:danger] = "Lo siento, pero el CFDI no existe"
           end
         end
       else
@@ -1504,10 +1508,10 @@ class FacturasController < ApplicationController
           respond_to do |format|
             if @factura.tipo_factura == "fv"
               format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+              flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
             elsif @factura.tipo_factura == "fg"
               format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-              flash[:notice] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
+              flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
             end
           end
         end
