@@ -1437,48 +1437,60 @@ class FacturasController < ApplicationController
       storage = gcloud.storage
       bucket = storage.bucket "cfdis"
 
-      if @factura.estado_factura == "Activa"
-        uuid = @factura.folio_fiscal
-        storage_file_path = @factura.ruta_storage
-        #Si selecciona la casilla de pdf 
-        if params[:xml_factura_activa] == "yes"
-          file = bucket.file "#{storage_file_path}#{uuid}.xml"
-          url = file.signed_url #Da error si no existe el archivo
-
-          link = "<a href=\"#{url}\">CFDI - #{uuid}</a>"
-          @mensaje = @mensaje << link
-        end
-        if params[:pdf_factura_activa] == "yes"
-          file = bucket.file "#{storage_file_path}#{uuid}.pdf"
-          url = file.signed_url
-
-          link = "<a href=\"#{url}\">Representación impresa del CFDI>"
-          @mensaje = @mensaje << link
-        end
-      elsif @factura.estado_factura == "Cancelada"
-        #Solo es posible si la factura de venta está cancelada
-        #Pendiente
-        if params[:xml_acuse_cancelacion] == "yes"
+      #El método <signed> de cloud genera un error si <storage_file_path> no existe
+      begin
+      #Debería de hacer esto por cada archivo, pero... naaa
+        if @factura.estado_factura == "Activa"
           uuid = @factura.folio_fiscal
           storage_file_path = @factura.ruta_storage
-          file = bucket.file "#{storage_file_path}#{uuid}.xml"
-          url = file.signed_url
+          #Si selecciona la casilla de pdf 
+          if params[:xml_factura_activa] == "yes"
+            file = bucket.file "#{storage_file_path}#{uuid}.xml"
+            url = file.signed_url #Da error si no existe el archivo
 
-          link = "<a href=\"#{url}\">factura de venta</a>"
-          @mensaje = @mensaje << link
+            link = "<a href=\"#{url}\">CFDI - #{uuid}</a>"
+            @mensaje = @mensaje << link
+          end
+          if params[:pdf_factura_activa] == "yes"
+            file = bucket.file "#{storage_file_path}#{uuid}.pdf"
+            url = file.signed_url
+
+            link = "<a href=\"#{url}\">Representación impresa del CFDI>"
+            @mensaje = @mensaje << link
+          end
+        elsif @factura.estado_factura == "Cancelada"
+          #Solo es posible si la factura de venta está cancelada
+          #Pendiente
+          if params[:xml_acuse_cancelacion] == "yes"
+            uuid = @factura.folio_fiscal
+            storage_file_path = @factura.ruta_storage
+            file = bucket.file "#{storage_file_path}#{uuid}.xml"
+            url = file.signed_url
+
+            link = "<a href=\"#{url}\">factura de venta</a>"
+            @mensaje = @mensaje << link
+          end
+        end
+        #Se enviá al momento
+        FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto).deliver_now
+      rescue
+        #Si alguno de los comprobantes no se pudo obtener de la cloud, o al momento de enviar, o que... se 
+        if @factura.tipo_factura == "fv"
+          redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
+          flash[:danger] = "El comprobante no se pudo enviar por email, vuelva a intentarlo por favor"
+        elsif @factura.tipo_factura == "fg"
+          redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")
+          flash[:danger] = "El comprobante no se pudo enviar por email, vuelva a intentarlo por favor}"
+        end
+      else
+        if @factura.tipo_factura == "fv"
+          redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
+          flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
+        elsif @factura.tipo_factura == "fg"
+          redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")
+          flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
         end
       end
-  
-      FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto).deliver_now
-
-      if @factura.tipo_factura == "fv"
-        redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
-        flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
-      elsif @factura.tipo_factura == "fg"
-        redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")
-        flash[:success] = "El comprobante se ha enviado exitosamente a: #{destinatario_final}"
-      end
-
     end
   end
 
