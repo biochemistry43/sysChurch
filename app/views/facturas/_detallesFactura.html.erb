@@ -5,22 +5,45 @@
       <div class="tab-content">
 
         <div class="tab-pane active" id="generales">
-            <div class="form-group col-md-10 col-sm-12 col-xs-12">
-              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Folio:</label>
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">UUID:</label>
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i></span>
-                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.folio %>" >
+                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @uuid%>" >
               </div>
             </div>
-            <div class="form-group col-md-10 col-sm-12 col-xs-12">
-              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha:</label>
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Serie:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @serie%>" >
+              </div>
+            </div>
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Folio:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @folio%>" >
+              </div>
+            </div>
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
+              <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha de expedición:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                 <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @factura.fecha_expedicion %>" >
               </div>
             </div>
+            <% if @factura.estado_factura == "Cancelada"%>
+              <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Fecha de cancelación:</label>
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= AcuseCancelacion.find(@factura.ref_acuse_cancelacion).fecha_cancelacion %>" >
+                </div>
+              </div>
+            <%end%>
             <% if @factura.tipo_factura == "fg" %>
-              <div class="form-group col-md-10 col-sm-12 col-xs-12">
+              <div class="form-group col-md-12 col-sm-12 col-xs-12">
                 <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Sucursal:</label>
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-institution"></i></span>
@@ -28,21 +51,21 @@
                 </div>
               </div>
             <% end %>
-            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Forma de pago:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-money"></i></span>
                 <input type="text" class="form-control col-md-5 col-xs-12 text_field" value= "<%= @forma_pago%>" >
               </div>
             </div>
-            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Método de pago:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-money"></i></span>
-                <input type="text"  class="form-control col-md-5 col-xs-12 text_field" value= "<%=@metodo_pago%>">
+                <input type="text"  class="form-control col-md-5 col-xs-12 text_field" value= "<%=@cve_nombre_metodo_pagoSAT%>">
               </div>
             </div>
-            <div class="form-group col-md-10 col-sm-12 col-xs-12">
+            <div class="form-group col-md-12 col-sm-12 col-xs-12">
               <label for="" class="control-label col-md-3 col-sm-3 col-xs-12">Total:</label>
               <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-usd"></i></span>
@@ -52,14 +75,14 @@
         </div> <!-- fin de generales-->
 
         <div class="tab-pane" id="receptor">
-          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <div class="form-group col-md-12 col-sm-12 col-xs-12">
           <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">Nombre Fiscal</label>
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
               <input type="text" class="form-control col-md-6 col-sm-6 col-xs-12 text_field" value= "<%= @nombreFiscal%>">
             </div>
           </div>
-          <div class="form-group col-md-10 col-sm-12 col-xs-12">
+          <div class="form-group col-md-12 col-sm-12 col-xs-12">
           <label for="" class="control-label col-md-4 col-sm-4 col-xs-12">RFC:</label>
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>

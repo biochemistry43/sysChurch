@@ -837,18 +837,28 @@ class FacturasController < ApplicationController
     end #Fin del méodo post
   end #Fin del controlador
 
-  #ACCIONES PARA LAS FACTURAS
+
+
+  #==============================================ACCIONES PARA LAS FACTURAS
 
   # GET /facturas/1
   # GET /facturas/1.json
   def mostrar_detalles
-      @nombreFiscal =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.nombreFiscal : "Público general"
-      @rfc =  @factura.cliente.datos_fiscales_cliente ?  @factura.cliente.datos_fiscales_cliente.rfc : "XAXX010101000"
-      cve_forma_pagoSAT = @factura.factura_forma_pago.cve_forma_pagoSAT
-      nombre_forma_pagoSAT = @factura.factura_forma_pago.nombre_forma_pagoSAT
-      @forma_pago = "#{cve_forma_pagoSAT} - #{nombre_forma_pagoSAT}"
-      nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "Pago en una sola exhibición" : "Pago en parcialidades o diferido"
-      @metodo_pago = "#{@factura.cve_metodo_pagoSAT} - #{nombre_metodo_pagoSAT}"
+    @uuid = @factura.folio_fiscal
+    @folio = @factura.consecutivo
+    @serie = @factura.folio.delete(@folio.to_s)
+    
+    if @factura.tipo_factura == "fv"
+      @nombreFiscal = @factura.cliente.datos_fiscales_cliente.nombreFiscal
+      @rfc = @factura.cliente.datos_fiscales_cliente.rfc 
+    else
+      #Datos predefinidos por el gran SAT
+      @nombreFiscal = "Público en general"
+      @rfc = "XAXX010101000"
+    end
+    @forma_pago = "#{@factura.factura_forma_pago.cve_forma_pagoSAT} - #{@factura.factura_forma_pago.nombre_forma_pagoSAT}"
+    #= ni hay ventas a parcialidades :V
+    @cve_nombre_metodo_pagoSAT = @factura.cve_metodo_pagoSAT == "PUE" ? "PUE - Pago en una sola exhibición" : "PPD - Pago en parcialidades o diferido"
   end
 
   #Para cancelar una factura, aunque también se puede cancelar al mismo tiempo la venta asociada.
