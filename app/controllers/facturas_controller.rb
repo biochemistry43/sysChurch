@@ -1437,6 +1437,7 @@ class FacturasController < ApplicationController
       storage = gcloud.storage
       bucket = storage.bucket "cfdis"
 
+
       #El método <signed> de cloud genera un error si <storage_file_path> no existe
       begin
       #Debería de hacer esto por cada archivo, pero... naaa
@@ -1446,16 +1447,16 @@ class FacturasController < ApplicationController
           #Si selecciona la casilla de pdf 
           if params[:xml_factura_activa] == "yes"
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
-            url = file.signed_url #Da error si no existe el archivo
+            url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">CFDI - #{uuid}</a>"
+            link = "<a href=\"#{url}\">CFDI nuevo</a><br>"
             @mensaje = @mensaje << link
           end
           if params[:pdf_factura_activa] == "yes"
             file = bucket.file "#{storage_file_path}#{uuid}.pdf"
-            url = file.signed_url
+            url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">Representación impresa del CFDI>"
+            link = "<a href=\"#{url}\">Representación impresa del CFDI><br>"
             @mensaje = @mensaje << link
           end
         elsif @factura.estado_factura == "Cancelada"
@@ -1465,9 +1466,9 @@ class FacturasController < ApplicationController
             uuid = @factura.folio_fiscal
             storage_file_path = @factura.ruta_storage
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
-            url = file.signed_url
+            url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">factura de venta</a>"
+            link = "<a href=\"#{url}\">factura de venta</a><br>"
             @mensaje = @mensaje << link
           end
         end
