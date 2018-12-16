@@ -1412,11 +1412,10 @@ class FacturasController < ApplicationController
   def enviar_email_post
     #Se optienen los datos que se ingresen o en su caso los datos de la configuracion del mensaje de los correos.
     if request.post?
-
       destinatario_final = params[:destinatario]
       tipo_factura = @factura.tipo_factura
 
-      #Se obtiene la plantilla de email según el tipo de factura.
+      #Se obtiene la plantilla de solo si es una factura de un cliete en especifico (factura de venta)
       if @factura.tipo_factura == "fv"
         if @factura.estado_factura == "Activa"
           plantilla_email("fv")
@@ -1424,11 +1423,9 @@ class FacturasController < ApplicationController
           plantilla_email("ac_fv")
         end
       elsif @factura.tipo_factura == "fg"
-        if @factura.estado_factura == "Activa"
-          plantilla_email("fg")
-        elsif @factura.estado_factura == "Cancelada"
-          plantilla_email("ac_fg")
-        end
+        #Se debe de obtener por paremetro
+        #asunto =  params[:asunto_email]
+        #mensaje = params[:mensaje_email]
       end
 
       project_id = "cfdis-196902"
@@ -1436,7 +1433,6 @@ class FacturasController < ApplicationController
       gcloud = Google::Cloud.new project_id, credentials
       storage = gcloud.storage
       bucket = storage.bucket "cfdis"
-
 
       #El método <signed> de cloud genera un error si <storage_file_path> no existe
       begin
@@ -2306,7 +2302,6 @@ class FacturasController < ApplicationController
     end
   end
 
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_factura
@@ -2325,60 +2320,50 @@ class FacturasController < ApplicationController
     #Solo funciona para facturas de ventas y para el envío de los acuses de cancelación de las mismas.
     def plantilla_email (opc)
       require 'plantilla_email/plantilla_email.rb'
-      #Las 4 opciones posibles son:
+      #Las  opciones posibles son:
         #fv => factura de venta
-        #ac_fv => acuse de cancelación de factura de venta (Las facturas globales quedan excluidas)
-        #ac_nc => acuse de cancelación de nota de crédito
         #nc => nota de crédito
-    
+        #ac => acuse de cancelación
+
       mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: opc).msg_email
       asunto = current_user.negocio.plantillas_emails.find_by(comprobante: opc).asunto_email
 
       cadena = PlantillaEmail::AsuntoMensaje.new
 
-      if opc == "fv" || opc == "fg"
-        cadena.nombCliente = @factura.cliente.nombre_completo 
-
+      if opc == "fv"
+        cadena.nombCliente = @factura.cliente.nombre_completo #Nombre que se usa en el sistema no el 
+        cadena uuid = @factura.folio_fiscal
         cadena.fecha = @factura.fecha_expedicion
-        cadena.numero = @factura.consecutivo
-        cadena.folio= @factura.folio 
+        cadena.folio= @factura.consecutivo
+        cadena.serie = @factura.folio.delete(@folio.to_s)
         cadena.total= @factura.monto
+
         cadena.nombNegocio = @factura.negocio.nombre 
         cadena.nombSucursal = @factura.sucursal.nombre 
         cadena.emailContacto = @factura.sucursal.email 
         cadena.telContacto = @factura.sucursal.telefono 
-
-        @mensaje = cadena.reemplazar_texto(mensaje)
-        @asunto = cadena.reemplazar_texto(asunto)
-
-      #Solo por que estos dos tipos de comprobantes estan dentro de la misma tabla de la BD
-      elsif opc == "ac_fv" || opc == "ac_fg"
+        cadena.paginaWeb = @factura.negocio.pag_web
+      elsif opc == "ac_fv" 
         #El cliente debe de ser el mismo
-        cadena.nombCliente = @factura.cliente.nombre_completo 
+        cadena.nombCliente = @factura.cliente.nombre_completo
 
-        #cadena.fecha = fecha_cancelacion 
-        #cadena.numero = @factura.consecutivo
-        #cadena.folio = folio
-        #cadena.total = fecha_cancelacion
-
-        cadena.nombNegocio = current_user.negocio.nombre
-        cadena.nombSucursal = current_user.sucursal.nombre
-        cadena.emailContacto = current_user.sucursal.email
-        cadena.telContacto = current_user.sucursal.telefono
-
+        acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
+        cadena.fecha = acuse_cancelacion.fecha_cancelacion 
+        #Folio y serie*
+        cadena.nombNegocio = acuse_cancelacion.negocio.nombre
+        cadena.nombSucursal = acuse_cancelacion.sucursal.nombre
+        cadena.emailContacto = acuse_cancelacion.sucursal.email
+        cadena.telContacto = acuse_cancelacion.sucursal.telefono
+        cadena.paginaWeb = acuse_cancelacion.negocio.pag_web
+      end
         @mensaje = cadena.reemplazar_texto(mensaje)
         @asunto = cadena.reemplazar_texto(asunto)
-
-      end
-
     end
-
     # Never trust parameters from the scary internet, only allow the white list through.
     def factura_params
       params.require(:factura).permit(:uso_cfdi_id)
       #params.require(:factura).permit(:folio, :fecha_expedicion, :estado_factura,:venta_id, :user_id, :negocio_id, :sucursal_id, :cliente_id,:forma_pago_id, :folio_fiscal, :consecutivo)
     end
-
 =begin
   # GET /facturas/new
   def new
