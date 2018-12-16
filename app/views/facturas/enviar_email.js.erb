@@ -3,7 +3,15 @@
   //$('#modal-facturas-title').parent().css("color", "white");
   //$('#modal-facturas-title').html("<i class='fa fa-info'></i> Detalles de factura");
 
-$('#modal-emails-title').html("<i class='glyphicon glyphicon-envelope'></i> Envío de comprobantes por email");
+<%if @factura.estado_factura.eql?("Activa")%>
+  $('#modal-emails-title').parent().css("background-color", "#92c33c");
+  $('#modal-emails-title').parent().css("color", "white");
+  $('#modal-emails-title').html("<i class='glyphicon glyphicon-envelope'></i> Envío de factura por email");
+<%elsif @factura.estado_factura.eql?("Cancelada") %>
+  $('#modal-emails-title').parent().css("background-color", "#C9302C");
+  $('#modal-emails-title').parent().css("color", "white");
+  $('#modal-emails-title').html("<i class='glyphicon glyphicon-envelope'></i> Envío del acuse de cancelación por email");
+<%end%>
 
 // Render the new form
 $('.modal-body-emails').html('<%= j render("enviar_email") %>');

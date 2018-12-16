@@ -19,5 +19,4 @@ module PlantillaEmail
 		      return cadena
 	    end
 	end
-
 end

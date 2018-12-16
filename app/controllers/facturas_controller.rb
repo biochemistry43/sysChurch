@@ -2332,7 +2332,7 @@ class FacturasController < ApplicationController
 
       if opc == "fv"
         cadena.nombCliente = @factura.cliente.nombre_completo #Nombre que se usa en el sistema no el 
-        cadena uuid = @factura.folio_fiscal
+        cadena.uuid = @factura.folio_fiscal
         cadena.fecha = @factura.fecha_expedicion
         cadena.folio= @factura.consecutivo
         cadena.serie = @factura.folio.delete(@folio.to_s)
