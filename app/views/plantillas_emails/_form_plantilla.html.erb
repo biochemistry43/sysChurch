@@ -35,5 +35,130 @@
     <%= submit_tag "Guardar Cambios", :class=>"btn btn-success active", :id => "btn_guardar_plantilla"%>
   </div>
  <% end %>
+
+<!--Vamos Rails, no te pongas chocosito on tu "do not repeat yourself"-->
+<%if @tipo_comprobante == "Plantilla de email para acuses de cancelación" %>
+  
+  <script type="text/javascript">
+   var texto_variable = ['Nombre del cliente','Fecha','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto', 'Página web']
+    
+
+      $('#summernote_asunto').summernote({
+          tabsize: 2,
+          disableResizeEditor: true,
+          lang: 'es-ES', // default: 'en-US'
+          toolbar: false,
+          //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+          hint: {
+            mentions: texto_variable,
+            match: /\B@(\w*)$/,
+            search: function (keyword, callback) {
+              callback($.grep(this.mentions, function (item) {
+                return item.indexOf(keyword) == 0;
+              }));
+            },
+            content: function (item) {
+              return '{{' + item + '}}';
+            }
+          },
+      });
+
+      $('#summernote').summernote({
+        tabsize: 2,
+        height: 170, 
+        disableResizeEditor: true,
+        //airMode: true,
+        lang: 'es-ES', // default: 'en-US'
+        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+        hint: {
+          mentions: texto_variable,
+          match: /\B@(\w*)$/,
+          search: function (keyword, callback) {
+            callback($.grep(this.mentions, function (item) {
+              return item.indexOf(keyword) == 0;
+            }));
+          },
+          content: function (item) {
+            return '{{' + item + '}}';
+          }
+        },
+
+        toolbar: [
+        // [groupName, [list of button]]
+        ['fontname',['fontname']],
+        ['fontsize', ['fontsize']],
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert',['link','table','hr']],
+        ['misc',['undo','redo']]
+
+      ]
+    });
+  </script>
+  <%else%>
+   <script type="text/javascript">
+   var texto_variable = ['Nombre del cliente', 'UUID', 'Fecha','Folio','Total','Nombre del negocio','Nombre de la sucursal','Email de contacto','Teléfono de contacto', 'Página web']
+    
+
+      $('#summernote_asunto').summernote({
+          tabsize: 2,
+          disableResizeEditor: true,
+          lang: 'es-ES', // default: 'en-US'
+          toolbar: false,
+          //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+          hint: {
+            mentions: texto_variable,
+            match: /\B@(\w*)$/,
+            search: function (keyword, callback) {
+              callback($.grep(this.mentions, function (item) {
+                return item.indexOf(keyword) == 0;
+              }));
+            },
+            content: function (item) {
+              return '{{' + item + '}}';
+            }
+          },
+      });
+
+      $('#summernote').summernote({
+        tabsize: 2,
+        height: 170, 
+        disableResizeEditor: true,
+        //airMode: true,
+        lang: 'es-ES', // default: 'en-US'
+        //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
+        hint: {
+          mentions: texto_variable,
+          match: /\B@(\w*)$/,
+          search: function (keyword, callback) {
+            callback($.grep(this.mentions, function (item) {
+              return item.indexOf(keyword) == 0;
+            }));
+          },
+          content: function (item) {
+            return '{{' + item + '}}';
+          }
+        },
+
+        toolbar: [
+        // [groupName, [list of button]]
+        ['fontname',['fontname']],
+        ['fontsize', ['fontsize']],
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert',['link','table','hr']],
+        ['misc',['undo','redo']]
+
+      ]
+    });
+     </script>
+  <%end%>
+
 <!-- En la carpeta de javascripts solo debe de existir un archivo .js o .coffee-->
 <%= javascript_include_tag "plantillas_emails" %> <!-- config => initializer => assets-->
