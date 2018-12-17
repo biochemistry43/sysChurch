@@ -60,7 +60,7 @@ class PlantillasEmailsController < ApplicationController
     @consulta = true
 
     @plantillas_email = PlantillasEmail.find(plantillas_email_params[:id])
-    @tipo_comprobante = @plantillas_email.comprobante
+    
     accion = params[:commit]
     if accion == "Cancelar"
       asunto = @plantillas_email.asunto_email
