@@ -18,6 +18,7 @@
         minHeight: 40,
         maxHeight: 40,
         maxWidth: 200,
+        disableResizeEditor: true,
         lang: 'es-ES', // default: 'en-US'
         toolbar: false,
         //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
@@ -37,9 +38,9 @@
 
       $('#summernote').summernote({
         tabsize: 2,
-        minHeight: 170,
-        maxHeight: 170,
-        maxWidth: 200,
+        height: 170, 
+        disableResizeEditor: true,
+        //airMode: true,
         lang: 'es-ES', // default: 'en-US'
         //Se aprovecha la funcionalidad de las sugerencias de summernote para brindarle al usuario la opcion de agregar texto variable.
         hint: {

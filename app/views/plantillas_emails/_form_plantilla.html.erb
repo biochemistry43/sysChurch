@@ -3,7 +3,7 @@
     <div class="col-md-9 col-sm-9 col-xs-12">
 
       <%= label_tag :asunto_email, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12", style:"text-align:right;"%>
-      <div class="input-group col-md-10 col-sm-10 col-xs-12" style="font-size: 12px; font-weight: bold;">
+      <div class="input-group col-md-10 col-sm-10 col-xs-12" style="font-size: 12px; font-weight: bold; word-break: break-all;">
         <!--span class="input-group-addon"><i class="fa fa-pencil"> </i></span-->
         <!-- f.text_field :asunto_email, class:'form-control text_field'-->
            <%= text_area_tag :asunto_email, @asunto,{class:'form-control text_field',id:"summernote_asunto" }%>
@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-md-9 col-sm-9 col-xs-12">
         <%= label_tag :msg_email, "Su mensaje: ", class:"control-label col-md-2 col-sm-2 col-xs-12",  style:"text-align:right;"%>
-      <div class="input-group col-md-10 col-sm-10 col-xs-12" style="font-size: 12px;">
+      <div class="input-group col-md-10 col-sm-10 col-xs-12" style="font-size: 12px; font-family: 'Arial'; font-weight: normal; word-break: break-all;">
          <!--textarea id="summernote" name="summernote"></textarea-->
         <%= text_area_tag :summernote, @mensaje , {class:'form-control text_field', id: "summernote"}%>
       </div>
