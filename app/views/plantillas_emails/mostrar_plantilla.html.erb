@@ -1,11 +1,13 @@
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
-      <h1>Plantillas de correos electrónicos</h1>
+      <h1>Plantillas de emails</h1>
     </div>
   </div>
   <div class="clearfix"></div>
   <hr>
+  <div class="row flash">
+  </div>
   <div class="row">
     <%= form_tag({ controller: "plantillas_emails", action: "mostrar_plantilla"}, {:class=> "form-horizontal", :method => :post}) do %>
 
@@ -16,19 +18,19 @@
       </div>
 
       <div class="col-md-4 col-sm-6 col-xs-12">
-        <%= select_tag :comprobante, "<optgroup label='Comprobantes'><option value='fv'>Facturas de ventas</option><option value='fg'>Facturas globales</option><option value='nc_fv'>Notas de crédito para factura de venta</option><option value= 'nc_fg'>Notas de crédito para factura global</option></optgroup><optgroup label='Acuses de cancelación'><option value= 'ac_fv'>Acuse de cancelación de factura de venta</option><option value= 'ac_nc_fv'>Acuse de cancelación de notas de crédito por factura de venta</option><option value= 'ac_fg'>Acuse de cancelación de factura global</option><option value= 'ac_nc_fg'>Acuse de cancelación de notas de crédito por factura global</option></optgroup>".html_safe, :prompt => 'Seleccione una plantilla', class: 'form-control' %>
+        <%= select_tag :comprobante, "<option value='fv'>Facturas de ventas</option><option value='nc'>Notas de crédito</option><option value= 'ac'>Acuses de cancelación</option>".html_safe, :prompt => 'Seleccione una plantilla', class: 'form-control' %>
       </div>
 
       <div class="col-md-2 col-sm-5 col-xs-12">
         <div class="text-center">
-          <%= submit_tag 'Mostrar plantilla de email', {:class=>"btn btn-primary active"} %>
+          <%= submit_tag 'Editar plantilla de email', {:class=>"btn btn-primary active"} %>
         </div>
       </div>
-
       <% end %>
   <hr>
+
   </div>
-    <% if @consulta && @plantillas_email%>
+    <%if @plantillas_email%>
       <div class="row">
         <div class="panel-body">
           <!--Panel para el encabezado del comprobante-->
@@ -38,15 +40,16 @@
               <h3 class="panel-title"> <%= @tipo_comprobante %></h3>
             </div>
             <div class="panel-body", id="update">
-              <%= render "form_plantilla"%>
+             <%=render "form_plantilla"%>
             </div>
           </div>
         </div>
       </div>
-    <% end %>
-  </div>
-
+  <%end%>
 </div>
+
+
+
 
 <!--
 <p id="notice"> notice ></p>
