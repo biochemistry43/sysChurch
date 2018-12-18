@@ -1367,46 +1367,31 @@ class FacturasController < ApplicationController
     storage = gcloud.storage
     bucket = storage.bucket "cfdis"
 
-    uuid = @factura.folio_fiscal
-    storage_file_path = @factura.ruta_storage
-
     #Por supuesto que los comprobantes no estarán toda la vida ocupando espaci. Son "5 años" los que deben de conservarse... 
     begin
-      #Se descarga el pdf de la nube y se guarda en el disco
-      #Daría un error si el archivo no se encuentra en google cloud
-      file_download_storage = bucket.file "#{storage_file_path}#{uuid}.pdf"
-      file_download_storage.download "public/#{uuid}.pdf"
+      file = bucket.file "#{@factura.ruta_storage}#{@factura.folio_fiscal}.pdf"
+      url = file.signed_url expires: 600 #10 minutos es hasta mucho
+      pdf_url = open(url) 
+      #file_download_storage = bucket.file "#{storage_file_path}#{uuid}.pdf"
+      #file_download_storage.download "public/#{uuid}.pdf"
     rescue
       respond_to do |format|
         if @factura.tipo_factura == "fv"
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-          flash[:danger] = "Lo siento, pero la factura no existe"
+          flash[:danger] = "No se pudo recuperar la facura de venta, vuelva a intentarlo más tarde"
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-          flash[:danger] = "Lo siento, pero la factura no existe"
+          flash[:danger] = "No se pudo recuperar la facura global, vuelva a intentarlo más tarde"
         end
       end
     else
-      #Para esto el archivo debió haber sido guardado en la carpeta "Public".
-      #Aun hay algo... no se cada cuando se borran los archivos en Heroku. Creo es por demás, pero =. Es muy inmediato.
-      if File::exists?( "public/#{uuid}.pdf")
-        if @factura.estado_factura == "Activa"
-          file=File.open( "public/#{uuid}.pdf")
-          send_file( file, :disposition => "inline", :type => "application/pdf")
-        else
-          #Tengo que ponerle una marca de agua al pdf que diga CANCELADA.
-        end
+      if @factura.estado_factura == "Activa"
+        file_name = @factura.tipo_factura == "fg" ? "Factura global.pdf" : "Factura de venta.pdf"
+        send_data pdf_url.read, filename: file_name, type: "application/pdf", disposition: 'inline'#, stream: 'true', buffer_size: '4096'
+        #send_file(pdf_IO, :disposition => "inline", :type => "application/pdf")
       else
-        respond_to do |format|
-          if @factura.tipo_factura == "fv"
-            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-            flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
-          elsif @factura.tipo_factura == "fg"
-            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-            flash[:danger] = "No se pudo recuperar la factura, vuelva a intentarlo por favor"
-          end
-        end
-      end 
+          #Tengo que ponerle una marca de agua al pdf que diga CANCELADA. :3
+      end
     end
   end
 
