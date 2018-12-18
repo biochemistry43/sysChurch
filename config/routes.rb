@@ -62,6 +62,7 @@ Rails.application.routes.draw do
   get 'facturas/enviar_email' 
   post 'facturas/enviar_email_post' #confirmar_envio
   get 'facturas/descargar_cfdis' #En formato .xml (de facturas activas o canceladas)
+  get 'facturas/descargar_acuses'
   #get 'facturas/cancelar_cfdi'
 
   get 'facturas/cancelar_factura' #mostrar_mensaje_cancelar
