@@ -15,7 +15,11 @@
     <div class="form-group">
       <%= label_tag :lbl_asunto, "Asunto: ", class:"control-label col-md-2 col-sm-2 col-xs-12"%>
       <div class="input-group col-md-9 col-sm-9 col-xs-12">
-        <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'}%>
+        <%if @factura.tipo_factura == "fv"%>
+          <%= text_area_tag :asunto, @asunto,{class:'form-control text_field', readonly: true }%>
+        <%elsif @factura.tipo_factura == "fg"%>
+          <%= text_area_tag :asunto, @asunto,{class:'form-control text_field'}%>
+        <%end%>
       </div>
     </div>
   </div>
@@ -25,10 +29,13 @@
         <%= label_tag :lbl_mensaje, "Su mensaje: ", class:"control-label"%>
       </div>
       <div class="input-group col-md-9 col-sm-9 col-xs-12">
-         <!--textarea id="summernote" name="summernote"></textarea-->
-        <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernote"}%>
-      </div>
-  </div>
+      <%if @factura.tipo_factura == "fv"%>
+          <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', readonly: true }%>
+        <%elsif @factura.tipo_factura == "fg"%>
+          <%= text_area_tag  :summernote, @mensaje,{class:'form-control text_field', id: "summernote"}%>
+        <%end%>
+     </div>
+    </div>
   </div>
 </div>
 
@@ -84,9 +91,8 @@
           maxHeight: 40,
           maxWidth: 200,
           lang: 'es-ES', // default: 'en-US'
-          toolbar: false,
+          toolbar: false
       });
-
       $('#summernote').summernote({
         tabsize: 2,
         height: 240,
