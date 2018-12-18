@@ -1541,7 +1541,7 @@ class FacturasController < ApplicationController
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-          flash[:danger] = "Lo siento, pero el CFDI no existe"
+          flash[:danger] = "No se pudo descargar el CFDI, vuelva a intentarlo por favor"
         end
       end
     else
@@ -1557,39 +1557,28 @@ class FacturasController < ApplicationController
     gcloud = Google::Cloud.new project_id, credentials 
     storage = gcloud.storage
     bucket = storage.bucket "cfdis"
-    
+
     begin
       acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
       storage_file_path = acuse_cancelacion.ruta_storage
       #Ni que hacerle, los acuses no tienen uuid para identificarlos asi que husaré el del sistema.
       id = acuse_cancelacion.id
-      file_download_storage_xml = bucket.file "#{storage_file_path}Acuse_#{id}.xml"
-      file_download_storage_xml.download "public/Acuse_#{id}.xml"
+
+      file = bucket.file "#{storage_file_path}Acuse_#{id}.xml"
+      url = file.signed_url expires: 600 #10 minutos es hasta mucho
+      xml_url = open(url).read
     rescue
       respond_to do |format|
         if @factura.tipo_factura == "fv"
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-          flash[:danger] = "No se pudo recuperar el acuse de cancelación, vuelva a intentarlo por favor"
+          flash[:danger] = "No se pudo descargar el acuse de cancelación, vuelva a intentarlo por favor"
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-          flash[:danger] = "No se pudo recuperar el acuse de cancelación, vuelva a intentarlo por favor"
+          flash[:danger] = "No se pudo descargar el acuse de cancelación, vuelva a intentarlo por favor"
         end
       end
     else
-      if File.exist?("public/#Acuse_{id}.xml")
-        xml = File.open("public/Acuse_#{id}.xml")
-        send_file(xml, filename: "Acuse de cancelación.xml", type: "application/xml")
-      else
-        respond_to do |format|
-          if @factura.tipo_factura == "fv"
-            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-            flash[:danger] = "No se pudo recuperar el acuse de cancelación, vuelva a intentarlo por favor"
-          elsif @factura.tipo_factura == "fg"
-            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-            flash[:danger] = "No se pudo recuperar el acuse de cancelación, vuelva a intentarlo por favor"
-          end
-        end
-      end
+      send_data xml_url, filename: "Acuse de cancelación.xml", disposition: 'attachment'
     end
   end
 
