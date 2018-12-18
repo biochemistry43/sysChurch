@@ -1530,12 +1530,14 @@ class FacturasController < ApplicationController
     uuid = @factura.folio_fiscal
     storage_file_path = @factura.ruta_storage
     begin
-      file_download_storage_xml = bucket.file "#{storage_file_path}#{uuid}.xml"
-      file_download_storage_xml.download "public/#{uuid}.xml"
+      #require 'open-uri'
+      file = bucket.file "#{storage_file_path}#{uuid}.xml"
+      url = file.signed_url expires: 600 #10 minutos es hasta mucho
+      xml_url = open(url).read
     rescue
       respond_to do |format|
         if @factura.tipo_factura == "fv"
-          flash[:danger] = "Lo siento, pero el CFDI no existe"
+          flash[:danger] = "No se pudo descargar el CFDI, vuelva a intentarlo por favor"
           format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
         elsif @factura.tipo_factura == "fg"
           format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
@@ -1543,20 +1545,7 @@ class FacturasController < ApplicationController
         end
       end
     else
-      if File.exist?("public/#{uuid}.xml")
-        xml = File.open("public/#{uuid}.xml")
-        send_file(xml,filename: "CFDI.xml", type: "application/xml")
-      else
-        respond_to do |format|
-          if @factura.tipo_factura == "fv"
-            format.html { redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")}
-            flash[:danger] = "No se pudo recuperar el CFDI, vuelva a intentarlo por favor"
-          elsif @factura.tipo_factura == "fg"
-            format.html { redirect_to facturas_index_facturas_globales_path(:tipo_factura => "fg")}
-            flash[:danger] = "No se pudo recuperar el CFDI, vuelva a intentarlo por favor"
-          end
-        end
-      end
+      send_data xml_url, filename: "CFDI.xml", disposition: 'attachment'
     end
   end
 
