@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  #post 'datos_fiscales_clientes/obtener_datos_fiscales_cliente'
+
   #resources :plantillas_emails
   #actualizar, mostrar
   put 'plantillas_emails/update'

@@ -40,14 +40,15 @@ class FacturasController < ApplicationController
   def buscar_venta
     @consulta = false
     #if request.post?
+      if can? :create, Negocio
+        @venta = current_user.negocio.ventas.find_by :folio=>params[:folio]
+      else
+        @venta = current_user.sucursal.ventas.find_by :folio=>params[:folio]
+      end
+      @consulta = true
       #si existe una venta con el folio solicitado, despliega una sección con los detalles en la vista
-      @venta = current_user.negocio.ventas.find_by :folio=>params[:folio]
-      #@@venta = @venta
-      @consulta = true #determina si se realizó una consulta
-      #La venta debe de ser del mismo negocio o mostrará que no hay ventas registradas con X folio de venta
       if @venta #&& current_user.negocio.id == @venta.negocio.id
         unless @venta.status.eql?("Cancelada") #Quiere decir que puede estar Activa o con devoluciones
-          #p "VENTA ACTIVA O CON DEVOLUCIONES"
           @ventaCancelada = false
           @monto_devolucion = 0
           #Puede ser el caso que una venta tenga devoluciones, si tiene devoluciones de monto menor al de la venta si se puede facturar.
@@ -58,13 +59,11 @@ class FacturasController < ApplicationController
             end
           else
             @monto_devolucion = 0
-          end # Fin de devoluciones
+          end #Fin de comprobación de venta con devoluciones
 
           #Solo si el monto de la suma de todas las devoluciones es inferior al monto de la venta
-          unless @monto_devolucion == @venta.montoVenta
-            #p "EL MONTO ES EL MISMO DE LA VENTA ORIGINAL"
+          if @monto_devolucion < @venta.montoVenta
             @ventaConDevolucionTotal = false
-            #@devoluciones = false
             @ventaFacturada = false
             @ventaParaFacturar = false
             if @venta.factura.present?
@@ -78,11 +77,11 @@ class FacturasController < ApplicationController
                 @ventaFacturaActiva = false
               end #Fin de comprobación de venta con factura en estado activa
             end
+
             #Pudo haberse facturado anteriormente pero se canceló la factura sin cancelar la venta.
             #puede presentar devoluciones siempre y cuando el monto de las devoluciones no sea igual al al monto de la venta
-            #Es una venta que no ha sido facturada ninguna vez.
+            #O puede ser una venta que no haya sido facturada ninguna vez.
             if (@ventaFacturaActiva == false && @ventaFacturada ) || @ventaFacturada == false
-              #p "SIN FACTURA"
               @ventaParaFacturar = true
               @consecutivo = 0
               if current_user.sucursal.facturas.last
@@ -93,84 +92,38 @@ class FacturasController < ApplicationController
               else
                 @consecutivo = 1 #Se asigna el número a la factura por default o de acuerdo a la configuración del usuario.
               end
-              #Temporalmente...
-              if current_user.sucursal.clave.present?
-                claveSucursal = current_user.sucursal.clave
-                @serie = claveSucursal + "F"
-              else
-                folio_default="F"
-                @serie = folio_default
-              end
-              #RECEPTOR
+              @serie = current_user.sucursal.clave
+
+              #Datos del receptor (principalmente el rfc y el nombre fiscal)
               @email_receptor = @venta.cliente.email #Dirección para el envío de los comprobantes
               #Datos requeridos por el SAT por eso son de ley para la factura, pero cuando se trata de facturar una venta echa al publico en genera resulta que no existen datos fiscales.
-              @rfc_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.rfc : ""
-              @nombre_fiscal_receptor_f=@venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.nombreFiscal : ""
+              
+              if @venta.cliente.datos_fiscales_cliente.present?
+                datos_fiscales_cliente = @venta.cliente.datos_fiscales_cliente
+                @rfc_receptor_f = datos_fiscales_cliente.rfc 
+                @nombre_fiscal_receptor_f = datos_fiscales_cliente.nombreFiscal
 
-              @calle_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.calle : ""
-              @noInterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numInterior : ""
-              @noExterior_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.numExterior : ""
-              @colonia_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.colonia : ""
-              @localidad_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.localidad : ""
-              @municipio_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.municipio : ""
-              @estado_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.estado : ""
-              @referencia_receptor_f =  @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.referencia : " "
-              @cp_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.codigo_postal : ""
-              @pais_receptor_f = @venta.cliente.datos_fiscales_cliente ? @venta.cliente.datos_fiscales_cliente.pais : ""
-              @uso_cfdi_receptor_f=UsoCfdi.all
-
-              #COMPROBANTE
-              #@c_unidadMedida_f=current_user.negocio.unidad_medidas.cla
-              #para mostrar el subtotal.
-              @subtotal = 0.00
-              @iva =0.00
-              @ieps = 0.00
-              @itemsVenta = @venta.item_ventas
-              @itemsVenta.each do |c|
-                importe_concepto = (c.precio_venta * c.cantidad) #Incluye impuestos(si esq), descuentos(si esq)...
-                if c.articulo.impuesto.present? #No imposta de que tipo de impuestos sean
-                  tasaOCuota = (c.articulo.impuesto.porcentaje / 100) #Se obtiene la tasa o cuota por ej. 16% => 0.160000
-                  #Se calcula el precio bruto de cada concepto
-                  base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
-                  importe_impuesto_concepto = (base_gravable * tasaOCuota)
-                  #valorUnitario = base_gravable / c.cantidad
-                  @subtotal += base_gravable
-
-                  if c.articulo.impuesto.tipo == "Federal"
-                    if c.articulo.impuesto.nombre == "IVA"
-                      @iva = @iva += importe_impuesto_concepto
-                    elsif c.articulo.impuesto.nombre == "IEPS"
-                      @ieps = importe_impuesto_concepto
-                    end
-                    #Los locales que show? luego luego jaja
-                  end
-                else
-                  @subtotal += importe_concepto
-                end
+                @calle_receptor_f = datos_fiscales_cliente.calle
+                @noInterior_receptor_f = datos_fiscales_cliente.numInterior
+                @noExterior_receptor_f = datos_fiscales_cliente.numExterior
+                @colonia_receptor_f = datos_fiscales_cliente.colonia
+                @localidad_receptor_f = datos_fiscales_cliente.localidad
+                @municipio_receptor_f = datos_fiscales_cliente.municipio
+                @estado_receptor_f = datos_fiscales_cliente.estado
+                @referencia_receptor_f = datos_fiscales_cliente.referencia
+                @cp_receptor_f = datos_fiscales_cliente.codigo_postal
+                @pais_receptor_f = datos_fiscales_cliente.pais
+                @uso_cfdi_receptor_f = UsoCfdi.all
               end
-              #@iva = '%.2f' % @iva.round(2)
-              #@ieps = '%.2f' % @ieps.round(2)
-              @subtotal = '%.2f' % @subtotal.round(2)
-              #@descuento_string = '%.2f' % descuento.round(2)
-              #por el momento el descuento es:
-              descuento = 0.00
-              @descuento_string = '%.2f' % descuento.round(2)
-              @total_string = '%.2f' % @venta.montoVenta.round(2)
 
-              #decimal = format('%.2f', @venta.montoVenta).split('.')
+              @total_string = '%.2f' % @venta.montoVenta
               decimal = '%.2f' %  @venta.montoVenta.round(2)
               @total_en_letras="( #{@venta.montoVenta.to_words.upcase} PESOS #{decimal[1]}/100 M.N.)"
-              @fechaVenta=  @venta.fechaVenta
-              #@itemsVenta  = @venta.item_ventas
-              @@itemsVenta=@itemsVenta
             end
-            #::::::::::::::::
           else
-            #p "LA VENTA FUE COMPLETAMENTE DEVUELTA"
             @ventaConDevolucionTotal = true
           end
         else
-          #p "VENTA CANCELADA"
           @ventaCancelada = true
         end
       else #Fin de la comprobación de existencia del folio de la venta del negocio
@@ -180,7 +133,6 @@ class FacturasController < ApplicationController
   end
 
   def facturar_venta
-
     if request.post?
       require 'cfdi'
       require 'timbrado'
@@ -1421,28 +1373,40 @@ class FacturasController < ApplicationController
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
             url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">CFDI nuevo</a><br>"
+            link = "<a href=\"#{url}\">CFDI</a><br>"
             mensaje_email = mensaje_email << link
           end
           if params[:pdf_factura_activa] == "yes"
             file = bucket.file "#{storage_file_path}#{uuid}.pdf"
             url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">Representación impresa del CFDI><br>"
+            link = "<a href=\"#{url}\">Representación impresa del CFDI</a><br>"
             mensaje_email = mensaje_email << link
           end
         elsif @factura.estado_factura == "Cancelada"
           #Solo es posible si la factura de venta está cancelada
           #Pendiente
           if params[:xml_acuse_cancelacion] == "yes"
+            acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
+            storage_file_path = acuse_cancelacion.ruta_storage
+            #Ni que hacerle, los acuses no tienen uuid para identificarlos asi que husaré el del sistema.
+            id = acuse_cancelacion.id
+            file = bucket.file "#{storage_file_path}Acuse_#{id}.xml"
+            url = file.signed_url expires: 2629800 
+            link = "<a href=\"#{url}\">Acuse de cancelación</a><br>"
+            mensaje_email = mensaje_email << link
+          end
+=begin
+          if params[:pdf_factura_cancelada] == "yes"
             uuid = @factura.folio_fiscal
             storage_file_path = @factura.ruta_storage
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
             url = file.signed_url expires: 2629800 
 
-            link = "<a href=\"#{url}\">factura de venta</a><br>"
+            link = "<a href=\"#{url}\">Representación impresa del CFDI cancelado</a><br>"
             mensaje_email = mensaje_email << link
           end
+=end
         end
         #Se enviá al momento
         FacturasEmail.factura_email(destinatario_final, mensaje_email, asunto_email).deliver_now
