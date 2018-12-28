@@ -94,15 +94,10 @@
         <!--%= label_tag :enviar_al_correo, @correo_electonico_f, class:"control-label"%-->
         <%=label_tag :enviar_email, "Enviar a email", class: "control-label" %>
       </div>
-      <!--%if @venta.cliente.email.present?%-->
-        <!--div class="col-md-1 col-sm-1 col-xs-12">
-            <%=check_box_tag(:enviar_al_correo, "yes", false, {class:" checked check"})%>
-        </div-->
-      <!--%else%-->
+
       <div class="col-md-8 col-sm-5 col-xs-12 input-group">
         <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-        <!--email_field_tag 'email', 'email@example.com', class: 'special_input', disabled: true-->
-        <!--%= text_field_tag :correo_electonico, nil,{class:'form-control text_field',placeholder:"Ejemplo: fulanito95@hotmail.com" }%-->
+
         <%= email_field_tag :destinatario, nil,{class:'form-control text_field', value: @email_receptor}%>
       </div>
       <!--%end%-->
@@ -169,40 +164,32 @@
                 
                   <div class="row">
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-primary col-md-2 col-sm-12 col-xs-12", remote: true, } do %>
-                        <i class="fa fa-pencil"> </i> Editar cliente original.
+                      <%=link_to edit_cliente_path(@venta.cliente.id) , html_options = {class: "btn btn-success col-md-3 col-sm-12 col-xs-12", remote: true, id: "btn_editar_datos_fiscales_cliente" } do %>
+                        Editar datos fiscales del cliente
                       <% end %>
-                    <button type="button" class="btn btn-primary col-md-2 col-sm-12 col-xs-12" id="cambiarClienteBtn">
-                      <i class="fa fa-user"> </i> Cambiar cliente
+                    <button type="button" class="btn btn-success col-md-2 col-sm-12 col-xs-12" id="cambiarClienteBtn">
+                      Cambiar cliente
                     </button>
                     <% if can? :create, Cliente %>
-                      <%= link_to new_cliente_path, {remote: true, class: "btn btn-primary col-md-2 col-sm-12 col-xs-12"}  do %>
-                         <i class="fa fa-plus"></i> Nuevo cliente.
+                      <%= link_to new_cliente_path, {remote: true, class: "btn btn-success col-md-2 col-sm-12 col-xs-12"}  do %>
+                         Nuevo cliente
                       <%end%>
                     <% end %>
                   </div>
                 </div>
 
-                    <!--
-                    <div class="col-md-4 col-sm-4 col-xs-12">
-                      <button class="btn btn-success col-md-12 col-sm-12 col-xs-12" id="btn_datos_manualmente" type="button">
-                         Ingresar datos manualmente. <i class="fa fa-user"> </i> <i class="fa fa-pencil"> </i>
-                      </button>
-                    </div>-->
                 <!-- El cliente será el mismo de la venta a menos que se requiera facturar a nombre de otro mono. -->
                 <%= hidden_field_tag :receptor_id,  @venta.cliente.id %>
 
-              
-
                 <div class="row" style="margin-bottom:15px; margin-top: 15px;">
                   <div class="col-md-1 col-sm-2 col-xs-3">
-                    <%= label_tag :rfc_receptor,'R.F.C.:', class:"control-label"%>
+                    <%= label_tag :rfc_receptor_vf,'R.F.C.:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%= text_field_tag :rfc_input, nil,{class:'form-control text_field',value:@rfc_receptor_f, readonly: true }%>
+                    <%= text_field_tag :rfc_receptor_vf, nil,{class:'form-control text_field',value:@rfc_receptor_f, readonly: true }%>
                   </div>
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%= label_tag :nombre_fiscal_receptor_f,'Nombre:', class:"control-label"%>
+                    <%= label_tag :nombre_fiscal_receptor_vf,'Nombre:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
                     <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field',value:@nombre_fiscal_receptor_f, readonly: true  }%>
@@ -219,10 +206,10 @@
                 </div>
 
                 <div class="row" style="margin-top: 10px; color: black; padding-bottom:15px;">
-                  <div class="col-md-5 col-sm-10 col-xs-10">
-                    <%= label_tag :lbl_direccion, "¿Desea agregar dirección de facturación a la factura?", class:"control-label"%>
+                  <div class="col-md-4 col-sm-10 col-xs-10">
+                    <%= label_tag :direccion_facturacion, "¿Desea agregar dirección de facturación?", class:"control-label"%>
                   </div>
-                  <div class="col-md-2 col-sm-2 col-xs-2">
+                  <div class="col-md-1 col-sm-2 col-xs-2">
                     <%=check_box_tag(:direccion_facturacion, "yes", false, {class:" checked check", id: "check_direccion_facturacion"})%>
                   </div>
                 </div>
@@ -231,79 +218,79 @@
 
                 <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%= label_tag :calle,'Calle:', class:"control-label" %>
+                    <%= label_tag :calle_receptor_vf,'Calle:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field' ,value:@calle_receptor_f, readonly: true }  %>
+                    <%= text_field_tag :calle_receptor_vf, nil,{class:'form-control text_field' ,value:@calle_receptor_f, readonly: true }%>
                   </div>
                   <div class="col-md-1 col-sm-3 col-xs-12">
-                    <%=  label_tag :no_interior_receptor_vf,'No. Int.:', class:"control-label" %>
+                    <%= label_tag :no_interior_receptor_vf,'No. Int.:', class:"control-label"%>
                   </div>
                   <div class="col-md-2 col-sm-3 col-xs-12">
-                    <%=  number_field_tag(:no_Interior_vf, nil, {class: "form-control text_field", value: @noInterior_receptor_f, readonly: true }) %>
+                    <%= number_field_tag(:no_interior_receptor_vf, nil, {class: "form-control text_field", value: @noInterior_receptor_f, readonly: true })%>
                   </div>
                   <div class="col-md-1 col-sm-3 col-xs-12">
-                    <%= label_tag :no_exterior_receptor_vf,'No. Ext.:', class:"control-label" %>
+                    <%= label_tag :no_exterior_receptor_vf,'No. Ext.:', class:"control-label"%>
                   </div>
                   <div class="col-md-2 col-sm-3 col-xs-12">
-                    <%=  number_field_tag(:no_Exterior_vf, nil, {class: "form-control text_field", value: @noExterior_receptor_f, readonly: true  }) %>
+                    <%= number_field_tag(:no_exterior_receptor_vf, nil, {class: "form-control text_field", value: @noExterior_receptor_f, readonly: true  })%>
+                  </div>
+                </div>
+
+
+                <div class="row" style="padding-bottom:15px;">
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :colonia_receptor_vf,'Colonia:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%= text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, readonly: true  }%>
+                  </div>
+                  <div class="col-md-1 col-sm-2 col-xs-12">
+                    <%= label_tag :localidad_receptor_vf,'Localidad:', class:"control-label"%>
+                  </div>
+                  <div class="col-md-5 col-sm-10 col-xs-12">
+                    <%=text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, readonly: true }%>
                   </div>
                 </div>
 
                 <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%= label_tag :colonia,'Colonia:', class:"control-label" %>
+                    <%= label_tag :municipio_receptor_vf,'Municipio:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :colonia_receptor_vf, nil,{class:'form-control text_field',value: @colonia_receptor_f, readonly: true  } %>
+                    <%= text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, readonly: true  }%>
                   </div>
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :localidad,'Localidad:', class:"control-label" %>
+                    <%= label_tag :estado_receptor_vf,'Estado:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%= text_field_tag :localidad_receptor_vf, nil,{class:'form-control text_field',value:@localidad_receptor_f, readonly: true } %>
+                    <%= text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, readonly: true }%>
                   </div>
                 </div>
 
                 <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :municipio,'Municipio:', class:"control-label" %>
+                    <%= label_tag :pais_receptor_vf,'País:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :municipio_receptor_vf, nil,{class:'form-control text_field',value:@municipio_receptor_f, readonly: true  } %>
+                    <%= text_field_tag :pais_receptor_vf, nil,{class:'form-control text_field',value:@pais_receptor_f, readonly: true }%>
                   </div>
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :estado,'Estado:', class:"control-label" %>
+                    <%= label_tag :cp_receptor_vf,'C.P.:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :estado_receptor_vf, nil,{class:'form-control text_field',value:@estado_receptor_f, readonly: true } %>
+                    <%= text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, readonly: true  }%>
                   </div>
                 </div>
 
                 <div class="row" style="padding-bottom:15px;">
                   <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :pais,'País:', class:"control-label" %>
-                  </div>
-                  <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :pais_receptor_vf, nil,{class:'form-control text_field',value:@pais_receptor_f, readonly: true } %>
-                  </div>
-                  <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :cp,'C.P.:', class:"control-label" %>
-                  </div>
-                  <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%=  text_field_tag :cp_receptor_vf, nil,{class:'form-control text_field',value:@cp_receptor_f, readonly: true  } %>
-                  </div>
-                </div>
-
-                <div class="row" style="padding-bottom:15px;">
-                  <div class="col-md-1 col-sm-2 col-xs-12">
-                    <%=  label_tag :referencia,'Referencia:', class:"control-label" %>
+                    <%= label_tag :referencia_receptor_vf,'Referencia:', class:"control-label"%>
                   </div>
                   <div class="col-md-11 col-sm-10 col-xs-12">
-                    <%=  text_area_tag :referencia_receptor_vf, @referencia_receptor_f,{class:'form-control text_field', readonly: true } %>
+                    <%= text_area_tag :referencia_receptor_vf, @referencia_receptor_f,{class:'form-control text_field', readonly: true }%>
                   </div>
                 </div>
-
               </div>
               </div>
             </div>
@@ -424,8 +411,8 @@
               <table class='table table-striped responsive-utilities jambo_table responsive no-wrap' id="lista_clientes">
                 <thead>
                   <tr class='headings'>
-                    <th class='column-title'>Nombre Cliente </th>
-                    <th class='column-title'>Teléfono </th>
+                    <th class='column-title'>Nombre fiscal </th>
+                    <th class='column-title'>R.F.C. </th>
                     <th class='column-title'>Email </th>
                     <th class='column-title'>Elegir </th>
                   </tr>
@@ -449,31 +436,12 @@
 </div>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    setTimeout(function() {
-        $(".content").fadeOut(1500);
-    },10000);
-
-    if( $('.check_direccion_facturacion').prop('checked') ) {
-      $('#direccion_facturacion').show();
-    }else{
-      $('#direccion_facturacion').hide();
-    }
-
-    $( '#check_direccion_facturacion' ).on( 'click', function() {
-    if( $(this).is(':checked') ){
-      $('#direccion_facturacion').show();
-    } else {
-      $('#direccion_facturacion').hide();
-    }
-    });
-/*
-
-    $.ajax({
+  //Con esta petición ajax, se llena el modal de clientes.
+  $.ajax({
     //Los datos se obtienen en json
-    url: "/datos_fiscales_clientes.json",
+    url: "/datos_fiscales_clientes/obtener_datos_fiscales",
     dataType: "JSON",
-    method: "POST",
+    method: "GET",
     timeout: 10000,
     beforeSend: function(){
 
@@ -489,24 +457,115 @@
       for(i=0; i < resLength; i++){
         var element = res[i];
 
-         alert(element.nombreFiscal);
-        $("#direccion_facturacion").append("<div>" + element.nombreFiscal + "</div>"+
+        /* lista_clientes es la tabla que está dentro del modal con la lista de los clientes.
+         * por cada cliente que se agrega a la tabla, se añade un botón con el método onclick
+         * para cambiar los datos
+         * del cliente dentro de la pantalla de venta**/
+        $("#lista_clientes").append(""+
 
-
-            "<tr class='even pointer'><td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
-            "<td>"+element.telefono1+"</td>"+
+            "<tr class='even pointer'><td>"+element.nombreFiscal+"</td>"+
+            "<td>"+element.rfc+"</td>"+
             "<td>"+element.email+"</td>"+
             "<td><button class='btn btn-success btn-xs' "+
-                    "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"\", \""+element.telefono1+"\", \""+element.email+"\")' >"+
+                    "onclick='cambiarCliente(\""+element.id+"\", \""+element.nombreFiscal+ "\", \""+element.rfc+"\", \""+element.email+"\", \""+element.calle+"\", \""+element.numExterior+"\", \""+element.numInterior+"\", \""+element.colonia+"\", \""+element.codigo_postal+"\", \""+element.municipio+"\", \""+element.estado+"\", \""+element.localidad+"\", \""+element.pais+"\", \""+element.referencia+"\")' >"+
                       "<i class='fa fa-check-square'></i> Seleccionar </button></td></tr>");
 
       }
+
+      /* Una vez que se han cargado los datos en la tabla, convertimos nuestra tabla en una tabla DataTable.
+       * El plugin Datatable fue instalado mediante la gema 'jquery-datatables-rails'.
+       * Para más información:  https://github.com/rweng/jquery-datatables-rails
+       * La funcionalidad de ser responsiva fue añadida a la tabla.
+       */
+      $('#lista_clientes').DataTable({
+        responsive: true,
+        "language":{
+          "info": "Mostrar pag _PAGE_ de _PAGES_",
+          "lengthMenu": "Mostrar _MENU_ registros",
+          "zeroRecords": "No hay coincidencias",
+          "search": "Buscar: _INPUT_",
+          "infoFiltered": " - encontrados en _MAX_ registros",
+          "paginate": {
+            "previous": "Anterior",
+            "next" : "siguiente",
+            "last" : "último",
+            "first" : "primero"
+          }
+        }
+      });
     }//Termina success de la petición ajax
-  }); */
+  }); //Termina petición ajax de la lista de clientes.
+
+  //Esta acción abre el modal que permite cambiar el cliente de una venta
+  $("#cambiarClienteBtn").on("click", function(e){
+
+    $('#modalClie').modal('show');
+
+  });
+  /*
+  * Esta función permite cambiar los valores del cuadro de clientes en base al cliente elegido
+  * En el modal de clientes
+  */
+  function cambiarCliente(id, nombre_fiscal, rfc, email, calle, no_ext, no_int, colonia, cp, municipio, estado, localidad, pais, referencia){
+    //Se guarda el id del cliente elegido en un input hidden
+    //$("#id_cliente").val(id);
+
+    //Se cambian los valores de las cajas de texto
+    $('#nombre_fiscal_receptor_vf').val(nombre_fiscal);
+    $('#rfc_receptor_vf').val(rfc);
+    $('#destinatario').val(email);
+    //Las siguientes cajas de texto corresponden a la dirección de facturación y solo se actualizan si está seleccionado el check. 
+    if( $('#check_direccion_facturacion').prop('checked')){
+      $('#calle_receptor_vf').val(calle);
+      $('#no_exterior_receptor_vf').val(no_ext);
+      $('#no_interior_receptor_vf').val(no_int);
+      $('#colonia_receptor_vf').val(colonia);
+      $('#cp_receptor_vf').val(cp);
+      $('#municipio_receptor_vf').val(municipio);
+      $('#estado_receptor_vf').val(estado);
+      $('#localidad_receptor_vf').val(localidad);
+      $('#pais_receptor_vf').val(pais);
+      $('#referencia_receptor_vf').val(referencia);
+    }
+
+   $("#modalClie").modal("hide");
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    setTimeout(function() {
+        $(".content").fadeOut(1500);
+    },10000);
+
+    $('#check_direccion_facturacion' ).on('click', function() {
+    if( $(this).is(':checked') ){
+      $('#direccion_facturacion').show();      
+    } else {
+      $('#direccion_facturacion').hide();
+    }
+    });
+
+    $('#btn_editar_datos_fiscales_cliente').on('click', function(){
+
+    });
+
+
+
+    
 
   });
 </script>
 
 <!-- stylesheet_link_tag "facturas" %-->
 <%= javascript_include_tag "validador_RFC_Obligatorio" %>
-<%= javascript_include_tag "mostrarDetallesVenta" %>

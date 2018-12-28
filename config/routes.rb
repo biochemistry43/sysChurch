@@ -78,6 +78,9 @@ Rails.application.routes.draw do
   post 'facturas/mostrarVentas_FacturaGlobal'
 
 
+  get 'datos_fiscales_clientes/obtener_datos_fiscales'
+
+
 
 
   get 'corte_cajas/show'
