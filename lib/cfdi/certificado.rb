@@ -19,7 +19,7 @@ module CFDI
     def initialize (file)
 
       if file.is_a? String
-        file = File.read(file)
+        file = open(file).read
       end
 
       super file

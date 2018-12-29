@@ -18,7 +18,7 @@ module CFDI
     # @ return [CFDI::Key] La llave privada
     def initialize path_llave, password_llave=nil
       if path_llave.is_a? String
-        path_llave = File.read(path_llave)
+        path_llave = open(path_llave).read
       end
       super path_llave, password_llave
     end

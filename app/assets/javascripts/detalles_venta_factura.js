@@ -74,10 +74,10 @@
 
     //Se cambian los valores de las cajas de texto
     $('#nombre_fiscal_receptor_vf').val(nombre_fiscal);
-    $('#rfc_receptor_vf').val(rfc);
+    $('#rfc_input').val(rfc);
     $('#destinatario').val(email);
     //Las siguientes cajas de texto corresponden a la dirección de facturación y solo se actualizan si está seleccionado el check. 
-    if( $('#check_agregar_direccion').prop('checked')){
+    //if( $('#check_agregar_direccion').prop('checked')){
       $('#calle_receptor_vf').val(calle);
       $('#no_exterior_receptor_vf').val(no_ext);
       $('#no_interior_receptor_vf').val(no_int);
@@ -88,7 +88,7 @@
       $('#localidad_receptor_vf').val(localidad);
       $('#pais_receptor_vf').val(pais);
       $('#referencia_receptor_vf').val(referencia);
-    }
+    //}
     $('.remove-attr').attr('readonly');
 
     $("#modalClie").modal("hide");
@@ -111,8 +111,10 @@
 
     $('#check_agregar_direccion' ).on('click', function() {
     if( $(this).is(':checked') ){
+      $(this).val('activado');
       $('#direccion_facturacion').show();      
     } else {
+      $(this).val('desactivado');
       $('#direccion_facturacion').hide();
     }
     });

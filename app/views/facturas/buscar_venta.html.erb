@@ -173,7 +173,7 @@
                       <%end%>
                     <% end %>
 
-                    <%= label_tag :check_activar_campos, "Activar los campos para editar los datos fiscales del receptor", class:"control-label col-md-5 col-sm-10 col-xs-10", style: "color: black;"%>
+                    <%= label_tag :check_activar_campos, "¿Quieres activar los campos para editar los datos fiscales del receptor?", class:"control-label col-md-6 col-sm-10 col-xs-10", style: "color: black;"%>
    
                     <%=check_box_tag(:check_activar_campos, "desactivado", false, {class:" checked check col-md-1 col-sm-2 col-xs-2"})%>
 
@@ -193,10 +193,10 @@
                     <%= text_field_tag :nombre_fiscal_receptor_vf, nil,{class:'form-control text_field remove-attr',value:@nombre_fiscal_receptor_f, readonly: true  }%>
                   </div>
                   <div class="col-md-1 col-sm-2 col-xs-3">
-                    <%= label_tag :rfc_receptor_vf,'R.F.C.:', class:"control-label"%>
+                    <%= label_tag :rfc_input,'R.F.C.:', class:"control-label"%>
                   </div>
                   <div class="col-md-5 col-sm-10 col-xs-12">
-                    <%= text_field_tag :rfc_receptor_vf, nil,{class:'form-control text_field remove-attr',value:@rfc_receptor_f, readonly: true }%>
+                    <%= text_field_tag :rfc_input, nil,{class:'form-control text_field remove-attr',value:@rfc_receptor_f, readonly: true }%>
                   </div>
                 </div>
                 <div class="row">
@@ -210,10 +210,10 @@
 
                 <div class="row" style="margin-top: 10px; color: black; padding-bottom:15px;">
                   <div class="col-md-4 col-sm-10 col-xs-10">
-                    <%= label_tag :check_agregar_direccion, "¿Desea agregar dirección de facturación?", class:"control-label"%>
+                    <%= label_tag :check_agregar_direccion, "¿Deseas ver la dirección fiscal del receptor?", class:"control-label"%>
                   </div>
                   <div class="col-md-1 col-sm-2 col-xs-2">
-                    <%=check_box_tag(:check_agregar_direccion, "yes", false, {class:" checked check"})%>
+                    <%=check_box_tag(:check_agregar_direccion, "desactivado", false, {class:"checked check"})%>
                   </div>
                 </div>
 
