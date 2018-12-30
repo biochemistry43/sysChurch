@@ -561,7 +561,7 @@ class FacturasController < ApplicationController
         hash_domicilioEmisor = {}
         datos_fiscales_negocio = current_user.negocio.datos_fiscales_negocio
         if current_user.negocio.datos_fiscales_negocio
-          CFDI::DatosComunes::Domicilio.new({
+          domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
           calle: datos_fiscales_negocio.calle,
           noExterior: datos_fiscales_negocio.numExterior,
           noInterior: datos_fiscales_negocio.numInterior,
@@ -679,22 +679,28 @@ class FacturasController < ApplicationController
         #p xml_certificado_sellado
 
         #4.- Se manda el xml a Timbox para su validación y timbrado
-        #Se convierte el xml en base64 para mandarselo a TIMBOX
         xml_base64 = Base64.strict_encode64(xml_certificado_sellado) 
-        # Parametros para conexion al Webservice (URL de Pruebas)
-        wsdl_url = "https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl"
-        usuario = "AAA010101000"
-        contrasena = "h6584D56fVdBbSmmnB"
-        #Se obtiene el xml timbrado
-        xml_timbox= servicio.timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
-        #Guardo el xml recien timbradito de timbox
-        uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-        archivo = File.open("public/#{uuid_cfdi}.xml", "w")
-        archivo.write (xml_timbox)
-        archivo.close
+        xml_timbox= servicio.timbrar_xml(xml_base64)
 
-        #Se forma la cadena original del timbre fiscal digital de manera manual por que e mugroso xslt del SAT no Jala.
-        
+        uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+        #Es la fecha de expedición, no la de timbrado
+        fecha_registroBD = Time.parse(xml_timbox.xpath('//@Fecha').to_s)  
+        fecha_expedicion_f = fecha_registroBD.strftime("%Y-%m-%d")
+
+        #Se crea una ruta en cloud con el nombre del negocio, el nombre de la sucursal... para almacenar el CFDI y el PDF
+        dir_negocio = current_user.negocio.nombre
+        dir_sucursal = current_user.sucursal.nombre
+        dir_cliente = params[:nombre_fiscal_receptor_vf]
+        dir_anno = fecha_registroBD.year
+        dir_mes = fecha_registroBD.month
+        dir_dia = fecha_registroBD.day
+
+        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
+        #Se guarda el CFDI en la nube en la ruta indicada.
+        file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}#{uuid_cfdi}.xml"
+
+        #La cadena original del complemento de certificación digital del SAT es un requisito para las representaciones impresas
+        #Se oye muy intimidador, pero solo es una simple contatenación de seis atributos del CFDI timbrado jaja 
         factura.complemento=CFDI::Complemento.new(
           {
             Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
@@ -708,18 +714,6 @@ class FacturasController < ApplicationController
         #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
         xml_copia = xml_timbox
  
-        #7.- Se guarda en la BD
-        fecha_registroBD = Time.parse(xml_timbox.xpath('//@Fecha').to_s)  #Es la fecha de expedición, no la de timbrado
-        fecha_expedicion_f = fecha_registroBD.strftime("%Y-%m-%d")
-
-        #Se realizan las consultas para formar los directorios en cloud y se guarda la ruta en la BD para poder acceder a los archivos posteriormente.
-        dir_negocio = current_user.negocio.nombre
-        dir_cliente = params[:nombre_fiscal_receptor_vf]
-        dir_dia = fecha_registroBD.day
-        dir_mes = fecha_registroBD.month
-        dir_anno = fecha_registroBD.year
-        dir_sucursal = current_user.sucursal.nombre
-        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
 
         @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_expedicion_f, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: uuid_cfdi, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
         
@@ -775,7 +769,6 @@ class FacturasController < ApplicationController
           hash_info[:email_sucursal] = current_user.sucursal.email
         end
 
-
         xml_rep_impresa = factura.add_elements_to_xml(hash_info)
         #puts xml_rep_impresa
         template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas de ventas.xsl'))
@@ -791,15 +784,10 @@ class FacturasController < ApplicationController
 
   #========================================================================================================================
         #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-        gcloud = Google::Cloud.new "cfdis-196902","/home/daniel/Descargas/CFDIs-0fd739cbe697.json"
-        storage=gcloud.storage
-        bucket = storage.bucket "cfdis"
-
         #Los comprobantes de almacenan en google cloud
         #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
         #file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}_CFDI.xml"
         file = bucket.create_file "public/#{uuid_cfdi}.pdf", "#{ruta_storage}#{uuid_cfdi}.pdf"
-        file = bucket.create_file "public/#{uuid_cfdi}.xml", "#{ruta_storage}#{uuid_cfdi}.xml"
 
   #=======================================================================================================================
           #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p

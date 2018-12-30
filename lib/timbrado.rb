@@ -1,26 +1,32 @@
 module Timbox
-
+  #Servicios web de Timbox
   class Servicios
+    USERNAME = Rails.application.secrets.timbox_username
+    PASSWORD = Rails.application.secrets.timbox_password
+
+    WSDL_TIMBRADO = Rails.application.secrets.swdl_timbrado
+    WSDL_CANCELACION = Rails.application.secrets.wsdl_cancelacion
     #Todas las urls de timbox son del ambiiente de pruebas(se deben de canbiar al pasar a producción)
     require 'byebug'
-
     #Al 100%
-    def timbrar_xml(usuario, contrasena, xml_base64, wsdl_url)
+    def timbrar_xml(xml_base64)
       # Generar el Envelope
+      wsdl_url = Rails.application.secrets.wsdl_timbrar_xml
+
       envelope = %Q^
         <soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:WashOut\">
           <soapenv:Header/>
           <soapenv:Body>
             <urn:timbrar_cfdi soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
-              <username xsi:type=\"xsd:string\">#{usuario}</username>
-              <password xsi:type=\"xsd:string\">#{contrasena}</password>
+              <username xsi:type=\"xsd:string\">#{USERNAME}</username>
+              <password xsi:type=\"xsd:string\">#{PASSWORD}</password>
               <sxml xsi:type=\"xsd:string\">##{xml_base64}</sxml>
           </urn:timbrar_cfdi>
           </soapenv:Body>
         </soapenv:Envelope>^
 
       # Crear un cliente de savon para hacer la petición al WS, en produccion quitar el "log: true"
-      client = Savon.client(wsdl: wsdl_url, log: true)
+      client = Savon.client(wsdl: WSDL_TIMBRADO, log: true)
 
       # Llamar el metodo timbrar
       response = client.call(:timbrar_cfdi, { "xml" => envelope })
