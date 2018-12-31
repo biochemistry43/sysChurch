@@ -152,25 +152,6 @@ class FacturasController < ApplicationController
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   def facturar_venta
     if request.post?
       require 'cfdi' #Mi pequeña libreria para armar los CFDI (.xml) en la v. 3.3
@@ -189,20 +170,21 @@ class FacturasController < ApplicationController
 
         @venta = Venta.find(params[:id])
 
+        negocio = current_user.negocio
+        datos_fiscales_negocio = negocio.datos_fiscales_negocio
+        sucursal = current_user.sucursal
+        datos_fiscales_sucursal = sucursal.datos_fiscales_sucursal
+
+
         #1.-Obtención de certificado, llave y clave
         if File::exists?( 'public/certificado.cer') && File::exists?( 'public/llave.pem')
-        #begin 
-          certificado_bucket = bucket.file current_user.negocio.datos_fiscales_negocio.path_cer
+          certificado_bucket = bucket.file datos_fiscales_negocio.path_cer
           url_certificado = certificado_bucket.signed_url expires: 600 # 10 minutos, no tiene por que demorar más.
           certificado = CFDI::Certificado.new url_certificado
 
-          #llave = CFDI::Certificado.new open(url_llave)
-          # Esta se convierte de un archivo .key con:
-          # openssl pkcs8 -inform DER -in someKey.key -passin pass:somePassword -out key.pem
-          llave_bucket = bucket.file current_user.negocio.datos_fiscales_negocio.path_key
+          llave_bucket = bucket.file datos_fiscales_negocio.path_key
           url_llave = llave_bucket.signed_url expires: 600
-          password_llave = current_user.negocio.datos_fiscales_negocio.password
-          #openssl pkcs8 -inform DER -in /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.key -passin pass:12345678a -out /home/daniel/Documentos/prueba/CSD03_AAA010101AAA.pem
+          password_llave = datos_fiscales_negocio.password
           llave = CFDI::Key.new url_llave, password_llave
 =begin       
           #Se debe de crear una nota de crédito cuando se necesite facturar una venta que ya haya sido incluida en una factura global.
@@ -534,271 +516,282 @@ class FacturasController < ApplicationController
           #2.- Se arma el CFDI (.xml) a como el señor SAT lo pide. 
           #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
           consecutivo = 0
-          consecutivo = current_user.sucursal.facturas.where(tipo_factura: "fv").last.consecutivo if current_user.sucursal.facturas.where(tipo_factura: "fv").last
+          consecutivo = sucursal.facturas.where(tipo_factura: "fv").last.consecutivo if sucursal.facturas.where(tipo_factura: "fv").last
           consecutivo += 1
 
-          clave_sucursal = current_user.sucursal.clave
+          clave_sucursal = sucursal.clave
           folio_registroBD = clave_sucursal + "FV" + consecutivo.to_s
           serie = clave_sucursal + "FV"
 
           forma_pago_f = FacturaFormaPago.find(params[:forma_pago_id])
           metodo_pago_f = params[:metodo_pago] == "PUE - Pago en una sola exhibición" ? "PUE" : "PPD"
         
-        factura = CFDI::Comprobante.new({
-          serie: serie,
-          folio: consecutivo,
-          #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
-          #La moneda por default es MXN
-          formaPago: forma_pago_f.cve_forma_pagoSAT,
-          #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
-          metodoDePago: metodo_pago_f,
-          #Al ingresar el Código Postal en este campo se cumple con el requisitode señalar el domicilio y lugar de expedición del comprobante a que se refieren las fracciones I y III del Artículo 29-A del CFF.
-          lugarExpedicion: current_user.sucursal.datos_fiscales_sucursal.codigo_postal,
-          total: '%.2f' % @venta.montoVenta.round(2)
-        })
-        #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
-        #Se obtienen los datos del emisor
-        hash_domicilioEmisor = {}
-        datos_fiscales_negocio = current_user.negocio.datos_fiscales_negocio
-        if current_user.negocio.datos_fiscales_negocio
-          domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
-          calle: datos_fiscales_negocio.calle,
-          noExterior: datos_fiscales_negocio.numExterior,
-          noInterior: datos_fiscales_negocio.numInterior,
-          colonia: datos_fiscales_negocio.colonia,
-          localidad: datos_fiscales_negocio.localidad,
-          referencia: datos_fiscales_negocio.referencia,
-          municipio: datos_fiscales_negocio.municipio,
-          estado: datos_fiscales_negocio.estado,
-          codigoPostal: datos_fiscales_negocio.codigo_postal
-        })
-        else
-          domicilioEmisor = CFDI::DatosComunes::Domicilio.new({})
-        end
-
-        #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
-        if current_user.sucursal
-          datos_fiscales_sucursal = current_user.sucursal.datos_fiscales_sucursal
-          expedidoEn= CFDI::DatosComunes::Domicilio.new({
-            calle: datos_fiscales_sucursal.calle,
-            noExterior: datos_fiscales_sucursal.numExt,
-            noInterior: datos_fiscales_sucursal.numInt,
-            colonia: datos_fiscales_sucursal.colonia,
-            localidad: datos_fiscales_sucursal.localidad,
-            codigoPostal: datos_fiscales_sucursal.codigo_postal,
-            municipio: datos_fiscales_sucursal.municipio,
-            estado: datos_fiscales_sucursal.estado,
-            referencia: datos_fiscales_sucursal.referencia
+          factura = CFDI::Comprobante.new({
+            serie: serie,
+            folio: consecutivo,
+            #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
+            #La moneda por default es MXN
+            formaPago: forma_pago_f.cve_forma_pagoSAT, #De los catálogos del SAT
+            #condicionesDePago: 'Sera marcada como pagada en cuanto el receptor haya cubierto el pago.',
+            metodoDePago: metodo_pago_f, #De los catálogos del SAT
+            #Al ingresar el Código Postal en este campo se cumple con el requisitode señalar el domicilio y lugar de expedición del comprobante a que se refieren las fracciones I y III del Artículo 29-A del CFF.
+            lugarExpedicion: datos_fiscales_sucursal.codigo_postal, #De los catálogos del SAT
+            total: '%.2f' % @venta.montoVenta.round(2)
           })
-        else
-          expedidoEn= CFDI::DatosComunes::Domicilio.new({})
-        end
-
-        factura.emisor = CFDI::Emisor.new({
-          #rfc: 'AAA010101AAA',
-          rfc: datos_fiscales_negocio.rfc,
-          nombre: datos_fiscales_negocio.nombreFiscal,
-          regimenFiscal: datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT,
-          domicilioFiscal: domicilioEmisor,
-          expedidoEn: expedidoEn
-        })
-
-        #Datos del receptor
-        #Estos datos tampoco son requeridos por el SAT, sin embargo se reflejarán en la representacion impresa de los CFDIs si se desea agregar concienzudamente*
-        #Los datos de facturación del receptor son recibidos de la vista porque puede ser facturado a otro mono distino al que hizo la compra o haber sido hecha al público en general.
-        domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
-          calle: params[:calle_receptor_vf],
-          noExterior: params[:no_exterior_receptor_vf],
-          noInterior:params[:no_interior_receptor_vf],
-          colonia: params[:colonia_receptor_vf],
-          localidad: params[:localidad_receptor_vf],
-          municipio: params[:municipio_receptor_vf],
-          estado: params[:estado_receptor_vf],
-          codigoPostal: params[:cp_receptor_vf],
-          pais: params[:pais_receptor_vf],
-          referencia: params[:referencia_receptor_vf]
-        })
-
-        uso_cfdi = UsoCfdi.find(params[:uso_cfdi_id])
-        factura.receptor = CFDI::Receptor.new({
-          #Datos requeridos si o si son: el rfc, nombre fiscal y el uso del CFDI.
-           rfc: params[:rfc_input],
-           nombre: params[:nombre_fiscal_receptor_vf],
-           UsoCFDI:uso_cfdi.clave, #De los catálogos del SAT
-           domicilioFiscal: domicilioReceptor
+          #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+          #Se obtienen los datos del emisor
+          hash_domicilioEmisor = {}
+          if current_user.negocio.datos_fiscales_negocio
+            domicilioEmisor = CFDI::DatosComunes::Domicilio.new({
+            calle: datos_fiscales_negocio.calle,
+            noExterior: datos_fiscales_negocio.numExterior,
+            noInterior: datos_fiscales_negocio.numInterior,
+            colonia: datos_fiscales_negocio.colonia,
+            localidad: datos_fiscales_negocio.localidad,
+            referencia: datos_fiscales_negocio.referencia,
+            municipio: datos_fiscales_negocio.municipio,
+            estado: datos_fiscales_negocio.estado,
+            codigoPostal: datos_fiscales_negocio.codigo_postal
           })
-
-        @itemsVenta = @venta.item_ventas
-        cont=0
-        @itemsVenta.each do |c|
-          hash_conceptos={ClaveProdServ: c.articulo.clave_prod_serv.clave, #De los catálogos del SAT
-                          NoIdentificacion: c.articulo.clave,
-                          Cantidad: c.cantidad,
-                          ClaveUnidad:c.articulo.unidad_medida.clave,#Catálogo
-                          Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
-                          Descripcion: c.articulo.nombre
-                          }
-
-          importe_concepto = (c.precio_venta * c.cantidad)#Incluye impuestos(si esq), descuentos(si esq)...
-          if c.articulo.impuesto.present? #Impuestos a la inversa
-            tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
-            #Se calcula el precio bruto de cada concepto
-            base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
-            importe_impuesto_concepto = (base_gravable * tasaOCuota)
-
-            valorUnitario = base_gravable / c.cantidad
-
-            if c.articulo.impuesto.tipo == "Federal"
-              if c.articulo.impuesto.nombre == "IVA"
-                clave_impuesto = "002"
-              elsif c.articulo.impuesto.nombre == "IEPS"
-                clave_impuesto =  "003"
-              end
-              factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
-                tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
-            #end
-            #elsif c.articulo.impuesto.tipo == "Local"
-              #Para el complemento de impuestos locales.
-            end
-            hash_conceptos[:ValorUnitario] = valorUnitario
-            hash_conceptos[:Importe] = base_gravable
           else
-            hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
-            hash_conceptos[:Importe] = importe_concepto
+            domicilioEmisor = CFDI::DatosComunes::Domicilio.new({})
           end
-          factura.conceptos << CFDI::Concepto.new(hash_conceptos)
-          cont += 1
-        end
 
-        #3.- Se agrega el no. del certificado y sello digitall
-        @total_to_w= factura.total_to_words
-        # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
-        certificado.certifica factura
-        #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
-        xml_certificado_sellado = llave.sella factura
-        #p xml_certificado_sellado
+          #Estos datos no son requeridos por el SAT, sin embargo se usaran para la representacion impresa de los CFDIs.*
+          if current_user.sucursal
+            expedidoEn= CFDI::DatosComunes::Domicilio.new({
+              calle: datos_fiscales_sucursal.calle,
+              noExterior: datos_fiscales_sucursal.numExt,
+              noInterior: datos_fiscales_sucursal.numInt,
+              colonia: datos_fiscales_sucursal.colonia,
+              localidad: datos_fiscales_sucursal.localidad,
+              codigoPostal: datos_fiscales_sucursal.codigo_postal,
+              municipio: datos_fiscales_sucursal.municipio,
+              estado: datos_fiscales_sucursal.estado,
+              referencia: datos_fiscales_sucursal.referencia
+            })
+          else
+            expedidoEn= CFDI::DatosComunes::Domicilio.new({})
+          end
 
-        #4.- Se manda el xml a Timbox para su validación y timbrado
-        xml_base64 = Base64.strict_encode64(xml_certificado_sellado) 
-        xml_timbox= servicio.timbrar_xml(xml_base64)
+          factura.emisor = CFDI::Emisor.new({
+            #Para timbox el rfc en el ambiente prueba para el recepor como del emisor es: 'AAA010101AAA'
+            rfc: datos_fiscales_negocio.rfc, 
+            nombre: datos_fiscales_negocio.nombreFiscal,
+            regimenFiscal: datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT,
+            domicilioFiscal: domicilioEmisor,
+            expedidoEn: expedidoEn
+          })
 
-        uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
-        #Es la fecha de expedición, no la de timbrado
-        fecha_registroBD = Time.parse(xml_timbox.xpath('//@Fecha').to_s)  
-        fecha_expedicion_f = fecha_registroBD.strftime("%Y-%m-%d")
+          #Datos del receptor
+          #Estos datos tampoco son requeridos por el SAT, sin embargo se reflejarán en la representacion impresa de los CFDIs si se desea agregar concienzudamente*
+          #Los datos de facturación del receptor son recibidos de la vista porque puede ser facturado a otro mono distino al que hizo la compra o haber sido hecha al público en general.
+          domicilioReceptor = CFDI::DatosComunes::Domicilio.new({
+            calle: params[:calle_receptor_vf],
+            noExterior: params[:no_exterior_receptor_vf],
+            noInterior:params[:no_interior_receptor_vf],
+            colonia: params[:colonia_receptor_vf],
+            localidad: params[:localidad_receptor_vf],
+            municipio: params[:municipio_receptor_vf],
+            estado: params[:estado_receptor_vf],
+            codigoPostal: params[:cp_receptor_vf],
+            pais: params[:pais_receptor_vf],
+            referencia: params[:referencia_receptor_vf]
+          })
 
-        #Se crea una ruta en cloud con el nombre del negocio, el nombre de la sucursal... para almacenar el CFDI y el PDF
-        dir_negocio = current_user.negocio.nombre
-        dir_sucursal = current_user.sucursal.nombre
-        dir_cliente = params[:nombre_fiscal_receptor_vf]
-        dir_anno = fecha_registroBD.year
-        dir_mes = fecha_registroBD.month
-        dir_dia = fecha_registroBD.day
+          uso_cfdi = UsoCfdi.find(params[:uso_cfdi_id])
+          factura.receptor = CFDI::Receptor.new({
+            #Datos requeridos si o si son: el rfc, nombre fiscal y el uso del CFDI.
+             rfc: params[:rfc_input],
+             nombre: params[:nombre_fiscal_receptor_vf],
+             UsoCFDI:uso_cfdi.clave, #De los catálogos del SAT
+             domicilioFiscal: domicilioReceptor
+            })
 
-        ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
-        #Se guarda el CFDI en la nube en la ruta indicada.
-        file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}#{uuid_cfdi}.xml"
+          @itemsVenta = @venta.item_ventas
+          cont=0
+          @itemsVenta.each do |c|
+            hash_conceptos={ClaveProdServ: c.articulo.clave_prod_serv.clave, #De los catálogos del SAT
+                            NoIdentificacion: c.articulo.clave,
+                            Cantidad: c.cantidad,
+                            ClaveUnidad:c.articulo.unidad_medida.clave, #De los catálogos del SAT
+                            Unidad: c.articulo.unidad_medida.nombre, #Es opcional para precisar la unidad de medida propia de la operación del emisor, pero pues...
+                            Descripcion: c.articulo.nombre
+                            }
 
-        #La cadena original del complemento de certificación digital del SAT es un requisito para las representaciones impresas
-        #Se oye muy intimidador, pero solo es una simple contatenación de seis atributos del CFDI timbrado jaja 
-        factura.complemento=CFDI::Complemento.new(
-          {
-            Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
-            uuid: uuid_cfdi,
-            FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
-            RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
-            SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
-            NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+            importe_concepto = (c.precio_venta * c.cantidad)#Incluye impuestos(si esq), descuentos(si esq)...
+            if c.articulo.impuesto.present? #Impuestos a la inversa
+              tasaOCuota = (c.articulo.impuesto.porcentaje / 100)#Se obtiene la tasa o cuota por ej. 16% => 0.160000
+              #Se calcula el precio bruto de cada concepto
+              base_gravable = (importe_concepto / (tasaOCuota + 1)) #Se obtiene el precio bruto por item de venta
+              importe_impuesto_concepto = (base_gravable * tasaOCuota)
+
+              valorUnitario = base_gravable / c.cantidad
+
+              if c.articulo.impuesto.tipo == "Federal"
+                if c.articulo.impuesto.nombre == "IVA"
+                  clave_impuesto = "002"
+                elsif c.articulo.impuesto.nombre == "IEPS"
+                  clave_impuesto =  "003"
+                end
+                factura.impuestos.traslados << CFDI::Impuesto::Traslado.new(base: base_gravable,
+                  tax: clave_impuesto, type_factor: "Tasa", rate: tasaOCuota, import: importe_impuesto_concepto.round(2), concepto_id: cont)
+              #end
+              #elsif c.articulo.impuesto.tipo == "Local"
+                #Para el complemento de impuestos locales.
+              end
+              hash_conceptos[:ValorUnitario] = valorUnitario
+              hash_conceptos[:Importe] = base_gravable
+            else
+              hash_conceptos[:ValorUnitario] = importe_concepto = c.precio_venta
+              hash_conceptos[:Importe] = importe_concepto
+            end
+            factura.conceptos << CFDI::Concepto.new(hash_conceptos)
+            cont += 1
+          end
+
+          #3.- Se agrega el no. del certificado y sello digitall
+          @total_to_w= factura.total_to_words
+          # Esto hace que se le agregue al comprobante el certificado y su número de serie (noCertificado)
+          certificado.certifica factura
+          #Se agrega el sello digital del comprobante, esto implica actulizar la fecha y calcular la cadena original
+          xml_certificado_sellado = llave.sella factura
+          #p xml_certificado_sellado
+
+          #4.- Se manda el xml a Timbox para su validación y timbrado
+          xml_base64 = Base64.strict_encode64(xml_certificado_sellado) 
+          xml_timbox= servicio.timbrar_xml(xml_base64)
+
+          uuid_cfdi = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
+          #Es la fecha de expedición, no la de timbrado
+          fecha_expedion = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s)  
+
+          #Se crea una ruta en cloud con el nombre del negocio, el nombre de la sucursal... para almacenar el CFDI y el PDF
+          dir_negocio = current_user.negocio.nombre
+          dir_sucursal = current_user.sucursal.nombre
+          dir_cliente = params[:nombre_fiscal_receptor_vf]
+          dir_anno = fecha_expedion.year
+          dir_mes = fecha_expedion.month
+          dir_dia = fecha_expedion.day
+
+          ruta_storage = "#{dir_negocio}/#{dir_sucursal}/#{dir_cliente}/#{dir_anno}/#{dir_mes}/#{dir_dia}/"
+          #Se guarda el CFDI en la nube en la ruta indicada.
+          file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}#{uuid_cfdi}.xml"
+
+          #La cadena original del complemento de certificación digital del SAT es un requisito para las representaciones impresas
+          #Se oye muy intimidador, pero solo es una simple contatenación de seis atributos del CFDI timbrado jaja 
+          factura.complemento=CFDI::Complemento.new(
+            {
+              Version: xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@Version'),
+              uuid: uuid_cfdi,
+              FechaTimbrado:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@FechaTimbrado'),
+              RfcProvCertif:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@RfcProvCertif'),
+              SelloCFD:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@SelloCFD'),
+              NoCertificadoSAT:xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@NoCertificadoSAT')
+            }
+          )
+          #Se guarda el en la base de datos y se hacen las relaciones
+          @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_expedion, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: uuid_cfdi, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
+          
+          if @factura.save
+             current_user.facturas<<@factura
+             current_user.negocio.facturas<<@factura
+             current_user.sucursal.facturas<<@factura
+             forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
+             forma_pago.facturas << @factura
+             Cliente.find(params[:receptor_id]).facturas << @factura
+             @factura.ventas << @venta
+          end
+
+          #Información extra para las representaciones impresas 
+          codigoQR=factura.qr_code xml_timbox
+          cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
+          logo=current_user.negocio.logo
+          uso_cfdi_descripcion = uso_cfdi.descripcion
+          cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
+          cve_nombre_metodo_pago =  params[:metodo_pago] == "PUE" ? "PUE - Pago en una sola exhibición" : "PPD - Pago en parcialidades o diferido"
+          #Para la clave y nombre del regimen fiscal
+          cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
+          nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
+          cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
+          #Para el nombre del changarro feo jajaja
+          nombre_negocio = current_user.negocio.nombre
+
+          #Personalización de la plantilla de impresión de una factura de venta. :P
+          plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "fv")
+          tipo_fuente = plantilla_impresion.tipo_fuente
+          tam_fuente = plantilla_impresion.tam_fuente
+          color_fondo = plantilla_impresion.color_fondo
+          color_banda = plantilla_impresion.color_banda
+          color_titulos = plantilla_impresion.color_titulos
+
+          #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
+          hash_info = {xml_copia: xml_timbox, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
+            tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
+            tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
           }
-        )
-        #se hace una copia del xml para modificarlo agregandole información extra para la representación impresa.
-        xml_copia = xml_timbox
- 
+          #Datos de contacto del receptor
+          receptor_id = params[:receptor_id]
+          receptor_final = Cliente.find(receptor_id)
+          unless receptor_final.telefono1.to_s.strip.empty?
+            hash_info[:Telefono1Receptor] =  receptor_final.telefono1
+          else
+            hash_info[:Telefono1Receptor] =  receptor_final.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
+          end
+          hash_info[:EmailReceptor]= receptor_final.email unless receptor_final.email.to_s.strip.empty?
+          #Solo si tiene más de un establecimiento el negocio...
+          if current_user.sucursal
+            hash_info[:tel_sucursal] = current_user.sucursal.telefono
+            hash_info[:email_sucursal] = current_user.sucursal.email
+          end
 
-        @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_expedicion_f, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: params[:metodo_pago], monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: uuid_cfdi, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
-        
-        if @factura.save
-           current_user.facturas<<@factura
-           current_user.negocio.facturas<<@factura
-           current_user.sucursal.facturas<<@factura
-           forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
-           forma_pago.facturas << @factura
-           Cliente.find(params[:receptor_id]).facturas << @factura
-           @factura.ventas << @venta
-        end
+          xml_rep_impresa = factura.add_elements_to_xml(hash_info)
+          #Se genera el pdf 
+          template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas de ventas.xsl'))
+          html_document = template.transform(xml_rep_impresa)
+          pdf = WickedPdf.new.pdf_from_string(html_document)
+          #Se guarda el pdf en la nube en la misma ruta que el CFDI
+          file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}#{uuid_cfdi}.pdf"
+          
+          #8.- Se envian los comprobantes al email del receptor si se ha proporcionado un mail
+          if params[:destinatario]
+            destinatario_final = params[:destinatario]
+            #Se obtiene la plantilla de email (asunto y mensaje)
+            mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "fv").msg_email
+            asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "fv").asunto_email
+            #Se asignan los valores del texto variable de la configuración de las plantillas de email.
+            require 'plantilla_email/plantilla_email.rb'
+            cadena = PlantillaEmail::AsuntoMensaje.new
+            cadena.nombCliente = params[:nombre_fiscal_receptor_vf]
+            cadena.uuid = uuid_cfdi
+            cadena.fecha = fecha_expedion
+            cadena.folio = consecutivo
+            cadena.serie = serie
+            cadena.total = @venta.montoVenta
+            cadena.nombNegocio = current_user.negocio.nombre
+            cadena.nombSucursal = current_user.sucursal.nombre 
+            cadena.emailContacto = current_user.sucursal.email 
+            cadena.telContacto = current_user.sucursal.telefono 
+            cadena.paginaWeb = current_user.negocio.pag_web
 
-        #5.- SE AGREGAN NUEVOS DATOS PARA LA REPRESENTACIÓN IMPRESA(INFORMACIÓN(PDF) IMPORTANTE PARA LOS CONTRIBUYENTES, PERO QUE AL SAT NO LE IMPORTAN JAJA)
-        codigoQR=factura.qr_code xml_timbox
-        cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
-        logo=current_user.negocio.logo
-        uso_cfdi_descripcion = uso_cfdi.descripcion
-        cve_nombre_forma_pago = "#{forma_pago_f.cve_forma_pagoSAT } - #{forma_pago_f.nombre_forma_pagoSAT}"
-        cve_nombre_metodo_pago =  params[:metodo_pago] == "PUE" ? "PUE - Pago en una sola exhibición" : "PPD - Pago en parcialidades o diferido"
-        #Para la clave y nombre del regimen fiscal
-        cve_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT
-        nomb_regimen_fiscalSAT = current_user.negocio.datos_fiscales_negocio.regimen_fiscal.nomb_regimen_fiscalSAT
-        cve_nomb_regimen_fiscalSAT = "#{cve_regimen_fiscalSAT} - #{nomb_regimen_fiscalSAT}"
-        #Para el nombre del changarro feo jajaja
-        nombre_negocio = current_user.negocio.nombre
+            mensaje = cadena.reemplazar_texto(mensaje)
+            asunto = cadena.reemplazar_texto(asunto)
 
-        #Personalización de la plantilla de impresión de una factura de venta. :P
-        plantilla_impresion = current_user.negocio.config_comprobantes.find_by(comprobante: "fv")
-        tipo_fuente = plantilla_impresion.tipo_fuente
-        tam_fuente = plantilla_impresion.tam_fuente
-        color_fondo = plantilla_impresion.color_fondo
-        color_banda = plantilla_impresion.color_banda
-        color_titulos = plantilla_impresion.color_titulos
+            #Se genera un enlace para el .xml y se agrega al mensaje
+            file_bucket = bucket.file "#{ruta_storage}#{uuid_cfdi}.xml"
+            url = file.signed_url expires: 2629800 
+            link = "<a href=\"#{url}\">CFDI</a><br>"
+            mensaje = mensaje << link
 
-        #Se pasa un hash con la información extra en la representación impresa como: datos de contacto, dirección fiscal y descripcion de la clave de los catálogos del SAT.
-        hash_info = {xml_copia: xml_copia, codigoQR: codigoQR, logo: logo, cadOrigComplemento: cadOrigComplemento, uso_cfdi_descripcion: uso_cfdi_descripcion, cve_nombre_forma_pago: cve_nombre_forma_pago, cve_nombre_metodo_pago: cve_nombre_metodo_pago, cve_nomb_regimen_fiscalSAT:cve_nomb_regimen_fiscalSAT, nombre_negocio: nombre_negocio,
-          tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
-          tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
-        }
-        #Datos de contacto del receptor
-        receptor_id = params[:receptor_id]
-        receptor_final = Cliente.find(receptor_id)
-        unless receptor_final.telefono1.to_s.strip.empty?
-          hash_info[:Telefono1Receptor] =  receptor_final.telefono1
-        else
-          hash_info[:Telefono1Receptor] =  receptor_final.telefono2 unless receptor_final.telefono2.to_s.strip.empty?
-        end
-        hash_info[:EmailReceptor]= receptor_final.email unless receptor_final.email.to_s.strip.empty?
-        #Solo si tiene más de un establecimiento el negocio...
-        if current_user.sucursal
-          hash_info[:tel_sucursal] = current_user.sucursal.telefono
-          hash_info[:email_sucursal] = current_user.sucursal.email
-        end
+            #Se genera un enlace para el .pdf y se agrega al mensaje
+            file_bucket = bucket.file "#{ruta_storage}#{uuid_cfdi}.pdf"
+            url = file.signed_url expires: 2629800 
+            link = "<a href=\"#{url}\">Representación impresa del CFDI</a><br>"
+            mensaje = mensaje << link
+            #Se envia el email en el mismo momento
+            FacturasEmail.factura_email(destinatario_final, mensaje, asunto).deliver_now
+          end
 
-        xml_rep_impresa = factura.add_elements_to_xml(hash_info)
-        #puts xml_rep_impresa
-        template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas de ventas.xsl'))
-        html_document = template.transform(xml_rep_impresa)
-        #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
-        pdf = WickedPdf.new.pdf_from_string(html_document)
-        #Se guarda el pdf 
-        nombre_pdf = "#{uuid_cfdi}.pdf"
-        save_path = Rails.root.join('public',nombre_pdf)
-        File.open(save_path, 'wb') do |file|
-            file << pdf
-        end
-
-  #========================================================================================================================
-        #6.- SE ALMACENAN EN GOOGLE CLOUD STORAGE
-        #Los comprobantes de almacenan en google cloud
-        #file = bucket.create_file StringIO.new(pdf), "#{ruta_storage}_RepresentaciónImpresa.pdf"
-        #file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}_CFDI.xml"
-        file = bucket.create_file "public/#{uuid_cfdi}.pdf", "#{ruta_storage}#{uuid_cfdi}.pdf"
-
-  #=======================================================================================================================
-          #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
-          destinatario_final = params[:destinatario]
-          #Se asignan los valores del texto variable de la configuración de las plantillas de email.
-          plantilla_email("fv")
-          comprobantes = {pdf:"public/#{uuid_cfdi}.pdf", xml: "public/#{uuid_cfdi}.xml"}
-          #FacturasEmail.factura_email(@destinatario, @mensaje, @tema).deliver_now
-          FacturasEmail.factura_email(destinatario_final, @mensaje, @asunto, comprobantes).deliver_now
-
-  #=======================================================================================================================
           #9.- SE MUESTRA EL PDF, SE REDIRIGE AL INDEX O ALGUNA EXCEPCIÓN
           if "yes" == params[:imprimir]
             send_file( File.open( "public/#{uuid_cfdi}.pdf"), :disposition => "inline", :type => "application/pdf")
@@ -1990,11 +1983,11 @@ class FacturasController < ApplicationController
         cve_forma_pagoSAT = "03"
       end
 
-      #fecha_expedicion_f = Time.now
+      #fecha_expedion = Time.now
       factura = CFDI::Comprobante.new({
         serie: serie,
         folio: consecutivo,
-        #fecha: fecha_expedicion_f,
+        #fecha: fecha_expedion,
         #Por defaulf el tipo de comprobante es de tipo "I" Ingreso
         #Moneda: MXN Peso Mexicano, USD Dólar Americano, Etc…
         #La moneda por default es MXN

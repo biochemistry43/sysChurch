@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180822084630) do
+ActiveRecord::Schema.define(version: 20181231211706) do
 
   create_table "acuse_cancelacions", force: :cascade do |t|
     t.string   "folio"
@@ -400,7 +400,6 @@ ActiveRecord::Schema.define(version: 20180822084630) do
 
   create_table "facturas", force: :cascade do |t|
     t.string   "folio"
-    t.date     "fecha_expedicion"
     t.string   "estado_factura"
     t.integer  "user_id"
     t.integer  "negocio_id"
@@ -416,6 +415,7 @@ ActiveRecord::Schema.define(version: 20180822084630) do
     t.decimal  "monto"
     t.string   "tipo_factura"
     t.integer  "ref_acuse_cancelacion"
+    t.datetime "fecha_expedicion"
   end
 
   add_index "facturas", ["cliente_id"], name: "index_facturas_on_cliente_id"
@@ -521,13 +521,6 @@ ActiveRecord::Schema.define(version: 20180822084630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "negocio_id"
-  end
-
-  create_table "metodo_pagos", force: :cascade do |t|
-    t.string   "clave"
-    t.string   "descripcion"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
   end
 
   create_table "movimiento_caja_sucursals", force: :cascade do |t|

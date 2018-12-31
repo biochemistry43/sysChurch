@@ -33,7 +33,6 @@ Rails.application.routes.draw do
   resources :unidad_medidas
   resources :uso_cfdis
   resources :clave_prod_servs
-  resources :metodo_pagos
   #resources :factura_recurrentes
   get 'factura_recurrentes/index'
   get 'factura_recurrentes/show'

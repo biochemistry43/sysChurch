@@ -4,7 +4,7 @@ module Timbox
     USERNAME = Rails.application.secrets.timbox_username
     PASSWORD = Rails.application.secrets.timbox_password
 
-    WSDL_TIMBRADO = Rails.application.secrets.swdl_timbrado
+    WSDL_TIMBRADO = Rails.application.secrets.wsdl_timbrado
     WSDL_CANCELACION = Rails.application.secrets.wsdl_cancelacion
     #Todas las urls de timbox son del ambiiente de pruebas(se deben de canbiar al pasar a producción)
     require 'byebug'
