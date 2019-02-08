@@ -6,6 +6,9 @@ var referenciaPaypal
 var copiaFormaPago = {};
 var ultimoFolio = "";
 
+/*Guarda los ids de los productos que están en la tabla de ventas*/
+var itemsEnTabla = new Set();
+
 //este arreglo json guardará todos los datos correspondientes a la venta
 var datosVenta = [];
 
@@ -99,6 +102,7 @@ $(document).ready(function(){
   });
 
   
+
   /**
    * Codigo para cambiar cantidad de producto vendido.
    * Al dar doble clic sobre algún producto de la lista de ventas, se abre un modal
@@ -106,9 +110,11 @@ $(document).ready(function(){
    */
   $(document).delegate("tr", "dblclick", function(e) {
 
-    cantidad = $(this).find("#cantidadProducto").html();
-    existencia = $(this).find("#existenciaProducto").html();
-    cambiarCantidadProducto($(this).index(), cantidad, existencia);
+    if (!$(this).hasClass("headings")) {
+      cantidad = $(this).find("#cantidadProducto").html();
+      existencia = $(this).find("#existenciaProducto").html();
+      cambiarCantidadProducto($(this).index(), cantidad, existencia);
+    }
 
   });
 
@@ -138,7 +144,8 @@ $(document).ready(function(){
          * del cliente dentro de la pantalla de venta**/
         $("#lista_clientes").append(""+
 
-            "<tr class='even pointer'><td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
+            "<tr class='even pointer'><td style='display:none;'>"+element.id+"</td>"+
+            "<td>"+element.nombre+" "+element.ape_pat+" "+element.ape_mat+"</td>"+
             "<td>"+element.telefono1+"</td>"+
             "<td>"+element.email+"</td>"+
             "<td><button class='btn btn-success btn-xs' "+
@@ -275,6 +282,8 @@ $(document).ready(function(){
 
             resultado = res[i]; //Se obtiene el campo.
 
+            
+
             nom = resultado.nombrecampo; //obtenemos el nombre del campo
 
             campo = nom.toString(); //Se transforma el dato en un String.
@@ -291,7 +300,7 @@ $(document).ready(function(){
             // en lugar de los espacios.
             // Sin embargo, para asignar la "llave" al JSON, se utiliza el nombre con
             // Espacios incluidos.
-            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();            
+            formaPagoJSON[String(campo)] = $("#campo-"+camNoSpc).val();   
 
           }
 
@@ -380,7 +389,7 @@ function completarVenta(){
     if(i!=0){
     //El código del producto se encuentra en la primer columna de 
     //de la tabla de venta actual.
-      var codigoProd = $(this).find("td").eq(0).text();
+      var codigoProd = $(this).find("td").eq(0).attr("id");
       //La cantidad vendida del producto se encuentra en la tercera
       //columna de la tabla de venta actual.
       var cantidadProd = $(this).find("td").eq(3).text();
@@ -495,31 +504,38 @@ function addProduct(elem){
     //$("#respuesta").html("Cargando...");
     },
     error: function(){
-      alert("error");
+      alert("error" + elem);
       //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
              
     },
     success: function(res){
+      //alert(res.nombre);
       if(res){
-        var resLength = res.length;
-        for(i=0; i < resLength; i++){
-          var element = res[i];
+        //var resLength = res.length;
+        //for(i=0; i < resLength; i++){
+
+          var element = res;   
           if(element.existencia == 0){
             alert("Este producto no tiene existencias");
           }
           else{
 
-            $("#table_sales").append("<tr class='even pointer'><td>"+element.clave+"</td>"+
+            var esAgregado = guardarIdAgregado(element);
+
+            if (esAgregado){
+              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'> <td id='"+element.id+"'>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
-                                    "<td>"+element.precioVenta+"</td><td id='cantidadProducto'>1</td>"+
+                                    "<td>"+element.precioVenta+"</td><td id='cantidadProducto' style='text-align:center;''>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
                                     "<td id='existenciaProducto' style='visibility:hidden;'>"+element.existencia+"</td>"+
                                     "<td><button class='btn btn-danger btn-xs borrar_item_venta'>"+
                                     "<i class='fa fa-trash-o'></i></button></td>"+
                                     "</tr>");
+            }
+
           }
 
-        }
+        //}
 
 
         var nodoResultado = document.getElementById("search-product").parentNode.lastChild;
@@ -534,7 +550,11 @@ function addProduct(elem){
 
 $(document).on('click', '.borrar_item_venta', function (event) {
     event.preventDefault();
-    $(this).closest('tr').remove();
+    var fila = $(this).closest('tr');
+    var id_fila = fila.attr('id');
+    var id_producto = id_fila.substr(9);
+    itemsEnTabla.delete(parseInt(id_producto));
+    fila.remove();
 });
 
 jQuery.fn.contentChange = function(callback){
@@ -610,3 +630,27 @@ function cambiarCliente(id, nombre, telefono, email){
   $("#modalClie").modal("hide");
 }
 
+/*
+ * Este método llena un arreglo con los ids de los productos que se van agregando
+ * a la tabla de ventas
+ */
+function guardarIdAgregado(producto){
+
+  if (itemsEnTabla.has(producto.id)) { 
+    var cantidad = $("#tr-venta-"+producto.id).children('td')[3].innerHTML;
+    var nuevaCantidad = parseFloat(cantidad) + 1;
+    $("#tr-venta-"+producto.id).children('td')[3].innerHTML = nuevaCantidad;
+
+    precioVenta = $("#tr-venta-"+producto.id).children('td')[2].innerHTML;
+
+    nuevoImporte = nuevaCantidad * parseFloat(precioVenta);
+
+    $("#tr-venta-"+producto.id).children('td')[4].innerHTML = nuevoImporte;
+
+    return false;
+  }
+  else{
+     itemsEnTabla.add(producto.id);  
+     return true;
+  }
+}
