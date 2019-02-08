@@ -247,8 +247,11 @@ class PuntoVentaController < ApplicationController
 			    item.each do |itemVenta|
 
             itemV = ItemVenta.new
+            puts "<<<<<<<<<<<<IITEM VENTA >>>>>>>>> #{itemVenta["codigo"]}"
+            puts "<<<<<<<<<<<<ARTICULO>>>>>>>>>><<#{Articulo.find(itemVenta["codigo"])}"
 
             itemV.articulo = Articulo.find(itemVenta["codigo"])
+
             itemV.precio_venta = itemV.articulo.precioVenta
             itemV.cantidad = itemVenta["cantidad"]
             monto_item = itemV.cantidad * itemV.precio_venta
