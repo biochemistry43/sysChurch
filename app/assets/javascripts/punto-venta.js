@@ -523,7 +523,7 @@ function addProduct(elem){
             var esAgregado = guardarIdAgregado(element);
 
             if (esAgregado){
-              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'><td id='"+element.id+"'>"+element.clave+"</td>"+
+              $("#table_sales").append("<tr id='tr-venta-"+element.id+"' class='even pointer'> <td id='"+element.id+"'>"+element.clave+"</td>"+
                                     "<td>"+element.nombre+"</td>"+
                                     "<td>"+element.precioVenta+"</td><td id='cantidadProducto' style='text-align:center;''>1</td>"+
                                     "<td>"+element.precioVenta+"</td>"+
