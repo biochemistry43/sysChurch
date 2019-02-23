@@ -37,6 +37,8 @@
             $(this).find('input').bind('keyup',function(event){
                 var input=$(this);
 
+                //6514645
+
                 //Si se borra todo el contenido del cuadro de búsqueda, se remueve
                 //el cuadro de resultados.
                 if(input.val()==""){
@@ -46,9 +48,10 @@
                 // codigo de la tecla persionada
                 var code=event.keyCode;
                 // si es Enter => seleccionar el link marcado 
-                if (code==13 && $('.autocomplete-jquery-mark').size()>0)
+                if (code==13)// && $('.autocomplete-jquery-mark').length > 0)
                 {
-                    var element=$('.autocomplete-jquery-mark').get(0);
+                    var element = input.parent().find('.autocomplete-jquery-results').find("a");
+                    console.log("element" + element);
                     selectItem(element);
                 }
                 // si son las flechas => moverse por los links
