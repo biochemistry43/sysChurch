@@ -504,7 +504,7 @@ function addProduct(elem){
     //$("#respuesta").html("Cargando...");
     },
     error: function(){
-      alert("no existe artículo con la clave: "  + elem);
+      //alert("no existe artículo con la clave: "  + elem);
       //$("#respuesta").html("Error al intentar buscar el empleado. Por favor intente más tarde.");
              
     },
