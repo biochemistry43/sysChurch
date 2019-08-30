@@ -221,7 +221,7 @@
                     </xsl:element>
                   </td>
                   <th align="right">Folio fiscal: </th>
-                  <td style="color: {color_titulos}; background-color: {$color_fondo}"  align="left" class="folioFiscal"> <xsl:value-of select="//@UUID"/></td>
+                  <td style="color: {$color_titulos}; background-color: {$color_fondo}"  align="left" class="folioFiscal"> <xsl:value-of select="//@UUID"/></td>
                 </tr><!--1 -->
                 <tr>
                   <th align="right" >Fecha y hora de certificación:  </th>
