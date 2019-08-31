@@ -103,6 +103,8 @@ group :development, :test do
 
   #sqlite3 db for Active Record in development enviroment
   gem 'sqlite3', '~> 1.3', '>= 1.3.11'
+  # Con esta gema se crean datos falsos de prueba
+  gem 'faker', require: false
 end
 
 group :production do
