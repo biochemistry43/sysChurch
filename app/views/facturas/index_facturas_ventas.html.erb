@@ -1,4 +1,3 @@
-
 <div class="right_col" role="main">
   <div class="page-title">
     <div class="title_left">
@@ -26,15 +25,13 @@
   </div> <!--Fin de botón -->
 
   <!-- Detalles de la consulta (por fecha, por folio, por cliente o avanzada) -->
-<div  id="parametros-de-consulta">
+  <div  id="parametros-de-consulta">
 
-</div>
-
-
+  </div>
+  
     <div class="row">
       <div class="col-md-12" style="color: gray;">
         <%if @facturas%>
-
           <% if @por_folio%>
             <div class="col-md-12">
               Folio: <span style="color:#5B7ECC; font-size: 16px;"> <%=@folio_fact%></span>
@@ -107,45 +104,17 @@
     <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
       <%=render "form_consulta_por_fecha"%>
-    </div> <!--Fin de busqueda por fecha-->
-    <!-- Termina buscador por rango de fechas -->
+    </div>
 
     <button id="filtro_por_folio" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
       Filtros por folio <i class="fa fa-sort-down"></i>
     </button>
+
     <!-- Este form permite buscar las facturas de acuerdo al folio ingresado-->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_folio">
-      <%= form_tag({ controller: "facturas", action: "consulta_por_folio", :tipo_factura => "fv" }, {:class=> "form-horizontal", :method => :post}) do %>
-
-        <div class="col-md-2 col-sm-6 col-xs-12">
-          <div class="text-center">
-            Búsqueda por folio:
-          </div>
-        </div>
-
-        <div class="col-md-1 col-sm-1 col-xs-1">
-          <div style="text-align: right; color: black;">
-            Folio:
-          </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= text_field_tag :folio_fact, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Serie + Número de la factura"} do%>
-              <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
-            <%end%>
-          </div>
-        </div>
-
-        <div class="col-md-1 col-sm-5 col-xs-12">
-          <div class="text-center">
-            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
-          </div>
-        </div>
-
-      <% end %>
+      <%=render "form_consulta_por_folio"%>
     </div>
-    <!-- Termina buscador por clave de producto -->
+
     <button id="filtro_por_cliente" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
       Filtros por cliente<i class="fa fa-sort-down"></i>
     </button>

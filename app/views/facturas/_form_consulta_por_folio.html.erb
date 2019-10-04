@@ -1,0 +1,27 @@
+<%= form_tag({ controller: "facturas", action: "consulta_por_folio", :tipo_de_factura => "fv" }, {:class=> "form-horizontal", :method => :post, remote:true}) do %>
+  <div class="col-md-2 col-sm-6 col-xs-12">
+    <div class="text-center">
+      Búsqueda por folio:
+    </div>
+  </div>
+
+  <div class="col-md-1 col-sm-1 col-xs-1">
+    <div style="text-align: right; color: black;">
+      Folio:
+    </div>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="text-center">
+      <%= text_field_tag :folio, nil, {class: "form-control col-md-7 col-xs-12 text_field", :placeholder=>"Serie + Número de la factura"} do%>
+        <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+      <%end%>
+    </div>
+  </div>
+
+  <div class="col-md-1 col-sm-5 col-xs-12">
+    <div class="text-center">
+      <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
+    </div>
+  </div>
+<% end %>

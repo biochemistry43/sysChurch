@@ -1716,48 +1716,33 @@ class FacturasController < ApplicationController
     end
   end
 
+  # FILTROS
   def consulta_por_fecha
     if request.post?
-      fechaInicial = (params[:fecha_inicial_cpf]).to_date
-      fechaFinal = (params[:fecha_final_cpf]).to_date
-      @tipo_factura = params[:tipo_factura]
+      fecha_inicial = (params[:fecha_inicial_cpf]).to_date
+      fecha_final = (params[:fecha_final_cpf]).to_date
+      @tipo_de_factura = params[:tipo_de_factura]
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: fechaInicial..fechaFinal)
+        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_de_factura, fecha_expedicion: fecha_inicial..fecha_final)
       else
-        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: fechaInicial..fechaFinal)
+        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_de_factura, fecha_expedicion: fecha_inicial..fecha_final)
       end
-      respond_to do |format|
-        format.js
-      end
+      respond_to(:js)
     end
   end
 
   def consulta_por_folio
-    @consulta = true
-    @fechas = false
-    @por_folio = true
-    @avanzada = false
-    @por_cliente= false
-
     if request.post?
-      @tipo_factura = params[:tipo_factura]
-      @folio_fact = params[:folio_fact]
-      @facturas = Factura.find_by folio: @folio_fact
+      folio = params[:folio]
+      @tipo_de_factura = params[:tipo_de_factura]
+      @facturas = Factura.find_by folio: folio
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, folio: @folio_fact)
+        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_de_factura, folio: folio)
       else
-        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_factura, folio: @folio_fact)
-        #@facturas = current_user.sucursal.facturas.where(folio: @folio_fact)
+        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_de_factura, folio: folio)
       end
-      respond_to do |format|
-        if @tipo_factura == "fv"
-          format.html { render 'index_facturas_ventas'}
-        elsif @tipo_factura == "fg"
-          format.html { render 'index_facturas_globales'}
-        end
-      end
+      respond_to(:js)
     end
-
   end
 
   #Las facturas globales no usan este filtro por que son echas al público en gral.
