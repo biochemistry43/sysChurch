@@ -97,10 +97,10 @@ class FacturasController < ApplicationController
               #Datos del receptor (principalmente el rfc y el nombre fiscal)
               @email_receptor = @venta.cliente.email #Dirección para el envío de los comprobantes
               #Datos requeridos por el SAT por eso son de ley para la factura, pero cuando se trata de facturar una venta echa al publico en genera resulta que no existen datos fiscales.
-              
+
               if @venta.cliente.datos_fiscales_cliente.present?
                 datos_fiscales_cliente = @venta.cliente.datos_fiscales_cliente
-                @rfc_receptor_f = datos_fiscales_cliente.rfc 
+                @rfc_receptor_f = datos_fiscales_cliente.rfc
                 @nombre_fiscal_receptor_f = datos_fiscales_cliente.nombreFiscal
 
                 @calle_receptor_f = datos_fiscales_cliente.calle
@@ -149,7 +149,7 @@ class FacturasController < ApplicationController
     if request.post?
       require 'cfdi' #Mi pequeña libreria para armar los CFDI (.xml) en la v. 3.3
       require 'timbrado' #Los  servicios de Timbox
-      servicio = Timbox::Servicios.new 
+      servicio = Timbox::Servicios.new
 
       if params[:commit] == "Cancelar"
         redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
@@ -177,7 +177,7 @@ class FacturasController < ApplicationController
         url_llave = llave_bucket.signed_url expires: 600
         password_llave = datos_fiscales_negocio.password
         llave = CFDI::Key.new url_llave, password_llave
-=begin       
+=begin
           #Se debe de crear una nota de crédito cuando se necesite facturar una venta que ya haya sido incluida en una factura global.
           if @venta.factura.present?
             if @factura.tipo_factura == "fg"
@@ -191,7 +191,7 @@ class FacturasController < ApplicationController
                   consecutivo_nc_fg += 1
                 end
               else
-                consecutivo_nc_fg = 1 
+                consecutivo_nc_fg = 1
               end
 
               serie_nc_fg = current_user.sucursal.clave + "NCFG"
@@ -407,7 +407,7 @@ class FacturasController < ApplicationController
               html_document = template.transform(xml_rep_impresa)
               #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
               pdf = WickedPdf.new.pdf_from_string(html_document)
-              #Se guarda el pdf 
+              #Se guarda el pdf
               save_path = Rails.root.join('public',"#{nc_id}_nc_fg.pdf")
               File.open(save_path, 'wb') do |file|
                   file << pdf
@@ -420,7 +420,7 @@ class FacturasController < ApplicationController
               dir_negocio = current_user.negocio.nombre
               dir_cliente = @factura.cliente.nombre_completo
               #Se separan. Se obtiene el día, mes y año de la fecha de emisión del comprobante
-              fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
+              fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s)
               dir_dia = fecha_registroBD.strftime("%d")
               dir_mes = fecha_registroBD.strftime("%m")
               dir_anno = fecha_registroBD.strftime("%Y")
@@ -434,7 +434,7 @@ class FacturasController < ApplicationController
               #file = bucket.create_file StringIO.new(xml_timbox.to_s), "#{ruta_storage}_CFDI.xml"
               file = bucket.create_file "public/#{nc_id}_nc_fg.pdf", "#{ruta_storage}.pdf"
               file = bucket.create_file "public/#{nc_id}_nc_fg.xml", "#{ruta_storage}.xml"
-              
+
               if @factura.save
                  current_user.facturas<<@factura
                  current_user.negocio.facturas<<@factura
@@ -453,7 +453,7 @@ class FacturasController < ApplicationController
               folio_fiscal_xml = xml_timbox_nc_fg.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
               @nota_credito = NotaCredito.new( consecutivo: consecutivo_nc_fg, folio: serie_nc_fg + consecutivo_nc_fg.to_s, fecha_expedicion: fecha_file, estado_nc:"Activa", ruta_storage: ruta_storage, monto: @cantidad_devuelta.to_f * @itemVenta.precio_venta, folio_fiscal: folio_fiscal_xml)
 
-              if @nota_credito.save 
+              if @nota_credito.save
                 current_user.nota_creditos << @nota_credito
                 @factura.cliente.nota_creditos << @nota_credito
                 current_user.negocio.nota_creditos << @nota_credito
@@ -470,10 +470,10 @@ class FacturasController < ApplicationController
 
                 #Se elimina la relación entre la venta y la factura global para asignar la factura del cliente final
                 @venta.factura = null
-              end     
+              end
               #8.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado) AL CLIENTE POR CORREO ELECTRÓNICO. :p
               #Se asignan los valores del texto variable de la configuración de las plantillas de email de las notas de crédito para las facturas globales
-              require 'plantilla_email/plantilla_email.rb'        
+              require 'plantilla_email/plantilla_email.rb'
 
               destinatario_contador = params[:destinatario_contador]
               mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "nc_fg").msg_email
@@ -481,13 +481,13 @@ class FacturasController < ApplicationController
 
               plantilla_email = PlantillaEmail::AsuntoMensaje.new
               plantilla_email.nombCliente = @factura.cliente.nombre_completo #if mensaje.include? "{{Nombre del cliente}}"
-                
+
               plantilla_email.fecha = fecha_file
               plantilla_email.numero = consecutivo_nc_fg
               plantilla_email.folio = serie_nc_fg + consecutivo_nc_fg.to_s
               #plantilla_email.total = @cantidad_devuelta.to_f * @itemVenta.precio_venta
 
-              plantilla_email.nombNegocio = current_user.negocio.nombre 
+              plantilla_email.nombNegocio = current_user.negocio.nombre
               plantilla_email.nombSucursal = current_user.sucursal.nombre
               plantilla_email.emailContacto = current_user.sucursal.email
               plantilla_email.telContacto = current_user.sucursal.telefono
@@ -495,7 +495,7 @@ class FacturasController < ApplicationController
 
               @mensaje = plantilla_email.reemplazar_texto(mensaje)
               @asunto = plantilla_email.reemplazar_texto(asunto)
-                
+
               comprobantes = {pdf_nc:"public/#{nc_id}_nc_fg.pdf", xml_nc:"public/#{nc_id}_nc_fg.xml"}
 
               FacturasEmail.factura_email(destinatario_contador, @mensaje, @asunto, comprobantes).deliver_now
@@ -504,7 +504,7 @@ class FacturasController < ApplicationController
           end #Fin de comprobación: ¿La venta está facturada?
 =end
   #========================================================================================================================
-        #2.- Se arma el CFDI (.xml) a como el señor SAT lo pide. 
+        #2.- Se arma el CFDI (.xml) a como el señor SAT lo pide.
         #Para obtener el numero consecutivo a partir de la ultima factura o de lo contrario asignarle por primera vez un número
         consecutivo = 0
         consecutivo = sucursal.facturas.where(tipo_factura: "fv").last.consecutivo if sucursal.facturas.where(tipo_factura: "fv").last
@@ -516,7 +516,7 @@ class FacturasController < ApplicationController
 
         forma_pago = FacturaFormaPago.find(params[:forma_pago_id])
         cve_metodo_pagoSAT = params[:metodo_pago]
-      
+
         factura = CFDI::Comprobante.new({
           serie: serie,
           folio: consecutivo,
@@ -570,7 +570,7 @@ class FacturasController < ApplicationController
 
         factura.emisor = CFDI::Emisor.new({
           #Para timbox el rfc en el ambiente prueba tanto del recepor como del emisor es: 'AAA010101AAA'
-          rfc: datos_fiscales_negocio.rfc, 
+          rfc: datos_fiscales_negocio.rfc,
           nombre: datos_fiscales_negocio.nombreFiscal,
           regimenFiscal: datos_fiscales_negocio.regimen_fiscal.cve_regimen_fiscalSAT,
           domicilioFiscal: domicilioEmisor,
@@ -653,12 +653,12 @@ class FacturasController < ApplicationController
         #p xml_certificado_sellado
 
         #4.- Se manda el xml a Timbox para su validación y timbrado
-        xml_base64 = Base64.strict_encode64(xml_certificado_sellado) 
+        xml_base64 = Base64.strict_encode64(xml_certificado_sellado)
         xml_timbox= servicio.timbrar_xml(xml_base64)
 
         uuid_cfdi = xml_timbox.xpath('//@UUID') #En una nota de credito se debe ser más especifico porque hay mas de un atributo llamado UUID
         #Es la fecha de expedición, no la de timbrado
-        fecha_expedion = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s)  
+        fecha_expedion = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s)
         #Se crea una ruta en cloud con el nombre del negocio, el nombre de la sucursal... para almacenar el CFDI y el PDF
         dir_negocio = negocio.nombre
         dir_sucursal = sucursal.nombre
@@ -673,7 +673,7 @@ class FacturasController < ApplicationController
 
         #Y también se guarda en la base de datos
         @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_expedion, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: cve_metodo_pagoSAT, monto: '%.2f' % @venta.montoVenta.round(2), folio_fiscal: uuid_cfdi, ruta_storage: ruta_storage, tipo_factura: "fv")#, monto: @venta.montoVenta)
-        
+
         if @factura.save
            current_user.facturas<<@factura
            current_user.negocio.facturas<<@factura
@@ -684,7 +684,7 @@ class FacturasController < ApplicationController
         end
 
         #La cadena original del complemento de certificación digital del SAT es un requisito para las representaciones impresas
-        #Se oye muy intimidador, pero solo es una simple contatenación de seis atributos del CFDI timbrado jaja 
+        #Se oye muy intimidador, pero solo es una simple contatenación de seis atributos del CFDI timbrado jaja
         #Se eliminan los espacios de nombres del CFDI para poder manipular mejor sus atributos armar el PDF. No hay porq que alarmarse, el CFDI ya fue guardado en la nuebe intacto
 
         #xml_timbox.remove_namespaces!
@@ -700,7 +700,7 @@ class FacturasController < ApplicationController
           }
         )
 
-        #Información extra para las representaciones impresas 
+        #Información extra para las representaciones impresas
         codigoQR=factura.qr_code xml_timbox
         cadOrigComplemento=factura.complemento.cadena_TimbreFiscalDigital
         logo=current_user.negocio.logo
@@ -797,7 +797,7 @@ class FacturasController < ApplicationController
             Referencia: params[:referencia_receptor_vf]
           }
         }
-        
+
         #codigoQR=factura.qr_code xml_timbox
         info_comprobante = {
           CadOrigComplemento: factura.complemento.cadena_TimbreFiscalDigital, #Esto debería estar en mi clase PDF
@@ -816,7 +816,7 @@ class FacturasController < ApplicationController
         }
 
         info_adicional = {
-          InformacionAdicional: { 
+          InformacionAdicional: {
             DatosComprobante: info_comprobante,
             PlantillaImpresion: info_plantilla_impresion,
             DatosNegocio: info_negocio,
@@ -835,7 +835,7 @@ class FacturasController < ApplicationController
 
 
         xml_rep_impresa = factura.add_elements_to_xml(hash_info)
-        #Se genera el pdf 
+        #Se genera el pdf
         template = Nokogiri::XSLT(File.read('/home/daniel/Vídeos/sysChurch/lib/Plantilla de facturas de ventas.xsl'))
         html_document = template.transform(xml_rep_impresa)
         pdf = WickedPdf.new.pdf_from_string(html_document)
@@ -846,7 +846,7 @@ class FacturasController < ApplicationController
 
 
 
-        
+
         #Se envian los comprobantes al email del receptor si se ha proporcionado un mail
         unless params[:destinatario].empty?
           destinatario_final = params[:destinatario]
@@ -863,9 +863,9 @@ class FacturasController < ApplicationController
           plantilla_email.serie = serie
           plantilla_email.total = @venta.montoVenta
           plantilla_email.nombNegocio = negocio.nombre
-          plantilla_email.nombSucursal = sucursal.nombre 
+          plantilla_email.nombSucursal = sucursal.nombre
           plantilla_email.emailContacto = sucursal.email
-          plantilla_email.telContacto = sucursal.telefono 
+          plantilla_email.telContacto = sucursal.telefono
           plantilla_email.paginaWeb = negocio.pag_web
 
           mensaje = plantilla_email.reemplazar_texto(mensaje)
@@ -873,13 +873,13 @@ class FacturasController < ApplicationController
 
           #Se genera un enlace para el .xml y se agrega al mensaje
           xml_bucket = bucket.file "#{ruta_storage}#{uuid_cfdi}.xml"
-          url_xml = xml_bucket.signed_url expires: 2629800 
+          url_xml = xml_bucket.signed_url expires: 2629800
           link_xml = "<a href=\"#{url_xml}\">CFDI</a><br>"
           mensaje = mensaje << link_xml
 
           #Se genera un enlace para el .pdf y se agrega al mensaje
           pdf_bucket = bucket.file "#{ruta_storage}#{uuid_cfdi}.pdf"
-          url_pdf = pdf_bucket.signed_url expires: 2629800 
+          url_pdf = pdf_bucket.signed_url expires: 2629800
           link_pdf = "<a href=\"#{url}\">Representación impresa del CFDI</a><br>"
           mensaje = mensaje << link_pdf
           #Se envia el email en el mismo momento
@@ -972,7 +972,7 @@ class FacturasController < ApplicationController
 
     if @factura.tipo_factura == "fv"
       @nombreFiscal = @factura.cliente.datos_fiscales_cliente.nombreFiscal
-      @rfc = @factura.cliente.datos_fiscales_cliente.rfc 
+      @rfc = @factura.cliente.datos_fiscales_cliente.rfc
     else
       #Datos predefinidos por el gran SAT
       @nombreFiscal = "Público en general"
@@ -1013,7 +1013,7 @@ class FacturasController < ApplicationController
       *En ambiente de pruebas se considera 15 mins después de recibida la solicitud de cancelación.
 
     Cancelación del CFDI con documentos relacionados:
-      Si el CFDI contiene documentos relacionados, el emisor sólo podrá cancelarlo siempre y cuando cancelen los CFDI relacionados y en el mismo momento el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”. 
+      Si el CFDI contiene documentos relacionados, el emisor sólo podrá cancelarlo siempre y cuando cancelen los CFDI relacionados y en el mismo momento el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”.
 =end
       require 'timbrado'
       servicio = Timbox::Servicios.new
@@ -1033,7 +1033,7 @@ class FacturasController < ApplicationController
           CCCC0303-CCCC-CC03-0303-CCCCCC030303
 =end
       uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" #@factura.folio_fiscal
-=begin    
+=begin
       folios =  %Q^<folio>
                     <uuid xsi:type="xsd:string">#{uuid}</uuid>
                     <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
@@ -1043,13 +1043,13 @@ class FacturasController < ApplicationController
       cert_pem = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
       llave_pem = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
       llave_password = "12345678a"
-=end      
+=end
       total = @factura.monto
 
-      #El servicio de “consultar_estatus” se utiliza para la consulta del estatus del CFDI, este servicio pretende proveer una forma alternativa de consulta que requiera verificar el estado de un comprobante en bases de datos del SAT. Los parámetros que se requieren en la consulta se describen en la siguiente tabla.  
-=begin      
+      #El servicio de “consultar_estatus” se utiliza para la consulta del estatus del CFDI, este servicio pretende proveer una forma alternativa de consulta que requiera verificar el estado de un comprobante en bases de datos del SAT. Los parámetros que se requieren en la consulta se describen en la siguiente tabla.
+=begin
         Cuando el emisor del CFDI requiera cancelarlo, tendrá que consultar el estado del comprobante, si es cancelable, le enviará al receptor del mismo una “Solicitud de Cancelación” ya sea a través del Portal del SAT o del Webservice del PAC, es decir, el contribuyente que requiera cancelar una factura deberá primero solicitar autorización a su cliente.
-        La función de este servicio es consultar los estatus de los comprobantes contemplando los siguientes: 
+        La función de este servicio es consultar los estatus de los comprobantes contemplando los siguientes:
         Esta tabla muestra los estados posibles que puede regresar la consulta de un comprobante.
 
         Los ESTATUS POSIBLES que puede regresar la consulta de un comprobante => Corresponde al estado del xml
@@ -1062,7 +1062,7 @@ class FacturasController < ApplicationController
           Cancelable sin Aceptación: El comprobante puede ser cancelado automáticamente
           No Cancelable: El comprobante no puede ser cancelado*
           *No significa que no se pueda cancelar, si no que serán aquellos que cuenten con al menos un documento relacionado con estatus “Vigente”, el emisor sólo podrá cancelarlo siempre y cuando los comprobantes relacionados se cancelen en el mismo momento que el comprobante origen y tenga estatus de “Cancelable con o sin aceptación”.
-        
+
         Los STATUS DE CANCELACIÓN que se pueden obtener al hacer la consulta
           Cancelado sin aceptación: El comprobante fue cancelado exitosamente sin requerir aceptación
           Cancelado con aceptación:  El comprobante fue cancelado aceptando la solicitud de cancelación
@@ -1070,7 +1070,7 @@ class FacturasController < ApplicationController
           Solicitud Rechazada: El comprobante no se cancelo porque se rechazo la solicitud de cancelación
           Plazo Vencido: El comprobante fue cancelado ya que no se recibió respuesta del receptor en el tiempo límite.
 
-        TIMBOX LOCO!!! Todo lo anterior asi está en su documentación, pero a la hora de probar el nodo "estatus_cancelación" puede tener los valores del "TIPOS DE CANCELACIÓN" y "ESTATUS DE CANCELACIÓN" 
+        TIMBOX LOCO!!! Todo lo anterior asi está en su documentación, pero a la hora de probar el nodo "estatus_cancelación" puede tener los valores del "TIPOS DE CANCELACIÓN" y "ESTATUS DE CANCELACIÓN"
 =end
       xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor, rfc_receptor, uuid, total)
 
@@ -1078,7 +1078,7 @@ class FacturasController < ApplicationController
       @es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
       @estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content.upcase
       @estatus_cancelacion = Nokogiri::XML(xml_consultar_status.xpath('//estatus_cancelacion').to_s).content.upcase
-      
+
       p "RESPUESTAS DE TIMBOX:"
       p "codigo_estatus - #{@codigo_estatus}"
       p "es_cancelable - #{@es_cancelable}"
@@ -1090,8 +1090,8 @@ class FacturasController < ApplicationController
           if @es_cancelable == "Cancelable con Aceptación".upcase #YEAH!
             @mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
             @descripcion_submit = "Realizar la petición de aceptación/rechazo"
-            
-            if @estatus_cancelacion == "En proceso".upcase 
+
+            if @estatus_cancelacion == "En proceso".upcase
               @mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada, por favor espere a que el receptor responda, hasta en un máximo de 72 hrs o de no ser así se podrá cancelar por plazo vencido."
             elsif @estatus_cancelacion == "Solicitud Rechazada".upcase # => YEAH!
               @mensaje_cancelacion_timbox = "El comprobante no se canceló porque el receptor rechazó la solicitud de cancelación"
@@ -1108,7 +1108,7 @@ class FacturasController < ApplicationController
             @descripcion_submit = "Cancelar los documentos relacionados"
           end
         elsif @estado == "Cancelado".upcase #YEAH!
-          #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
+          #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS).
           if @estatus_cancelacion == "Cancelado sin aceptación".upcase #YEAH!
             @mensaje_cancelacion_timbox = "El comprobante fue cancelado exitosamente sin requerir aceptación"
           elsif @estatus_cancelacion = "Cancelado con aceptación".upcase
@@ -1159,7 +1159,7 @@ class FacturasController < ApplicationController
     En proceso  El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada
     Solicitud Rechazada El comprobante no se cancelo porque se rechazo la solicitud de cancelación
     Plazo Vencido El comprobante fue cancelado ya que no se recibió respuesta del receptor en el tiempo límite.
-=end    
+=end
 
     require 'timbrado'
 
@@ -1172,7 +1172,7 @@ class FacturasController < ApplicationController
       #Para la otra debo de poner mayor atención, en este servicio se necesita el CSD  del reseptor y no del emisor.
       cert_pem_receptor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
       llave_pem_receptor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
-      llave_password = "12345678a" 
+      llave_password = "12345678a"
       rfc_receptor = @factura.cliente.datos_fiscales_cliente.rfc
       rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
       total = @factura.monto
@@ -1187,7 +1187,7 @@ class FacturasController < ApplicationController
                           <respuesta>#{respuesta}</respuesta>
                         </folios_respuestas>^
 
-      #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.     
+      #El servicio de “procesar_respuesta” se utiliza para realizar la petición de aceptación/rechazo de la solicitud de cancelación que se encuentra en espera de dicha resolución por parte del receptor del documento al servicio del SAT.
       hash_procesar_respuesta =  servicio.procesar_respuesta(username, password, rfc_receptor, respuestas, cert_pem_receptor, llave_pem_receptor, llave_password)
       folios_respuesta = hash_procesar_respuesta[:procesar_respuesta_response][:procesar_respuesta_result][:folios]
       xml_folios_respuesta = Nokogiri::XML(folios_respuesta.to_s)
@@ -1206,34 +1206,34 @@ class FacturasController < ApplicationController
         CANC111 El CFDI ha sido cancelado previamente, no puede ser rechazado
 
       Pasos para replicar cada error
-        CANC108 
+        CANC108
           Generar un comprobante
           Esperar 10 minutos
           Realizar la solicitud de cancelacion como emisor
           Esperar 15 minutos
           Aceptar la solicitud de cancelacion como receptor
-        CANC109 
+        CANC109
           Generar un comprobante
           Esperar 10 minutos
           Realizar la solicitud de cancelacion como emisor
           Aceptar la solicitud de cancelacion como receptor
           Volver a aceptar la solicitud de cancelacion
-        CANC110 
+        CANC110
           Generar un comprobante
           Esperar 10 minutos
           Realizar la solicitud de cancelacion como emisor
           Esperar 15 minutos
           Rechazar la solicitud de cancelacion como receptor
-        CANC111 
+        CANC111
           Generar un comprobante
           Esperar 10 minutos
           Realizar la solicitud de cancelacion como emisor
           Rechazar la solicitud de cancelacion como receptor
           Volver a rechazar la solicitud de cancelacion
 =end
-      @erorr_procesar_respuesta = Timbox::Errores::ERRORES_PROCESADO_RESPUESTA[codigo.to_s]      
+      @erorr_procesar_respuesta = Timbox::Errores::ERRORES_PROCESADO_RESPUESTA[codigo.to_s]
       redirect_to :back, notice: "Se ha relizado una solicitud de cancelación al receptor de la factura. Ahora debe de esperar a que responda o a que trascurran 72 hrs para poder cancelar por plazo vencido"
-      #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor. 
+      #Eso fue todo, esto no garantiza que se lleve a cabo la cancelación del comprobante a no ser que el receptor ACEPTE o pasen 72 hrs sin respuesta del receptor.
       #Posteriormente se debe de consumir otro servicio para consultar las peticiones de los comprobantes que se encuentran pendientes por la aceptación o rechazo por parte del Receptor, pero ese seguimiento se hace en alguna otra parte del sistema.
     elsif params[:commit] == "Cancelar factura"# => "Cancelable sin Aceptación".upcase #YEAH!
 
@@ -1242,7 +1242,7 @@ class FacturasController < ApplicationController
       llave_password = "12345678a"
       rfc_emisor  = @factura.negocio.datos_fiscales_negocio.rfc
 
-       
+
       folios =  %Q^<folio>
                     <uuid xsi:type="xsd:string">#{uuid}</uuid>
                     <rfc_receptor xsi:type="xsd:string">#{rfc_receptor}</rfc_receptor>
@@ -1281,7 +1281,7 @@ class FacturasController < ApplicationController
 
           #Se guarda el Acuse en la nube
           file = bucket.create_file StringIO.new(acuse.to_s), "#{ruta_storage}.xml"
-          
+
           #El consecutivo para formar el folio del acuse de cancelación
           if @factura.tipo_factura == "fv"
             #El consecutivo del acuse de cancelación de la factura de venta
@@ -1313,10 +1313,10 @@ class FacturasController < ApplicationController
 
           if @factura_cancelada.save
             current_user.negocio.acuse_cancelacions << @factura_cancelada
-            current_user.sucursal.acuse_cancelacions << @factura_cancelada 
+            current_user.sucursal.acuse_cancelacions << @factura_cancelada
             current_user.acuse_cancelacions << @factura_cancelada
-            
-            #No hay relaciones entre la tabla Acuses y los derefrentes comprobantes, en lugar de ello solo hago referencia 
+
+            #No hay relaciones entre la tabla Acuses y los derefrentes comprobantes, en lugar de ello solo hago referencia
             if AcuseCancelacion.present?
               acuse_cancelacion_id = AcuseCancelacion.last.consecutivo
               if acuse_cancelacion_id
@@ -1327,7 +1327,7 @@ class FacturasController < ApplicationController
             end
 
             @factura.ref_acuse_cancelacion =  acuse_cancelacion_id
-            @factura.update( estado_factura: "Cancelada")      
+            @factura.update( estado_factura: "Cancelada")
           end
 
           plantilla_email("ac_#{@factura.tipo_factura}")
@@ -1377,7 +1377,7 @@ class FacturasController < ApplicationController
           end
     redirect_to :back, notice: "La factura fué cancelada correctamente sin aceptación del receptor"
     elsif params[:commit] == "Cancelar los documentos relacionados"
-      
+
       cert_pem_emisor = OpenSSL::X509::Certificate.new File.read './public/certificado.cer'
       llave_pem_emisor = OpenSSL::PKey::RSA.new File.read './public/llave.pem'
       llave_password = "12345678a"
@@ -1392,40 +1392,40 @@ class FacturasController < ApplicationController
         Documento Abuelo, tercer documento al que se le relaciona el folio del CFDI identificado como Padre
           CCCC0303-CCCC-CC03-0303-CCCCCC030303
 =end
-      uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" # => Se debe de cambiar por el UUID real en producción @factura.folio_fiscal 
+      uuid = "AAAA0101-AAAA-AA01-0101-AAAAAA010101" # => Se debe de cambiar por el UUID real en producción @factura.folio_fiscal
 
           #Se obtienen los docuemnetos relacionados por  medio del siguiente servicio antes de cancelar el documento origen
           hash_documentos_relacionados = servicio.consultar_documento_relacionado(username, password, rfc_receptor, uuid, cert_pem_emisor, llave_pem_emisor, llave_password)
           #Se obtienen todos los folios de los comprobantes
           p hash_documentos_relacionados
-          #No tendría que hacer todo este rollo, por que las notas de credito no requieren aceptación del receptor, pero si se lanza el sistema sin que relice venttas en parcialidades hay riesgo de que eso... o  amm que alguién haga un comprobante en otro sistema      
+          #No tendría que hacer todo este rollo, por que las notas de credito no requieren aceptación del receptor, pero si se lanza el sistema sin que relice venttas en parcialidades hay riesgo de que eso... o  amm que alguién haga un comprobante en otro sistema
           hash_documentos_relacionados = hash_documentos_relacionados[:consultar_documento_relacionado_response][:consultar_documento_relacionado_result]
           resultado_documentos_relacionados = hash_documentos_relacionados[:resultado]
           p "DOCUMENTOS RELACIONADOS"
           p resultado_documentos_relacionados
           #Obtener el código del mensaje, lo demás no me importa q diga.
-  
+
           #2000  Existen cfdi relacionados al folio fiscal.  Este código de respuesta se presentará cuando la petición de consulta encuentre documentos relacionados al UUID consultado.
           #2001  No existen cfdi relacionados al folio fiscal. Este código de respuesta se presentará cuando el UUID consultado no contenga documentos relacionados a el.
           #2002  El folio fiscal no pertenece al receptor. Este código de respuesta se presentará cuando el RFC del receptor no corresponda al UUID consultado.
           #1101  No existen peticiones para el RFC Receptor. Este código se regresa cuando la consulta se realizó de manera exitosa, pero no se encontraron solicitudes de cancelación para el rfc receptor.
           ['Clave: 2000', 'Clave: 2001', 'Clave: 2002', 'Clave: 1101'].each { |cve| @clave = cve if resultado_documentos_relacionados.include? cve }
           #Solo si se encontraron documentos relacionados
-          if 'Clave: 2000' == @clave 
+          if 'Clave: 2000' == @clave
             if hash_documentos_relacionados.key?(:relacionados_padres)
               relacionados_padres = hash_documentos_relacionados[:relacionados_padres]
-              
+
               Nokogiri::XML(relacionados_padres.to_s).xpath('//uuid_padre').each do |doc_padre|
                 uuid_documento_relacionado = doc_padre.xpath('//uuid').text
                 rfc_emisor_documento_relacionado = doc_padre.xpath('//rfc-emisor').text
                 rfc_receptor_documento_relacionado = doc_padre.xpath('//rfc-receptor').text
-                
+
                 #1.-Se consulta el estatus por cada documento padre
                 #Entons... a consumir otro servicio para los detalles del comprobante
-                total = @factura.monto #El total debe deser del comprobante 
-                
+                total = @factura.monto #El total debe deser del comprobante
+
                 xml_consultar_status = servicio.consultar_estatus(username, password, rfc_emisor_documento_relacionado.to_s, rfc_receptor_documento_relacionado.to_s, uuid_documento_relacionado.to_s, total)
-              
+
                 codigo_estatus = Nokogiri::XML(xml_consultar_status.xpath('//codigo_estatus').to_s).content.upcase
                 es_cancelable = Nokogiri::XML(xml_consultar_status.xpath('//es_cancelable').to_s).content.upcase #No tiene sentido esto, pero bueno
                 estado = Nokogiri::XML(xml_consultar_status.xpath('//estado').to_s).content.upcase
@@ -1436,12 +1436,12 @@ class FacturasController < ApplicationController
                 p estado
                 p estatus_cancelacion
 
-                #Para mostrar un mensaje para cualquier caso que pudiera suceder por cada 
+                #Para mostrar un mensaje para cualquier caso que pudiera suceder por cada
                 if codigo_estatus == "S - Comprobante obtenido satisfactoriamente.".upcase #YEAH!
                   if estado == "Vigente".upcase #YEAH!
                     if es_cancelable == "Cancelable con Aceptación".upcase #YEAH!
                       mensaje_cancelacion_timbox = "Para poder cancelar el comprobante es necesario enviarle una solicitud al cliente la cual puede ser aceptada o rechazada hasta en un plazo máximo de 72 horas o de no responder, se podrá cancelar la factura por plazo vencido."
-                      if estatus_cancelacion == "En proceso".upcase 
+                      if estatus_cancelacion == "En proceso".upcase
                         mensaje_cancelacion_timbox = " El comprobante recibió una solicitud de cancelación y se encuentra en espera de una respuesta o aun no es reflejada, por favor espere a que el receptor responda, hasta en un máximo de 72 hrs o de no ser así se podrá cancelar por plazo vencido."
                       elsif estatus_cancelacion == "Solicitud Rechazada".upcase # => YEAH!
                         mensaje_cancelacion_timbox = "El comprobante no se canceló porque el receptor rechazó la solicitud de cancelación"
@@ -1453,7 +1453,7 @@ class FacturasController < ApplicationController
                       mensaje_cancelacion_timbox = "El comprobante no se puede cancelar a menos que se cancelen los CFDIs relacionados e inmediatamente el CFDI origen y tenga estatus de proceso de cancelación igual a: “Cancelable con o sin aceptación”."
                     end
                   elsif estado == "Cancelado".upcase #YEAH!
-                    #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS). 
+                    #Si ya está cancelado ya no se puede cancelar jeje suena lógico, pero ahora entiendo que si se pueden cumplir las siguientes condiciones debido a que el estado en la BD del comprobante no cambia hasta que se realice la peticion de las cancelaciones pendientes, y todos aquellos q fueron aceptados por el cliente o pasados despues de 72 hrs se cambian a cancelado en el sistema(OMILOS).
                     if estatus_cancelacion == "Cancelado sin aceptación".upcase #YEAH!
                       mensaje_cancelacion_timbox = "El comprobante fue cancelado exitosamente sin requerir aceptación"
                     elsif estatus_cancelacion = "Cancelado con aceptación".upcase
@@ -1476,7 +1476,7 @@ class FacturasController < ApplicationController
               #2.-Se consulta el eststus del doc relacionado
               #3.-Se cancelan los doc relacionados
             end
-      end          
+      end
     end
   end
 
@@ -1489,11 +1489,11 @@ class FacturasController < ApplicationController
     storage = gcloud.storage
     bucket = storage.bucket "cfdis"
 
-    #Por supuesto que los comprobantes no estarán toda la vida ocupando espaci. Son "5 años" los que deben de conservarse... 
+    #Por supuesto que los comprobantes no estarán toda la vida ocupando espaci. Son "5 años" los que deben de conservarse...
     begin
       file = bucket.file "#{@factura.ruta_storage}#{@factura.folio_fiscal}.pdf"
       url = file.signed_url expires: 600 #10 minutos es hasta mucho
-      pdf_url = open(url) 
+      pdf_url = open(url)
       #file_download_storage = bucket.file "#{storage_file_path}#{uuid}.pdf"
       #file_download_storage.download "public/#{uuid}.pdf"
     rescue
@@ -1523,7 +1523,7 @@ class FacturasController < ApplicationController
       destinatario_final = params[:destinatario]
       tipo_factura = @factura.tipo_factura
 
-      asunto_email =  params[:asunto] 
+      asunto_email =  params[:asunto]
       mensaje_email = params[:summernote]
 
       project_id = "cfdis-196902"
@@ -1538,17 +1538,17 @@ class FacturasController < ApplicationController
         if @factura.estado_factura == "Activa"
           uuid = @factura.folio_fiscal
           storage_file_path = @factura.ruta_storage
-          #Si selecciona la casilla de pdf 
+          #Si selecciona la casilla de pdf
           if params[:xml_factura_activa] == "yes"
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
-            url = file.signed_url expires: 2629800 
+            url = file.signed_url expires: 2629800
 
             link = "<a href=\"#{url}\">CFDI</a><br>"
             mensaje_email = mensaje_email << link
           end
           if params[:pdf_factura_activa] == "yes"
             file = bucket.file "#{storage_file_path}#{uuid}.pdf"
-            url = file.signed_url expires: 2629800 
+            url = file.signed_url expires: 2629800
 
             link = "<a href=\"#{url}\">Representación impresa del CFDI</a><br>"
             mensaje_email = mensaje_email << link
@@ -1562,7 +1562,7 @@ class FacturasController < ApplicationController
             #Ni que hacerle, los acuses no tienen uuid para identificarlos asi que husaré el del sistema.
             id = acuse_cancelacion.id
             file = bucket.file "#{storage_file_path}Acuse_#{id}.xml"
-            url = file.signed_url expires: 2629800 
+            url = file.signed_url expires: 2629800
             link = "<a href=\"#{url}\">Acuse de cancelación</a><br>"
             mensaje_email = mensaje_email << link
           end
@@ -1571,7 +1571,7 @@ class FacturasController < ApplicationController
             uuid = @factura.folio_fiscal
             storage_file_path = @factura.ruta_storage
             file = bucket.file "#{storage_file_path}#{uuid}.xml"
-            url = file.signed_url expires: 2629800 
+            url = file.signed_url expires: 2629800
 
             link = "<a href=\"#{url}\">Representación impresa del CFDI cancelado</a><br>"
             mensaje_email = mensaje_email << link
@@ -1581,7 +1581,7 @@ class FacturasController < ApplicationController
         #Se enviá al momento
         FacturasEmail.factura_email(destinatario_final, mensaje_email, asunto_email).deliver_now
       rescue
-        #Si alguno de los comprobantes no se pudo obtener de la cloud, o al momento de enviar, o que... se 
+        #Si alguno de los comprobantes no se pudo obtener de la cloud, o al momento de enviar, o que... se
         if @factura.tipo_factura == "fv"
           redirect_to facturas_index_facturas_ventas_path(:tipo_factura => "fv")
           flash[:danger] = "El comprobante no se pudo enviar por email, vuelva a intentarlo por favor"
@@ -1601,7 +1601,7 @@ class FacturasController < ApplicationController
     end
   end
 
-  def enviar_email 
+  def enviar_email
       estado_factura = @factura.estado_factura
       tipo_factura = @factura.tipo_factura
       if tipo_factura == "fv"
@@ -1613,25 +1613,25 @@ class FacturasController < ApplicationController
           mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: tipo_factura).msg_email
           asunto = current_user.negocio.plantillas_emails.find_by(comprobante: tipo_factura).asunto_email
 
-          plantilla_email.nombCliente = @factura.cliente.nombre_completo #Nombre que se usa en el sistema no el 
+          plantilla_email.nombCliente = @factura.cliente.nombre_completo #Nombre que se usa en el sistema no el
           plantilla_email.uuid = @factura.folio_fiscal
           plantilla_email.fecha = @factura.fecha_expedicion
           plantilla_email.folio= @factura.consecutivo
           plantilla_email.serie = @factura.folio.delete(@folio.to_s)
           plantilla_email.total= @factura.monto
 
-          plantilla_email.nombNegocio = @factura.negocio.nombre 
-          plantilla_email.nombSucursal = @factura.sucursal.nombre 
-          plantilla_email.emailContacto = @factura.sucursal.email 
-          plantilla_email.telContacto = @factura.sucursal.telefono 
+          plantilla_email.nombNegocio = @factura.negocio.nombre
+          plantilla_email.nombSucursal = @factura.sucursal.nombre
+          plantilla_email.emailContacto = @factura.sucursal.email
+          plantilla_email.telContacto = @factura.sucursal.telefono
           plantilla_email.paginaWeb = @factura.negocio.pag_web
 
-        elsif estado_factura == "Cancelada" 
+        elsif estado_factura == "Cancelada"
           mensaje = current_user.negocio.plantillas_emails.find_by(comprobante: "ac").msg_email
           asunto = current_user.negocio.plantillas_emails.find_by(comprobante: "ac").asunto_email
-          
+
           acuse_cancelacion = AcuseCancelacion.find(@factura.ref_acuse_cancelacion)
-          plantilla_email.fecha = acuse_cancelacion.fecha_cancelacion 
+          plantilla_email.fecha = acuse_cancelacion.fecha_cancelacion
 
           #Es obvio que debe de ser el mismo cliente que aparece en la factura de venta
           plantilla_email.nombCliente = @factura.cliente.nombre_completo
@@ -1648,7 +1648,7 @@ class FacturasController < ApplicationController
         #Las facturas globales no se envian a ningún cliente en especifico, sin embargo estará la opción de enviar, claro solo usuarios con privilegios podrán hacerlo.
         #Por la misma razón, las FG no hacen uso de alguna plantilla
         #El mensaje queda a la libertad del usuario.
-        #asunto_email =  params[:asunto_email] 
+        #asunto_email =  params[:asunto_email]
         #mensaje_email = params[:mensaje_email]
   end
 
@@ -1657,7 +1657,7 @@ class FacturasController < ApplicationController
     # project_id = "cfdis-196902","public/CFDIs-0fd739cbe697.json"# project_id = "Su ID de proyecto de Google Cloud"
     project_id = "cfdis-196902"
     credentials = File.open("public/CFDIs-0fd739cbe697.json") #Esto debe de existir siempre si o si.
-    gcloud = Google::Cloud.new project_id, credentials 
+    gcloud = Google::Cloud.new project_id, credentials
     storage = gcloud.storage
     bucket = storage.bucket "cfdis"
 
@@ -1688,7 +1688,7 @@ class FacturasController < ApplicationController
     # project_id = "cfdis-196902","public/CFDIs-0fd739cbe697.json"# project_id = "Su ID de proyecto de Google Cloud"
     project_id = "cfdis-196902"
     credentials = File.open("public/CFDIs-0fd739cbe697.json") #Esto debe de existir siempre si o si.
-    gcloud = Google::Cloud.new project_id, credentials 
+    gcloud = Google::Cloud.new project_id, credentials
     storage = gcloud.storage
     bucket = storage.bucket "cfdis"
 
@@ -1718,26 +1718,16 @@ class FacturasController < ApplicationController
 
   def consulta_por_fecha
     if request.post?
-      @consulta = true
-      @fechas=true
-      @por_folio=false
-      @avanzada = false
-      @por_cliente= false
-      @fechaInicial = (params[:fecha_inicial]).to_date
-      @fechaFinal = (params[:fecha_final]).to_date
+      fechaInicial = (params[:fecha_inicial_cpf]).to_date
+      fechaFinal = (params[:fecha_final_cpf]).to_date
       @tipo_factura = params[:tipo_factura]
       if can? :create, Negocio
-        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal)
+        @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: fechaInicial..fechaFinal)
       else
-        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal)
+        @facturas = current_user.sucursal.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: fechaInicial..fechaFinal)
       end
-
       respond_to do |format|
-        if @tipo_factura == "fv"
-          format.html { render 'index_facturas_ventas'}
-        elsif @tipo_factura == "fg"
-          format.html { render 'index_facturas_globales'}
-        end
+        format.js
       end
     end
   end
@@ -1769,7 +1759,7 @@ class FacturasController < ApplicationController
     end
 
   end
-  
+
   #Las facturas globales no usan este filtro por que son echas al público en gral.
   def consulta_por_cliente
     @consulta = true
@@ -1849,7 +1839,7 @@ class FacturasController < ApplicationController
           datos_fiscales_cliente = DatosFiscalesCliente.find(cliente_id)
           @criterio_cliente = true
           @nombreFiscal = datos_fiscales_cliente.nombreFiscal
-          clientes_ids = datos_fiscales_cliente.cliente_id 
+          clientes_ids = datos_fiscales_cliente.cliente_id
         end
       end
 
@@ -1866,7 +1856,7 @@ class FacturasController < ApplicationController
            when "rango desde" then ".." #o también <> Distinto de
         end
         @monto_factura = params[:monto_factura]
-        @monto_factura2 = params[:monto_factura2]  
+        @monto_factura2 = params[:monto_factura2]
         if ((not(@monto_factura.empty?) && operador_monto != "..") || (not(@monto_factura.empty?) && not(@monto_factura2.empty?) && operador_monto == ".."))
           @criterio_monto = true
         end
@@ -1882,15 +1872,15 @@ class FacturasController < ApplicationController
       if can? :create, Negocio
         #Se obtinen las facturas de ventas o globales dependiendo del parametro recibido del index
         #Si el usuario si eligió una sucursal
-        unless @suc.empty? 
+        unless @suc.empty?
           #Si se eligió un cliente específico para esta consulta
-          if @criterio_cliente 
+          if @criterio_cliente
             #Si el estado_factura elegido es todas, entonces no filtra las ventas por el estado_factura
-            unless @estado_factura.eql?("Todas")  
+            unless @estado_factura.eql?("Todas")
               #Si se eligió monto de factura
-              if @criterio_monto 
+              if @criterio_monto
                 if operador_monto == ".." #Cuando se trata de un rango
-                  @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal, cliente: clientes_ids, monto: @monto_factura..@monto_factura2) 
+                  @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal, cliente: clientes_ids, monto: @monto_factura..@monto_factura2)
                 else
                   @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, sucursal: @sucursal, cliente: clientes_ids)
                   @facturas = @facturas.where("monto #{operador_monto} ?", @monto_factura)
@@ -1948,7 +1938,7 @@ class FacturasController < ApplicationController
                   @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura, monto: @monto_factura..@monto_factura2)
                 else
                   @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
-                  @facturas = @facturas.where("monto #{operador_monto} ?", @monto_factura) 
+                  @facturas = @facturas.where("monto #{operador_monto} ?", @monto_factura)
                 end
               else
                 @facturas = current_user.negocio.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal, estado_factura: @estado_factura)
@@ -1976,7 +1966,7 @@ class FacturasController < ApplicationController
           else
             @facturas =current_user.sucursal.facturas.where(tipo_factura: @tipo_factura, fecha_expedicion: @fechaInicial..@fechaFinal)
           end #Termina unless @estado_factura.eql?("Todas")
-        end 
+        end
       end
 
       respond_to do |format|
@@ -2275,7 +2265,7 @@ class FacturasController < ApplicationController
         tipo_fuente: tipo_fuente, tam_fuente: tam_fuente, color_fondo:color_fondo, color_banda:color_banda, color_titulos:color_titulos,
         tel_negocio: current_user.negocio.telefono, email_negocio: current_user.negocio.email, pag_web_negocio: current_user.negocio.pag_web
       }
-  
+
       #Solo si tiene más de un establecimiento el negocio...
       if current_user.sucursal
         hash_info[:tel_sucursal] = current_user.sucursal.telefono
@@ -2288,7 +2278,7 @@ class FacturasController < ApplicationController
       html_document = template.transform(xml_rep_impresa)
       #File.open('/home/daniel/Documentos/timbox-ruby/CFDImpreso.html', 'w').write(html_document)
       pdf = WickedPdf.new.pdf_from_string(html_document)
-      #Se guarda el pdf 
+      #Se guarda el pdf
       nombre_pdf="#{fg_id}_fg.pdf"
       save_path = Rails.root.join('public',nombre_pdf)
       File.open(save_path, 'wb') do |file|
@@ -2305,7 +2295,7 @@ class FacturasController < ApplicationController
       dir_negocio = current_user.negocio.nombre
       dir_cliente = "Público en general"
       #Se separan obtiene el día, mes y año de la fecha de emisión del comprobante
-      fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s) 
+      fecha_registroBD = DateTime.parse(xml_timbox.xpath('//@Fecha').to_s)
       dir_dia = fecha_registroBD.strftime("%d")
       dir_mes = fecha_registroBD.strftime("%m")
       dir_anno = fecha_registroBD.strftime("%Y")
@@ -2324,13 +2314,13 @@ class FacturasController < ApplicationController
       file = bucket.create_file "public/#{fg_id}_fg.xml", "#{ruta_storage}.xml"
 
       #7.- SE ENVIAN LOS COMPROBANTES(pdf y xml timbrado)
-      
+
 
       #8.- SE REGISTRA LA NUEVA FACTURA GLOBAL EN LA BASE DE DATOS
       #Se crea un objeto del modelo Factura y se le asignan a los atributos los valores correspondientes para posteriormente guardarlo como un registo en la BD.
       folio_fiscal_xml = xml_timbox.xpath('/cfdi:Comprobante/cfdi:Complemento//@UUID')
       @factura = Factura.new(folio: folio_registroBD, fecha_expedicion: fecha_file, consecutivo: consecutivo, estado_factura:"Activa", cve_metodo_pagoSAT: 'PUE', monto: '%.2f' % (@ventas.map(&:montoVenta).reduce(:+)).round(2), folio_fiscal: folio_fiscal_xml, ruta_storage: ruta_storage, tipo_factura: "fg")#, monto: @venta.montoVenta)
-      
+
       if @factura.save
         current_user.facturas<<@factura
         current_user.negocio.facturas<<@factura
@@ -2342,7 +2332,7 @@ class FacturasController < ApplicationController
         #A público en general
         current_user.negocio.clientes.find_by(nombre: "General").facturas << @factura
         #@venta.factura = @factura
-        @ventas.each {|vta| @factura.ventas << vta} 
+        @ventas.each {|vta| @factura.ventas << vta}
 
       end
 

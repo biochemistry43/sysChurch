@@ -24,26 +24,17 @@
         <%end%>
     </div>
   </div> <!--Fin de botón -->
-  <% if @consulta %>
-  <div class="row">
-    <div class="col-md-12" style="color: gray;">
-        <%if @facturas%>
-          <%if @facturas.count >= 1 %>
-            Se <% if @facturas.size == 1%>encontró<% else %>encontraron<% end %> <span style="color:#5B7ECC; font-size: 20px;"><%= @facturas.size %></span> factura<% if @facturas.size > 1 %>s<% end %> con:
-          <%else%>
-            No se encontró ninguna factura con:
-          <%end%>
-        <%end%>
-    </div>
-  </div>
+
+  <!-- Detalles de la consulta (por fecha, por folio, por cliente o avanzada) -->
+<div  id="parametros-de-consulta">
+
+</div>
+
+
     <div class="row">
       <div class="col-md-12" style="color: gray;">
         <%if @facturas%>
-          <%if @fechas%>
-          <div class="col-md-12">
-            Rango de fechas: <span style="color:#5B7ECC; font-size: 16px;"> <%= @fechaInicial %> <span style="color: gray;"> a</span> <%= @fechaFinal %></span>
-          </div>
-          <%end%>
+
           <% if @por_folio%>
             <div class="col-md-12">
               Folio: <span style="color:#5B7ECC; font-size: 16px;"> <%=@folio_fact%></span>
@@ -107,8 +98,6 @@
           <% end %>
       </div>
     </div>
-    <%end%>
-
 
   <hr style="border-style: solid; border-width: 2px;">
 
@@ -117,47 +106,9 @@
     </button>
     <!-- Este buscador sencillo, permite al usuario buscar ventas realizadas en determinado rango de fechas -->
     <div class="row opciones_filtros" style="margin-bottom: 30px;" id="opciones_filtros_por_fecha">
-      <%= form_tag({ controller: "facturas", action: "consulta_por_fecha", :tipo_factura => "fv"}, {:class=> "form-horizontal", :method => :post}) do %>
-        <div class="col-md-2 col-sm-6 col-xs-12">
-          <div class="text-center">
-            Búsqueda por fechas:
-          </div>
-        </div>
-
-        <div class="col-md-1 col-sm-1 col-xs-1">
-          <div style="text-align: right; color: black;">
-            Desde:
-          </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= date_picker_tag("fecha_inicial", nil, {class: "form-control text-center", selectMonths: :true}, {})%>
-          </div>
-        </div>
-
-        <div class="col-md-1 col-sm-1 col-xs-1">
-          <div style="text-align: right; color: black;">
-            Hasta:
-          </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="text-center">
-            <%= date_picker_tag("fecha_final", nil, {class: "form-control text-center"}, {})%>
-
-          </div>
-        </div>
-
-        <div class="col-md-1 col-sm-5 col-xs-12">
-          <div class="text-center">
-            <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info"} %>
-          </div>
-        </div>
-      <% end %>
+      <%=render "form_consulta_por_fecha"%>
     </div> <!--Fin de busqueda por fecha-->
     <!-- Termina buscador por rango de fechas -->
-
 
     <button id="filtro_por_folio" class="btn btn-primary" style="margin-bottom: 30px; display: inline-block;">
       Filtros por folio <i class="fa fa-sort-down"></i>
@@ -389,7 +340,7 @@
           </tr>
         </thead>
         <%if @facturas %>
-        <tbody id="facturas-de-ventas">
+        <tbody id="lista-de-facturas">
           <%= render @facturas%>
         </tbody>
         <%end%>
@@ -408,10 +359,22 @@
   <%= javascript_include_tag "facturas" %> <!-- config => initializer => assets-->
 </div>
 
+
 <script type="text/javascript">
   $(document).ready(function() {
     setTimeout(function() {
         $(".notice").fadeOut(1500);
     },10000);
   });
+
+  // Parámetros de consulta
+  $("#btn-consulta-por-fecha").click( function(){
+    var cantidadDeFacturas = "No puedo obtener el número de facturas XD";
+
+    var fechaInicialCPF = $('#fecha-inicial-cpf').val();
+    var fechaFinalCPF = $('#fecha-final-cpf').val();
+
+    $('#parametros-de-consulta').html(`<div>Facturas encontradas: <span>${cantidadDeFacturas}</span></div><div>Rango de fechas: <span>${fechaInicialCPF} - ${fechaFinalCPF}</span></div>`);
+  });
+
 </script>

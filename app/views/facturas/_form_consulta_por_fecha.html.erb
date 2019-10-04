@@ -1,0 +1,37 @@
+<%= form_tag({ controller: "facturas", action: "consulta_por_fecha", :tipo_factura => "fv"}, {:class=> "form-horizontal", :method => :post, remote:true}) do %>
+  <div class="col-md-2 col-sm-6 col-xs-12">
+    <div class="text-center">
+      Búsqueda por fechas:
+    </div>
+  </div>
+
+  <div class="col-md-1 col-sm-1 col-xs-1">
+    <div style="text-align: right; color: black;">
+      Desde:
+    </div>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="text-center">
+      <%= date_picker_tag("fecha_inicial_cpf", nil, {id: "fecha-inicial-cpf", class: "form-control text-center", selectMonths: :true}, {})%>
+    </div>
+  </div>
+
+  <div class="col-md-1 col-sm-1 col-xs-1">
+    <div style="text-align: right; color: black;">
+      Hasta:
+    </div>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12">
+    <div class="text-center">
+      <%= date_picker_tag("fecha_final_cpf", nil, {id: "fecha-final-cpf", class: "form-control text-center"}, {})%>
+    </div>
+  </div>
+
+  <div class="col-md-1 col-sm-5 col-xs-12">
+    <div class="text-center">
+      <%= submit_tag 'Buscar facturas', {id: "btn-consulta-por-fecha", :class=>"btn btn-info"} %>
+    </div>
+  </div>
+<% end %>
