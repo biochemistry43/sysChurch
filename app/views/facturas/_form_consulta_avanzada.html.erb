@@ -1,0 +1,114 @@
+<%= form_tag({ controller: "facturas", action: "consulta_avanzada", :tipo_factura => "fv" }, {:class=> "form-horizontal",id: "formFiltrosAvanzados", :method => :post, remote:true}) do %>
+  <div class="item form-group">
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <div style="text-align: left; color: black;">
+        Elija un conjunto de criterios para hacer un filtro más detallado.
+      </div>
+    </div>
+  </div>
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        Seleccione un rango de fechas:
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-center">
+        <%= date_picker_tag("fecha_inicial_avanzado", nil, {class: "form-control text_field text-center", selectMonths: :true}, {})%>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-center">
+        <%= date_picker_tag("fecha_final_avanzado", nil, {class: "form-control text_field text-center"}, {})%>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        Cliente:
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        <%= select_tag :opcion_busqueda_cliente, "<option>Buscar por R.F.C.</option><option>Buscar por nombre fiscal</option>".html_safe, :prompt => 'Elija una opción.',  class: 'form-control' %>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;"  id="errorRFC2">
+          <%= collection_select(nil, :cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija un cliente.'}, { class: "form-control col-md-7 col-xs-12 nombre_collection_select", style: "display: none;"})%>
+          <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_text_field", id:"rfc_input2", :placeholder=>"RFC del cliente...", style: "display: none;"} do%>
+            <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+          <%end%>
+      </div>
+    </div>
+  </div>
+  <!--Filtro por monto de venta-->
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        Por monto:
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        <%= select_tag :condicion_monto_factura, "<option>menor que</option><option>mayor que</option><option>menor o igual que</option><option>mayor o igual que</option><option>igual que</option><option>diferente que</option><option id='rangoMonto'>rango desde</option>".html_safe, :prompt => 'Elija una condición.',  class: 'form-control' %>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        <%= number_field_tag(:monto_factura , nil, {class: "form-control text_field", style: "display: none;"})%>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        <%= number_field_tag(:monto_factura2 , nil, {class: "form-control text_field", style: "display: none;"})%>
+      </div>
+    </div>
+  </div>
+
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div style="text-align: right;">
+        Status de factura:
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-center">
+        <%= select_tag "estado_factura", "<option>Todas</option><option>Activa</option><option>Cancelada</option>".html_safe,  class: 'form-control' %>
+      </div>
+    </div>
+  </div>
+
+  <% if can? :create, Negocio %>
+
+    <div class="item form-group">
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div style="text-align: right;">
+          Sucursal:
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="text-center">
+          <%= collection_select(nil, :suc_elegida, @sucursales, :id, :nombre, {:prompt => 'Seleccione sucursal'}, { class: "form-control col-md-7 col-xs-12" })%>
+        </div>
+      </div>
+    </div>
+
+  <% end %>
+
+  <div class="item form-group">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+      <div class="text-left">
+        <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info",id: "RFC_Obligatorio2"} %>
+      </div>
+    </div>
+  </div>
+<% end %>

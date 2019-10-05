@@ -1928,13 +1928,7 @@ class FacturasController < ApplicationController
         end
       end
 
-      respond_to do |format|
-        if @tipo_factura == "fv"
-          format.html { render 'index_facturas_ventas'}
-        elsif @tipo_factura == "fg"
-          format.html { render 'index_facturas_globales'}
-        end
-      end
+      respond_to(:js)
     end
   end
 
