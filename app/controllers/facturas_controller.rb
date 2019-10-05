@@ -1745,55 +1745,29 @@ class FacturasController < ApplicationController
     end
   end
 
-  #Las facturas globales no usan este filtro por que son echas al público en gral.
+  #Las facturas globales no usan este filtro porque se expiden al público en gral.
   def consulta_por_cliente
-    @consulta = true
-    @fechas = false
-    @por_folio = false
-    @avanzada = false
-    @por_cliente= true
-
     if request.post?
-      if can? :create, Negocio
-        if params[:rbtn] == "rbtn_rfc"
-          @rfc = params[:rfc]
-          datos_fiscales_cliente = DatosFiscalesCliente.find_by(rfc: @rfc)
-          cliente_id = datos_fiscales_cliente ? datos_fiscales_cliente.cliente_id : nil
+      if params[:rbtn] == "rbtn_rfc"
+        rfc = params[:rfc]
+        datos_fiscales_cliente = DatosFiscalesCliente.find_by_rfc(rfc)
+        cliente_id = datos_fiscales_cliente ? datos_fiscales_cliente.cliente_id : nil
+        if can? :create, Negocio
           @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: cliente_id)
-        elsif params[:rbtn] == "rbtn_nombreFiscal"
-          cliente_id = params[:cliente_id]
-          unless cliente_id.empty?
-            datos_fiscales_cliente = DatosFiscalesCliente.find(cliente_id)
-            @nombreFiscal = datos_fiscales_cliente.nombreFiscal
-            cliente = datos_fiscales_cliente.cliente_id
-          else
-            cliente =nil
-            @nombreFiscal = ""
-          end
-          @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: cliente)
-        end
-      else
-        if params[:rbtn] == "rbtn_rfc"
-          @rfc = params[:rfc]
-          dfc = DatosFiscalesCliente.find_by(rfc: @rfc)
-          cliente_id = dfc ? dfc.cliente_id : nil
+        else
           @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: cliente_id)
-        elsif params[:rbtn] == "rbtn_nombreFiscal"
-          cliente_id = params[:cliente_id]
-          unless cliente_id.empty?
-            datos_fiscales_cliente = DatosFiscalesCliente.find(cliente_id)
-            @nombreFiscal = datos_fiscales_cliente.nombreFiscal
-            cliente = datos_fiscales_cliente.cliente_id
-          else
-            cliente = nil
-            @nombreFiscal = ""
-          end
-          @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: clientes_ids)
+        end
+      elsif params[:rbtn] == "rbtn_nombreFiscal"
+        id = params[:datos_ficales_cliente_id]
+        cliente_id = nil
+        cliente_id = DatosFiscalesCliente.find(id).cliente_id unless id.empty?
+        if can? :create, Negocio
+          @facturas = current_user.negocio.facturas.where(tipo_factura: "fv", cliente_id: cliente_id)
+        else
+          @facturas = current_user.sucursal.facturas.where(tipo_factura: "fv", cliente_id: cliente_id)
         end
       end
-      respond_to do |format|
-        format.html { render 'index_facturas_ventas'}
-      end
+      respond_to(:js)
     end
   end
 

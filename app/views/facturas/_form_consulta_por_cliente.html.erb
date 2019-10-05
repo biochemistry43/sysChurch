@@ -1,0 +1,43 @@
+<%= form_tag({ controller: "facturas", action: "consulta_por_cliente" }, {:class=> "form-horizontal", :method => :post, remote:true}) do %>
+  <div class="form_row" style="margin-bottom: 30px;">
+    <div class="btn-group" data-toggle="buttons">
+      <%= label_tag "lbl2", "lbl_rfc", class: "btn btn-primary btn-xs form-check-label" do %>
+        <%= radio_button_tag 'rbtn', "rbtn_rfc",  class:"form-check-input"%> Buscar por R.F.C
+        <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+      <%end%>
+      <%= label_tag "lbl", "lbl_nombreFiscal", class: "btn btn-primary btn-xs active form-check-label" do %>
+        <%= radio_button_tag 'rbtn', "rbtn_nombreFiscal", class:"form-check-input"%>Buscar por nombre fiscal
+        <!--input class="form-check-input" type="radio" checked autocomplete="off"> radio 1 (pre-checked)-->
+      <%end%>
+
+    </div>
+  </div>
+  <div class="item form-group">
+    <div class="col-md-2 col-sm-6 col-xs-12">
+      <div class="text-center">
+        Búsqueda por cliente:
+      </div>
+    </div>
+    <div class="col-md-1 col-sm-1 col-xs-1">
+      <div style="text-align: right; color: black;">
+        <%= label_tag "lbl", "Nombre:", class: "control-label", id: "leyenda_filtro_cliente"%>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+      <div class="text-center" id="errorRFC">
+
+        <%= collection_select(nil, :datos_ficales_cliente_id, @nombreFiscalClientes, :id, :nombreFiscal, {:prompt => 'Elija el cliente.'}, { class: "form-control col-md-7 col-xs-12", id: "nombreFiscalCliente"})%>
+
+        <%= text_field_tag :rfc, nil, {class: "form-control col-md-7 col-xs-12 text_field rfc_input",id:"rfc_input", :placeholder=>"RFC del cliente..."} do%>
+          <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+        <%end%>
+      </div>
+    </div>
+
+    <div class="col-md-1 col-sm-5 col-xs-12">
+      <div class="text-center">
+        <%= submit_tag 'Buscar facturas', {:class=>"btn btn-info",id: "RFC_Obligatorio"} %>
+      </div>
+    </div>
+  </div>
+<% end %>
