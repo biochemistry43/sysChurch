@@ -47,7 +47,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 #Necessary gem for use bootstrap inside rails application
-gem 'bootstrap-sass', '~> 3.3.5'
+gem 'bootstrap-sass', '~> 3.4.1'
 
 gem 'autoprefixer-rails'
 
