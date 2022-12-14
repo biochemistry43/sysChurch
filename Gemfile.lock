@@ -62,7 +62,7 @@ GEM
       execjs
     coffee-script-source (1.10.0)
     concurrent-ruby (1.1.5)
-    crass (1.0.5)
+    crass (1.0.6)
     date_picker (0.0.9)
       rails (>= 4.0.3)
     debug_inspector (0.0.2)
@@ -240,7 +240,7 @@ GEM
       jquery-rails
       rails (>= 3.1.0)
     kgio (2.11.0)
-    loofah (2.3.1)
+    loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.6.3)
